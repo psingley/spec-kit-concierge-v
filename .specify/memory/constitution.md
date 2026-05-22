@@ -645,9 +645,11 @@ codebase, it doesn't work for users.
   notified.
 - UI: React 18 (function components only), Redux Toolkit with RTK
   Query, custom hooks. No other state library.
-- Styling: design tokens from `design/spec-kit-concierge-2/styles.css`
-  carried over (teal accent `#3a7e9a` / `#132f3b` dim, three-state orb
-  palette, near-black surfaces). No CSS-in-JS runtime in v1.
+- Styling: design tokens from `design/project/styles.css` carried over
+  (teal accent `#3a7e9a` / `#132f3b` dim, three-state orb palette,
+  near-black surfaces). The `design/` directory is the v2 canonical
+  bundle; `design/legacy/` holds the earlier v1 prototype for
+  historical reference only. No CSS-in-JS runtime in v1.
 - Linting: ESLint with `@typescript-eslint`, `eslint-plugin-react`,
   `eslint-plugin-functional`, and project-local rules enforcing the
   Pure / Effect layer boundary and the `console.log` prohibition.
@@ -730,4 +732,11 @@ Runtime guidance for contributors lives at
 that needs it). PR review comments cite the principle they invoke by
 number.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-21
+**Version**: 1.0.1 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-22
+
+### Amendment history
+
+- **1.0.1** (2026-05-22) — PATCH: corrected the design tokens path in
+  Stack & Coding Standards (`design/spec-kit-concierge-2/styles.css`
+  → `design/project/styles.css`) and named the v1 prototype's location
+  (`design/legacy/`). No principle change.

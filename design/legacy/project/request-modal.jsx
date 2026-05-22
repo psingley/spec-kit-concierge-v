@@ -1,7 +1,7 @@
 // File-a-request modal — feature or bug to the concierge team
 
 function RequestModal({ onClose }) {
-  const [kind, setKind] = React.useState("bug");
+  const [kind, setKind] = React.useState("feature");
   const [title, setTitle] = React.useState("");
   const [body, setBody] = React.useState("");
   const [severity, setSeverity] = React.useState("normal");
@@ -38,7 +38,7 @@ function RequestModal({ onClose }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-head">
           <Ico.Send />
-          <h3>Report a bug or request a feature</h3>
+          <h3>File a request to the concierge team</h3>
           <button className="icon-btn" onClick={onClose}><Ico.X /></button>
         </div>
         <div className="modal-body">

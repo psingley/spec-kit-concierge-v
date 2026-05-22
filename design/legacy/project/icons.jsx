@@ -64,21 +64,6 @@ const Ico = {
   Refresh: ({ size = 12 }) => (
     <svg width={size} height={size} viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M2 7a5 5 0 0 1 9-3l1-1v3H9M12 7a5 5 0 0 1-9 3l-1 1v-3h3"/></svg>
   ),
-  Gear: ({ size = 14 }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-    </svg>
-  ),
-  Download: ({ size = 13 }) => (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M7 1.5v7.5M3.5 6 7 9.5 10.5 6M2 11.5v.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-.5"/></svg>
-  ),
-  Info: ({ size = 13 }) => (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="7" cy="7" r="5.5"/><path d="M7 6v3.5M7 4.2v.3"/></svg>
-  ),
-  Branch: ({ size = 12 }) => (
-    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><circle cx="3.5" cy="3" r="1.3"/><circle cx="3.5" cy="11" r="1.3"/><circle cx="10.5" cy="5" r="1.3"/><path d="M3.5 4.3v5.4M3.5 9c0-2.2 1.8-4 4-4h2.5"/></svg>
-  ),
   Mail: ({ size = 14 }) => (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><path d="m2 4 6 5 6-5"/></svg>
   ),

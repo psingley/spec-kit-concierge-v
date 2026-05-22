@@ -58,10 +58,11 @@ function ModeBadge({ mode, busy }) {
 
 function App() {
   const [t, setTweak] = useTweaks(/*EDITMODE-BEGIN*/{
-    "accent": ["#3a7e9a", "#132f3b"],
+    "accent": ["#c4302b", "#3a1010"],
     "activitySide": "right",
     "density": "regular",
-    "requireScrollToUnlock": true
+    "requireScrollToUnlock": true,
+    "sidebarCollapsed": false
   }/*EDITMODE-END*/);
 
   const accent = Array.isArray(t.accent) ? t.accent[0] : t.accent;
@@ -71,14 +72,11 @@ function App() {
   const [repo, setRepo] = React.useState(null);
   const [branch, setBranch] = React.useState(null);
   const [step, setStep] = React.useState("specify");
-  const [maxStep, setMaxStep] = React.useState("specify");  // furthest progressed
   const [model, setModel] = React.useState("claude-sonnet-4-5");
 
   const [prompt, setPrompt] = React.useState(SAMPLE_PROMPT);
   const [md, setMd] = React.useState(SPEC_MD);
   const [answers, setAnswers] = React.useState({});
-  const [specStarted, setSpecStarted] = React.useState(false);
-  const [specComplete, setSpecComplete] = React.useState(false);
 
   const [planItems, setPlanItems] = React.useState(PLAN_ITEMS_SEED);
   const [analyzeItems, setAnalyzeItems] = React.useState(ANALYZE_ITEMS_SEED);
@@ -87,11 +85,10 @@ function App() {
   const [log, setLog] = React.useState(INITIAL_LOG);
   const [busy, setBusy] = React.useState(false);
   const [current, setCurrent] = React.useState("Idle.");
-  const [showActivity, setShowActivity] = React.useState(false);
+  const [showActivity, setShowActivity] = React.useState(true);
   const [showRequest, setShowRequest] = React.useState(false);
 
   const stepIndex = STEPS.findIndex(s => s.id === step);
-  const maxStepIndex = STEPS.findIndex(s => s.id === maxStep);
 
   const addLog = React.useCallback((k, g, m) => {
     const now = new Date();
@@ -132,26 +129,15 @@ function App() {
     if (!repo) return;
     addLog("cmd", "$", `<strong>cd</strong> ~/work/${repo} &amp;&amp; <strong>git pull</strong>`);
     addLog("ok", "✓", `Workspace mounted: <em>${repo}</em>`);
-    setCurrent(`Workspace: <span>${repo}</span> · awaiting prompt`);
+    setCurrent(`Workspace: <span>${repo}</span> · ready for <span>specify</span>`);
   }, [repo]);
 
-  // Kick off the specify pipeline. Called explicitly when user clicks Begin.
-  const runSpecifyPipeline = () => {
-    setSpecStarted(true);
-    setSpecComplete(false);
+  // Specify: simulate spec.md drafting on first repo selection
+  React.useEffect(() => {
+    if (!repo) return;
     setBusy(true);
-
-    // Branch is created at specify time (matching real spec-kit behavior),
-    // not when the user clicks "New session". Until then, they're on main.
-    let activeBranch = branch;
-    if (!activeBranch) {
-      activeBranch = `spec/draft-${Date.now().toString(36).slice(-4)}`;
-      setBranch(activeBranch);
-      addLog("cmd", "$", `<strong>git checkout -b</strong> <em>${activeBranch}</em>`);
-    }
-
     setCurrent(`Drafting <span>spec.md</span> from prompt…`);
-    addLog("cmd", "$", `<strong>copilot</strong> specify`);
+    addLog("cmd", "$", `<strong>copilot</strong> specify --prompt "Add self-serve flight-change flow…"`);
 
     const ticks = [
       ["info", "→", "Grounding against <em>booking-engine</em> conventions"],
@@ -163,10 +149,9 @@ function App() {
     ticks.forEach((l, i) => setTimeout(() => addLog(...l), 400 + i * 280));
     setTimeout(() => {
       setBusy(false);
-      setSpecComplete(true);
       setCurrent("Awaiting spec review.");
     }, 400 + ticks.length * 280);
-  };
+  }, [repo]);
 
   // ---- Run the plan step pipeline ----
   const runPlanPipeline = () => {
@@ -243,39 +228,30 @@ function App() {
     }, TASK_ITEMS_SEED.length * 700 + 100);
   };
 
-  // Helpers to advance maxStep monotonically
-  const stepOrder = STEPS.map(s => s.id);
-  const advanceTo = (id) => {
-    const next = stepOrder.indexOf(id);
-    const cur = stepOrder.indexOf(maxStep);
-    if (next > cur) setMaxStep(id);
-    setStep(id);
-  };
-
   // Advance handlers
   const goClarify = () => {
-    advanceTo("clarify");
+    setStep("clarify");
     addLog("ok", "✓", "Spec accepted. Entering <em>clarify</em> step.");
     addLog("cmd", "$", "<strong>copilot</strong> clarify --spec spec.md");
     setCurrent("Awaiting clarification answers.");
   };
   const goPlan = () => {
-    advanceTo("plan");
+    setStep("plan");
     addLog("ok", "✓", "Clarifications captured. Entering <em>plan</em> step.");
     setTimeout(runPlanPipeline, 200);
   };
   const goAnalyze = () => {
-    advanceTo("analyze");
+    setStep("analyze");
     addLog("info", "→", "Entering <em>analyze</em> step.");
     setTimeout(runAnalyzePipeline, 200);
   };
   const goTasks = () => {
-    advanceTo("tasks");
+    setStep("tasks");
     addLog("info", "→", "Entering <em>tasks</em> step.");
     setTimeout(runTasksPipeline, 200);
   };
   const goFinal = () => {
-    advanceTo("final");
+    setStep("final");
     addLog("ok", "✓", "All spec-kit steps complete. Ready for human review.");
     setCurrent("Awaiting JIRA sync and implementation approval.");
   };
@@ -297,7 +273,12 @@ function App() {
     }, 1300);
   };
 
-  const onImplement = () => {};  // implement button removed
+  const onImplement = () => {
+    setBusy(true);
+    setCurrent("Handing off to <span>copilot implement</span>…");
+    addLog("cmd", "$", "<strong>copilot</strong> implement --tasks tasks.md --branch feature/0042");
+    addLog("info", "→", "This will run unattended. You can monitor from the activity stream.");
+  };
 
   // Allow free navigation between steps. Auto-set up prerequisites so a
   // mid-flow step has something to render.
@@ -306,7 +287,7 @@ function App() {
     if (auth.copilot !== "ok") setAuth(a => ({ ...a, copilot: "ok" }));
     if (!repo) setRepo("concierge-api");
 
-    advanceTo(id);
+    setStep(id);
 
     if (id === "plan" || id === "analyze" || id === "tasks" || id === "final") {
       setPlanItems(items => items.map(x => ({ ...x, status: "done" })));
@@ -334,30 +315,6 @@ function App() {
   // gate: no repo selected → empty workspace
   const showEmpty = !repo;
 
-  // Resume / new session handler — used by sidebar AND the top-bar branch chip
-  const handleResume = (repoName, branchObj) => {
-    setRepo(repoName);
-    if (branchObj) {
-      setBranch(branchObj.name);
-      setSpecStarted(true);
-      setSpecComplete(true);
-      addLog("cmd", "$", `<strong>git checkout</strong> <em>${branchObj.name}</em>`);
-      addLog("ok", "✓", `Resumed branch <strong>${branchObj.name}</strong> at step <em>${branchObj.step}</em>`);
-      setTimeout(() => jumpToStep(branchObj.step), 50);
-    } else {
-      // Don't create the branch yet — that happens when specify runs.
-      setBranch(null);
-      setSpecStarted(false);
-      setSpecComplete(false);
-      addLog("cmd", "$", `<strong>git checkout</strong> <em>main</em>`);
-      addLog("ok", "✓", "On <em>main</em> · ready to start a new session");
-      setStep("specify");
-      setMaxStep("specify");
-    }
-  };
-
-  const [showAbout, setShowAbout] = React.useState(false);
-
   return (
     <div
       className={"app density-" + t.density + " activity-" + t.activitySide}
@@ -368,44 +325,25 @@ function App() {
       }}
     >
       <div className="titlebar">
-        <div className="titlebar-left">
-          <div className="titlebar-dots">
-            <span /><span /><span />
-          </div>
-          <div className="titlebar-brand">Spec-kit Concierge</div>
-          <span className="tb-divider" />
-          <AuthChip auth={auth} setAuth={setAuth} />
-          {auth.gh === "ok" && auth.copilot === "ok" && (
-            <React.Fragment>
-              <RepoChip
-                repo={repo}
-                onPick={(name) => {
-                  setRepo(name);
-                  setBranch(null);
-                  setStep("specify");
-                  setMaxStep("specify");
-                  setSpecStarted(false);
-                  setSpecComplete(false);
-                  addLog("cmd", "$", `<strong>cd</strong> ~/work/${name}`);
-                }}
-              />
-              {repo && (
-                <BranchChip
-                  repo={repo}
-                  branch={branch}
-                  onResume={(b) => handleResume(repo, b)}
-                  onNewSession={() => handleResume(repo, null)}
-                />
-              )}
-            </React.Fragment>
-          )}
+        <div className="titlebar-dots">
+          <span /><span /><span />
         </div>
-
-        <div className="titlebar-right">
-          {auth.copilot === "ok" && (
-            <ModelPicker value={model} onChange={setModel} />
-          )}
-          <GearMenu log={log} onAbout={() => setShowAbout(true)} onFileRequest={() => setShowRequest(true)} />
+        <div className="titlebar-title">
+          <b>Spec-kit Concierge</b>
+          {repo && <React.Fragment>
+            <span className="tb-sep">·</span>
+            <span className="mono tb-repo">collette-travel/{repo}</span>
+            {branch && <React.Fragment>
+              <span className="tb-branch">
+                <span className="tb-branch-glyph" />
+                <span className="mono">{branch}</span>
+              </span>
+            </React.Fragment>}
+            <span className="tb-sep">·</span>
+            <span>{stepLabel}</span>
+          </React.Fragment>}
+        </div>
+        <div className="titlebar-actions">
           <button
             className={"icon-btn " + (showActivity ? "is-active" : "")}
             onClick={() => setShowActivity(v => !v)}
@@ -419,69 +357,82 @@ function App() {
       <div className={"app-body "
         + (t.activitySide === "hidden" || !showActivity ? "no-activity" : "")
         + (t.activitySide === "left" ? " activity-left" : "")
+        + (t.sidebarCollapsed ? " sidebar-collapsed" : "")
       }>
         {t.activitySide === "left" && showActivity && (
           <Activity log={log} busy={busy} current={current} onClear={clearLog} />
         )}
+        <Sidebar
+          auth={auth} setAuth={setAuth} repo={repo} setRepo={setRepo}
+          collapsed={t.sidebarCollapsed}
+          onToggleCollapse={() => setTweak("sidebarCollapsed", !t.sidebarCollapsed)}
+          onFileRequest={() => setShowRequest(true)}
+          model={model} setModel={setModel}
+          onResumeBranch={(repoName, branch) => {
+            if (branch) {
+              setBranch(branch.name);
+              addLog("cmd", "$", `<strong>git checkout</strong> <em>${branch.name}</em>`);
+              addLog("ok", "✓", `Resumed branch <strong>${branch.name}</strong> at step <em>${branch.step}</em>`);
+              setTimeout(() => jumpToStep(branch.step), 50);
+            } else {
+              const newBranch = `spec/draft-${Date.now().toString(36).slice(-4)}`;
+              setBranch(newBranch);
+              addLog("cmd", "$", `<strong>git checkout -b</strong> <em>${newBranch}</em>`);
+              addLog("ok", "✓", "Started new session from <em>main</em>");
+              setStep("specify");
+            }
+          }}
+        />
 
         <main className="workspace">
-          {!(auth.gh === "ok" && auth.copilot === "ok") ? (
-            <SignInScreen auth={auth} setAuth={setAuth} />
-          ) : showEmpty ? (
-            <RepoBrowseScreen
-              onResume={(repoName, branchObj) => handleResume(repoName, branchObj)}
-              onNewSession={(repoName) => handleResume(repoName, null)}
-            />
+          {showEmpty ? (
+            <div className="empty">
+              <div>
+                <div className="glyph"><Ico.Folder size={28} /></div>
+                <h2>Pick a repository to begin</h2>
+                <p>
+                  {auth.gh === "ok" && auth.copilot === "ok"
+                    ? "Choose a collette-travel repository from the sidebar. The spec-kit flow runs scoped to that workspace."
+                    : "Sign in to GitHub CLI and Copilot CLI from the sidebar. We'll then load your organization's repos here."}
+                </p>
+              </div>
+            </div>
           ) : (
             <React.Fragment>
               <div className="ws-header">
+                <div className="ws-title-row">
+                  <h1 className="ws-title">{STEPS[stepIndex].label}</h1>
+                  <span className="ws-sub">spec-kit · step {stepIndex + 1} of {STEPS.length} · {STEPS[stepIndex].sub}</span>
+                </div>
                 <div className={"stepper mode-" + STEPS[stepIndex].mode}>
-                  {STEPS.map((s, i) => {
-                    const isDone = i < maxStepIndex;
-                    const isCurrent = i === maxStepIndex;
-                    const isLocked = i > maxStepIndex;
-                    const isViewing = i === stepIndex;
-                    return (
-                      <React.Fragment key={s.id}>
-                        {i > 0 && <div className={"step-sep sep-" + s.mode + " sep-from-" + STEPS[i-1].mode} />}
-                        <div
-                          className={"step mode-" + s.mode + " "
-                            + (isViewing ? "is-viewing " : "")
-                            + (isCurrent ? "is-current " : "")
-                            + (isDone ? "is-done " : "")
-                            + (isLocked ? "is-locked" : "")}
-                          onClick={() => { if (!isLocked) setStep(s.id); }}
-                          title={isLocked
-                            ? `${s.label} — not available yet`
-                            : isDone
-                              ? `${s.label} (completed · read-only)`
-                              : `${s.label} (in progress)`}
-                        >
-                          <div className="step-orb" />
-                          {s.label}
+                  {STEPS.map((s, i) => (
+                    <React.Fragment key={s.id}>
+                      {i > 0 && <div className={"step-sep sep-" + s.mode + " sep-from-" + STEPS[i-1].mode} />}
+                      <div
+                        className={"step mode-" + s.mode + " "
+                          + (i === stepIndex ? "is-current " : "")
+                          + (i < stepIndex ? "is-done" : "")}
+                        onClick={() => jumpToStep(s.id)}
+                        title={"Jump to " + s.label + (s.mode === "ai" ? " (automated)" : " (your input)")}
+                      >
+                        <div className="step-num">
+                          {i < stepIndex
+                            ? <Ico.Check size={10} />
+                            : s.mode === "ai"
+                              ? <Ico.Sparkles size={10} />
+                              : i + 1}
                         </div>
-                      </React.Fragment>
-                    );
-                  })}
+                        {s.label}
+                      </div>
+                    </React.Fragment>
+                  ))}
                   <div className="stepper-track">
-                    <div className="stepper-track-fill" style={{ width: `${(maxStepIndex / (STEPS.length - 1)) * 100}%` }} />
+                    <div className="stepper-track-fill" style={{ width: `${(stepIndex / (STEPS.length - 1)) * 100}%` }} />
                   </div>
                 </div>
               </div>
 
-              <div className={"ws-body " + (stepIndex < maxStepIndex ? "is-readonly" : "")}>
-                {stepIndex < maxStepIndex && (
-                  <div className="readonly-banner">
-                    <span className="ro-glyph" />
-                    <div className="ro-text">
-                      <strong>Step complete</strong>
-                      <span>This step has been committed. View only — return to {STEPS[maxStepIndex].label} to continue.</span>
-                    </div>
-                    <button className="btn" onClick={() => setStep(maxStep)}>
-                      Resume {STEPS[maxStepIndex].label} <Ico.Right />
-                    </button>
-                  </div>
-                )}
+              <div className="ws-body">
                 {step === "specify" && (
                   <SpecifyStep
                     prompt={prompt}
@@ -490,10 +441,6 @@ function App() {
                     setMd={setMd}
                     onAdvance={goClarify}
                     requireScroll={t.requireScrollToUnlock}
-                    started={specStarted}
-                    complete={specComplete}
-                    onBegin={runSpecifyPipeline}
-                    busy={busy}
                   />
                 )}
                 {step === "clarify" && (
@@ -534,6 +481,7 @@ function App() {
                     repo={repo}
                     answers={answers}
                     onJira={onJira}
+                    onImplement={onImplement}
                   />
                 )}
               </div>
@@ -547,7 +495,6 @@ function App() {
       </div>
 
       {showRequest && <RequestModal onClose={() => setShowRequest(false)} />}
-      {showAbout && <AboutModal onClose={() => setShowAbout(false)} model={model} repo={repo} branch={branch} />}
 
       <TweaksPanel title="Tweaks">
         <TweakSection label="Theme">
@@ -555,7 +502,6 @@ function App() {
             label="Accent"
             value={t.accent}
             options={[
-              ["#3a7e9a", "#132f3b"],
               ["#c4302b", "#3a1010"],
               ["#c89b4a", "#3a2710"],
               ["#7a3a8a", "#2a1430"],
@@ -582,6 +528,11 @@ function App() {
               { value: "hidden", label: "Off" },
             ]}
             onChange={v => setTweak("activitySide", v)}
+          />
+          <TweakToggle
+            label="Collapse sidebar"
+            value={t.sidebarCollapsed}
+            onChange={v => setTweak("sidebarCollapsed", v)}
           />
         </TweakSection>
 

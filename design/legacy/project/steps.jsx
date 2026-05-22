@@ -1,7 +1,7 @@
 // === Step views ===
 
 // ---- Specify ----
-function SpecifyStep({ prompt, setPrompt, md, setMd, onAdvance, requireScroll = true, started, complete, onBegin, busy }) {
+function SpecifyStep({ prompt, setPrompt, md, setMd, onAdvance, requireScroll = true }) {
   const [mode, setMode] = React.useState("preview"); // preview | edit | split
   const [progress, setProgress] = React.useState(0);
   const [editorOpen, setEditorOpen] = React.useState(false);
@@ -19,66 +19,12 @@ function SpecifyStep({ prompt, setPrompt, md, setMd, onAdvance, requireScroll = 
 
   const readComplete = !requireScroll || progress >= 98;
 
-  // ---- Not-yet-started: prompt is an editable input ----
-  if (!started) {
-    return (
-      <div className="specify-shell">
-        <div className="prompt-input-card">
-          <textarea
-            className="prompt-input"
-            placeholder="What do you want to build today?"
-            value={prompt}
-            onChange={e => setPrompt(e.target.value)}
-            autoFocus
-            spellCheck={true}
-          />
-          <div className="prompt-input-foot">
-            <button
-              className="btn ghost"
-              onClick={() => setPrompt("")}
-              disabled={!prompt}
-            >
-              Clear
-            </button>
-            <span style={{ flex: 1 }} />
-            <button
-              className="btn primary"
-              onClick={onBegin}
-              disabled={!prompt.trim() || busy}
-            >
-              {busy ? <React.Fragment><div className="spinner sm" /> Specifying…</React.Fragment>
-                    : <React.Fragment><Ico.Sparkles /> Begin specify</React.Fragment>}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ---- Started but pipeline still running: spinner only ----
-  if (!complete) {
-    return (
-      <div className="specify-shell">
-        <div className="spec-loading">
-          <div className="spec-loading-ring">
-            <div className="spinner" />
-          </div>
-          <div className="spec-loading-h">Specifying…</div>
-          <div className="spec-loading-sub">
-            Drafting <span className="mono">spec.md</span> from your prompt. Grounding against the codebase, generating goals and acceptance criteria, flagging ambiguities for the next step.
-          </div>
-          <div className="spec-loading-stream">
-            <span className="dot" />
-            <span>Watch progress in the activity stream.</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ---- Complete: spec.md visible ----
   return (
     <div className="specify-shell">
+      <div className="prompt-card">
+        <div className="label">Specify prompt</div>
+        <div className="prompt-text">{prompt}</div>
+      </div>
 
       <div className="md-panel">
         <div className="md-tabs">
@@ -122,7 +68,7 @@ function SpecifyStep({ prompt, setPrompt, md, setMd, onAdvance, requireScroll = 
       <div className="advance-row">
         <div className="gate">
           <span className={"gate-icon " + (readComplete ? "done" : "")}>
-            {readComplete ? <Ico.Check /> : <React.Fragment>{Math.round(progress)}</React.Fragment>}
+            {readComplete ? <Ico.Check /> : <span style={{ fontSize: 9, fontFamily: "var(--mono)" }}>{Math.round(progress)}%</span>}
           </span>
           <span>
             {!requireScroll
@@ -299,7 +245,6 @@ function ClarifyStep({ answers, setAnswers, onAdvance, onAskMore, addLog }) {
 function StatusStep({ stepName, items, onContinue, continueLabel }) {
   // items: { title, sub, status: done|active|wait|fail }
   const allDone = items.every(i => i.status === "done");
-  const [viewArtifact, setViewArtifact] = React.useState(null);
   return (
     <div className="evidence-grid">
       <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 16 }}>
@@ -326,13 +271,13 @@ function StatusStep({ stepName, items, onContinue, continueLabel }) {
           </div>
           <div className="ev-actions">
             {it.evidence && (
-              <button
-                className="icon-btn"
-                onClick={() => setViewArtifact(it.evidence)}
-                disabled={it.status !== "done"}
-                title={it.status === "done" ? `View ${it.evidence}` : `${it.evidence} (pending)`}
-              >
+              <button className="icon-btn" title={`View ${it.evidence}`}>
                 <Ico.File /> {it.evidence}
+              </button>
+            )}
+            {it.status === "done" && (
+              <button className="icon-btn" title="View diff">
+                <Ico.Eye />
               </button>
             )}
           </div>
@@ -344,209 +289,14 @@ function StatusStep({ stepName, items, onContinue, continueLabel }) {
           {continueLabel || "Continue"} <Ico.Right />
         </button>
       </div>
-
-      {viewArtifact && <ArtifactViewer filename={viewArtifact} onClose={() => setViewArtifact(null)} />}
-    </div>
-  );
-}
-
-// ---- Artifact viewer modal — markdown or code preview ----
-function ArtifactViewer({ filename, onClose }) {
-  const file = EVIDENCE_FILES[filename];
-  if (!file) return null;
-
-  const copyToClipboard = () => {
-    navigator.clipboard?.writeText(file.content);
-  };
-
-  const downloadFile = () => {
-    const blob = new Blob([file.content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename.replace(/\//g, "-");
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  return (
-    <div className="modal-veil" onClick={onClose}>
-      <div className="modal artifact-modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-head">
-          <Ico.File />
-          <h3 className="mono">{filename}</h3>
-          <span className="tag">{file.size}</span>
-          <button className="icon-btn" onClick={copyToClipboard} title="Copy contents">
-            <span style={{ fontSize: 11, fontFamily: "var(--mono)" }}>copy</span>
-          </button>
-          <button className="icon-btn" onClick={downloadFile} title="Download">
-            <Ico.Download />
-          </button>
-          <button className="icon-btn" onClick={onClose} title="Close">
-            <Ico.X />
-          </button>
-        </div>
-        <div className="artifact-body">
-          {file.kind === "markdown" ? (
-            <div className="md-preview" dangerouslySetInnerHTML={{ __html: renderMarkdown(file.content) }} />
-          ) : (
-            <pre className="code-preview"><code>{file.content}</code></pre>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ---- Task viewer modal ----
-function TaskViewer({ taskId, onClose }) {
-  const t = TASKS.find(x => x.id === taskId);
-  const d = TASK_DETAILS[taskId];
-  if (!t) return null;
-
-  return (
-    <div className="modal-veil" onClick={onClose}>
-      <div className="modal task-modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-head">
-          <span className={"task-pill pill " + t.area}>{t.area.toUpperCase()}</span>
-          <h3 className="mono">{t.id}</h3>
-          <span className="tag">{t.est}</span>
-          <span style={{ flex: 1 }} />
-          <button className="icon-btn" onClick={onClose} title="Close">
-            <Ico.X />
-          </button>
-        </div>
-        <div className="modal-body task-body">
-          <h4 className="task-title">{t.title}</h4>
-          {d ? (
-            <React.Fragment>
-              <p className="task-desc">{d.desc}</p>
-
-              <div className="task-section">
-                <div className="task-section-h">Files to touch</div>
-                <div className="task-files">
-                  {d.files.map(f => (
-                    <span key={f} className="mono task-file"><Ico.File size={10} /> {f}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="task-section">
-                <div className="task-section-h">Acceptance criteria</div>
-                <ul className="task-acceptance">
-                  {d.acceptance.map((a, i) => <li key={i}>{a}</li>)}
-                </ul>
-              </div>
-
-              {d.blocks?.length > 0 && (
-                <div className="task-section">
-                  <div className="task-section-h">Blocked on</div>
-                  <div className="task-blocks">
-                    {d.blocks.map(b => <span key={b} className="mono task-block-pill">{b}</span>)}
-                  </div>
-                </div>
-              )}
-            </React.Fragment>
-          ) : (
-            <p className="task-desc" style={{ color: "var(--text-faint)" }}>
-              No detail captured for this task yet.
-            </p>
-          )}
-        </div>
-        <div className="modal-foot">
-          <span style={{ flex: 1, fontSize: 11, color: "var(--text-faint)" }} className="mono">
-            from tasks.md
-          </span>
-          <button className="btn ghost" onClick={onClose}>Close</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ---- JIRA synced splash (post-send state) ----
-function JiraSyncedSplash({ tasks, onBack }) {
-  // Flat list of created issues; no special-casing of any single ticket.
-  const issues = [
-    { id: "CC-2420", kind: "epic", title: "Self-serve flight-change for loyalty guests" },
-    ...tasks.map((t, i) => ({
-      id: `CC-${2421 + i}`,
-      kind: t.area,
-      title: t.title,
-    })),
-  ];
-
-  return (
-    <div className="jira-splash">
-      <div className="jira-splash-stage">
-        <div className="jira-splash-hero">
-          <div className="jira-rings">
-            <span className="ring r1" />
-            <span className="ring r2" />
-            <span className="ring r3" />
-          </div>
-          <div className="jira-check">
-            <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 33 L28 43 L46 23" pathLength="1" />
-            </svg>
-          </div>
-        </div>
-
-        <h1 className="jira-splash-h">Synced to JIRA</h1>
-        <p className="jira-splash-sub">Ready for engineering.</p>
-
-        <div className="jira-tasks-h">
-          <span>{issues.length} issues created</span>
-          <span style={{ flex: 1 }} />
-          <span className="jira-tasks-host mono">jira.collette-travel.io</span>
-        </div>
-
-        <div className="jira-tasks">
-          {issues.map((iss, i) => (
-            <a
-              key={iss.id}
-              href="#"
-              className="jira-task"
-              onClick={e => e.preventDefault()}
-              style={{ animationDelay: `${300 + i * 40}ms` }}
-              title={`Open ${iss.id} in JIRA`}
-            >
-              <span className="jira-task-link mono">
-                <Ico.Pop size={10} />
-                {iss.id}
-              </span>
-              <span className={`pill ${iss.kind}`}>{iss.kind.toUpperCase()}</span>
-              <span className="jira-task-title">{iss.title}</span>
-            </a>
-          ))}
-        </div>
-
-        <div className="jira-foot">
-          <button className="btn ghost" onClick={onBack}>← Back to review</button>
-          <span style={{ flex: 1 }} />
-        </div>
-      </div>
     </div>
   );
 }
 
 // ---- Final tasks summary ----
-function FinalStep({ repo, answers, onJira }) {
+function FinalStep({ repo, answers, onJira, onImplement }) {
+  const [implementOk, setImplementOk] = React.useState(false);
   const [sentJira, setSentJira] = React.useState(false);
-  const [viewArtifact, setViewArtifact] = React.useState(null);
-  const [viewTask, setViewTask] = React.useState(null);
-
-  if (sentJira) {
-    return <JiraSyncedSplash tasks={TASKS} onBack={() => setSentJira(false)} />;
-  }
-
-  const evidence = [
-    "spec.md", "clarifications.md", "plan.md",
-    "research.md", "data-model.md", "analysis.md",
-    "contracts/rebook.proto", "tasks.md",
-  ];
 
   return (
     <div className="final-summary">
@@ -568,15 +318,14 @@ function FinalStep({ repo, answers, onJira }) {
             <Ico.Check className="check" size={10} />
           </div>
           <div className="files">
-            {evidence.map(f => (
-              <a
-                key={f} href="#"
-                onClick={e => { e.preventDefault(); setViewArtifact(f); }}
-              >
-                <Ico.File /> {f}
-                <span className="sz">{EVIDENCE_FILES[f]?.size}</span>
-              </a>
-            ))}
+            <a href="#"><Ico.File /> spec.md <span className="sz">4.1 KB</span></a>
+            <a href="#"><Ico.File /> clarifications.md <span className="sz">1.8 KB</span></a>
+            <a href="#"><Ico.File /> plan.md <span className="sz">6.3 KB</span></a>
+            <a href="#"><Ico.File /> research.md <span className="sz">3.2 KB</span></a>
+            <a href="#"><Ico.File /> data-model.md <span className="sz">2.0 KB</span></a>
+            <a href="#"><Ico.File /> analysis.md <span className="sz">2.4 KB</span></a>
+            <a href="#"><Ico.File /> contracts/rebook.proto <span className="sz">1.1 KB</span></a>
+            <a href="#"><Ico.File /> tasks.md <span className="sz">2.9 KB</span></a>
           </div>
         </div>
 
@@ -615,12 +364,7 @@ function FinalStep({ repo, answers, onJira }) {
           <span className="tag info"><Ico.Github size={10} /> {repo}</span>
         </div>
         {TASKS.map(t => (
-          <div
-            key={t.id}
-            className="task-item is-clickable"
-            onClick={() => setViewTask(t.id)}
-            title="View task details"
-          >
+          <div key={t.id} className="task-item">
             <div className="tnum">{t.id.split("-")[1]}</div>
             <div className="tid">{t.id}</div>
             <div>{t.title}</div>
@@ -634,12 +378,13 @@ function FinalStep({ repo, answers, onJira }) {
 
       <div className="final-actions">
         <span className="note">
-          Review the evidence and task breakdown, then sync to JIRA when ready.
+          Implementation is disabled until you sync to JIRA. Verify the task breakdown first.
         </span>
         <button
-          className="btn primary"
+          className="btn"
           onClick={() => {
             setSentJira(true);
+            setImplementOk(true);
             onJira();
           }}
           disabled={sentJira}
@@ -647,10 +392,15 @@ function FinalStep({ repo, answers, onJira }) {
           {sentJira ? <React.Fragment><Ico.Check /> Sent to JIRA</React.Fragment>
                     : <React.Fragment><Ico.Jira /> Send to JIRA</React.Fragment>}
         </button>
+        <button
+          className="btn primary"
+          disabled={!implementOk}
+          onClick={onImplement}
+          title={!implementOk ? "Send to JIRA first to unlock implementation" : ""}
+        >
+          <Ico.Play /> Implement <span className="kbd">⌘↵</span>
+        </button>
       </div>
-
-      {viewArtifact && <ArtifactViewer filename={viewArtifact} onClose={() => setViewArtifact(null)} />}
-      {viewTask && <TaskViewer taskId={viewTask} onClose={() => setViewTask(null)} />}
     </div>
   );
 }
