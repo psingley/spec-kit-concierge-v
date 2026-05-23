@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "spec-validate": {
+      "version": "1.0.1",
+      "source": "local",
+      "manifest_hash": "sha256:170187e5d80a7d0435b5924e601f65215a18f36914e6cb15cfd1e3662333ac92",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.spec-validate.validate",
+          "speckit.spec-validate.validate-tasks",
+          "speckit.spec-validate.review",
+          "speckit.spec-validate.gate",
+          "speckit.spec-validate.status",
+          "speckit.spec-validate.analytics"
+        ],
+        "claude": [
+          "speckit.spec-validate.validate",
+          "speckit.spec-validate.validate-tasks",
+          "speckit.spec-validate.review",
+          "speckit.spec-validate.gate",
+          "speckit.spec-validate.status",
+          "speckit.spec-validate.analytics"
+        ],
+        "codex": [
+          "speckit.spec-validate.validate",
+          "speckit.spec-validate.validate-tasks",
+          "speckit.spec-validate.review",
+          "speckit.spec-validate.gate",
+          "speckit.spec-validate.status",
+          "speckit.spec-validate.analytics"
+        ],
+        "copilot": [
+          "speckit.spec-validate.validate",
+          "speckit.spec-validate.validate-tasks",
+          "speckit.spec-validate.review",
+          "speckit.spec-validate.gate",
+          "speckit.spec-validate.status",
+          "speckit.spec-validate.analytics"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-05-23T22:42:34.721600+00:00"
+    }
+  }
+}

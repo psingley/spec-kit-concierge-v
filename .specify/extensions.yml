@@ -1,0 +1,28 @@
+installed: []
+settings:
+  auto_execute_hooks: true
+hooks:
+  after_specify:
+  - extension: spec-validate
+    command: speckit.spec-validate.validate
+    enabled: true
+    optional: true
+    prompt: Spec generated. Run comprehension validation now?
+    description: Run spec validation after specification is generated
+    condition: null
+  after_tasks:
+  - extension: spec-validate
+    command: speckit.spec-validate.validate-tasks
+    enabled: true
+    optional: true
+    prompt: Tasks generated. Run task validation now?
+    description: Run task validation after tasks are generated
+    condition: null
+  before_implement:
+  - extension: spec-validate
+    command: speckit.spec-validate.gate
+    enabled: true
+    optional: false
+    prompt: Execute speckit.spec-validate.gate?
+    description: Hard gate implementation on validation and review policy
+    condition: null
