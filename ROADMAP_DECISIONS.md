@@ -287,6 +287,412 @@ step's full Step Contract in that slice. The Clarify contract is
 already detailed in Principle VIII; the others get authored by their
 slice.
 
+## Constitution v1.0.2 extracted inventory
+
+Inventory that the constitution previously named directly was
+extracted to this section under the v1.0.2 PATCH amendment, per the
+locked extraction-threshold rule (must / must-not boundaries stay in
+the constitution; inventory, vendor choices, version pins, file
+names, endpoint lists, UI copy beyond commitments, timeout
+constants, and v1-only service choices move here).
+
+### Renderer state inventory (extracted from Principle VI)
+
+**Redux slices (9):**
+
+1. **`ui`** — transient view state, in-memory only. Modals,
+   dropdowns, activity rail current visibility, popovers.
+2. **`preferences`** — persisted via `electron-store` through a
+   debounced `preferencesPersister` listener. Accent, density,
+   activity rail default side and default visibility, LRU of recent
+   repos, persisted model id.
+3. **`auth`** — state machine for the three auth prerequisites
+   (GitHub CLI, Copilot CLI, Atlassian via OAuth → localhost
+   callback). Includes identity (`username`, `avatarUrl`),
+   per-prerequisite status, and last error. All three prerequisites
+   must be `ok` before the workspace surface is usable.
+4. **`workspace`** — `{repo, branch}` only. The navigation pointer.
+   Org name is a v1 constant (`"collette-travel"`), not a slice
+   field.
+5. **`steps`** — the canonical step state machine. Per-step status
+   (`not_available` / `pending` / `complete`), the single `pending`
+   step, and `viewing` (which step's UI the user has open).
+   Invariants: exactly one `pending` step; status transitions are
+   monotonic forward unless explicitly reset via Step Escape Hatch;
+   `viewing ≤ pending` in display order. Step state is recomputed
+   from disk on every Session start.
+6. **`session`** — per-branch work-in-progress: `prompt`, `specMd`
+   in-memory copy, `clarify.answers` (including `malformed` records
+   from Clarify Re-ask), `clarify.extraQuestions`, and `pipelines`
+   for `plan`, `tasks`, `analyze`, and `tojira`. Active-session blob
+   only; closed sessions live on disk plus a summary in
+   `sessionsIndex`.
+7. **`sessionsIndex`** *(createEntityAdapter)* — lightweight metadata
+   for the resume picker, keyed by `${repo}#${branch}`.
+   `{repo, branch, lastStep, lastTouched}` entries. Resuming a
+   branch reads the entity by id and loads its blob from disk into
+   `session`.
+8. **`activity`** — ring buffer of LogEntry (cap ~2000), ambient
+   `busy`, and `current` status string. Stream-fed from ACP
+   `session/update` events via a subscription pipeline.
+   Display-only — never read for state decisions. Activity rail
+   auto-opens once per session on the first `err` entry; user can
+   re-close and override via `preferences`.
+9. **`copilot`** — currently-selected model id. Mirrors into
+   `preferences` for persistence. Disabled while `steps.pending`
+   step is `running`; swappable when current step is
+   `not_available` or `complete` (constitution III).
+
+**RTK Query APIs (13):** all wrap `ipcRenderer.invoke` via a shared
+typed `baseQuery` returning `{data}` or `{error: {code, message}}`
+with the error-code enum below.
+
+- `authApi` (`auth:status`, `auth:gh:login`, `auth:gh:logout`,
+  `auth:copilot:login`, `auth:copilot:logout`, `auth:atlassian:login`,
+  `auth:atlassian:logout`) — tag `["AuthStatus"]`.
+- `reposApi` (`repos:list`, `repos:refresh`) — tag `["Repos"]`.
+- `branchesApi` (`branches:sessions`, `git:checkout`,
+  `git:createDraft`) — tag `["Branches:repo"]`.
+- `sessionApi` (`session:load`, `session:save-spec`).
+- `acpApi` (`acp:runStep`, `acp:cancelTurn`, `acp:setModel`) — one
+  mutation per step type, streaming via `onCacheEntryAdded` that
+  pushes activity log lines and updates `session.pipelines.<step>`.
+- `clarifyApi` (`clarify:next`, `clarify:answer`,
+  `clarify:reaskMalformed`, `clarify:askAnother`, `clarify:commit`).
+- `artifactsApi` (`artifact:read`) — cached per
+  `{repo, branch, path}`, invalidated on any mutation that touches
+  the path.
+- `tasksDetailApi` (`tasks:detail`).
+- `copilotApi` (`copilot:models`, `copilot:set-model`).
+- `jiraApi` (`jira:loopCreateAndVerify`, `jira:syncedRecord`).
+- `platformTeamApi` (`platformTeam:report`) — "Report a bug / file a
+  request" submission. UI copy may say "concierge team" per the
+  design; code, types, and endpoints use `platformTeam` to avoid
+  overloading "concierge" as a term.
+- `mcpConfigApi` (`mcp:config:check`, `mcp:config:fix`).
+- `electronApi` (`app:version`, `app:open-external`,
+  `app:save-file-dialog`, `app:export-debug-log`).
+
+**Typed error-code enum** for the shared baseQuery error envelope:
+`AUTH_REQUIRED`, `NETWORK`, `CLI_TIMEOUT`, `GIT_DIRTY`,
+`MCP_NOT_CONFIGURED`, `JIRA_FORBIDDEN`, `STEP_CONTRACT_VIOLATION`,
+`UNKNOWN`.
+
+**Listener middleware (17):**
+
+- `activityLogger` — RTK Query mutation lifecycle + ACP stream
+  notifications → LogEntry rows.
+- `pipelineProgressLogger` — streaming `acp:runStep` events →
+  pipeline row updates + `activity.current` / `activity.busy`. Sole
+  legal subscriber to ACP `session/update`.
+- `stepAdvancer` — the only writer of step-status promotions
+  (`pending` → `complete`, next-step `not_available` → `pending`).
+  Fires on `after_<step>` hook success acks.
+- `stepEscapeHatch` — handles the canonical recovery flow for all
+  step failure modes.
+- `clarifyMalformationLogger` — on each Clarify Re-ask, writes a
+  structured malformation record to disk and to `activity`.
+- `branchCreator` — on Specify pipeline start while
+  `workspace.branch === null`, fires `branchesApi.createDraft` first
+  and queues the Specify run.
+- `preferencesPersister` — debounced (250 ms) write of
+  `preferences/*` to `electron-store`.
+- `sessionPersister` — per-branch session blob write; also updates
+  `sessionsIndex` with the lightweight summary.
+- `authBootstrap` — on app launch, queries auth status for all three
+  prerequisites; once all three are `ok`, prefetches
+  `reposApi.listOrgRepos`.
+- `repoSwitchCleanup` — on `workspace.repo` change, invalidates
+  branch + session data scoped to the prior repo.
+- `modelLogger` — on `copilotApi.setModel/fulfilled`, appends
+  activity log line.
+- `externalLinkOpener` — routes any action with `meta.external: true`
+  through `electronApi.openExternal`. Security: renderer never calls
+  `window.open`.
+- `activityAutoOpener` — on first `err` entry per session,
+  dispatches `ui/activityRail/visible = true` unless the user has
+  already overridden.
+- `stepsRestoredFromDisk` — on `workspace.repo` / `workspace.branch`
+  change (or app launch with restored Session), reads git history,
+  computes the status map from `Concierge-Step:` trailers, dispatches
+  `steps/restored`.
+- `hangDetector` — watches `session.pipelines` for 20 minutes of no
+  progress events; emits a soft notification suggesting cancel or
+  restart. No auto-fail.
+- `mcpConfigChecker` — on app launch and on `workspace.repo` change,
+  fires `mcpConfigApi.check`; if the required MCP entry is missing,
+  immediately fires `mcpConfigApi.fix` and emits a one-time
+  informational activity-stream entry ("Configured `<MCP>` for
+  `<Bound CLI>`"). No user-action affordance — silent write per
+  Principle X.
+- `mcpToolCallSummarizer` — on every ACP-streamed MCP tool call,
+  emits a one-line activity entry (tool name + brief target) and
+  writes the full payload to the debug log.
+
+**Persistence boundary:**
+
+| `electron-store` (persists) | Per-Session blob (disk) | In-memory only |
+|---|---|---|
+| `preferences.*`, `sessionsIndex.*` summary entries | active `session.*` keyed by `${repo}#${branch}`; closed-session blobs at `userData/sessions/${repo}--${branch}.json` | `ui.*`, `activity.*`, RTK Query cache, `auth.*`, `workspace.*`, `steps.*` (rebuilt from disk on Session start), `copilot.*` (mirrored from `preferences`) |
+
+### ACP runtime inventory (extracted from Principle III)
+
+- **Library:** `@agentclientprotocol/sdk` v0.22.1 (Apache-2.0). The
+  only v1 ACP runtime dependency. Lives behind the Concierge typed
+  `CodingAgent` adapter.
+- **Reference repos (not dependencies, do not import):**
+  `openclaw/acpx` (MIT, alpha — useful queue/session/cancel
+  patterns), `formulahendry/acp-ui` (MIT — config + traffic-monitor
+  UI patterns), `formulahendry/vscode-acp` (MIT — editor-client
+  conventions), `agentclientprotocol/agent-client-protocol`
+  (Apache-2.0 — normative spec).
+- **Data-layer module path:** `main/data-layer/acp/`. Single typed
+  `CodingAgent` interface at `main/data-layer/acp/agent.ts`. No code
+  outside this directory spawns a coding-agent binary.
+- **Bound CLI manifest:** `main/data-layer/acp/agents.json`. Each
+  entry declares binary path, args, unrestricted-permission flag,
+  ACP-mode flag, capability tags. Adding an agent = one manifest
+  entry + transcript contract tests.
+- **v1 default Bound CLI:** GitHub Copilot CLI, launched in ACP mode
+  with `--allow-all-tools` (the documented full-permission flag per
+  GitHub Copilot CLI docs). The ACP-mode flag is verified against
+  the installed Copilot CLI's `--help` output during Run 3 and
+  recorded in the manifest. Best evidence as of 2026-05 suggests
+  `--acp` or `--acp --stdio`; verify before locking.
+- **Model swap mechanism:** `unstable_setSessionModel` on the
+  `ClientSideConnection` from `@agentclientprotocol/sdk` v0.22.1 if
+  the method is present and the bound CLI supports it. The SDK
+  marks the method `UNSTABLE` and "not part of the spec yet."
+  Fallback when unavailable: restart the Bound CLI with the new
+  model selected via the launch-time `--model` flag. User-visible
+  behavior is identical either way.
+- **Constraint:** Model swap allowed only when `steps.pending`
+  step's status is `not_available` or `complete` — never `pending`
+  and running (constitution III). UI model picker disables during a
+  running step.
+- **Transcript recording:** raw ACP JSON-RPC, full fidelity, written
+  to `userData/transcripts/<sessionId>/<step>-<timestamp>.jsonl`.
+  Used by contract tests, verifier-agent E2E, and audit.
+
+### Cancel and recovery behavior (extracted from Principle VII)
+
+- **Cancel** requires explicit confirmation dialog. On confirm:
+  hard-revert to last Step Commit using the Step Escape Hatch
+  flow. No graceful-wait dance with the bound CLI process. Cancel
+  is an escape-hatch tool, not a graceful-interrupt feature.
+- **Hang detection threshold (v1):** 20 minutes of zero ACP stream
+  activity → soft notification only. Threshold may move to
+  per-agent manifest entries in a later version; v1 is a single
+  rule.
+- **Crash recovery marker:** a `userData/in-flight/${sessionId}/${step}.marker`
+  file is written by `before_<step>` and removed by `after_<step>`.
+  On launch, if a marker exists for a step that is not commit-proven
+  complete, the Concierge App invokes the Bound CLI to resume from
+  the dirty workspace state per Workspace Dirty Resume (Principle
+  VII). No user-facing crash dialog; the Bound CLI takes over the
+  in-flight turn and either completes it or restarts from the last
+  Step Commit.
+
+### HTTP API endpoint inventory (extracted from Principle IX)
+
+The v1 endpoint set. Run 10 produces the full versioned contract in
+`docs/api.md`.
+
+Read endpoints:
+- `GET /v1/status` — Session, step, Workspace, auth, model.
+- `GET /v1/spec` — current `spec.md`.
+- `GET /v1/evidence` — committed artifacts on the current branch
+  with `Concierge-Step:` trailer mapping.
+- `GET /v1/activity?since=<seq>` — paginated log slice.
+- `GET /v1/activity/stream` (SSE) — live activity events.
+
+Write endpoints:
+- `POST /v1/session/start` — `{repo, branch?}`. Only valid when no
+  active Session or when the active Session is at the Review stage
+  and complete.
+- `POST /v1/session/resume` — `{repo, branch}`.
+- `POST /v1/specify/begin` — `{promptText}`. Only valid when
+  `steps.pending === 'specify'` and prompt unsubmitted.
+- `POST /v1/clarify/answer` — `{qid, choice, note?}`. Only valid
+  when `steps.pending === 'clarify'` and `qid` matches the currently
+  surfaced question.
+- `POST /v1/clarify/reaskMalformed` — `{qid, malformationCategory}`.
+- `POST /v1/clarify/askAnother`.
+- `POST /v1/step/advance` — promotes the pending step if its Step
+  Contract has passed.
+- `POST /v1/step/retry` — fires the Step Escape Hatch.
+- `POST /v1/step/run` — `{step}`. Only valid when `step ===
+  steps.pending` and the step has not yet been invoked on this
+  branch.
+- `POST /v1/jira/submit` — fires the JIRA Submission outer loop.
+- `POST /v1/platformTeam/report` — submit a Support Request.
+
+Token + port discovery: per-launch token + random port written to
+`userData/api/loopback.json` with `0600` permissions.
+
+### MCP scope v1 (extracted from Principle X)
+
+- **Required MCP set v1:** Atlassian MCP only.
+- **Behavior:** silent idempotent write at launch + on
+  `workspace.repo` change. One-time informational notification
+  surfaces in the activity stream when the write occurs. No
+  "click to fix" affordance — silent unless missing detection
+  surfaces a passive warning state in the auth chip.
+- **Config file paths (v1):**
+  - Windows: `%APPDATA%\github-copilot\mcp.json` (canonical per
+    Copilot CLI's documented config path — verify at Run 11).
+  - macOS (dev only): `~/Library/Application Support/github-copilot/mcp.json`.
+- **Future MCPs:** plugin architecture post-v1. When MCP count
+  reaches ≥2, a dedicated `mcp` slice replaces the `auth.atlassian`
+  prerequisite framing.
+
+### JIRA submission specifics (extracted from Principle XI)
+
+- **Extension home:** `psingley/concierge-jira` — a first-class
+  fork-publication of the user's existing canary (located at
+  `/Users/psingley/clean-room/spec-kit-jira-collette-canary`, SHA
+  `249f78f`, 6 commits ahead of `mbachorik/spec-kit-jira`, install
+  + remove + dry-run validated, issue #2 fixed by dropping the
+  legacy short alias from the extension manifest). Concierge
+  installs the extension by its catalog name; the canary code is
+  published as the source.
+- **Per-ticket verification pattern** (already in the canary's
+  `commands/specstoissues.md` lines 459–513): the agent creates
+  the ticket via Atlassian MCP, then performs a live read-back of
+  the created ticket and verifies summary/description/parent
+  against the spec before continuing. Concierge's outer loop reads
+  the stateful record file after each invocation and confirms the
+  expected delta.
+- **Stateful record file:** `specs/<branch>/jira-tickets.json`, schema
+  documented earlier in this file under "Stateful JIRA record file
+  (Principle XI)."
+- **Idempotency on resume:** the outer loop reads the stateful
+  record on relaunch and skips already-verified tasks. No duplicate
+  tickets.
+- **Celebration screen:** reads from `jira-tickets.json`, not from
+  stream events. Lists every created issue with its JIRA URL.
+
+### Stack picks (extracted from Stack & Coding Standards)
+
+- **Desktop shell:** Electron LTS; Node 22+ in main.
+- **Renderer build:** Vite + `@vitejs/plugin-react`. (Electron-Forge
+  bundled webpack template vs Vite-template clarification is a Run 1
+  open question.)
+- **Packaging:** Electron Forge. v1 ships Windows installer only
+  (NSIS or Squirrel maker — final choice in Run 1 plan step). macOS
+  and Linux are dev-from-source only in v1.
+- **Auto-update:** deferred. Users manually download new versions
+  when notified.
+- **UI:** React 18, function components only.
+- **State:** Redux Toolkit + RTK Query. No other state library.
+- **Styling:** design tokens from `design/project/styles.css` (teal
+  accent `#3a7e9a` / `#132f3b` dim, three-state orb palette,
+  near-black surfaces). `design/legacy/` is historical reference
+  only. No CSS-in-JS runtime in v1.
+- **Logging:** pino.
+- **Localhost HTTP server:** Express. (Fastify and Hono have no
+  production Electron precedent per Round 6 research.)
+- **HTTP/SSE:** raw SSE over Node response semantics or thin
+  wrapper; no canonical SSE library is mandatory.
+- **Linting:** ESLint with `@typescript-eslint`,
+  `eslint-plugin-react`, `eslint-plugin-functional`, plus
+  project-local rules enforcing the Pure/Effect layer boundary and
+  the `console.log` prohibition. GitHub Desktop's
+  `no-restricted-imports` pattern for forbidding `ipcRenderer` /
+  `ipcMain` imports in cross-process modules is the precedent.
+- **Formatting:** Prettier.
+- **Markdown viewer:** `react-markdown` + `rehype-sanitize`.
+- **Component primitives:** Radix UI (adapted; not full library
+  borrow).
+- **Repo-local skills (mandatory within their scopes):** `tdd`
+  (new logic), `grill-with-docs` (before every `/speckit.specify`),
+  `impeccable` (frontend craft).
+
+### Test stack (extracted from Testing Discipline)
+
+- **Unit + component:** Vitest + React Testing Library. Co-located
+  as `*.test.ts(x)` next to the module under test.
+- **E2E:** Playwright driving Electron via the `_electron` API.
+  Tests under `e2e/`.
+- **Accessibility:** axe-core + `@axe-core/playwright` in CI gates.
+  WAI-ARIA Authoring Practices used as the spec oracle for custom
+  widgets.
+- **Storybook:** deferred from v1.
+- **ACP layer:** recorded-transcript contract tests at
+  `tests/fixtures/acp-transcripts/<scenario>.jsonl`. Carve-out for
+  line-coverage in `main/data-layer/acp/` if/when transcript-based
+  coverage proves equivalent.
+
+### Build-vs-borrow audit (extracted from Round 6)
+
+**Build (no clean borrow, safety-critical seams):**
+- IPC bridge + Zod validation
+- Bound CLI process supervisor (spawn, lifecycle, crash recovery,
+  cancellation)
+- MCP config detection + idempotent writer
+- Spec-kit hooks executor
+- Per-step factory + Zod step contracts
+- ACP transcript recording
+- HTTP-to-Redux-action adapter (no library exists)
+- SSE in Electron main
+- `agents.json` manifest loader
+- `fs/safeWrite` workspace-scoped helper
+
+**Borrow (commodity, saves weeks):**
+- pino — structured logging
+- Electron Forge + Vite + electron-vite-react patterns + Forge fuses
+  — packaging / build
+- RTK / RTK Query / `createSelector` / listener middleware — state
+- Zod — schema validation everywhere
+- axe-core + `@axe-core/playwright` — accessibility CI
+- Express — localhost HTTP server
+- `simple-git` — git read primitives (adapt, not import wholesale)
+- `react-markdown` + `rehype-sanitize` — markdown viewer
+- Radix UI primitives — adapted component layer
+
+### Extension adoption / deferral (extracted from Round 5)
+
+**Adopt for v1:**
+- `aeltayeb/spec-kit-spec-validate` — SHA-256 content-hash gates
+  for step contracts. Install before Run 1. Provides the
+  hash-validate gate at the Analyze → Review boundary that matches
+  Principle VIII's intent.
+- `psingley/concierge-jira` — see JIRA submission specifics above.
+
+**Deferred post-v1:**
+- Wireframe Visual Feedback Loop — replaced in v1 by "Send to
+  Figma" / "Send to Claude Design" buttons on the Review screen.
+  Architecture leaves a hook; no implementation in v1.
+- Worktree Isolation — Session tuple stays `(workspace, branch,
+  CLI, model)` in v1. Worktrees + multi-session post-v1 if needed.
+  Collaboration / parallel implementation candidates also post-v1.
+- V-Model, Agent Assign, QA Testing, MemoryLint — not in v1.
+
+### Slicing strategy (re-sequenced per Round 6)
+
+Carry-overs from the round-6 build-vs-borrow audit that affect the
+13-run sequence above:
+
+- ESLint Pure/Effect layer-boundary rules + Zod conventions + pino
+  promote into **Run 1**. Establishing them once saves retrofit
+  cost across every downstream run.
+- RTK Query custom `ipcBaseQuery` promotes into **Run 2** (before
+  any UI work). It shapes renderer data access for everything
+  downstream.
+- Listener middleware catalog + selector catalog + slice catalog
+  merge into one **state architecture spine** run (folded into the
+  scope of Run 4, "IPC Bridge & Redux Store Skeleton").
+- The HTTP API run (current Run 10) splits into two phases: Phase A
+  internal command adapter + auth/token/discovery contract; Phase B
+  full endpoint breadth + SSE streaming.
+- UI component work in Runs 7–9 splits into Phase A primitive
+  accessibility contracts (orb stepper, three-state controls,
+  modal) and Phase B visual polish + full component library.
+
+These resequencings inform the spec.md scopes for the affected
+runs; the dependency graph above is the source of truth for run
+order.
+
 ## Risks and mitigations
 
 - **R1: ACP support in Copilot CLI is recent.** Mitigation: Run 3

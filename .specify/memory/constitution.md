@@ -1,11 +1,22 @@
 # Spec-kit Concierge Constitution
 
-> Electron desktop application that hosts the six-step spec-kit flow
+> Electron desktop application that hosts the six-stage Concierge flow
 > (Specify → Clarify → Plan → Tasks → Analyze → Review) for the
-> `collette-travel` GitHub organization, driving a Bound CLI (GitHub
-> Copilot CLI in v1, any ACP-compliant CLI later) over the Agent Client
-> Protocol, exposing every human action through a localhost HTTP API so
-> external agents can drive the app the same way a human does.
+> `collette-travel` GitHub organization. Five stages map to spec-kit
+> canonical Step Agents (`specify`, `clarify`, `plan`, `tasks`,
+> `analyze`); Review is the Concierge-app surface that hosts evidence
+> review and invokes the spec-kit JIRA extension. The app drives a
+> Bound CLI (GitHub Copilot CLI in v1, any ACP-compliant CLI later)
+> over the Agent Client Protocol and exposes every human action
+> through a localhost HTTP API so external agents can drive the app
+> the same way a human does.
+
+This constitution is law. Roadmap inventory, vendor choices, version
+pins, file names, endpoint lists, and v1 implementation specifics live
+in `ROADMAP_DECISIONS.md`. When the two conflict, this constitution
+wins. When this constitution conflicts with `.github/agents/speckit.constitution.agent.md`
+or any other agent prompt, this constitution wins and the agent file
+is updated in the same amendment.
 
 ## Core Principles
 
@@ -17,61 +28,58 @@ client, localhost HTTP server. They communicate exclusively through
 the IPC bridge.
 
 ```
-┌───────────────────────────────────────────────────────────────────────┐
-│  Renderer (React 18 + Redux Toolkit + RTK Query + TypeScript strict)  │
-│  ┌────────┐ ┌──────────────┐ ┌─────────────────┐ ┌─────────────────┐  │
-│  │ Slices │ │ RTK Query    │ │ Listener        │ │ Selectors       │  │
-│  │ (8)    │ │ APIs (IPC)   │ │ middleware      │ │ (createSelector)│  │
-│  └────────┘ └──────────────┘ └─────────────────┘ └─────────────────┘  │
-└──────────────────┬──────────────────────────┬─────────────────────────┘
-                   │ IPC contextBridge        │ HTTP loopback (token)
-                   ▼                          ▲ external agents
-┌───────────────────────────────────────────────────────────────────────┐
-│  Main (Electron, Node 22+)                                            │
-│  data-layer: acp/, fs/, git/, http/, mcp-config/                      │
-│  spec-kit extension hooks · Step Commits · Bound CLI supervisor       │
-└───────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│  Renderer                                    │
+│  UI · navigation · session work-in-progress  │
+└──────────────────┬───────────────────────────┘
+                   │ IPC bridge (typed, validated)
+                   ▼
+┌──────────────────────────────────────────────┐
+│  Main                                        │
+│  git · fs · child processes · ACP · HTTP     │
+└──────────────────────────────────────────────┘
 ```
 
 Rules:
-- Renderer code MUST NOT `import('electron')`, `import('node:*')`,
-  `child_process`, `simple-git`, or `fs`. Only IPC handlers exposed by
-  the main process and the RTK Query API surface that wraps them.
-- Main-process code MUST NOT import React, Redux Toolkit, or any
-  renderer code.
-- Every IPC handler MUST validate its renderer payload with a Zod
-  schema before passing it to the data layer.
-- Filesystem writes go through a single `fs/safeWrite.ts` helper that
-  refuses writes outside the active Workspace path.
-- ACP wire I/O lives only in `main/data-layer/acp/`; nothing outside
-  that directory spawns or speaks to a coding-agent CLI directly.
+- Renderer code MUST NOT import Electron APIs, Node built-ins,
+  child-process modules, git libraries, or filesystem libraries.
+  Renderer reaches I/O only through IPC handlers and the RTK Query
+  API surface that wraps them.
+- Main-process code MUST NOT import React, Redux, or any renderer
+  module.
+- Every IPC handler MUST validate its renderer payload with a schema
+  before passing it to the data layer.
+- Filesystem writes go through a workspace-scoped helper that refuses
+  writes outside the active Workspace path.
+- ACP wire I/O lives only in the dedicated ACP data-layer module;
+  nothing outside that module spawns or speaks to a coding-agent CLI
+  directly.
 
-Rationale: A bright IPC boundary keeps the renderer testable in
-Vitest + jsdom, keeps the main process replaceable by a headless
-HTTP-only driver (the verifier agent), and structurally enforces
-disk-as-truth.
+Rationale: A bright IPC boundary keeps the renderer testable without
+Electron, keeps the main process replaceable by a headless driver
+(the verifier agent), and structurally enforces disk-as-truth.
 
 ### II. Disk Is Truth (NON-NEGOTIABLE)
 
 The state of record for a Session lives on disk: git history,
-`Concierge-Step:` trailers, the per-step artifacts under
-`specs/<branch>/`, and the JIRA stateful record file. The renderer
-caches a derived view of that truth in Redux. On every Session start,
+`Concierge-Step:` trailers, the per-step artifacts under the feature
+directory, and any external-service stateful record files. The
+renderer caches a derived view of that truth. On every Session start,
 on every branch switch, and on resume, the renderer's step state is
-recomputed from disk — never restored from a serialized Redux blob.
+recomputed from disk — never restored from a serialized memory blob.
 
 Rules:
-- No Redux slice serializes itself to disk as the canonical record of
-  step completion. `preferences` and per-Session-blob persistence cache
-  user-input work (prompt text, in-flight clarify answers); they do
-  not establish step completion.
-- `Concierge-Step: <step>` git trailer on a commit is the only valid
-  proof a step is complete. The `after_<step>` hook is the only writer
-  of those commits; the Bound CLI is forbidden from making git commits
-  during step execution.
-- When the renderer and disk disagree (manual git operation,
-  external-agent write, app crash), disk wins on re-read. The renderer
-  re-reads at every Session start.
+- No renderer state slice serializes itself to disk as the canonical
+  record of step completion. Resumable drafts (prompt text, in-flight
+  clarify answers) may be persisted, but never establish step
+  completion.
+- A `Concierge-Step: <step>` git trailer is the only valid proof a
+  step is complete. The `after_<step>` extension hook is the only
+  writer of those commits; the Bound CLI is forbidden from making git
+  commits during step execution.
+- When renderer cache and disk disagree (manual git operation,
+  external-agent write, app crash), disk wins on re-read. The
+  renderer re-reads at every Session start.
 - Step completion is detected only through git history and on-disk
   artifact validation, never through ACP stream prose.
 
@@ -86,54 +94,57 @@ The Concierge App drives coding-agent CLIs through the Agent Client
 Protocol — JSON-RPC 2.0 over stdio — and nothing else.
 
 Rules:
-- The Bound CLI interface lives at `main/data-layer/acp/agent.ts` and
-  exposes a single typed `CodingAgent` surface. No code outside that
-  folder spawns a coding-agent binary.
-- v1 default Bound CLI: GitHub Copilot CLI in ACP mode, launched with
-  `--allow-all-tools` (no per-tool permission prompts in v1).
-- An agent adapter is a thin process supervisor that (a) spawns the
-  binary with documented ACP flags, (b) speaks JSON-RPC 2.0 over
-  stdin/stdout, (c) emits typed `AgentEvent` notifications, (d) exposes
-  capability discovery so the UI hides features the current Bound CLI
-  doesn't support.
-- Supported Bound CLI set is data, not code: a JSON manifest at
-  `main/data-layer/acp/agents.json` lists each agent's binary, args,
-  and capability flags. Adding a new ACP agent requires a manifest
-  entry plus contract tests against recorded transcripts.
-- Non-ACP CLIs are out of scope as Bound CLIs. Claude Code (currently
-  an ACP client, not an ACP agent) cannot be used as the Bound CLI
-  until it ships an ACP agent.
+- The Bound CLI interface is a single typed `CodingAgent` surface
+  inside the ACP data-layer module. No code outside that module
+  spawns a coding-agent binary.
+- A Bound CLI adapter is a thin process supervisor that (a) spawns
+  the binary with the documented ACP flags, (b) speaks JSON-RPC 2.0
+  over stdin/stdout, (c) emits typed agent events, (d) exposes
+  capability discovery so the UI hides features the current Bound
+  CLI does not support.
+- The supported Bound CLI set is data, not code: a JSON manifest
+  lists each agent's binary, args, capability flags, and permission
+  grant. Adding a new ACP-compliant agent requires a manifest entry
+  plus contract tests against recorded ACP transcripts.
+- Non-ACP CLIs are out of scope as Bound CLIs. A CLI that is itself
+  an ACP client (rather than an ACP agent) cannot be used as the
+  Bound CLI until it ships an ACP-agent surface.
+- The Bound CLI runs without per-tool permission prompts; the per-CLI
+  unrestricted-mode flag is declared in the manifest.
 - Model selection flows through ACP session messages, never through
-  shell-level `copilot config set`. Model swap is allowed between
-  steps; locked once a step is `pending` and running.
+  shell-level CLI configuration commands. Model swap is allowed only
+  between steps — when the current step's status is `not_available`
+  or `complete`, never `pending` and running. The top-bar model
+  picker disables during a running step. If the ACP method for model
+  swap is unstable in a given runtime, the fallback is to restart
+  the Bound CLI process with the new model selected via launch flag.
+- CLI swap (binding a different ACP-compliant CLI) is forbidden
+  mid-Session. Changing the Bound CLI ends the Session.
 
 Rationale: ACP is the published cross-vendor standard. Building
-against it once gives us substitutability for free with every ACP-
-compliant CLI (Codex, Gemini, OpenCode, Kimi, Qwen, Junie, etc.) and
-keeps the swap claim provable through transcript contract tests.
+against it once gives us substitutability across every ACP-compliant
+agent (Codex, Gemini, OpenCode, Kimi, Qwen, Junie, etc.) and keeps
+the swap claim provable through transcript contract tests.
 
 ### IV. Factory-First Data Transformation
 
-Every payload that enters the renderer (from IPC, ACP, FS, HTTP API)
+Every payload that enters the renderer (from IPC, ACP, FS, or HTTP)
 MUST pass through a factory before any consumer sees it.
 
 Rules:
-- Factories live in `domain/factories/`.
-- Factories accept `unknown` with a type guard and return a fully-typed
-  shape with safe defaults. Defensive coercion helpers
-  (`asString`, `asNumber`, `asBoolean`, `asDate`, `stripHTML`,
-  `normalizeLineEndings`) live in `domain/coerce.ts`; ad-hoc casts
-  inside factories are forbidden.
-- Domain interfaces live in `domain/types/<domain>.d.ts`.
+- Factories accept `unknown` with a type guard and return a
+  fully-typed shape with safe defaults.
+- Defensive coercion helpers (string, number, boolean, date,
+  HTML-strip, line-ending-normalize) are co-located with the factory
+  module; ad-hoc casts inside factories are forbidden.
 - Each factory has co-located unit tests covering happy path, empty
   `{}` input, partial input, and at least one malformed-type case.
-- The Clarify factory is the strictest — it enforces every constraint
-  in CONTEXT.md's "Step Agent Failure Modes (Clarify-specific)"
-  glossary entry. A malformed question never renders raw; it surfaces
-  through the Clarify Re-ask UI affordance.
+- The Clarify factory is the strictest. A malformed clarify question
+  never renders raw; it surfaces through the Clarify Re-ask UI
+  affordance.
 
-Rationale: ACP events, git outputs, JIRA stateful records, and the
-HTTP API's external-agent payloads all evolve independently of our
+Rationale: ACP events, git outputs, external-service stateful
+records, and HTTP API payloads all evolve independently of our
 release cadence. Factories are the contract seam that absorbs that
 drift.
 
@@ -142,241 +153,153 @@ drift.
 All TypeScript follows functional discipline; ESLint enforces it.
 Layers are tagged as Pure or Effect.
 
-Pure layers (`domain/`, `renderer/store/*/selectors.ts`,
-`renderer/hooks/derive*`, all factories):
+Pure layers (domain, selectors, derived-state hooks, all factories):
 - `const` over `let`/`var`; no `var`.
 - No mutation of inputs; return new values.
 - No reliance on or modification of external state inside the function.
-- `map`/`filter`/`reduce`/`toSorted` over loops.
+- Non-mutating array methods over loops.
 - `as const` or `Object.freeze` for non-mutated objects.
 - Functional composition over inheritance.
-- Function components only.
-- Classes only for third-party interop (Zod schemas, RTK builder
-  pattern).
+- React function components only.
+- Classes only for third-party interop (schema validators, builder
+  patterns).
 
-Effect layers (`main/electron-bootstrap.ts`, `main/ipc/*`,
-`main/data-layer/*`, `renderer/main.tsx`, `renderer/store/*/slice.ts`,
-RTK Query `baseQuery` implementations):
-- Side effects MUST be confined to identified files.
-- A Pure-layer file may not import from an Effect-layer module
-  directly — only from its transform/factory partner.
+Effect layers (Electron bootstrap, IPC handlers, data-layer modules,
+renderer entry point, RTK slice files, RTK Query baseQuery
+implementations):
+- Side effects are confined to identified files.
+- A pure-layer file may not import from an effect-layer module
+  directly — only from its transform / factory partner.
 - Redux Toolkit's Immer-backed mutative syntax inside `createSlice`
-  reducers is considered pure: Immer produces immutable outputs, the
+  reducers is considered pure: Immer produces immutable outputs; the
   mutative syntax is presentation only.
 
 Rationale: Predictable, testable, composable code. The Pure/Effect
-split lets reviewers ask a single question — "is this in a pure-layer
+split lets reviewers ask one question — "is this in a pure-layer
 file?" — instead of arguing whether a given side effect is justified.
 
 ### VI. State Management (NON-NEGOTIABLE)
 
-Eight Redux slices, one purpose each. RTK Query for all IPC. Listener
-middleware for cross-domain effects. Selectors are the only way UI
-reads composite state.
+Renderer state architecture follows one shape:
 
-Slices:
+- **Redux Toolkit slices** own all renderer-local state. One state
+  machine per slice; reducers perform no I/O.
+- **RTK Query** owns every renderer interaction that crosses the IPC
+  boundary. A shared typed `baseQuery` wraps IPC invocation, returns
+  `{ data }` or `{ error: { code, message } }` with a typed error
+  code enum, and exposes typed hooks to smart components.
+- **Streaming step execution** uses RTK Query lifecycle primitives
+  (`onCacheEntryAdded` or equivalent). Components MUST NOT subscribe
+  to ACP streams directly.
+- **Listener middleware** is the only legal place for cross-domain
+  renderer effects: step advancement, persistence writes, activity
+  logging, branch/session cleanup, model-change logging, auth
+  bootstrapping, MCP-config checks, hang detection, recovery
+  orchestration, external-link opening.
+- **Selectors** are the composite read API. Components read named
+  selectors or RTK Query hooks; they never read raw multi-slice
+  state. Selectors returning fresh objects, arrays, or computed
+  values use memoization.
+- **Thunks are discouraged.** Cross-domain coordination belongs in
+  listener middleware; IPC-crossing async belongs in RTK Query.
+  Introducing or materially expanding a Redux thunk requires a
+  "Constitution impact" note in the pull request explaining why
+  listener middleware or RTK Query was insufficient.
+- **`createEntityAdapter`** is used for any slice modeling a
+  collection with stable IDs.
+- **No other state library** in v1. No Zustand, Jotai, MobX, React
+  Query, Apollo Client, or ad-hoc event bus.
 
-1. **`ui`** — transient view state, in-memory only. Modals, dropdowns,
-   activity rail current visibility, popovers.
-2. **`preferences`** — persisted via `electron-store` through a
-   debounced `preferencesPersister` listener. Accent, density,
-   activity rail default side and default visibility, LRU of recent
-   repos, persisted model id.
-3. **`auth`** — state machine for the three auth prerequisites:
-   GitHub CLI, Copilot CLI, Atlassian (OAuth via system browser to a
-   localhost callback). Includes identity (`username`, `avatarUrl`),
-   per-prerequisite status, and last error.
-4. **`workspace`** — `{repo, branch}` only. The navigation pointer.
-   Org name is a v1 constant (`"collette-travel"`), not a slice field.
-5. **`steps`** — the canonical step state machine: per-step status
-   (`not_available` / `pending` / `complete`), the single `pending`
-   step, and `viewing` (which step's UI the user has open).
-   Invariants: exactly one `pending` step; status transitions are
-   monotonic forward unless explicitly reset via Step Escape Hatch;
-   `viewing ≤ pending` in display order. Step state is recomputed
-   from disk on every Session start.
-6. **`session`** — per-branch work-in-progress: `prompt`, `specMd`
-   in-memory copy, `clarify.answers` (including `malformed` records
-   from Clarify Re-ask), `clarify.extraQuestions`, and `pipelines` for
-   `plan`, `tasks`, `analyze`, and `tojira`. Per-branch session blobs
-   persist to disk so close/reopen drops the user back exactly where
-   they left off.
-7. **`activity`** — ring buffer of LogEntry, ambient `busy`, and
-   `current` status string. Stream-fed from ACP `session/update` events
-   via a subscription pipeline. Display-only — never read for state
-   decisions. Activity rail auto-opens once per session on the first
-   `err` entry; user can re-close and override via `preferences`.
-8. **`copilot`** — currently-selected model id. Mirrors into
-   `preferences` for persistence.
+Slice inventory, RTK Query API inventory, listener inventory, and
+the persistence boundary table live in `ROADMAP_DECISIONS.md`.
 
-RTK Query APIs (all wrap `ipcRenderer.invoke` via a shared `baseQuery`
-that returns `{data}` or `{error: {code, message}}` with a typed error
-code enum: `AUTH_REQUIRED`, `NETWORK`, `CLI_TIMEOUT`, `GIT_DIRTY`,
-`MCP_NOT_CONFIGURED`, `JIRA_FORBIDDEN`, `STEP_CONTRACT_VIOLATION`,
-`UNKNOWN`):
-
-- `authApi` (`auth:status`, `auth:gh:login`, `auth:gh:logout`,
-  `auth:copilot:login`, `auth:copilot:logout`, `auth:atlassian:login`,
-  `auth:atlassian:logout`) — tag `["AuthStatus"]`.
-- `reposApi` (`repos:list`, `repos:refresh`) — tag `["Repos"]`.
-- `branchesApi` (`branches:sessions`, `git:checkout`,
-  `git:createDraft`) — tag `["Branches:repo"]`.
-- `sessionApi` (`session:load`, `session:save-spec`).
-- `acpApi` (`acp:runStep`, `acp:cancelTurn`,
-  `acp:setModel`) — one mutation per step type, streaming via
-  `onCacheEntryAdded` that pushes activity log lines and updates
-  `session.pipelines.<step>`.
-- `clarifyApi` (`clarify:next`, `clarify:answer`,
-  `clarify:reaskMalformed`, `clarify:askAnother`, `clarify:commit`).
-- `artifactsApi` (`artifact:read`) — cached per
-  `{repo, branch, path}`, invalidated on any mutation that touches the
-  path.
-- `tasksDetailApi` (`tasks:detail`) — per-task expand modal data.
-- `copilotApi` (`copilot:models`, `copilot:set-model`).
-- `jiraApi` (`jira:loopCreateAndVerify`, `jira:syncedRecord`) — drives
-  the deterministic outer loop in the main process; renderer dispatches
-  the loop start and observes per-ticket pipeline state in
-  `session.pipelines.tojira`.
-- `bugReportApi` (`concierge:report`).
-- `mcpConfigApi` (`mcp:config:check`, `mcp:config:fix`) — detects
-  whether the Bound CLI's MCP config has the required servers and
-  writes the missing entry idempotently.
-- `electronApi` (`app:version`, `app:open-external`,
-  `app:save-file-dialog`, `app:export-debug-log`).
-
-Listener middleware (the only legal cross-slice coordination):
-
-- `activityLogger` — translates RTK Query mutation lifecycle and ACP
-  stream notifications into LogEntry rows.
-- `pipelineProgressLogger` — translates streaming `acp:runStep`
-  events into pipeline row updates plus `activity.current` and
-  `activity.busy`.
-- `stepAdvancer` — the only writer of `steps/STATUS_UPDATE` actions
-  that promote a step from `pending` to `complete` and the next step
-  from `not_available` to `pending`. Fires on `after_<step>` hook
-  success acks.
-- `stepEscapeHatch` — handles the canonical step recovery flow on
-  any failure mode action.
-- `clarifyMalformationLogger` — on each Clarify Re-ask, writes a
-  structured malformation record to disk and to `activity`.
-- `branchCreator` — on Specify pipeline start while
-  `workspace.branch === null`, fires `branchesApi.createDraft` first
-  and queues the Specify run.
-- `preferencesPersister` — debounced (250 ms) write of `preferences/*`
-  changes to `electron-store`.
-- `sessionPersister` — per-branch session blob write.
-- `authBootstrap` — on app launch, queries auth status for all three
-  prerequisites; once all three are `ok`, prefetches `reposApi.listOrgRepos`.
-- `repoSwitchCleanup` — on `workspace.repo` change, invalidates
-  branch + session data scoped to the prior repo.
-- `modelLogger` — on `copilotApi.setModel/fulfilled`, appends activity
-  log line.
-- `externalLinkOpener` — routes any action with `meta.external: true`
-  through `electronApi.openExternal` (security: never `window.open`).
-- `activityAutoOpener` — on first `err` entry per session, dispatches
-  `ui/activityRail/visible = true` if the user hasn't already
-  overridden.
-- `stepsRestoredFromDisk` — on `workspace.repo` or `workspace.branch`
-  change (or app launch with restored Session), reads git history,
-  computes the status map from `Concierge-Step:` trailers, and
-  dispatches `steps/restored`.
-- `hangDetector` — watches `session.pipelines` for 20 minutes of no
-  progress events; emits a soft notification suggesting cancel/restart.
-  No auto-fail.
-- `mcpConfigChecker` — on app launch and on `workspace.repo` change,
-  fires `mcpConfigApi.check` and surfaces "click to fix" in `auth` if
-  Atlassian MCP is missing.
-
-Selectors:
-- Co-located with their slice by default; split into `selectors.ts`
-  when a slice has ≥5 selectors or any of them require `createSelector`.
-- `createSelector` (from `@reduxjs/toolkit`) mandatory for any
-  selector returning a fresh array, object, or computed value.
-- `createEntityAdapter` for any slice modeling a collection with
-  stable IDs (none in v1's eight slices — collections live in RTK
-  Query caches).
-- Components MUST NOT read raw slice fields. They use named selectors.
-  Lint or review enforces this.
-
-Persistence boundary:
-
-| `electron-store` (persists) | Per-Session blob (disk) | In-memory only |
-|---|---|---|
-| `preferences.*` | `session.*` keyed by `${repo}#${branch}` | `ui.*`, `activity.*`, RTK Query cache, `auth.*`, `workspace.*`, `steps.*` (rebuilt from disk on Session start) |
-
-Rationale: One state-machine per slice. RTK Query owns everything
-that crosses the IPC boundary or comes from outside. Listeners are the
-only legal place for cross-slice coordination, so race conditions
-have one home. Selectors are the only API for reads, so the slice
-shape is free to evolve without churning components.
+Rationale: One state-management stack, one IPC data-fetching
+primitive, one cross-domain effect primitive, and one composite-read
+API keep renderer behavior auditable. The constitutional law is the
+ownership boundary; the exact inventory is roadmap material that
+evolves without amendment.
 
 ### VII. Step Lifecycle and Recovery (NON-NEGOTIABLE)
 
 Every step's lifecycle is owned by the spec-kit `before_<step>` and
-`after_<step>` extension hooks registered in `.specify/extensions.yml`.
-The Concierge App is the implementation of those hooks.
+`after_<step>` extension hooks. The Concierge App is the
+implementation of those hooks.
 
 Rules:
 - `before_<step>` validates prerequisites (auth, prior step commits,
   MCP config presence) and may inject context.
 - `after_<step>` reads the step's expected artifacts from disk,
-  validates them against the Step Contract factory, and:
-  - on pass → creates a single Step Commit with the `Concierge-Step:`
-    trailer and dispatches `stepAdvancer` to promote step status;
-  - on fail → triggers the Step Escape Hatch.
+  validates them against the Step Contract factory, and on pass
+  emits a single Step Commit with the `Concierge-Step:` trailer; on
+  fail it triggers the Step Escape Hatch.
 - The per-step expected-artifact manifest is derived from spec-kit's
-  installed agent files. v1 hard-codes the table; a startup
-  verification reads each `.github/agents/speckit.*.agent.md` and
-  warns if declared outputs drift from the hard-coded list.
-- Plan's Step Commit also touches `.github/copilot-instructions.md`
-  per spec-kit's plan agent intent.
-- Analyze commits with `--allow-empty` if no diff resulted, so the
-  `Concierge-Step:` trailer history is unbroken and resume can read
-  it deterministically.
+  installed agent files. The manifest is enumerated in
+  `ROADMAP_DECISIONS.md`; a startup verification parses the installed
+  agent files and warns if their declared outputs drift from the
+  manifest.
+- The Plan step's commit MAY include modifications to a Bound-CLI
+  context file outside the feature directory (e.g., the agent's
+  per-repo instructions file). This single exception is permitted
+  because spec-kit's plan agent writes the plan path into that file
+  by design.
+- The Analyze step commits with `--allow-empty` if no diff resulted,
+  so the `Concierge-Step:` trailer history remains unbroken and
+  resume can read it deterministically.
 - The Bound CLI is forbidden from making git commits during step
   execution. Pre-commit hooks on the repo are honored; if a hook
   rejects a Concierge-emitted commit, the step transitions to the
-  Step Escape Hatch with the hook output surfaced. No `--no-verify`.
-- Mid-step model swap is forbidden. Model can change only when the
-  step's status is `not_available` or `complete`, never `pending`-and-
-  running. The top-bar model picker disables during a running step.
+  Step Escape Hatch with the hook output surfaced. `--no-verify` is
+  forbidden.
 - Workspace Dirty Resume: on Session start, if the Workspace has
   uncommitted changes to the current step's expected artifacts, the
   Concierge App invokes the Bound CLI to resume from that disk state
-  instead of reverting or committing.
-- Hang detection: 20 minutes of ACP-stream silence triggers a soft
-  user notification suggesting cancel/restart. No auto-fail.
+  rather than reverting or committing. A step-in-flight marker file
+  written when a step starts and removed when it commits is the
+  recovery cue.
+- Step Escape Hatch is the single canonical recovery flow for all
+  step failure modes (factory rejection, Bound CLI crash, ACP error,
+  hook failure, malformed clarify output). The hatch cancels the
+  active turn, reverts the step's expected artifacts to the last
+  Step Commit, resets the step's UI state, and presents a Retry
+  affordance. Retry is manual; the app never silently auto-retries.
+- The Cancel control is the user-invoked Step Escape Hatch. It
+  requires explicit confirmation and on confirm hard-reverts to the
+  last Step Commit.
+- Hang detection: extended ACP-stream silence triggers a soft user
+  notification suggesting cancel or restart. No auto-fail. The
+  specific threshold is configured in `ROADMAP_DECISIONS.md`.
 
-Rationale: spec-kit's hook seam is the published integration surface.
-Leaning on it gives deterministic step lifecycle, eliminates
-log-scraping flakiness, and makes the Concierge App's responsibility
-small and well-bounded: validate, commit, recover.
+Rationale: spec-kit's hook seam is the published integration
+surface. Leaning on it gives a deterministic step lifecycle,
+eliminates log-scraping flakiness, and makes the Concierge App's
+responsibility small and well-bounded: validate, commit, recover.
 
 ### VIII. Step Contracts and the Clarify Rigor Mandate
 
-Every step ships a Zod schema for its expected artifacts. The
+Every step ships a schema for its expected artifacts. The
 `after_<step>` hook runs the schema; rejection triggers the Step
 Escape Hatch.
 
 Rules:
-- Spec, plan, tasks, analyze contracts validate the artifact files
-  exist with required fields, frontmatter, and section headings.
-- The Clarify contract is the strictest. Every `ClarifyQuestion`
-  written to `spec.md`'s `## Clarifications` section MUST satisfy:
-  - non-empty `questionText`, trimmed, LF-normalized;
-  - ≥2 `choices`, each with non-empty key (`A`/`B`/`C`/...) and label;
-  - short-answer affordance present in the rendered UI (data shape
-    permits a `note` field per answer);
-  - no leading `*` markdown emphasis that would confuse parsers;
-  - no CRLF / mixed line endings in the section.
-- A failed Clarify contract on a specific question routes through the
-  Clarify Re-ask UI affordance, not the full Step Escape Hatch. The
-  Concierge App logs a structured malformation record
-  (`{questionId, malformationCategory, rawOutput, timestamp, modelId}`)
-  to a disk-backed log and to the `activity` slice, then re-prompts
-  the Step Agent for that one question.
-- Malformed questions render visibly malformed (red border,
-  annotation) — never silently broken or hidden.
+- The Specify, Plan, Tasks, and Analyze contracts validate that
+  artifact files exist with required fields, frontmatter, and section
+  headings.
+- The Clarify contract is the strictest. Every clarify question
+  written to the spec MUST satisfy:
+  - non-empty question text, trimmed, with line endings normalized;
+  - at least two well-formed choices, each with a key and a label;
+  - a short-answer affordance present in the rendered UI;
+  - no markdown emphasis at start of line that would confuse
+    parsers;
+  - consistent line endings throughout the clarifications section.
+- A failed Clarify contract on a specific question routes through
+  the Clarify Re-ask affordance — not the full Step Escape Hatch.
+  The Concierge App logs a structured malformation record (question
+  id, malformation category, raw output, timestamp, model id) to a
+  disk-backed log and to the activity stream, then re-prompts the
+  Step Agent for that one question.
+- Malformed questions render visibly malformed in the UI — never
+  silently broken or hidden.
 
 Rationale: Clarify is the only HITL step with intra-step state, and
 its real-world failure modes have been observed. Hardening one
@@ -384,119 +307,92 @@ factory is cheaper than building a general-purpose retry layer.
 
 ### IX. Driveable by External Agents
 
-The Concierge App exposes a localhost HTTP API on a random port
-written to the Electron `userData` directory at launch, gated by a
-per-launch token written alongside the port file with `0600` perms.
-Every action available to a human user is available via the API,
-gated by the same Session state machine. The GUI mirrors external-
-agent activity in real-time, indistinguishable from a human click
-sequence.
+The Concierge App exposes a localhost HTTP API at launch on a
+randomly chosen port. The port and a per-launch authentication token
+are written to the Electron `userData` directory with restricted
+permissions so a local automation client can discover them. Every
+action available to a human user is available via the API, gated by
+the same Session state machine. The GUI mirrors external-agent
+activity in real-time, indistinguishable from a human click sequence.
 
 Rules:
 - The HTTP API and the human UI dispatch into the same Redux store
   through the same actions and the same IPC handlers. There is no
   alternative path.
-- Every endpoint is typed (Zod request and response schemas) and
-  versioned at the path level (`/v1/...`).
+- Every endpoint is typed (schema-validated request and response)
+  and versioned at the path level.
 - Streaming subscriptions use Server-Sent Events.
 - v1 ships HTTP only. MCP compatibility is not v1; if it becomes
   worth shipping, it arrives as a thin MCP-to-HTTP adapter over the
   existing API.
-- Endpoints (informative, not exhaustive — final list lives in
-  `docs/api.md`):
-  - `GET /v1/status` — Session, step, Workspace, auth, model.
-  - `GET /v1/spec` — current `spec.md`.
-  - `GET /v1/evidence` — committed artifacts on the current branch
-    with `Concierge-Step:` trailer mapping.
-  - `GET /v1/activity?since=<seq>` — paginated log slice.
-  - `GET /v1/activity/stream` (SSE) — live activity events.
-  - `POST /v1/session/start` — `{repo, branch?}`. Only valid when no
-    active Session or when the active Session is at `review` and
-    complete.
-  - `POST /v1/session/resume` — `{repo, branch}`.
-  - `POST /v1/specify/begin` — `{promptText}`. Only valid when
-    `steps.pending === 'specify'` and prompt is unsubmitted.
-  - `POST /v1/clarify/answer` — `{qid, choice, note?}`. Only valid
-    when `steps.pending === 'clarify'` and `qid` matches the currently
-    surfaced question.
-  - `POST /v1/clarify/reaskMalformed` — `{qid, malformationCategory}`.
-  - `POST /v1/clarify/askAnother`.
-  - `POST /v1/step/advance` — promotes the pending step if its Step
-    Contract has passed.
-  - `POST /v1/step/retry` — fires the Step Escape Hatch.
-  - `POST /v1/step/run` — `{step}`. Only valid when `step ===
-    steps.pending` and the step has not yet been invoked on this
-    branch.
-  - `POST /v1/jira/submit` — fires the JIRA Submission outer loop.
-  - `POST /v1/support/report` — submit a Support Request.
+
+The v1 endpoint inventory is enumerated in `ROADMAP_DECISIONS.md`.
 
 Rationale: One state machine, two consumers. Internal-tool
 verifier-agent E2E tests are real driveability tests because they
 exercise the same paths a human exercises.
 
-### X. MCP Posture (Observer-Only, v1)
+### X. MCP Posture (Observer-Only)
 
 The Bound CLI is the MCP host. The Concierge App is not. The
 Concierge App's only MCP responsibility is detecting whether the
 Bound CLI's MCP configuration includes the required MCP servers and
-offering a one-click "fix" affordance to write them.
+silently writing the missing entry idempotently.
 
 Rules:
-- v1 required MCP set: Atlassian MCP only.
-- The Concierge App reads the Bound CLI's MCP config on launch and on
-  Workspace change. If Atlassian MCP entry is missing, the auth
-  surface shows a "Atlassian MCP not configured — click to fix"
-  affordance that idempotently writes the entry without disturbing
-  user-managed entries.
-- The Concierge App never speaks to Atlassian (or any service) over
-  MCP directly. All MCP traffic flows through the Bound CLI.
-- Activity stream surfaces every MCP tool call the Bound CLI makes as
-  a summarized one-liner (tool name + brief target). Full payloads
-  are written to a disk-backed debug log.
+- The Concierge App reads the Bound CLI's MCP configuration on launch
+  and on Workspace change. If a required MCP server entry is missing,
+  the app writes it idempotently and surfaces a one-time
+  informational notification ("Configured `<MCP server>` for `<Bound CLI>`").
+  User-managed entries are preserved.
+- The Concierge App never speaks to any MCP-hosted service directly.
+  All MCP traffic flows through the Bound CLI.
+- The activity stream surfaces every MCP tool call the Bound CLI
+  makes as a summarized one-liner (tool name plus brief target).
+  Full payloads are written to a disk-backed debug log.
 - Plugin architecture for additional MCPs is post-v1. Code is
-  structured to make adding additional MCPs a config + manifest
-  change. When the MCP count reaches ≥2, a dedicated `mcp` slice
-  replaces the `auth.atlassian` field.
+  structured so adding additional MCPs is a configuration plus
+  manifest change.
 
-Rationale: Atlassian is the only external service v1 needs; the
-Concierge App's responsibility is bounded to "make sure the Bound CLI
-can reach what it needs," not "be a generic MCP client."
+The v1 required MCP set is declared in `ROADMAP_DECISIONS.md`.
 
-### XI. JIRA Submission (Concierge-Orchestrated Outer Loop)
+Rationale: Concierge's responsibility is bounded to "make sure the
+Bound CLI can reach what it needs," not "be a generic MCP client."
 
-The Send-to-JIRA action on the Review step uses a customized spec-kit
-JIRA extension agent — installed from the spec-kit extensions
-marketplace, customized to scope each invocation to a single ticket
-with on-disk verification.
+### XI. External-Service Submission via Concierge-Orchestrated Outer Loop
+
+External-service submission flows (the Send-to-JIRA action on the
+Review stage is the v1 instance) are owned by Concierge as a
+deterministic outer loop over the unit-of-work, with the per-unit
+external call delegated to a customized spec-kit extension agent
+running through the Bound CLI.
 
 Rules:
-- The Concierge App owns the deterministic outer loop. For each task
-  in `tasks.md`:
-  1. If the task already has a verified entry in the stateful record
-     file (`specs/<branch>/jira-tickets.json` or whatever the
-     extension names it), skip.
-  2. Otherwise, invoke the per-ticket agent through ACP.
-  3. The agent calls Atlassian MCP to create the ticket, verifies the
-     ticket is not a duplicate, and writes the result to the stateful
-     record file.
-  4. The Concierge App reads the stateful record after the agent
-     finishes and verifies the expected delta (one new verified entry
-     for this task).
-  5. On match, the loop advances. On mismatch, the loop halts and the
-     Review UI surfaces the discrepancy with a retry affordance.
-- Idempotent on resume: if the app crashes mid-loop, the outer loop
-  reads the stateful record on relaunch and skips already-verified
-  tasks. No duplicate tickets.
-- The celebration screen reads from the stateful record, not stream
-  events.
-- The Concierge App never speaks to Atlassian directly.
-- Same pattern generalizes to future per-unit external-service
-  integrations.
+- The Concierge App owns iteration over the unit-of-work
+  (per-ticket, per-issue, per-row) and the verification step between
+  iterations.
+- For each unit, the Concierge App invokes a single per-unit agent
+  invocation through ACP. The agent calls the external service via
+  MCP, verifies the result is not a duplicate, and writes its result
+  to a stateful record file on disk.
+- After each invocation, the Concierge App reads the stateful record
+  and verifies the expected delta (one new verified entry for the
+  current unit). On match, the loop advances. On mismatch, the loop
+  halts and the UI surfaces the discrepancy with a retry affordance.
+- The flow is idempotent on resume. If the app crashes mid-loop, the
+  outer loop reads the stateful record on relaunch and skips
+  already-verified units. No duplicates.
+- The terminal success UI (e.g., a celebration screen) reads from the
+  stateful record, not from stream events.
+- The Concierge App never speaks to the external service directly.
 
-Rationale: The Concierge App owns deterministic iteration and
-idempotency without owning JIRA logic. The agent + MCP do all
-external calls. The stateful record is the visible source of truth
-for both UI and recovery.
+The v1 instance (JIRA) and its specific record-file conventions are
+documented in `ROADMAP_DECISIONS.md`.
+
+Rationale: Concierge owns deterministic iteration and idempotency
+without owning external-service API knowledge. The agent + MCP do
+all external calls. The stateful record is the visible source of
+truth for both UI and recovery.
 
 ### XII. Smart / Dumb Component Separation
 
@@ -505,17 +401,17 @@ separate from presentation logic.
 
 Rules:
 - Smart components own data fetching (via RTK Query hooks), store
-  access (via `useAppSelector` and selectors), dispatch, workflow
-  branching, and non-trivial data transformation before values reach
-  presentational components.
-- Dumb components receive already-prepared data and callbacks through
-  props. Dumb components MUST NOT call RTK Query hooks, read from the
-  store, or contain spec-kit-flow-specific decision trees.
-- When a component mixes orchestration with substantial JSX, extract
-  the render-only region into a dumb component and keep the smart
-  wrapper focused on coordination.
-- Dumb components are reusable across routes and scenarios — they're
-  shaped by UI concerns, not page-specific behavior.
+  access (via typed selectors), dispatch, workflow branching, and
+  non-trivial data transformation before values reach presentational
+  components.
+- Dumb components receive already-prepared data and callbacks
+  through props. Dumb components MUST NOT call RTK Query hooks, read
+  from the store, or contain Concierge-flow-specific decision trees.
+- When a component mixes orchestration with substantial JSX, the
+  render-only region is extracted into a dumb component and the
+  smart wrapper stays focused on coordination.
+- Dumb components are reusable across routes and scenarios — they
+  are shaped by UI concerns, not page-specific behavior.
 - Business logic shared across smart components lives in hooks,
   factories, utilities, or selectors — never reimplemented inside
   dumb components.
@@ -534,7 +430,8 @@ chooses the narrowest mechanism.
 
 Rules:
 1. If the code synchronizes with something outside React (network,
-   subscription, browser API, timer, external widget) — use `useEffect`.
+   subscription, browser API, timer, external widget) — use
+   `useEffect`.
 2. If the logic is triggered by a user action — use an event handler.
 3. If a value can be derived from props or state — compute it during
    render. For expensive derivations use `useMemo`.
@@ -544,7 +441,7 @@ Rules:
 5. If notifying a parent or external store — call directly in the
    event handler, not from `useEffect`.
 6. If fetching data tied to lifecycle or parameter changes — use RTK
-   Query (default for the Concierge App) or `useEffect`.
+   Query (default for the Concierge App).
 7. If code must run once when the component appears — `useEffect`
    with an empty dependency array.
 8. If code must read or mutate layout before paint — `useLayoutEffect`.
@@ -555,9 +452,9 @@ Rules:
   timers, and external listeners when the synchronization ends.
 - Effects stay small and single-purpose. Business logic, derived
   values, and event-driven flows stay outside effect hooks.
-- ACP stream subscription lives in exactly one place: the listener
-  middleware's `pipelineProgressLogger` (which dispatches into Redux),
-  not in components. Components never subscribe to ACP directly.
+- ACP stream subscription lives in exactly one place: the
+  centralized listener middleware that dispatches into Redux. Components
+  never subscribe to ACP directly.
 
 Rationale: Misused effects create duplicated state, hidden control
 flow, and avoidable re-renders. Restricting effects preserves the
@@ -571,24 +468,27 @@ is a baseline quality requirement, not optional.
 
 Rules:
 - Semantic HTML first; ARIA roles, states, and properties added only
-  when native semantics don't provide the required behavior.
-- All interactive UI fully operable with a keyboard — logical tab
+  when native semantics do not provide the required behavior.
+- All interactive UI is fully operable with a keyboard — logical tab
   order, visible focus indicators, no keyboard traps.
 - Every form control has an accessible name, an associated label,
   clear instructions when needed, and programmatically associated
   error messaging.
 - Images and non-text content provide meaningful alt text unless
-  decorative (then hidden from AT).
+  decorative (then hidden from assistive technology).
 - Color is never the sole means of conveying meaning. Text and
-  interactive controls meet W3C contrast requirements. The
-  three-state orb stepper provides text labels alongside color.
+  interactive controls meet W3C contrast requirements.
 - Dynamic UI changes (validation errors, loading states, dialogs,
   status updates, malformed-clarify-question announcements) are
   announced appropriately via ARIA live regions.
-- Heading structure, landmark regions, and document titles communicate
-  document structure for screen-reader navigation.
-- Custom widgets (orb stepper, three-state controls, modals, OAuth
-  flows) follow the relevant WAI-ARIA Authoring Patterns completely.
+- Heading structure, landmark regions, and document titles
+  communicate document structure for screen-reader navigation.
+- Custom widgets follow the relevant WAI-ARIA Authoring Patterns
+  completely.
+
+Specific custom-widget inventory and design-token references live in
+`ROADMAP_DECISIONS.md`. The standards above are constitutional and
+non-extractable.
 
 Rationale: The Concierge App is used inside an organization with
 diverse needs. Baseline accessibility is non-negotiable.
@@ -598,18 +498,24 @@ diverse needs. Baseline accessibility is non-negotiable.
 Observability is not optional in production builds.
 
 Rules:
-- Structured logger (`pino` or equivalent) in `main/logger.ts` with
-  fields `{ts, level, type, sessionId, stepId?, modelId?, ...}`. No PII.
-- Logs roll to a file under the Electron `userData` directory and
-  stream into the renderer's activity log via IPC.
-- Every IPC handler, every ACP turn, every step lifecycle transition,
-  every MCP tool call summary, every Clarify malformation event, and
-  every error has a structured log line.
+- A structured logger emits to a file under the Electron `userData`
+  directory and streams into the renderer's activity log via IPC.
+- Every IPC handler, every ACP turn, every step lifecycle
+  transition, every MCP tool call summary, every Clarify
+  malformation event, and every error has a structured log line.
+- Log lines carry at minimum a timestamp, a level, a structured
+  event type, correlation identifiers where applicable, and no PII
+  (no email, full name, payment data, raw tokens).
+- ACP wire traffic is recorded as raw JSON-RPC transcripts at full
+  fidelity for contract tests, verifier-agent E2E, and audit.
 - `console.log` is prohibited in production code paths.
-  `console.warn` / `console.error` allowed only in unreachable
-  default branches. ESLint enforces.
-- v1 ships local-only logging. No telemetry vendor. The "Export
-  activity log" gear-menu action writes the stripped log to disk.
+  `console.warn` / `console.error` are allowed only in
+  unreachable-default branches. ESLint enforces.
+- v1 ships local-only logging. No telemetry vendor. An "Export
+  activity log" action writes the stripped log to disk on demand.
+
+Logger choice, exact field schema, file locations, and export UI
+copy live in `ROADMAP_DECISIONS.md`.
 
 Rationale: A desktop app driving long-running CLI sessions needs
 structured logs to be debuggable at all. Local-only keeps the user
@@ -622,121 +528,171 @@ The Concierge App uses spec-kit on itself.
 Rules:
 - Non-trivial changes go through `spec/NNNN-*` branches with full
   spec-kit artifacts committed before implementation.
+- Every `/speckit.specify` run MUST be preceded by a grill-with-docs
+  planning cadence. The grilling session produces the prompt for the
+  specify run; nothing skips it. The grilling artifact is committed
+  or cited in the spec branch before implementation begins.
 - `/speckit.constitution` amendments require a PR labeled
   `constitution-change` with at least one non-author reviewer
   approval.
-- The bundled spec-kit `Full SDD Cycle` workflow YAML is the
-  authoritative workflow; modifications are made in place and
-  committed.
+- The bundled spec-kit workflow YAML is the authoritative workflow;
+  modifications are made in place and committed.
+- The Review stage hosts evidence review and invokes the spec-kit
+  JIRA extension via the Bound CLI. It is a Concierge-app surface,
+  not a spec-kit canonical step.
 
-Rationale: Eat the dogfood. If the flow doesn't work for our own
-codebase, it doesn't work for users.
+Rationale: Eat the dogfood. If the flow does not work for our own
+codebase, it does not work for users.
 
 ## Stack & Coding Standards
 
-- Runtime: Electron LTS, Node 22+ in `main/`.
-- Language: TypeScript strict. No `any` without a comment citing the
-  reason.
-- Renderer build: Vite + `@vitejs/plugin-react`.
-- Packaging: Electron Forge. v1 ships Windows installer (NSIS or
-  Squirrel maker — final choice in plan step). macOS and Linux are
-  dev-from-source only in v1.
-- Auto-update: deferred. Users manually download new versions when
-  notified.
-- UI: React 18 (function components only), Redux Toolkit with RTK
-  Query, custom hooks. No other state library.
-- Styling: design tokens from `design/project/styles.css` carried over
-  (teal accent `#3a7e9a` / `#132f3b` dim, three-state orb palette,
-  near-black surfaces). The `design/` directory is the v2 canonical
-  bundle; `design/legacy/` holds the earlier v1 prototype for
-  historical reference only. No CSS-in-JS runtime in v1.
-- Linting: ESLint with `@typescript-eslint`, `eslint-plugin-react`,
-  `eslint-plugin-functional`, and project-local rules enforcing the
-  Pure / Effect layer boundary and the `console.log` prohibition.
-- Formatting: Prettier. CI rejects unformatted code.
-- Local skills attached to this repo: `tdd` (mandatory for new
-  logic), `grill-with-docs` (planning sessions), `impeccable`
-  (frontend craft). These are normative within their scopes.
+- Language: TypeScript strict. No `any` without an inline comment
+  citing the reason.
+- ESLint enforces the Pure / Effect layer boundary and the
+  `console.log` prohibition through project-local rules.
+- Prettier formats all code; CI rejects unformatted code.
+- Dependencies pinned to exact versions; security audit clean at the
+  configured level in CI.
+- Repo-local skills (`tdd` mandatory for new logic,
+  `grill-with-docs` mandatory before every `/speckit.specify`,
+  `impeccable` normative for frontend craft) are binding within
+  their scopes.
+
+Concrete package picks, framework choices, build tooling, packaging
+maker, and platform targets live in `ROADMAP_DECISIONS.md`.
 
 ## Testing Discipline (NON-NEGOTIABLE)
 
 TDD is mandatory for new logic: failing test first → user approval
 → watch it fail → implement → refactor.
 
-Stack:
-- Unit and component tests: Vitest + React Testing Library.
-  Co-located as `*.test.ts(x)` next to the module under test.
-- E2E tests: Playwright driving Electron via `_electron` API. Tests
-  live in `e2e/`.
-- Coverage gate: 85% line coverage via `npm run test:coverage`. CI
-  blocks merges that drop below. ACP-layer coverage strategy
-  deferred; a carve-out for `main/data-layer/acp/` (covered by
-  recorded-transcript contract tests rather than line coverage) may
-  be added when we reach that work.
-
 Rules:
-- Failing tests are not committed. `it.skip` / `test.skip` requires a
-  linked issue ID in the skip message.
-- Tests target public behavior, not implementation. `data-testid` for
-  DOM selection. Dependency Injection (props, context, factory args)
-  over module-level mocks where practical.
-- Every `.ts` / `.tsx` module with logic has a co-located test file.
-- Tests are deterministic, isolated, and runnable via `npm test`.
+- Failing tests are not committed. `it.skip` / `test.skip` requires
+  a linked issue ID in the skip message.
+- Tests target public behavior, not implementation. Dependency
+  Injection over module-level mocks where practical. Selector by
+  accessible role or stable test id over DOM-structure selectors.
+- Every module that ships logic has a co-located test file with the
+  same basename.
+- Tests are deterministic, isolated, and runnable via a single
+  command.
 - ACP adapter, IPC bridge, and HTTP API contract tests replay
   recorded JSON-RPC transcripts and HTTP fixtures against the live
   surfaces.
-- E2E covers: auth flow for all three prerequisites; first-run sign-in
-  + repo picker; new-session Specify→Review run; resume from mid-step
-  with a Workspace Dirty Resume; Clarify Re-ask of a malformed
-  question; JIRA Submission outer loop with one verified failure and
-  recovery; external-agent driving the same full flow over the HTTP
-  API and observing the GUI mirror in real-time.
+- E2E covers: auth flow for all auth prerequisites; first-run
+  sign-in plus repo picker; new-session Specify→Review run; resume
+  from mid-step with a Workspace Dirty Resume; Clarify Re-ask of a
+  malformed question; external-service submission outer loop with
+  one verified failure and recovery; external-agent driving the
+  same full flow over the HTTP API and the GUI mirroring it in
+  real-time.
+- Coverage gate: 85% line coverage enforced in CI. ACP-layer
+  coverage strategy may use recorded-transcript contract tests in
+  place of line coverage and is finalized when that layer is built.
+
+Test stack (Vitest, React Testing Library, Playwright via
+`_electron`, axe-core for accessibility) lives in
+`ROADMAP_DECISIONS.md`.
 
 ## Development Workflow
 
 - Branch naming: `spec/NNNN-<slug>` for spec-kit work,
   `chore/<slug>` / `fix/<slug>` otherwise.
 - Every PR MUST:
-  - Pass `npm run lint`, `npm run typecheck`, `npm test`,
-    `npm run test:coverage` (≥85%), `npm run e2e`.
+  - Pass lint, typecheck, tests, coverage gate, and E2E.
   - Include or update a co-located unit test for any logic change.
-  - Include a "Constitution impact" section in the description
-    (`none` is acceptable).
-- Customizations to spec-kit-installed agent files (e.g., a JIRA
-  extension agent) are tracked in version control and explicitly
-  re-applied after extension upgrades.
-- Dependencies pinned to exact versions in `package.json`.
-  `npm audit --audit-level=high` clean in CI.
+  - Include a "Constitution impact" section in the description.
+    `none` is acceptable.
+  - If the PR introduces or materially expands a Redux thunk, the
+    "Constitution impact" section MUST explain why listener
+    middleware or RTK Query was insufficient.
+- Customizations to spec-kit-installed extension agent files are
+  tracked in version control and explicitly re-applied after
+  extension upgrades.
 - Commits authored by the Concierge App's `after_<step>` hooks use
   the user's git identity with a `Concierge-Step: <step>` trailer.
   No synthetic author. No `--no-verify`.
 
 ## Governance
 
-This constitution supersedes ad-hoc practices. When a principle is in
-tension with shipping, the principle wins or the constitution is
-amended — not silently violated.
+This constitution supersedes ad-hoc practice. When a principle is in
+tension with delivery pressure, the principle wins or the
+constitution is amended — not silently violated. A roadmap edit,
+plan, task list, implementation shortcut, or review comment may
+clarify execution but may not silently weaken this constitution.
 
-Amendments:
+### Document Relationship
+
+Two governing documents:
+
+1. **Constitution** (`.specify/memory/constitution.md`) — durable
+   principles, ownership boundaries, quality bars, workflow law, and
+   governance rules. Spec-kit commands that load the constitution
+   treat it as hard law.
+2. **Roadmap decisions** (`ROADMAP_DECISIONS.md`) — v1 sequencing,
+   current implementation inventory (slices, APIs, listeners,
+   endpoints, vendor choices, version pins, file paths), extracted
+   specifics, deferred scope, known risks, and pre-resolved choices
+   for upcoming spec-kit runs.
+
+Precedence: constitution first; roadmap second. If a roadmap
+decision needs to weaken, remove, or materially reinterpret a
+constitutional principle, that change must happen as a constitution
+amendment, not as a roadmap edit.
+
+### Conflict with Agent Files
+
+If this constitution conflicts with
+`.github/agents/speckit.constitution.agent.md` or any other agent
+prompt file, this constitution wins. The agent file is downstream
+procedure and MUST be updated in the same amendment.
+
+### Amendment Process
+
+Constitution amendments:
 - Filed as a PR touching this file, labeled `constitution-change`.
 - Require approval from at least one contributor other than the
   author.
-- Semver: MAJOR for principle removals or incompatible reframings,
-  MINOR for new principles or material expansions, PATCH for
-  clarifications and typo fixes.
+- Bump version per semver: MAJOR for principle removals or
+  incompatible reframings, MINOR for new principles or material
+  expansions, PATCH for clarifications, typo fixes, and extraction
+  of implementation inventory that does not change governing
+  meaning.
 - The amending PR description includes a Sync Impact Report listing
-  every downstream template, agent file, or workflow touched.
+  every downstream template, agent file, roadmap section, or
+  workflow touched.
+
+Roadmap updates:
+- May change without a constitution amendment when they refine
+  sequence, v1 inventory, risks, open questions, or deferred scope.
+- MUST NOT contradict or weaken constitutional principles.
 
 Runtime guidance for contributors lives at
-`.specify/memory/CONTRIBUTING.md` (authored in the first plan step
-that needs it). PR review comments cite the principle they invoke by
+`.specify/memory/CONTRIBUTING.md`, authored in the first plan step
+that needs it. PR review comments cite the principle they invoke by
 number.
 
-**Version**: 1.0.1 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-22
+**Version**: 1.0.2 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-23
 
 ### Amendment history
 
+- **1.0.2** (2026-05-23) — PATCH: extracted v1 implementation
+  inventory (state-management inventory in Principle VI, plan-artifact
+  filename in Principle VII, endpoint inventory in Principle IX,
+  Atlassian-only naming in Principle X, JIRA-specific recipe in
+  Principle XI, widget examples in Principle XIV, vendor specifics
+  in Principle XV, package picks in Stack & Testing sections) to
+  `ROADMAP_DECISIONS.md`. Added principle-level rules: model swap
+  gating in Principle III, thunks-discouraged + Constitution-impact
+  note in Principle VI and Workflow, grill-with-docs mandatory
+  cadence in Principle XVI, two-document precedence and agent-file
+  conflict rules in Governance. Generalized Principle X to
+  observer-only posture (no longer naming a single v1 service in the
+  constitution itself), generalized Principle XI to "external-service
+  submission outer loop" with JIRA as the v1 instance. No principle
+  removed; no governing meaning weakened.
 - **1.0.1** (2026-05-22) — PATCH: corrected the design tokens path in
   Stack & Coding Standards (`design/spec-kit-concierge-2/styles.css`
-  → `design/project/styles.css`) and named the v1 prototype's location
-  (`design/legacy/`). No principle change.
+  → `design/project/styles.css`) and named the v1 prototype's
+  location (`design/legacy/`). No principle change.
+- **1.0.0** (2026-05-21) — Initial ratification.
