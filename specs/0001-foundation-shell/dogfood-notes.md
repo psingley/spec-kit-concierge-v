@@ -118,3 +118,80 @@ Spec.md unchanged.
     spec because clarify is single-pass.
 
 ---
+
+## DF-005 — `/speckit.tasks` first run dumped to stdout, did not write file
+
+**Observed:** Initial `/speckit.tasks` invocation produced the full
+task breakdown (Phases 3-7 visible in stdout, Phases 1-2 truncated
+from the buffer) but never wrote `tasks.md` to disk. Exit code 0.
+0.33 Premium burned. The agent treated the response as "answer the
+user" rather than "persist the artifact."
+
+Second invocation (same `-p` form) with an explicit imperative
+("CRITICAL: Write the complete output to specs/.../tasks.md as a
+file on disk. Do NOT just print it to stdout.") succeeded on the
+first try. Cost a second 0.33 Premium.
+
+**Implication for Concierge App:**
+- The Step Contract factory (Principle VIII) for the Tasks step
+  MUST verify the artifact exists on disk before the
+  `after_<step>` hook marks the step complete. "Agent claimed
+  success" is not enough — the disk-truth invariant (Principle II)
+  is the actual gate.
+- The Concierge App's Bound CLI driver should include an artifact-
+  existence check between the CLI returning success and the Step
+  Commit firing. If the artifact is missing, route through the
+  Step Escape Hatch with a clear "expected file not produced"
+  failure category.
+- This is the canonical example of why "Disk Is Truth" matters: a
+  successful exit code from the CLI is NOT step completion.
+- For the spec-kit pipeline runners, expected output paths should
+  be encoded into the step agent contract (already partially done
+  via `handoffs:` frontmatter in
+  `.github/agents/speckit.tasks.agent.md`). The Concierge App's
+  HookExecutor for Run 5 should read those expected paths and
+  verify them.
+- The fact that this happens with the *current* spec-kit step
+  agent (not a bespoke Concierge step) means it's an upstream
+  fragility we have to defend against, not a Concierge-only bug.
+
+**Open question for Run 3 (ACP Adapter):** does this failure mode
+manifest the same way over ACP/JSON-RPC, or is it specific to the
+`-p` mode prompt protocol? Worth a transcript capture during Run 3
+to find out.
+
+---
+
+## DF-006 — No rtk leakage in shipped artifacts (verified)
+
+**Observed:** Across all four spec-kit steps (specify, clarify,
+plan, tasks), Copilot's internal tool calls used `rtk git`, `rtk
+ls`, etc. (per the user-level `~/.copilot/copilot-instructions.md`
+preference). But none of the shipped artifacts — `spec.md`,
+`plan.md`, `research.md`, `tasks.md`, `ADR-0001`, `ADR-0002`,
+`.github/copilot-instructions.md` — contain any `rtk` references.
+
+Verified via: `grep -rn "rtk" specs/0001-foundation-shell/ docs/
+.github/copilot-instructions.md` → 0 matches.
+
+**Why this matters:**
+- `rtk` is a machine-local user optimization installed on the
+  developer's machine. Not all future contributors will have it.
+- The Concierge App ships to users without rtk. If shipped
+  artifacts hardcoded `rtk` commands, those users would get
+  "command not found" errors.
+- The dogfood signal here is structural: Copilot CLI correctly
+  treats rtk as a working-session helper, not a project
+  convention. The boundary held without explicit instruction.
+
+**Implication for Concierge App:**
+- The ACP Adapter (Run 3) launch command for the Bound CLI MUST
+  NOT include `rtk` prefixes. Plain `copilot ...` only.
+- Any npm scripts, CI workflows, and shipped tooling stay plain.
+  rtk is the user's choice, not the project's.
+- The Concierge App could optionally detect rtk's presence at
+  launch and surface a "Token-optimization helper detected:
+  rtk" diagnostic — but that's post-v1 polish.
+
+---
+
