@@ -1,0 +1,23 @@
+# Minimal Jira Configuration Example
+
+# This is the simplest configuration - just set your project key
+# All other settings use defaults
+
+project:
+  key: "DEMO" # Replace with your Jira project key
+
+# That's it! The extension will use these defaults:
+# - mapping.spec_artifact: "Epic"
+# - mapping.phase_artifact: "Story"
+# - mapping.task_artifact: "Task"
+# - mapping.relationships.phase_task: "Relates"
+# - No custom fields
+
+# Optional: Add labels to categorize issues
+defaults:
+  spec:
+    labels: ["spec-driven"]
+  task:
+    labels: ["implementation"]
+# To discover custom fields available in your Jira instance:
+# Run: /speckit.concierge-jira.discover-fields

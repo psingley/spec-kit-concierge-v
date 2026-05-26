@@ -1,4 +1,5 @@
 installed:
+- concierge-jira
 - git
 settings:
   auto_execute_hooks: true
@@ -32,6 +33,13 @@ hooks:
     optional: true
     prompt: Commit task changes?
     description: Auto-commit after task generation
+    condition: null
+  - extension: concierge-jira
+    command: speckit.concierge-jira.specstoissues
+    enabled: true
+    optional: true
+    prompt: Create Jira issues from tasks?
+    description: Automatically create Jira hierarchy after task generation
     condition: null
   before_implement:
   - extension: spec-validate
