@@ -47,4 +47,4 @@ design/project/Spec-kit Concierge (standalone).html
 .claude/
 
 # `skills` CLI top-level dir is a workspace artifact, not source.
-skills/
+/skills/
