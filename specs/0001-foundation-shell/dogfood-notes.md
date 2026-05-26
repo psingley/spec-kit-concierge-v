@@ -195,3 +195,41 @@ Verified via: `grep -rn "rtk" specs/0001-foundation-shell/ docs/
 
 ---
 
+## DF-007 — Spec-kit branch sequencing is per-user-local, not globally meaningful
+
+**Observed:** Spec-kit's branch numbering increments based on what's
+in `specs/` on the current branch. Two users pulling `main` at the
+same SHA both produce `spec/0004-*` branches independently. The
+ordinal `NNNN` is per-user, not global. Branches are also expected
+to be **ephemeral** in the Concierge App model — most never merge
+to main; they're per-user local explorations that Session resume
+reads directly from disk per Principle II (Disk Is Truth).
+
+**Implication for Concierge App:**
+- Session resume must work from any local spec branch, regardless
+  of whether it descends cleanly from `main`. Already correct in
+  the Session definition (workspace + branch + Bound CLI + model)
+  — branch SHA is observable, not derived.
+- The UI must distinguish *which user's* Run N this is when
+  multiple users' spec branches are visible on the same repo
+  clone. Run 5 (Step Lifecycle) will pick the naming strategy;
+  v1 stays flat (`spec/NNNN-<slug>`) per locked decision.
+- ROADMAP_DECISIONS.md is the canonical "what Run N means"
+  registry. Filesystem layout is a convenience, not a contract.
+- Cross-Run dependencies (Run 2 needs Run 1's foundation) must
+  branch off the prior spec branch directly, not from `main`.
+  Plan.md documents the parent branch + SHA explicitly.
+- Spec branches that get abandoned are not "broken"; they're
+  drafts. Garbage collection (delete dead branches) is post-v1
+  affordance.
+- Jira epic labels should include the run slug (e.g.,
+  "Foundation Shell") in addition to "Run 1", so two users'
+  parallel Run 1s are at least visually distinguishable in Jira.
+
+**Locked for v1:** flat `spec/NNNN-<slug>` naming, accept ephemera,
+defer the multi-user collision resolution to Run 5. Documented as
+an open question in ROADMAP_DECISIONS under "Branch and spec-
+directory sequencing across users."
+
+---
+

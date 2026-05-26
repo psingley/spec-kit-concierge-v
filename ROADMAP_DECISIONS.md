@@ -740,10 +740,92 @@ order.
 - Telemetry / RUM. Logs are local-only.
 - Open-source preparation.
 
+## Open questions — deferred to a future specify run
+
+These are real architectural questions surfaced during earlier runs
+that don't block the current run but need an answer before the
+relevant downstream run lands.
+
+### Branch and spec-directory sequencing across users (open; deferred to Run 5)
+
+**The problem.** Each user starts a new spec-kit Run by pulling
+`main` locally. They produce a `spec/NNNN-<slug>` branch with a
+`specs/NNNN-<slug>/` directory. They may or may not ever merge
+that branch back to `main`. Other users on the same repo pull
+`main` at different times and start their own Runs. Because
+spec-kit's branch numbering increments based on what's in `specs/`
+on the current branch, **two users pulling `main` at the same SHA
+will both produce `spec/0004-*` branches independently. The
+ordinal `NNNN` is no longer globally meaningful — it's per-user
+wishful thinking.**
+
+The Concierge App's design (Session = workspace + branch + Bound
+CLI + model; resume from any local branch state per the Disk Is
+Truth principle) explicitly accepts that **most spec branches are
+ephemeral**: per-user explorations, drafts, abandoned attempts,
+parallel work. The model is "local notebook page that may or may
+not become a published article" — NOT "feature branch that lands
+in main."
+
+**Implications if left unresolved:**
+- Branch namespace collisions across users on the same repo
+  (different SHAs at the same `NNNN` slot, with different slugs).
+- Filesystem path drift if multiple users do eventually merge —
+  `main` ends up with both `specs/0004-foo/` and `specs/0004-bar/`.
+- Jira epic labeling drift — two users' "Run 4" epics in the same
+  KCKB project, indistinguishable by their human-readable label.
+- Cross-Run dependencies (e.g., Run 2 needs Run 1's foundation)
+  can't assume "main has Run 1 merged" — they have to either
+  branch off a spec branch directly, or reference prior runs'
+  artifacts by SHA.
+
+**Temporary solution for v1, locked now (least-disruptive):**
+**Accept the ephemera. Flat ordinal naming (`spec/NNNN-<slug>`,
+`specs/NNNN-<slug>/`) stays as-is.** Most v1 users are running
+this on their own local repo without a shared multi-user
+workflow, so the collision risk is theoretical, not observed.
+ROADMAP_DECISIONS.md remains the canonical "what Run N is";
+filesystem layout is a convenience, not a contract.
+
+**The real fix is deferred to Run 5 (Step Lifecycle).** Possible
+strategies to evaluate when we get there:
+- (A) **Per-user prefix** — `spec/<user>-NNNN-<slug>`,
+  `specs/<user>/NNNN-<slug>/`. Eliminates collisions; minor
+  customization to the bundled git extension's branch-naming
+  script. Concierge App UI distinguishes "your Run 4" vs
+  "alice's Run 4."
+- (B) **Timestamp ordinal** — `spec/2026-05-26T143022-<slug>`.
+  Built-in spec-kit support via `--branch-numbering timestamp`.
+  Collisions ~impossible; semantic "Run N" mapping lives only in
+  ROADMAP/Jira, not in filename.
+- (C) **Drop ordinal entirely** — `spec/<slug>` (e.g.,
+  `spec/foundation-shell`). The Run number lives in spec.md
+  frontmatter (`roadmap-run: 1`) and Jira labels, never in
+  filenames. Most aggressive deviation from spec-kit defaults.
+
+**Run 5 will pick one** when the multi-user / never-merge story
+needs to land for real (HTTP API + external-agent driving from
+Run 10 onward makes the "many parallel runs from many actors"
+case observable, not theoretical).
+
+**What this means for Runs 2-4 right now:**
+- Continue flat ordinal naming. `spec/0002-main-data-layer`,
+  `spec/0003-acp-adapter`, etc.
+- Run 1's `specs/0001-foundation-shell/` layout stays as-is.
+- When dependencies cross runs, branch the new spec directly off
+  the prior spec branch (not off `main`), since `main` may not
+  have the prior run merged. Document the parent SHA in the new
+  spec's plan.md.
+- Jira epic labels include the run slug, not just "Run N", so
+  cross-user collision is at least visually flagged.
+
+---
+
 ## Open questions for the first specify run
 
-These are the things the **first specify** (Run 1) will need to clarify;
-listing them here so the clarify step has predictable scope:
+These were the Run 1 open questions; preserved here for historical
+reference. All resolved during Run 1's grilling session
+(see `specs/0001-foundation-shell/grill.md`):
 
 - Vite vs electron-vite vs Electron Forge's bundled webpack template.
   Codex flagged Electron Forge as official; the renderer build tool
