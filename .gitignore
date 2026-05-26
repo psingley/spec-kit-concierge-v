@@ -8,3 +8,43 @@ out/
 .idea/
 .omc/
 design/project/Spec-kit Concierge (standalone).html
+
+# Skill-fanout from `skills` CLI installs.
+# Canonical skill source lives at .agents/skills/<skill>/
+# Copilot integration surface lives at .github/{agents,prompts}/
+# Everything else is mirror noise for non-installed agents.
+.adal/
+.agent/
+.augment/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.factory/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+
+# Codex and Claude skill mirrors (Copilot is the primary surface for this repo).
+.agents/skills/speckit-*/
+.claude/
+
+# `skills` CLI top-level dir is a workspace artifact, not source.
+skills/
