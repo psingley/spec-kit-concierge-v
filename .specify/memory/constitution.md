@@ -672,10 +672,21 @@ Runtime guidance for contributors lives at
 that needs it. PR review comments cite the principle they invoke by
 number.
 
-**Version**: 1.0.2 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-23
+**Version**: 1.0.3 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-26
 
 ### Amendment history
 
+- **1.0.3** (2026-05-26) — PATCH: removed runtime schema library (Zod)
+  from the project's borrow list and from Run 4 IPC handler
+  description in `ROADMAP_DECISIONS.md`. The factory-pattern at trust
+  boundaries (already first-class in Principle IV) is now the sole
+  validation/normalization mechanism; the factory's return type IS
+  the typed shape; no parallel schema definition is maintained.
+  Updated `CONTEXT.md` Step Contract glossary entry from
+  "typed schema (Zod)" to "factory-validated typed shape." No
+  principle change; no governing meaning weakened — Principle IV's
+  factory mandate is unchanged and is now the unambiguous answer to
+  "how is incoming data normalized."
 - **1.0.2** (2026-05-23) — PATCH: extracted v1 implementation
   inventory (state-management inventory in Principle VI, plan-artifact
   filename in Principle VII, endpoint inventory in Principle IX,

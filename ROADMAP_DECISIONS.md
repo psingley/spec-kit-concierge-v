@@ -55,7 +55,8 @@ followed by the full canonical six-step flow per the constitution
    ACP agent. **Depends on 1, 2. Highest risk. Blocks 4 and 6.**
 
 4. **IPC Bridge & Redux Store Skeleton**
-   `main/ipc/` handlers with Zod validation; renderer's eight slices
+   `main/ipc/` handlers with factory-pattern validation at the IPC
+   trust boundary; renderer's eight slices
    (`ui`, `preferences`, `auth`, `workspace`, `steps`, `session`,
    `activity`, `copilot`) wired but empty of business logic; RTK
    Query `baseQuery` wrapping `ipcRenderer.invoke`; all named
@@ -626,24 +627,35 @@ Token + port discovery: per-launch token + random port written to
 ### Build-vs-borrow audit (extracted from Round 6)
 
 **Build (no clean borrow, safety-critical seams):**
-- IPC bridge + Zod validation
+- IPC bridge + factory-pattern validation
 - Bound CLI process supervisor (spawn, lifecycle, crash recovery,
   cancellation)
 - MCP config detection + idempotent writer
 - Spec-kit hooks executor
-- Per-step factory + Zod step contracts
+- Per-step factory step contracts (hand-written)
 - ACP transcript recording
 - HTTP-to-Redux-action adapter (no library exists)
 - SSE in Electron main
 - `agents.json` manifest loader
 - `fs/safeWrite` workspace-scoped helper
+- Trust-boundary factories for every cross-boundary payload (IPC,
+  ACP, HTTP, FS, MCP). Hand-written predicates and normalizers. The
+  factory is the single source of truth for the typed shape; the
+  TypeScript type is the factory's return type. No runtime schema
+  library used. Rationale: maintenance tax of keeping schema-library
+  schemas in sync with TS types exceeds the safety dividend for an
+  internal Electron app with no third-party schema consumers, and the
+  Clarify failure modes (LF/CRLF mixing, missing fields, malformed
+  multiple-choice blocks) are imperative checks not cleanly expressed
+  as declarative schema rules. Factory tests are mandatory and tight;
+  hostile-input cases (empty, null, missing fields, deep malformation)
+  go into co-located test fixtures.
 
 **Borrow (commodity, saves weeks):**
 - pino — structured logging
 - Electron Forge + Vite + electron-vite-react patterns + Forge fuses
   — packaging / build
 - RTK / RTK Query / `createSelector` / listener middleware — state
-- Zod — schema validation everywhere
 - axe-core + `@axe-core/playwright` — accessibility CI
 - Express — localhost HTTP server
 - `simple-git` — git read primitives (adapt, not import wholesale)
@@ -673,9 +685,12 @@ Token + port discovery: per-launch token + random port written to
 Carry-overs from the round-6 build-vs-borrow audit that affect the
 13-run sequence above:
 
-- ESLint Pure/Effect layer-boundary rules + Zod conventions + pino
-  promote into **Run 1**. Establishing them once saves retrofit
-  cost across every downstream run.
+- ESLint Pure/Effect layer-boundary rules + pino promote into
+  **Run 1**. Establishing them once saves retrofit cost across every
+  downstream run. Factory-pattern conventions are documented in Run 1
+  but the first concrete factories land with Run 2 (Main Data Layer)
+  and Run 4 (IPC Bridge), where the first cross-boundary payloads
+  exist to validate.
 - RTK Query custom `ipcBaseQuery` promotes into **Run 2** (before
   any UI work). It shapes renderer data access for everything
   downstream.
