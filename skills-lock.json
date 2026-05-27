@@ -10,6 +10,11 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "computedHash": "34e59a34b9705187e87039faa5d9585aebe0056ef657f761b905afef276a3362"
+    },
+    "tdd": {
+      "source": "mattpocock/ai-engineer-workshop-2026-project",
+      "sourceType": "github",
+      "computedHash": "ad055544599481182d0079c4198e85da26677cb408a677be2da04915375f0427"
     }
   }
 }
