@@ -16,20 +16,57 @@ const proofStore = configureStore({
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware)
 });
 
-const renderAppVersionProof = (version: string | null): void => {
+type ProofState = {
+  version: string | null;
+  agentVersion: string | null;
+  model: string | null;
+};
+
+const proofState: ProofState = {
+  version: null,
+  agentVersion: null,
+  model: null
+};
+
+const renderProof = (): void => {
   root.render(
-    version === null ? null : <span data-testid="app-version-proof">{version}</span>
+    <>
+      {proofState.version === null ? null : (
+        <span data-testid="app-version-proof">{proofState.version}</span>
+      )}
+      {proofState.agentVersion === null ? null : (
+        <span data-testid="bound-cli-proof">
+          {proofState.agentVersion}:{proofState.model ?? 'unknown-model'}
+        </span>
+      )}
+    </>
   );
 };
 
-renderAppVersionProof(null);
+renderProof();
 
 void proofStore
   .dispatch(api.endpoints.getAppVersion.initiate())
   .unwrap()
   .then((payload) => {
-    renderAppVersionProof(payload.version);
+    proofState.version = payload.version;
+    renderProof();
   })
   .catch(() => {
-    renderAppVersionProof(null);
+    proofState.version = null;
+    renderProof();
+  });
+
+void proofStore
+  .dispatch(api.endpoints.getBoundCLICapabilities.initiate())
+  .unwrap()
+  .then((payload) => {
+    proofState.agentVersion = `${payload.agent.name} ${payload.agent.version}`;
+    proofState.model = payload.models.current ?? null;
+    renderProof();
+  })
+  .catch(() => {
+    proofState.agentVersion = null;
+    proofState.model = null;
+    renderProof();
   });

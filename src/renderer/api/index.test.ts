@@ -1,16 +1,20 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRtkQueryTestStore } from '../../test/rtkQueryStore';
 import { api, RUN2_TAG_TYPES } from './index';
+import { rendererVerifiedCapabilities } from './capabilities.factory.spec';
 
 describe('renderer API slice', () => {
-  it('exposes only getAppVersion', () => {
-    expect(Object.keys(api.endpoints)).toEqual(['getAppVersion']);
+  it('exposes only proof endpoints', () => {
+    expect(Object.keys(api.endpoints)).toEqual(['getAppVersion', 'getBoundCLICapabilities']);
   });
 
   it('dispatches getAppVersion successfully through the base query', async () => {
     window.concierge = {
       app: {
         getVersion: vi.fn(async () => ({ version: '0.1.0' }))
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
       }
     };
     const { store } = createRtkQueryTestStore(api);
@@ -26,6 +30,9 @@ describe('renderer API slice', () => {
         getVersion: vi.fn(async () => {
           throw new Error('ipc failed');
         })
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
       }
     };
     const { store } = createRtkQueryTestStore(api);
@@ -51,5 +58,69 @@ describe('renderer API slice', () => {
       'Preferences'
     ]);
     expect(new Set(RUN2_TAG_TYPES).size).toBe(8);
+  });
+
+  it('dispatches getBoundCLICapabilities through the ACP preload bridge and validates the response first', async () => {
+    window.concierge = {
+      app: {
+        getVersion: vi.fn()
+      },
+      acp: {
+        probeBoundCLI: vi.fn(async () => rendererVerifiedCapabilities)
+      }
+    };
+    const { store } = createRtkQueryTestStore(api);
+
+    await expect(store.dispatch(api.endpoints.getBoundCLICapabilities.initiate()).unwrap()).resolves.toEqual(
+      rendererVerifiedCapabilities
+    );
+    expect(window.concierge.acp.probeBoundCLI).toHaveBeenCalledTimes(1);
+  });
+
+  it('surfaces renderer capability factory failures as typed parsing errors', async () => {
+    window.concierge = {
+      app: {
+        getVersion: vi.fn()
+      },
+      acp: {
+        probeBoundCLI: vi.fn(async () => ({}))
+      }
+    };
+    const { store } = createRtkQueryTestStore(api);
+
+    await expect(store.dispatch(api.endpoints.getBoundCLICapabilities.initiate()).unwrap()).rejects.toEqual({
+      status: 'PARSING_ERROR',
+      data: {
+        name: 'InvalidBoundCLICapabilities',
+        message: 'protocolVersion must be a number'
+      }
+    });
+  });
+
+  it('preserves structured ACP IPC failures', async () => {
+    window.concierge = {
+      app: {
+        getVersion: vi.fn()
+      },
+      acp: {
+        probeBoundCLI: vi.fn(async () => {
+          throw new Error('acp failed');
+        })
+      }
+    };
+    const { store } = createRtkQueryTestStore(api);
+
+    await expect(store.dispatch(api.endpoints.getBoundCLICapabilities.initiate()).unwrap()).rejects.toEqual({
+      status: 'IPC_ERROR',
+      data: {
+        name: 'Error',
+        message: 'acp failed'
+      }
+    });
+  });
+
+  it('provides the fixed Agent tag for bound CLI capability proofs', () => {
+    expect(api.endpoints.getBoundCLICapabilities).toHaveProperty('initiate');
+    expect(RUN2_TAG_TYPES).toContain('Agent');
   });
 });

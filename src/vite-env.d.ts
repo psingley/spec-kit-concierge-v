@@ -7,6 +7,9 @@ type ConciergePreloadBridge = {
   app: {
     getVersion: () => Promise<unknown>;
   };
+  acp: {
+    probeBoundCLI: () => Promise<unknown>;
+  };
 };
 
 interface Window {

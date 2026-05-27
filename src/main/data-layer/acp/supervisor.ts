@@ -1,0 +1,366 @@
+import { EventEmitter } from 'node:events';
+import { spawn } from 'node:child_process';
+import type { ChildProcess, SpawnOptions } from 'node:child_process';
+import type { AgentManifestEntry } from '../agents/manifest';
+import type { MainLogger } from '../../logging';
+import type { BoundCLISession, CodingAgent } from './agent';
+import { createBoundCLICapabilities, parseBoundCLIConfigOptions } from './capabilities';
+import { createAcpProtocol, type AcpProtocol, type AcpTranscriptRecord } from './protocol';
+import {
+  AGENT_MODE_URI,
+  AUTOPILOT_MODE_URI,
+  AutopilotRequiresAllowError,
+  ModeChangeDeferredError,
+  ModelChangeInProgressError,
+  type BoundCLICancelResult,
+  type BoundCLICapabilities,
+  type BoundCLICrashInfo,
+  type BoundCLIDisposeResult,
+  type BoundCLILifecycleState,
+  type BoundCLILoadSessionResult,
+  type BoundCLIMcpServer,
+  type BoundCLINewSessionOptions,
+  type BoundCLINewSessionResult,
+  type BoundCLIPromptResult,
+  type BoundCLIPromptUpdate,
+  type BoundCLISessionId,
+  type BoundCLISessionSummary
+} from './types';
+import { writeAcpTranscript } from './transcript';
+
+export type BoundCLISupervisorOptions = {
+  agent: AgentManifestEntry;
+  logger?: Pick<MainLogger, 'info' | 'warn' | 'error'>;
+  userDataPath?: string;
+  now?: () => Date;
+  setTimeoutFn?: typeof setTimeout;
+  clearTimeoutFn?: typeof clearTimeout;
+};
+
+type SpawnedBoundCLI = ChildProcess & {
+  stdin: NodeJS.WritableStream | null;
+  stdout: NodeJS.ReadableStream | null;
+  stderr: NodeJS.ReadableStream | null;
+};
+
+const cancellationWindowMs = 5_000;
+const stderrTailLimit = 4 * 1024;
+
+const toRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
+
+const raceWithTimeout = async <T>(
+  work: Promise<T>,
+  timeoutMs: number,
+  setTimeoutFn: typeof setTimeout,
+  clearTimeoutFn: typeof clearTimeout
+): Promise<T | 'timeout'> => {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<'timeout'>((resolve) => {
+    timeoutHandle = setTimeoutFn(() => resolve('timeout'), timeoutMs);
+  });
+
+  try {
+    return await Promise.race([work, timeout]);
+  } finally {
+    if (timeoutHandle !== undefined) {
+      clearTimeoutFn(timeoutHandle);
+    }
+  }
+};
+
+class LiveBoundCLISession implements BoundCLISession {
+  readonly capabilities: BoundCLICapabilities;
+  readonly events = new EventEmitter();
+  #state: BoundCLILifecycleState = 'ready';
+  #sessionId: string | undefined;
+  #expectedClose = false;
+  #stderrTail = '';
+  #updates: BoundCLIPromptUpdate[] = [];
+
+  constructor(
+    capabilities: BoundCLICapabilities,
+    private readonly child: SpawnedBoundCLI,
+    private readonly protocol: AcpProtocol,
+    private readonly transcriptRecords: AcpTranscriptRecord[],
+    private readonly options: Required<
+      Pick<BoundCLISupervisorOptions, 'now' | 'setTimeoutFn' | 'clearTimeoutFn'>
+    > &
+      Pick<BoundCLISupervisorOptions, 'logger' | 'userDataPath'>
+  ) {
+    this.capabilities = capabilities;
+    this.child.stderr?.on('data', (chunk: Buffer | string) => {
+      this.#stderrTail = `${this.#stderrTail}${String(chunk)}`.slice(-stderrTailLimit);
+    });
+    this.child.once('exit', (code: number | null, signal: NodeJS.Signals | null) => {
+      if (this.#expectedClose) {
+        return;
+      }
+
+      this.#state = 'errored';
+      const info: BoundCLICrashInfo = {
+        code,
+        signal,
+        stderrTail: this.#stderrTail
+      };
+      this.options.logger?.error({ ...info }, 'bound CLI session ended unexpectedly');
+      this.events.emit('session-ended', info);
+    });
+  }
+
+  get state(): BoundCLILifecycleState {
+    return this.#state;
+  }
+
+  handleSessionUpdate = (params: unknown): void => {
+    const record = toRecord(params);
+    const sessionId = typeof record.sessionId === 'string' ? record.sessionId : (this.#sessionId ?? '');
+    const rawUpdate = toRecord(record.update);
+    this.#updates.push({ sessionId, update: rawUpdate });
+  };
+
+  onSessionEnded(listener: (info: unknown) => void): () => void {
+    this.events.on('session-ended', listener);
+    return () => this.events.off('session-ended', listener);
+  }
+
+  async newSession(
+    cwd: string,
+    mcpServers: BoundCLIMcpServer[],
+    options: BoundCLINewSessionOptions = {}
+  ): Promise<BoundCLINewSessionResult> {
+    const modeId = options.modeId ?? AGENT_MODE_URI;
+    if (modeId === AUTOPILOT_MODE_URI && options.autopilotDecision !== 'allow') {
+      throw new AutopilotRequiresAllowError();
+    }
+
+    const result = toRecord(await this.protocol.newSession({ cwd, mcpServers }));
+    const sessionId = typeof result.sessionId === 'string' ? result.sessionId : '';
+    this.#sessionId = sessionId;
+    this.#state = 'ready';
+    await this.writeTranscript(sessionId, options.step ?? 'session-new');
+
+    const modes = toRecord(result.modes);
+    const models = toRecord(result.models);
+    const currentModeId = options.modeId ?? (typeof modes.currentModeId === 'string' ? modes.currentModeId : AGENT_MODE_URI);
+    const currentModelId =
+      typeof models.currentModelId === 'string' ? models.currentModelId : this.capabilities.models.current;
+
+    return {
+      sessionId,
+      currentModeId,
+      currentModelId,
+      configOptions: parseBoundCLIConfigOptions(result.configOptions)
+    };
+  }
+
+  async prompt(
+    sessionId: BoundCLISessionId,
+    text: string,
+    onUpdate?: (update: BoundCLIPromptUpdate) => void
+  ): Promise<BoundCLIPromptResult> {
+    this.#sessionId = sessionId;
+    this.#state = 'prompting';
+    const start = this.#updates.length;
+    const result = toRecord(await this.protocol.prompt({ sessionId, text }));
+    const updates = this.#updates.slice(start);
+    for (const update of updates) {
+      onUpdate?.(update);
+    }
+    this.#state = 'ready';
+    await this.writeTranscript(sessionId, 'prompt');
+
+    return {
+      stopReason: typeof result.stopReason === 'string' ? result.stopReason : 'unknown',
+      updates
+    };
+  }
+
+  async setModel(sessionId: BoundCLISessionId, modelId: string): Promise<void> {
+    if (this.#state === 'pending' || this.#state === 'prompting') {
+      throw new ModelChangeInProgressError();
+    }
+
+    await this.protocol.setSessionConfigOption({ sessionId, configId: 'model', value: modelId });
+  }
+
+  async setMode(): Promise<void> {
+    throw new ModeChangeDeferredError();
+  }
+
+  async listSessions(cwd?: string): Promise<BoundCLISessionSummary[]> {
+    const result = toRecord(await this.protocol.listSessions({ cwd }));
+    const sessions = Array.isArray(result.sessions) ? result.sessions : [];
+
+    return sessions.flatMap((session): BoundCLISessionSummary[] => {
+      const record = toRecord(session);
+      if (typeof record.sessionId !== 'string') {
+        return [];
+      }
+
+      return [
+        {
+          sessionId: record.sessionId,
+          title: typeof record.title === 'string' ? record.title : undefined,
+          cwd: typeof record.cwd === 'string' ? record.cwd : undefined,
+          updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : undefined
+        }
+      ];
+    });
+  }
+
+  async loadSession(sessionId: BoundCLISessionId, cwd: string): Promise<BoundCLILoadSessionResult> {
+    const result = toRecord(await this.protocol.loadSession({ sessionId, cwd }));
+    this.#sessionId = sessionId;
+    this.#state = 'ready';
+    const modes = toRecord(result.modes);
+
+    return {
+      sessionId,
+      currentModeId: typeof modes.currentModeId === 'string' ? modes.currentModeId : undefined
+    };
+  }
+
+  async cancel(sessionId: BoundCLISessionId): Promise<BoundCLICancelResult> {
+    this.#state = 'cancelling';
+    const outcome = await raceWithTimeout(
+      this.protocol.cancel({ sessionId }),
+      cancellationWindowMs,
+      this.options.setTimeoutFn,
+      this.options.clearTimeoutFn
+    );
+
+    if (outcome === 'timeout') {
+      this.child.kill();
+      this.#state = 'closed';
+      return { outcome: 'terminated' };
+    }
+
+    this.#state = 'ready';
+    await this.writeTranscript(sessionId, 'cancel');
+    return { outcome: 'acknowledged' };
+  }
+
+  async dispose(): Promise<BoundCLIDisposeResult> {
+    if (this.#state === 'closed') {
+      return { outcome: 'closed' };
+    }
+
+    this.#expectedClose = true;
+    this.child.stdin?.end();
+    const outcome = await raceWithTimeout(
+      this.protocol.close(),
+      cancellationWindowMs,
+      this.options.setTimeoutFn,
+      this.options.clearTimeoutFn
+    );
+
+    if (outcome === 'timeout') {
+      this.child.kill();
+      this.#state = 'closed';
+      return { outcome: 'terminated' };
+    }
+
+    this.#state = 'closed';
+    return { outcome: 'closed' };
+  }
+
+  private async writeTranscript(sessionId: string, step: string): Promise<void> {
+    if (this.options.userDataPath === undefined) {
+      return;
+    }
+
+    await writeAcpTranscript({
+      userDataPath: this.options.userDataPath,
+      sessionId,
+      step,
+      timestamp: this.options.now(),
+      records: this.transcriptRecords.map((record) => ({
+        direction: record.direction,
+        ...record.message
+      }))
+    });
+  }
+}
+
+export class BoundCLISupervisor implements CodingAgent {
+  constructor(private readonly options: BoundCLISupervisorOptions) {}
+
+  async start(): Promise<BoundCLISession> {
+    const launchArgs = [
+      ...this.options.agent.launchArgs,
+      ...(this.options.agent.acpModeFlag === null ? [] : [this.options.agent.acpModeFlag])
+    ];
+    const spawnOptions: SpawnOptions = {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: false
+    };
+    const child = spawn(this.options.agent.binary, launchArgs, spawnOptions) as SpawnedBoundCLI;
+
+    if (child.stdin === null || child.stdout === null || child.stderr === null) {
+      throw new Error('Bound CLI process did not expose stdio pipes.');
+    }
+
+    const transcriptRecords: AcpTranscriptRecord[] = [];
+    const sessionRef: { current?: LiveBoundCLISession } = {};
+    const protocol = createAcpProtocol({
+      stdin: child.stdin,
+      stdout: child.stdout,
+      client: {
+        onSessionUpdate: (params) => sessionRef.current?.handleSessionUpdate(params),
+        record: (record) => {
+          transcriptRecords.push(record);
+        }
+      }
+    });
+
+    // Codex-found bug: if initialize() or capability parsing fails, the spawned
+    // child was orphaned. Wrap init+parse in try/catch that kills the child
+    // before re-throwing.
+    let rawCapabilities: unknown;
+    try {
+      rawCapabilities = await protocol.initialize();
+    } catch (initError) {
+      child.kill();
+      throw initError;
+    }
+    const capabilityResult = createBoundCLICapabilities(rawCapabilities);
+    if (!capabilityResult.ok) {
+      child.kill();
+      throw new Error(capabilityResult.error.message);
+    }
+
+    const session = new LiveBoundCLISession(capabilityResult.value, child, protocol, transcriptRecords, {
+      logger: this.options.logger,
+      userDataPath: this.options.userDataPath,
+      now: this.options.now ?? (() => new Date()),
+      setTimeoutFn: this.options.setTimeoutFn ?? setTimeout,
+      clearTimeoutFn: this.options.clearTimeoutFn ?? clearTimeout
+    });
+    sessionRef.current = session;
+
+    if (this.options.userDataPath !== undefined) {
+      await writeAcpTranscript({
+        userDataPath: this.options.userDataPath,
+        sessionId: 'initialize',
+        step: 'initialize',
+        timestamp: this.options.now?.() ?? new Date(),
+        records: transcriptRecords.map((record) => ({
+          direction: record.direction,
+          ...record.message
+        }))
+      });
+    }
+
+    this.options.logger?.info(
+      {
+        binary: this.options.agent.binary,
+        launchArgs,
+        success: true
+      },
+      'bound CLI supervisor started'
+    );
+
+    return session;
+  }
+}

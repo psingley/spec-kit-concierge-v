@@ -1,11 +1,11 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 
 export type IpcQueryArgs = {
-  channel: 'app:getVersion';
+  channel: 'app:getVersion' | 'acp:probeBoundCLI';
 };
 
 export type IpcQueryError = {
-  status: 'IPC_ERROR';
+  status: 'IPC_ERROR' | 'PARSING_ERROR';
   data: {
     name: string;
     message: string;
@@ -37,6 +37,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
     switch (args.channel) {
       case 'app:getVersion':
         return { data: await window.concierge.app.getVersion() };
+      case 'acp:probeBoundCLI':
+        return { data: await window.concierge.acp.probeBoundCLI() };
     }
   } catch (error) {
     return {
