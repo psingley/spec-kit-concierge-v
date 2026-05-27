@@ -19,15 +19,31 @@ describe('createAgentManifest', () => {
       displayName: 'GitHub Copilot CLI',
       binary: 'copilot',
       launchArgs: ['--allow-all-tools'],
-      acpFlag: '--acp',
+      acpModeFlag: '--acp',
       verifiedAgainst: {
         version: '1.0.54',
-        date: '2026-05-27'
+        verifiedAt: '2026-05-27'
       },
       capabilities: ['text', 'tools'],
       modelSelectionStrategy: 'unstable_setSessionModel|restart',
       defaultModel: null
     });
+  });
+
+  it('treats verifiedAgainst: null as unverified (warn-and-allow per Q4)', () => {
+    const result = createAgentManifest({
+      version: 1,
+      agents: {
+        future: {
+          ...validManifest.agents.copilot,
+          verifiedAgainst: null
+        }
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    // Verifies the explicit null case is accepted; field should be absent in the parsed value
+    expect(result.ok && result.value.agents.future?.verifiedAgainst).toBeUndefined();
   });
 
   it('returns a named error for an empty object', () => {

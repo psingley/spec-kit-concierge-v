@@ -74,6 +74,41 @@ describe('createMainLogger', () => {
     });
   });
 
+  it('rotates the log file when the calendar date advances (per FR-008)', async () => {
+    await withTempDir(async (directory) => {
+      // Simulate creating the logger on day 1, then emitting on day 2
+      // (i.e., the app starts before midnight and runs past midnight).
+      let currentTime = new Date('2026-05-27T23:59:50Z');
+      const logger = createMainLogger({
+        userDataPath: directory,
+        now: () => currentTime,
+        packageVersion: 'test-version',
+        enablePrettyStream: false
+      });
+
+      logger.info({ event: 'before-midnight' }, 'day1');
+      logger.flush();
+
+      currentTime = new Date('2026-05-28T00:00:10Z');
+      logger.info({ event: 'after-midnight' }, 'day2');
+      logger.flush();
+
+      // Wait briefly for pino to flush both streams
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      expect(existsSync(`${directory}/logs/concierge-2026-05-27.log`)).toBe(true);
+      expect(existsSync(`${directory}/logs/concierge-2026-05-28.log`)).toBe(true);
+
+      const day1 = readFileSync(`${directory}/logs/concierge-2026-05-27.log`, 'utf8');
+      const day2 = readFileSync(`${directory}/logs/concierge-2026-05-28.log`, 'utf8');
+
+      expect(day1).toContain('before-midnight');
+      expect(day1).not.toContain('after-midnight');
+      expect(day2).toContain('after-midnight');
+      expect(day2).not.toContain('before-midnight');
+    });
+  });
+
   it('adds the pino-pretty terminal stream only outside production', async () => {
     await withTempDir(async (directory) => {
       const terminalOutput = new PassThrough();

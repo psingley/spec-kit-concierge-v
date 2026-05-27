@@ -5,10 +5,10 @@
       "displayName": "GitHub Copilot CLI",
       "binary": "copilot",
       "launchArgs": ["--allow-all-tools"],
-      "acpFlag": "--acp",
+      "acpModeFlag": "--acp",
       "verifiedAgainst": {
         "version": "1.0.54",
-        "date": "2026-05-27"
+        "verifiedAt": "2026-05-27"
       },
       "capabilities": ["text", "tools"],
       "modelSelectionStrategy": "unstable_setSessionModel|restart",

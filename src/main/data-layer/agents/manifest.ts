@@ -2,14 +2,14 @@ export type AgentCapability = 'text' | 'tools';
 
 export type AgentVerification = {
   version: string;
-  date: string;
+  verifiedAt: string;
 };
 
 export type AgentManifestEntry = {
   displayName: string;
   binary: string;
   launchArgs: string[];
-  acpFlag: string;
+  acpModeFlag: string | null;
   verifiedAgainst?: AgentVerification;
   capabilities: AgentCapability[];
   modelSelectionStrategy: 'unstable_setSessionModel|restart';
@@ -55,27 +55,31 @@ const parseVerification = (
   value: unknown,
   path: string
 ): { ok: true; value?: AgentVerification } | { ok: false; error: ManifestFactoryError } => {
-  if (value === undefined) {
+  if (value === undefined || value === null) {
+    // Per grill Q4 + spec FR-006: missing OR explicit null verification
+    // metadata is treated as "unverified" — warn-and-allow path, not invalid.
+    // The loader emits the warning; the factory just returns the entry without
+    // the verifiedAgainst field set.
     return { ok: true };
   }
 
   if (!isRecord(value)) {
-    return invalid('verifiedAgainst must be an object when present', path);
+    return invalid('verifiedAgainst must be an object, null, or absent', path);
   }
 
   if (typeof value.version !== 'string') {
     return invalid('verifiedAgainst.version must be a string', `${path}.version`);
   }
 
-  if (typeof value.date !== 'string') {
-    return invalid('verifiedAgainst.date must be a string', `${path}.date`);
+  if (typeof value.verifiedAt !== 'string') {
+    return invalid('verifiedAgainst.verifiedAt must be a string', `${path}.verifiedAt`);
   }
 
   return {
     ok: true,
     value: {
       version: value.version,
-      date: value.date
+      verifiedAt: value.verifiedAt
     }
   };
 };
@@ -100,8 +104,8 @@ const parseEntry = (
     return invalid('launchArgs must be an array of strings', `${path}.launchArgs`);
   }
 
-  if (typeof value.acpFlag !== 'string') {
-    return invalid('acpFlag must be a string', `${path}.acpFlag`);
+  if (typeof value.acpModeFlag !== 'string' && value.acpModeFlag !== null) {
+    return invalid('acpModeFlag must be a string or null', `${path}.acpModeFlag`);
   }
 
   const verification = parseVerification(value.verifiedAgainst, `${path}.verifiedAgainst`);
@@ -131,7 +135,7 @@ const parseEntry = (
       displayName: value.displayName,
       binary: value.binary,
       launchArgs: value.launchArgs,
-      acpFlag: value.acpFlag,
+      acpModeFlag: value.acpModeFlag,
       ...(verification.value === undefined ? {} : { verifiedAgainst: verification.value }),
       capabilities: value.capabilities,
       modelSelectionStrategy: value.modelSelectionStrategy,

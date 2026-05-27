@@ -37,6 +37,7 @@ export const loadAgentManifest = async (
   }
 
   for (const [agentName, entry] of Object.entries(result.value.agents)) {
+    // verifiedAgainst is absent (undefined) OR was explicitly null in source — both warn.
     if (entry.verifiedAgainst === undefined) {
       logger.warn({ agentName }, 'agent manifest entry is unverified');
     }
