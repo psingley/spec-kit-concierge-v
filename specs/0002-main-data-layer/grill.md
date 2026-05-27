@@ -21,16 +21,30 @@ access for everything downstream.
 - pino as the structured logger (Run 1 locked the dependency; Run 2
   configures it).
 - `main/data-layer/` is the only place I/O lives (constitution I).
-- Workspace path guard exists; writes refuse paths outside active
-  Workspace (constitution I).
+- ~~Workspace path guard exists; writes refuse paths outside active~~
+  ~~Workspace (constitution I).~~
+  **SUPERSEDED 2026-05-27 by Q2 user decision + constitution v1.0.4
+  amendment.** Permissive-by-default: writes log target path + calling
+  Step, do NOT refuse paths outside any workspace.
 - `Concierge-Step:` trailers are git-log read-only in Run 2 — the
   writer-side of step commits is Run 5 (Step Lifecycle).
-- Run 2 introduces NO IPC handlers, NO renderer code, NO Redux
-  slices, NO HTTP server. Pure main-process data-layer + the RTK
-  Query base-query *shape definition* (not registration).
+- Run 2 introduces NO IPC handlers (except `app:getVersion` proof),
+  NO renderer code (except proof-endpoint wiring), NO Redux Provider
+  mount, NO HTTP server. Main-process data-layer + the RTK Query
+  base-query shape + the `app:getVersion` proof endpoint.
 - Run 2 introduces the FIRST hand-written factories under
-  `domain/factories/` — proof-of-concept against the agents.json
-  manifest payload.
+  `src/main/data-layer/` and `src/main/ipc/` — proof-of-concept
+  against the agents.json manifest payload, trailer parsing, and the
+  app-version proof payload.
+
+**Note on Q7 (layout refactor):** Q7's body described the refactor as
+work the Plan step would perform. The refactor was actually executed
+on 2026-05-27 BEFORE /speckit.specify was invoked, on commit
+`dd7fd1b` of branch `spec/0002-main-data-layer`. Spec.md, plan.md,
+and tasks.md correctly treat it as baseline-already-complete and
+explicitly exclude it from Run 2 implementation scope. The Q7 body
+below is preserved for decision provenance but is NOT implementation
+guidance — see the "Run 2 prep" commit dd7fd1b for the actual work.
 
 ---
 
@@ -62,8 +76,10 @@ the file).
 - Power-loss-mid-write on user laptops is genuinely rare; the cost
   of defending against it (temp files, fsync ordering, rename
   semantics on Windows) was judged not worth it.
-- `safeWrite` STILL enforces the workspace path guard (Q2). The
-  "safe" in the name is about *boundary safety*, not *atomicity*.
+- ~~`safeWrite` STILL enforces the workspace path guard (Q2).~~
+  **SUPERSEDED by Q2 user decision:** no path guard exists. The "safe"
+  in the name refers to typed-helper audit logging (target path +
+  calling Step), not path refusal.
 
 **ADR candidate?** Maybe (it's a deviation from the
 Concierge-jira convention; surprising-without-context: a reader might
@@ -438,6 +454,16 @@ Co-located = same directory as the factory, `.spec.ts` not
 
 **User decision (2026-05-27):** "yes" — 5-case floor locked.
 
+**AMENDED 2026-05-27 (later in session, post-analyze):** Floor widened
+from 5 to 6 cases to satisfy constitution v1.0.4 partial-input
+requirement. The 6th case is: partial structurally-plausible-but-
+incomplete input (e.g., manifest entry missing `binary` field,
+app-version payload missing `version` field). Trust-boundary factories
+(manifest, IPC payloads) MUST cover all 6; recovery-path parsers
+(`trailers.ts`) are exempt and cover the 8 lenient-parser behaviors
+instead. See spec.md FR-017, plan.md "Factory-Spec Test Conventions",
+tasks.md task-format header.
+
 **ADR candidate?** No (test-discipline floor is project convention,
 not a hard-to-reverse architectural decision).
 
@@ -451,34 +477,51 @@ each Q above with explicit user-decision attribution where applicable.
 
 | Q | Topic | Decision | ADR? |
 |---|---|---|---|
-| Q1 | safeWrite atomicity | direct overwrite + fsync | tentative ADR-0003 |
-| Q2 | path guard | none (permissive); constitution amend in Plan | constitution amend |
+| Q1 | safeWrite atomicity | direct overwrite + fsync | tentative ADR-0003 (deferred — no separate ADR landed) |
+| Q2 | path guard | none (permissive); constitution v1.0.4 amended | constitution amend (landed) |
 | Q3 | trailer parser | lenient + `interpretation` tag | maybe Run 5 |
 | Q4 | agents.json shape | concrete (--acp verified at grill-time) | no |
 | Q5 | pino config | date-rotated + pretty-in-dev | no |
-| Q6 | RTK tagTypes | upfront, 8 tags | ADR-0003 |
-| Q7 | layout drift | restructure to constitution-literal paths | maybe |
-| Q8 | factory tests | 5-case floor, co-located *.factory.spec.ts | no |
+| Q6 | RTK tagTypes | upfront, 8 tags | ADR-0003 (landed) |
+| Q7 | layout drift | restructure to constitution-literal paths | n/a — refactor pre-completed on commit `dd7fd1b` BEFORE specify, NOT a Run 2 implementation deliverable |
+| Q8 | factory tests | **6-case floor** (happy + `{}` + null + undefined + hostile + partial), co-located *.factory.spec.ts | no |
 
-**Run 2 deliverables (final):**
-1. Layout refactor (Q7): `src/main/index.ts` + `src/renderer/index.tsx`
-   + `src/preload/index.ts`; six config files updated; four-command
-   verification.
-2. `src/main/data-layer/fs/safeWrite.ts` — direct overwrite + fsync
+**Run 2 implementation deliverables (final, scoped for /speckit.implement):**
+
+(The layout refactor from Q7 is pre-completed on commit `dd7fd1b`
+and is NOT a Run 2 implementation deliverable. Constitution v1.0.4
+and ADR-0003 are already authored during /speckit.plan and are
+verified-read-only by Phase 9 tasks; they are not authored by
+/speckit.implement.)
+
+1. `src/main/data-layer/fs/safeWrite.ts` — direct overwrite + fsync
    (Q1).
-3. `src/main/data-layer/git/` — trailer reader (lenient, Q3),
+2. `src/main/data-layer/git/` — trailer reader (lenient, Q3),
    branch-state reader, uncommitted-path-set checker.
-4. `src/main/data-layer/agents/` — agents.json schema + loader (Q4),
+3. `src/main/data-layer/agents/` — agents.json schema + loader (Q4),
    verified Copilot CLI 1.0.54 entry shipped.
-5. `src/main/logging.ts` extended to date-rotated pino config (Q5).
-6. `src/renderer/api/` — RTK Query `ipcBaseQuery` shape + 8 tagTypes
+4. `src/main/logging.ts` extended to date-rotated pino config (Q5).
+5. `src/renderer/api/` — RTK Query `ipcBaseQuery` shape + 8 tagTypes
    (Q6) + trivial `getAppVersion` proof endpoint.
-7. `src/main/data-layer/` factories all ship with co-located
-   `*.factory.spec.ts` at 5-case floor (Q8).
-8. Constitution amendment: relax Principle I's "refuse writes outside
-   workspace" clause to "log writes with calling Step" (Q2).
-9. ADR-0003: RTK Query tagTypes taxonomy (Q6).
+6. `src/main/ipc/appVersion.ts` — proof IPC handler with structured
+   logging on every invocation.
+7. `src/preload/index.ts` — proof bridge for `app:getVersion` only.
+8. `src/renderer/index.tsx` — proof-endpoint dispatch (no Redux
+   Provider mount).
+9. Every Run 2 factory ships with a co-located `*.factory.spec.ts` at
+   **6-case floor** (Q8): happy path, `{}`, `null`, `undefined`,
+   factory-specific hostile input, partial structurally-plausible
+   input.
 
-Run 2 does NOT introduce: IPC handlers, Redux Provider mount, HTTP
-server, ACP client, Step Commit writers, hook executor, factories for
-domain steps. Those land in Runs 4-5.
+**Run 2 governance artifacts (already authored during /speckit.plan,
+verified read-only by /speckit.implement Phase 9):**
+
+- Constitution v1.0.4 PATCH amendment (Principle I path-guard
+  relaxation per Q2).
+- ADR-0003 (RTK Query tagTypes taxonomy per Q6).
+- `.github/copilot-instructions.md` Run 2 conventions block.
+
+Run 2 does NOT introduce: IPC handlers (beyond `app:getVersion`
+proof), Redux Provider mount, HTTP server, ACP client, Step Commit
+writers, hook executor, factories for domain steps. Those land in
+Runs 3-5.

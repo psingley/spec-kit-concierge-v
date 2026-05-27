@@ -39,7 +39,7 @@ The post-refactor entry-point layout is baseline state. `src/main/index.ts`, `sr
 | Logging | `src/main/logging.ts` writes `main.log` | Date-rotated `concierge-YYYY-MM-DD.log` ndjson plus dev-only pretty stream |
 | Data layer | No concrete data-layer factories | Add `src/main/data-layer/` fs, git, and agents modules |
 | IPC | No IPC handlers | Add only `app:getVersion`, validated through a proof payload factory |
-| Tests | Vitest/coverage may pass with no tests | Run 2 coverage must execute real specs; factory specs use the five-case floor |
+| Tests | Vitest/coverage may pass with no tests | Run 2 coverage must execute real specs; trust-boundary factory specs use the six-case floor (incl. partial-input per constitution v1.0.4) |
 
 ## Constitution Check
 
@@ -50,7 +50,7 @@ The post-refactor entry-point layout is baseline state. `src/main/index.ts`, `sr
 - Principle V: data-layer modules, IPC handlers, RTK Query `baseQuery`, and entry points are Effect-layer files; factories and parsing transforms keep side effects isolated.
 - Principle VI: RTK Query owns IPC-crossing renderer access; Run 2 defines the base query and tag taxonomy without mounting the Redux store or Provider in product UI.
 - Principle XV: pino remains the structured logger; production writes ndjson locally and development pretty printing is terminal-only.
-- Testing Discipline: new logic ships with co-located specs; every Run 2 factory has a co-located `*.factory.spec.ts` file with the required five cases.
+- Testing Discipline: new logic ships with co-located specs; every Run 2 trust-boundary factory has a co-located `*.factory.spec.ts` file with the required six cases (happy, `{}`, null, undefined, hostile, partial). Recovery-path parsers (`trailers.ts`) are exempt and cover the eight enumerated lenient-parser behaviors instead.
 
 No complexity-tracking violations are introduced.
 
@@ -127,15 +127,16 @@ src/
 
 ## Factory-Spec Test Conventions
 
-Every Run 2 factory has a co-located `*.factory.spec.ts` file in the same directory as the factory module. Each factory spec includes at least:
+Every Run 2 trust-boundary factory has a co-located `*.factory.spec.ts` file in the same directory as the factory module. Each trust-boundary factory spec includes at least the **six-case floor** (per constitution v1.0.4 partial-input requirement):
 
 1. Happy path: valid input returns the typed output.
 2. Empty object: `{}` returns a named error.
 3. Null: `null` returns a named error.
 4. Undefined: `undefined` returns a named error.
-5. Factory-specific hostile input: malformed trailer value, wrong manifest field type, unexpected app-version proof payload, or equivalent.
+5. Factory-specific hostile input: wrong manifest field type, unexpected app-version proof payload, or equivalent malicious shape.
+6. Partial input: structurally-plausible-but-incomplete shape (e.g., manifest entry missing `binary`, app-version payload missing `version` field) returns a named error.
 
-Factory errors use stable names that tests assert directly. Factory specs must cover public behavior and must not inspect private helper internals. Recovery-path parsers, especially `trailers.ts`, remain lenient and never throw; trust-boundary factories remain strict.
+Factory errors use stable names that tests assert directly. Factory specs must cover public behavior and must not inspect private helper internals. Recovery-path parsers, especially `trailers.ts`, are exempt from the six-case floor — they remain lenient, never throw, and cover the eight enumerated lenient-parser behaviors instead.
 
 ## New Test Infrastructure
 
@@ -225,7 +226,7 @@ Factory errors use stable names that tests assert directly. Factory specs must c
 | FR-014 | ADR-0003 in `docs/adr/0003-rtk-query-tagtypes-taxonomy.md` |
 | FR-015 | `.github/copilot-instructions.md` Run 2 conventions |
 | FR-016 | Dependency setup task for exact `@reduxjs/toolkit` and `react-redux` pins |
-| FR-017 | Co-located `*.factory.spec.ts` five-case convention and execution via Vitest |
+| FR-017 | Co-located `*.factory.spec.ts` six-case trust-boundary floor (trailer parser exempt) and execution via Vitest |
 | FR-018 | Renderer API boundary rule and preload-only IPC access |
 | FR-019 | Explicit out-of-scope exclusions for store mounting, HTTP, ACP, hooks, MCP, Jira, packaging, and product UI |
 | FR-020 | Layout refactor excluded; current entry paths treated as baseline |
@@ -236,7 +237,7 @@ Factory errors use stable names that tests assert directly. Factory specs must c
 |---|---|
 | SC-001 | Typecheck after entry-point and Run 2 module wiring |
 | SC-002 | Lint after renderer API boundary coverage |
-| SC-003 | Real Vitest coverage, including every `*.factory.spec.ts` five-case floor |
+| SC-003 | Real Vitest coverage, including every trust-boundary `*.factory.spec.ts` six-case floor |
 | SC-004 | Existing Electron smoke remains passing |
 | SC-005 | Dev launch shows pretty terminal logs and proves app-version query path |
 | SC-006 | Manifest loader succeeds and logs verified Copilot entry |

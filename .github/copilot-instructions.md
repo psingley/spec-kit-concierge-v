@@ -16,7 +16,7 @@ Run 2 conventions:
 - Main-process data-layer modules live under `src/main/data-layer/`: filesystem helpers in `fs/`, git readers in `git/`, and agent manifest loading in `agents/`.
 - IPC registration lives under `src/main/ipc/`; Run 2 adds only the `app:getVersion` proof channel.
 - Renderer data access lives under `src/renderer/api/`; modules there must use the preload bridge and must not import Electron APIs or Node built-ins.
-- Every Run 2 factory has a co-located `*.factory.spec.ts` with at least: happy path, empty object named error, null named error, undefined named error, and one factory-specific hostile case.
+- Every Run 2 trust-boundary factory has a co-located `*.factory.spec.ts` with the six-case floor: happy path, empty object named error, null named error, undefined named error, one factory-specific hostile case, and one partial structurally-plausible input case (per constitution v1.0.4). Recovery-path parsers (`trailers.ts`) are exempt and cover the eight lenient-parser behaviors instead.
 - Safe writes use direct overwrite plus fsync, log target path and calling Step context, and do not reject paths outside an active Workspace.
 - RTK Query tag taxonomy is fixed upfront: `Workspace`, `StepState`, `GitState`, `Agent`, `Session`, `Step`, `Transcript`, `Preferences`.
 <!-- SPECKIT END -->

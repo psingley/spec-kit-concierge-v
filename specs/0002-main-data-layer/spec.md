@@ -70,7 +70,7 @@ As a project steward, I can see the Run 2 architectural decisions captured in th
 
 1. **Given** Principle I still refers to a workspace path guard, **When** Run 2 planning lands, **Then** constitution v1.0.4 relaxes that clause to require typed helpers that log target path and calling Step instead of refusing external paths.
 2. **Given** the RTK Query tag taxonomy is used by future runs, **When** ADR-0003 is reviewed, **Then** it records the eight upfront tag types and rationale.
-3. **Given** a Run 2 factory is added, **When** its co-located spec is reviewed, **Then** it contains at least the five required factory cases.
+3. **Given** a Run 2 factory is added, **When** its co-located spec is reviewed, **Then** it contains at least the six required factory cases (happy path, empty object, null, undefined, factory-specific hostile input, and partial structurally-plausible input).
 
 ---
 
@@ -105,7 +105,7 @@ As a project steward, I can see the Run 2 architectural decisions captured in th
 - **FR-014**: Run 2 planning MUST add ADR-0003 documenting the RTK Query tag-type taxonomy.
 - **FR-015**: Run 2 MUST update `.github/copilot-instructions.md` with Run 2 conventions for data-layer module paths, co-located `*.factory.spec.ts` requirements, and the RTK Query tag taxonomy.
 - **FR-016**: Run 2 MUST add pinned `@reduxjs/toolkit` and `react-redux` runtime dependencies to `package.json`, with selected versions documented during planning.
-- **FR-017**: Every Run 2 factory MUST ship with a co-located `*.factory.spec.ts` file that includes at least these five cases: happy path, empty object named error, null named error, undefined named error, and one factory-specific hostile case.
+- **FR-017**: Every Run 2 trust-boundary factory MUST ship with a co-located `*.factory.spec.ts` file that includes at least these six cases: happy path, empty object named error, null named error, undefined named error, one factory-specific hostile case, and one partial structurally-plausible-but-incomplete input case (per constitution v1.0.4 partial-input requirement). Recovery-path parsers (`trailers.ts`) are exempt from this floor and instead cover the eight enumerated lenient-parser behaviors.
 - **FR-018**: The renderer API layer MUST use the preload bridge for IPC and MUST NOT import Electron APIs or Node built-ins directly.
 - **FR-019**: Run 2 MUST NOT include Redux store mounting, Provider mounting, HTTP server behavior, ACP client or Bound CLI supervisor behavior, Step Commit writers, hook executor behavior, domain step factories, MCP integration, Jira submission integration, Windows packaging changes, or product UI beyond the app-version proof rendering or dispatch.
 - **FR-020**: The implementation MUST preserve the post-refactor entry-point world where `src/main/index.ts`, `src/renderer/index.tsx`, and `src/preload/index.ts` are the active entry paths; moving to those paths is not part of Run 2 scope.
@@ -128,7 +128,7 @@ As a project steward, I can see the Run 2 architectural decisions captured in th
 
 - **SC-001**: `npm run typecheck` exits 0 and positively confirms the current `src/main/index.ts`, `src/renderer/index.tsx`, and `src/preload/index.ts` paths are typechecked.
 - **SC-002**: `npm run lint` exits 0 and positively confirms Pure/Effect layer rules apply at the current boundaries, including that `src/renderer/api/` has no direct Electron or Node built-in imports.
-- **SC-003**: `npm run test:coverage` exits 0 with a test count greater than 0 and every Run 2 factory represented by at least five required factory-spec cases.
+- **SC-003**: `npm run test:coverage` exits 0 with a test count greater than 0 and every Run 2 trust-boundary factory represented by at least the six required factory-spec cases per FR-017.
 - **SC-004**: `npm run e2e` exits 0 and the existing smoke test still verifies window opens, title matches, and zero console errors.
 - **SC-005**: `npm run dev` launches the app, shows development pretty-print logging in the terminal, and proves `getAppVersion` returns the package version string from main process through preload bridge through the RTK Query proof endpoint to renderer-side dispatch.
 - **SC-006**: Boot loading of `agents.json` succeeds and logs the loaded manifest shape at info level with the Copilot entry treated as verified.
