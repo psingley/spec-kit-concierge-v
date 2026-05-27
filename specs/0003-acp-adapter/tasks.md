@@ -173,7 +173,7 @@ source_plan: specs/0003-acp-adapter/plan.md
 - [ ] T028 Implement Autopilot opt-in recording (GREEN).
   - Paths: `src/main/data-layer/acp/agent.ts`, `src/main/data-layer/acp/types.ts`, `src/main/data-layer/acp/supervisor.ts`.
   - Dependencies: T027.
-  - Acceptance: `setMode()` or session startup accepts Autopilot only with recorded `allow`, rejects implicit Autopilot selection, does not bypass top-level cancellation, and the Autopilot test passes.
+  - Acceptance: Session startup accepts Autopilot only with recorded `allow`, rejects implicit Autopilot selection, does not bypass top-level cancellation, and the Autopilot test passes. **Mid-session mode changes via `setMode()` are NOT in Run 3 scope per grill Q7** — `setMode()` is exposed as a public method but its Run 3 acceptance is "throws `ModeChangeDeferredError` for any non-startup invocation." Mid-session mode-change behavior is deferred to Run 7-9.
 
 ## Phase 7 - Session listing and loading
 
@@ -242,7 +242,7 @@ source_plan: specs/0003-acp-adapter/plan.md
 - [ ] T041 Add crash supervision behavior test (RED).
   - Paths: `src/main/data-layer/acp/supervisor.test.ts`.
   - Dependencies: T040.
-  - Acceptance: The test simulates unexpected child-process exit and asserts lifecycle state becomes `errored`, exit code/signal/last 4KB stderr are logged, a `session-ended` event is emitted, and no automatic restart occurs.
+  - Acceptance: The test covers the full ADR-0004 crash matrix — FOUR separate cases: (1) clean unexpected exit (code != 0), (2) signal-induced termination (SIGSEGV), (3) explicit kill (SIGKILL), (4) simulated crash via stderr-then-exit. EACH case asserts lifecycle state becomes `errored`, exit code/signal/last 4KB stderr are logged, a `session-ended` event is emitted, and **NO automatic restart occurs**. Per ADR-0004 line 28.
 
 - [ ] T042 Implement crash supervision policy (GREEN).
   - Paths: `src/main/data-layer/acp/supervisor.ts`, `src/main/data-layer/acp/types.ts`.
@@ -283,15 +283,25 @@ source_plan: specs/0003-acp-adapter/plan.md
 
 ## Phase 10 - Renderer proof API and proof surface
 
+- [ ] T049a Add renderer-entry capabilities factory test (RED).
+  - Paths: `src/renderer/api/capabilities.factory.spec.ts`.
+  - Dependencies: T048.
+  - Acceptance: Per constitution IV (every payload entering renderer from IPC/ACP/FS/HTTP MUST pass through a factory before any consumer sees it), the test asserts a renderer-side `parseRendererBoundCLICapabilities` factory covers the 6-case trust-boundary floor on whatever the preload bridge hands the renderer: happy path (Copilot 1.0.54 shape), `{}`, `null`, `undefined`, hostile (mismatched nested types from a malicious preload response), partial (missing `loadSession`). Constitution IV is non-negotiable; the main-side `capabilities.ts` factory does NOT cover the renderer trust boundary because the preload bridge is a distinct cross-process surface.
+
+- [ ] T049b Implement renderer-entry capabilities factory (GREEN).
+  - Paths: `src/renderer/api/capabilities.factory.ts`.
+  - Dependencies: T049a.
+  - Acceptance: Factory returns typed `BoundCLICapabilities` on valid input and stable named errors on invalid input; renderer-safe (no Electron/Node imports); used by the RTK Query endpoint (T050) before any consumer sees the value; passes its 6-case spec.
+
 - [ ] T049 Add RTK Query bound CLI capabilities endpoint test (RED).
   - Paths: `src/renderer/api/index.test.ts`.
-  - Dependencies: T048.
-  - Acceptance: The test asserts `getBoundCLICapabilities` calls the preload ACP proof bridge, returns the capability descriptor, preserves structured IPC errors, and provides the `Agent` tag without changing the fixed tag taxonomy.
+  - Dependencies: T049b.
+  - Acceptance: The test asserts `getBoundCLICapabilities` calls the preload ACP proof bridge, passes the result through `parseRendererBoundCLICapabilities` (T049b) before returning it to consumers, returns the validated capability descriptor on happy path, preserves structured IPC errors, surfaces factory failures as typed errors, and provides the `Agent` tag without changing the fixed tag taxonomy.
 
 - [ ] T050 Implement RTK Query bound CLI capabilities endpoint (GREEN).
   - Paths: `src/renderer/api/index.ts`.
   - Dependencies: T049.
-  - Acceptance: The API slice adds only `getBoundCLICapabilities`, uses the existing preload-backed base query, provides the `Agent` tag, imports no Electron APIs or Node built-ins, and `src/renderer/api/index.test.ts` passes.
+  - Acceptance: The API slice adds only `getBoundCLICapabilities`, uses the existing preload-backed base query, runs the response through `parseRendererBoundCLICapabilities` per constitution IV, provides the `Agent` tag, imports no Electron APIs or Node built-ins, and `src/renderer/api/index.test.ts` passes.
 
 - [ ] T051 Add renderer proof-surface behavior test (RED).
   - Paths: `src/renderer/index.tsx`, `src/renderer/api/index.test.ts`.
@@ -315,15 +325,26 @@ source_plan: specs/0003-acp-adapter/plan.md
   - Dependencies: T053.
   - Acceptance: The app can invoke the real configured Copilot bound CLI through the proof path, returns capabilities within the target window, disposes without leaked processes/listeners, and the smoke test passes.
 
-- [ ] T055 Verify Run 3 automated checks.
-  - Paths: `package.json`, `src/main/data-layer/acp/agent.ts`, `src/main/data-layer/acp/types.ts`, `src/main/data-layer/acp/capabilities.ts`, `src/main/data-layer/acp/protocol.ts`, `src/main/data-layer/acp/transcript.ts`, `src/main/data-layer/acp/supervisor.ts`, `src/main/ipc/acpProbe.ts`, `src/preload/index.ts`, `src/renderer/api/index.ts`, `src/renderer/index.tsx`, `e2e/smoke.spec.ts`.
+- [ ] T055 Verify Run 3 automated checks (expanded).
+  - Paths: `package.json`, `src/main/data-layer/acp/agent.ts`, `src/main/data-layer/acp/types.ts`, `src/main/data-layer/acp/capabilities.ts`, `src/main/data-layer/acp/protocol.ts`, `src/main/data-layer/acp/transcript.ts`, `src/main/data-layer/acp/supervisor.ts`, `src/main/ipc/acpProbe.ts`, `src/preload/index.ts`, `src/renderer/api/index.ts`, `src/renderer/api/capabilities.factory.ts`, `src/renderer/index.tsx`, `e2e/smoke.spec.ts`, `docs/adr/0004-acp-process-supervision-policy.md`, `docs/adr/0005-acp-session-modes-posture.md`, `docs/adr/0006-acp-testing-discipline.md`, `.github/copilot-instructions.md`, `ROADMAP_DECISIONS.md`.
   - Dependencies: T054.
-  - Acceptance: `npm run lint`, `npm run typecheck`, `npm run test:coverage`, and `npm run e2e` all exit 0 with Run 3 tests included.
+  - Acceptance: ALL must pass:
+    - `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run e2e` exit 0.
+    - **SC-006 test-count threshold:** `npm run test:coverage 2>&1 | grep -oE "Tests +[0-9]+ passed"` reports >= 75 passing tests.
+    - **SC-008 ADR presence:** `ls docs/adr/0004*.md docs/adr/0005*.md docs/adr/0006*.md` all exist; each file has `Status: Accepted` (grep).
+    - **SC-009 roadmap correction:** `grep -c "configOptions\[id=model\]\|configOptions selector" ROADMAP_DECISIONS.md` >= 1 AND `grep -c "unstable_setSessionModel" ROADMAP_DECISIONS.md` notes it as superseded (not the canonical mechanism).
+    - **FR-028 copilot-instructions:** `grep -c "Run 3 conventions" .github/copilot-instructions.md` >= 1; contains ACP layer paths + Autopilot opt-in posture.
 
-- [ ] T056 Verify ACP-only process and wire boundary.
-  - Paths: `src/main/data-layer/acp/supervisor.ts`, `src/main/data-layer/acp/protocol.ts`, `src/main/index.ts`, `src/main/ipc/acpProbe.ts`, `src/preload/index.ts`, `src/renderer/api/index.ts`, `src/renderer/index.tsx`.
+- [ ] T056 Verify ACP-only process and wire boundary (expanded grep).
+  - Paths: `src/main/data-layer/acp/supervisor.ts`, `src/main/data-layer/acp/protocol.ts`, `src/main/index.ts`, `src/main/ipc/acpProbe.ts`, `src/preload/index.ts`, `src/renderer/api/index.ts`, `src/renderer/api/capabilities.factory.ts`, `src/renderer/index.tsx`.
   - Dependencies: T055.
-  - Acceptance: `rg "spawn\\(|exec\\(|ClientSideConnection|ndJsonStream" src` shows coding-agent process creation and ACP wire communication confined to `src/main/data-layer/acp/`, except tests and imports that prove the boundary.
+  - Acceptance: Boundary verification via expanded grep — ALL coding-agent process/wire patterns must be confined to `src/main/data-layer/acp/` (and test files / imports that prove the boundary):
+    - `rg "child_process|spawn\\(|spawnSync\\(|exec\\(|execFile\\(|fork\\(" src --type ts` — process spawn primitives
+    - `rg "@agentclientprotocol/sdk" src --type ts` — SDK imports
+    - `rg "ClientSideConnection|ndJsonStream|JsonRpcConnection" src --type ts` — wire-level types
+    - `rg "(copilot|claude|codex|gemini).*--acp" src --type ts` — direct bound-CLI invocations
+    - `rg "process\\.stdin|process\\.stdout.*write" src --type ts` — direct stdio JSON-RPC writes
+    - Each grep result MUST be confined to `src/main/data-layer/acp/` OR be a test/import line that demonstrates the boundary. Out-of-layer matches FAIL the task.
 
 ## Parallel opportunities
 
