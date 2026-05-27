@@ -1,10 +1,20 @@
 node_modules/
 dist/
+build/
 out/
+coverage/
+.vite/
+test-results/
+playwright-report/
 .DS_Store
+Thumbs.db
 *.log
+*.tmp
+*.swp
+.env*
 .env
 .env.local
+.vscode/
 .idea/
 .omc/
 design/project/Spec-kit Concierge (standalone).html
@@ -47,4 +57,7 @@ design/project/Spec-kit Concierge (standalone).html
 .claude/
 
 # `skills` CLI top-level dir is a workspace artifact, not source.
-skills/
+/skills/
+
+# specify extension uninstall/reinstall backup churn
+.specify/extensions/.backup/

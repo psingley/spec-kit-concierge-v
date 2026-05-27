@@ -1,0 +1,74 @@
+schema_version: "1.0"
+
+extension:
+  id: "concierge-jira"
+  name: "Concierge Jira"
+  version: "0.2.2"
+  description: "Concierge fork of spec-kit-jira: hardened Jira spec/phase/task issue creation from spec-kit artifacts, with dry-run preflight, live verification, and a gold-standard ticket contract"
+  author: "Peter Singley"
+  repository: "https://github.com/psingley/concierge-jira"
+  license: "MIT"
+  homepage: "https://github.com/psingley/concierge-jira"
+
+requires:
+  speckit_version: ">=0.1.0"
+  # Note: Requires an MCP server providing Jira/Atlassian tools
+  # The server name is configurable via mcp_server in jira-config.yml
+  # Common names: "atlassian", "jira-mcp-server", "jira"
+
+provides:
+  commands:
+    - name: "speckit.concierge-jira.specstoissues"
+      file: "commands/specstoissues.md"
+      description: "Create Jira hierarchy from spec and tasks"
+
+    - name: "speckit.concierge-jira.discover-fields"
+      file: "commands/discover-fields.md"
+      description: "Discover Jira custom fields for configuration"
+
+    - name: "speckit.concierge-jira.sync-status"
+      file: "commands/sync-status.md"
+      description: "Sync task completion status to Jira"
+
+    - name: "speckit.concierge-jira.file-ticket"
+      file: "commands/file-ticket.md"
+      description: "File one Jira ticket with isolated stateful verification"
+
+  config:
+    - name: "jira-config.yml"
+      template: "jira-config.template.yml"
+      description: "Jira integration configuration"
+      required: true
+
+hooks:
+  after_tasks:
+    command: "speckit.concierge-jira.specstoissues"
+    optional: true
+    prompt: "Create Jira issues from tasks?"
+    description: "Automatically create Jira hierarchy after task generation"
+
+tags:
+  - "issue-tracking"
+  - "jira"
+  - "atlassian"
+  - "project-management"
+
+defaults:
+  mcp_server: "atlassian"
+  project:
+    key: ""
+  mapping:
+    spec_artifact: "Epic"
+    phase_artifact: "Story"
+    task_artifact: "Task"
+    relationships:
+      spec_phase: "Epic Link"
+      phase_task: "Relates"
+      spec_task: "Epic Link"
+  defaults:
+    spec:
+      labels: []
+    phase:
+      labels: []
+    task:
+      labels: []

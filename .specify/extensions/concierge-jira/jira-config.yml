@@ -1,0 +1,73 @@
+# Jira Integration Configuration
+# Concierge Jira config for ~/spec-kit-concierge-v
+#
+# SKC is a team-managed Jira Scrum project at collette.atlassian.net.
+# Hierarchy mirrors MYC: Epic -> Story / Task / Bug -> Subtask.
+# Team-managed projects use the `Parent` relationship (not "Epic Link"
+# which is a company-managed legacy field). This config sets relationships
+# to "Parent" accordingly.
+
+# MCP Server Configuration
+# Atlassian Cloud ID — required on every Atlassian MCP call.
+# Hardcoded so per-ticket agents don't need to re-resolve at runtime.
+atlassian_cloud_id: "20a57dd3-0f9f-41ca-94d0-0def6f4ff476"
+
+mcp_server: "atlassian"
+
+# Jira Project Configuration
+project:
+  key: "SKC"  # Spec-Kit Concierge project at collette.atlassian.net
+
+# Artifact Mapping Configuration
+# Maps spec-kit artifacts to SKC issue types.
+#
+# spec_artifact (one per spec run, container)            -> Epic
+# phase_artifact (one per Phase in plan.md)              -> Story
+# task_artifact  (one per T### in tasks.md)              -> Subtask
+#
+# The Subtask choice (vs Task) matches the KCKB-163 gold-standard pattern:
+# tasks.md T### items become Subtasks under their parent phase Story.
+# Task type is reserved for orphan operational work (e.g., "QA Sprint 11
+# tickets") that is not part of a spec-kit pipeline.
+mapping:
+  spec_artifact: "Epic"
+  phase_artifact: "Story"
+  task_artifact: "Subtask"
+
+  # Relationships are "Parent" for team-managed projects (SKC is team-managed).
+  # See KCKB-163 evidence: parent field is set directly to the Epic key, no
+  # separate Epic Link field exists in team-managed Jira.
+  relationships:
+    spec_phase: "Parent"
+    phase_task: "Parent"
+    spec_task: "Parent"
+
+# Default Values for Issue Creation
+defaults:
+  spec:
+    labels:
+      - "spec-kit"
+      - "concierge"
+      - "run-1"  # update per Run when creating each spec
+    custom_fields: {}
+
+  phase:
+    labels:
+      - "spec-kit"
+      - "concierge"
+    custom_fields: {}
+
+  task:
+    labels:
+      - "spec-kit"
+      - "concierge"
+    custom_fields: {}
+
+# Sync-status configuration (post-tasks state mirroring).
+# Per the research dispatched 2026-05-26 (see specs/0001-foundation-shell/
+# dogfood-notes.md when DF-008 lands), we are deliberately NOT mapping
+# per-step statuses in v1. Default behavior is fine: tasks.md checkbox
+# completion -> Jira transition to Done. Per-step label mirroring
+# (concierge-step:specify, :clarify, etc.) is deferred to Run 11/12
+# (JIRA Outer Loop) per ROADMAP_DECISIONS open question.
+done_status: "Done"

@@ -66,9 +66,10 @@ log scraping, no filesystem watcher.
 
 ### Step Contract
 
-The typed schema (Zod) that a step's emitted artifacts must satisfy
-before the Concierge App treats the step as complete. Enforced inside
-the `after_<step>` hook. Clarify's contract is the tightest because of
+The factory-validated typed shape that a step's emitted artifacts
+must satisfy before the Concierge App treats the step as complete.
+Enforced inside the `after_<step>` hook by a hand-written
+trust-boundary factory (see Principle IV). Clarify's contract is the tightest because of
 historical real-world flakiness — each ClarifyQuestion must have a
 non-empty `questionText`, ≥2 well-formed `choices` (key + label), a
 present short-answer affordance, and LF-normalized line endings.

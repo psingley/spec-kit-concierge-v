@@ -82,6 +82,53 @@
       },
       "registered_skills": [],
       "installed_at": "2026-05-24T21:08:03.046517+00:00"
+    },
+    "concierge-jira": {
+      "version": "0.2.2",
+      "source": "local",
+      "manifest_hash": "sha256:879f0f9692c8a13140260df562ed78cd6875d0c5fa82f7f38aa2aed6ffaa0a19",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ],
+        "claude": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ],
+        "codex": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ],
+        "copilot": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ],
+        "trae": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ],
+        "vibe": [
+          "speckit.concierge-jira.specstoissues",
+          "speckit.concierge-jira.discover-fields",
+          "speckit.concierge-jira.sync-status",
+          "speckit.concierge-jira.file-ticket"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-05-27T04:42:51.072092+00:00"
     }
   }
 }
