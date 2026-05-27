@@ -342,8 +342,12 @@ source_plan: specs/0003-acp-adapter/plan.md
     - `rg "child_process|spawn\\(|spawnSync\\(|exec\\(|execFile\\(|fork\\(" src --type ts` — process spawn primitives
     - `rg "@agentclientprotocol/sdk" src --type ts` — SDK imports
     - `rg "ClientSideConnection|ndJsonStream|JsonRpcConnection" src --type ts` — wire-level types
-    - `rg "(copilot|claude|codex|gemini).*--acp" src --type ts` — direct bound-CLI invocations
+    - `rg "(copilot|claude|codex|gemini).*--acp" src --type ts` — direct bound-CLI invocations with --acp flag
+    - `rg "(exec|execFile|spawn|spawnSync|fork)\\([^)]*['\"](copilot|claude|codex|gemini)" src --type ts` — direct exec/spawn of any ACP-capable bound CLI binary regardless of flag
     - `rg "process\\.stdin|process\\.stdout.*write" src --type ts` — direct stdio JSON-RPC writes
+    - `rg "stdin\\.write|\\.stdin\\.write" src --type ts` — aliased writable streams (e.g., `child.stdin.write(...)`, `agentProcess.stdin.write(...)`)
+    - `rg "Writable\\.toWeb|Readable\\.toWeb" src --type ts` — stream-to-web-stream conversion paths that could route JSON-RPC out of the ACP layer
+    - `rg "JSON\\.stringify\\(.*jsonrpc" src --type ts` — direct JSON-RPC envelope construction
     - Each grep result MUST be confined to `src/main/data-layer/acp/` OR be a test/import line that demonstrates the boundary. Out-of-layer matches FAIL the task.
 
 ## Parallel opportunities
