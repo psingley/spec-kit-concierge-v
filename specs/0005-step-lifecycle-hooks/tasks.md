@@ -15,9 +15,9 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 
 **Pino discipline**: Handler and hook logging tests MUST mock `createMainLogger` from `src/main/logging.ts` and assert `logger.info`/`logger.warn`/`logger.error` calls with the expected structured fields. Generic logger-shaped mocks, `console` mocks, or field-shape assertions alone are not acceptable. This rider is contractual for T011/T013/T015/T017/T019/T021/T023/T025/T027/T029/T063 and every other logging test.
 
-**Before-hook lifecycle discipline**: Every before-hook task acceptance in T007-T030 MUST prove prerequisite validation succeeds before lifecycle transition, then calls `writeInFlightMarker(sessionId, step)`, emits a `step-pending` log/activity event with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/pending` action. A before hook that only logs metadata or only returns success is incomplete.
+**Before-hook lifecycle discipline**: Before-hook shell tasks T007-T030 (Phase 3) are logging + dispatcher wiring ONLY. Marker writes are deferred to lifecycle-wiring tasks added after T049-T050 exist. Acceptance for T007-T030 shells MUST NOT include marker writes. The lifecycle-wiring tasks MUST prove prerequisite validation succeeds before lifecycle transition, then call `writeInFlightMarker(sessionId, step)`, emit a `step-pending` log/activity event with the grill Q13 schema, and return a result the dispatcher uses to dispatch the renderer `steps/pending` action.
 
-**After-hook lifecycle discipline**: Every after-hook task acceptance in T009-T030 MUST prove the hook invokes the step's Step Contract factory, calls `commitWithTrailer` on factory success, calls `removeInFlightMarker(sessionId, step)` only after commit success, emits `step-commit-written` and `step-complete` log/activity events with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/complete` action. An after hook that bypasses factory validation, commit writing, marker removal, or completion dispatch is incomplete.
+**After-hook lifecycle discipline**: After-hook shell tasks T009-T030 (Phase 3) are logging + dispatcher wiring ONLY. Factory call, commit writer, and marker removal are deferred to lifecycle-wiring tasks added after T031-T052 exist. The lifecycle-wiring tasks MUST prove the hook invokes the step's Step Contract factory, calls `commitWithTrailer` on factory success, calls `removeInFlightMarker(sessionId, step)` only after commit success, emits `step-commit-written` and `step-complete` log/activity events with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/complete` action.
 
 **Factory-floor discipline**: Each Step Contract factory uses the six standard factory-floor cases as SIX sequential sub-tracer bullets, followed by the seventh disk-entry extra-key rejection sub-tracer bullet. Implementers MUST run each case as RED -> GREEN before adding the next case. A single RED test containing all cases violates the vertical discipline.
 
@@ -30,7 +30,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 6. Partial structurally-plausible input returns a stable named error or escape-hatch reason.
 7. Disk-entry extra-key rejection rejects malicious JSON/frontmatter payloads.
 
-**Execution order**: Execute tasks in numeric order. For every RED task, run the focused test and confirm it fails for the expected missing behavior before starting the paired GREEN task. For every GREEN task, implement only the behavior required by the immediately preceding RED task, then run the focused test until it passes.
+**Execution order**: Execute tasks in numeric order unless a lettered lifecycle-wiring task declares later dependencies; execute those lettered tasks only after their listed dependencies exist. For every RED task, run the focused test and confirm it fails for the expected missing behavior before starting the paired GREEN task. For every GREEN task, implement only the behavior required by the immediately preceding RED task, then run the focused test until it passes.
 
 ## Phase 1 - First 3-state vertical tracer bullet
 
@@ -71,12 +71,12 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T006A Add shared prerequisite gate tests (RED).
   - Paths: `src/main/hooks/prerequisiteGate.test.ts`, `src/main/hooks/prerequisiteGate.ts`.
   - Dependencies: T006.
-  - Acceptance: The failing tests prove the shared gate checks prior Step Commit existence in branch trailers for prerequisite steps, accepts auth status only through an injected slot, accepts MCP config status only through an injected slot, never reads MCP/Atlassian state directly, and returns gate failure as the named `StepEscapeHatchReason` for prerequisite/auth/MCP failures.
+  - Acceptance: The failing tests prove the shared gate checks prior Step Commit existence in branch trailers for prerequisite steps, accepts auth status only through an injected slot, accepts MCP config status only through an injected slot, never reads MCP/Atlassian state directly, and returns gate failure as the named `StepEscapeHatchReason` for prerequisite/auth/MCP failures. Slots MUST be typed via named TypeScript interfaces (`AuthStatusSlot`, `McpConfigSlot`) in `src/main/hooks/prerequisites.ts`: `type AuthStatusSlot = { copilotLoggedIn: boolean | null; githubLoggedIn: boolean | null }` and `type McpConfigSlot = { mcpServers: Record<string, McpServerSummary>; configReadAt: string }`. Loose `unknown` types FAIL the task.
 
 - [ ] T006B Implement shared prerequisite gate helper (GREEN).
   - Paths: `src/main/hooks/prerequisiteGate.ts`, `src/main/hooks/types.ts`.
   - Dependencies: T006A.
-  - Acceptance: The helper exposes a dispatcher-injectable prerequisite check used by before hooks, maps all gate failures to named Step Escape Hatch reasons, keeps auth/MCP statuses dependency-injected, reads prior Step Commit state only through the trailer reader seam, and `prerequisiteGate.test.ts` passes.
+  - Acceptance: The helper exposes a dispatcher-injectable prerequisite check used by before hooks, maps all gate failures to named Step Escape Hatch reasons, keeps auth/MCP statuses dependency-injected, reads prior Step Commit state only through the trailer reader seam, and `prerequisiteGate.test.ts` passes. Slots MUST be typed via named TypeScript interfaces (`AuthStatusSlot`, `McpConfigSlot`) in `src/main/hooks/prerequisites.ts`: `type AuthStatusSlot = { copilotLoggedIn: boolean | null; githubLoggedIn: boolean | null }` and `type McpConfigSlot = { mcpServers: Record<string, McpServerSummary>; configReadAt: string }`. Loose `unknown` types FAIL the task.
 
 - [ ] T007 Add `beforeSpecify` hook contract test (RED).
   - Paths: `src/main/hooks/beforeSpecify.hook.test.ts`.
@@ -86,7 +86,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T008 Implement `beforeSpecify` hook shell (GREEN).
   - Paths: `src/main/hooks/beforeSpecify.hook.ts`.
   - Dependencies: T007.
-  - Acceptance: The hook exports the dispatcher-compatible entry point, uses manifest-driven metadata, logs through `createMainLogger`, performs no unsanctioned side effects yet, and its test passes.
+  - Acceptance: The hook exports the dispatcher-compatible entry point, uses manifest-driven metadata, logs through `createMainLogger`, performs no unsanctioned side effects yet, and its test passes. This is a logging skeleton + dispatcher wiring task only; marker write is deferred to T030A.
 
 - [ ] T009 Add `afterSpecify` hook contract test (RED).
   - Paths: `src/main/hooks/afterSpecify.hook.test.ts`.
@@ -96,7 +96,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T010 Implement `afterSpecify` hook shell (GREEN).
   - Paths: `src/main/hooks/afterSpecify.hook.ts`.
   - Dependencies: T009.
-  - Acceptance: The hook exports the dispatcher-compatible entry point, uses manifest-driven metadata, logs through `createMainLogger`, performs no unsanctioned side effects yet, and its test passes.
+  - Acceptance: The hook exports the dispatcher-compatible entry point, uses manifest-driven metadata, logs through `createMainLogger`, performs no unsanctioned side effects yet, and its test passes. This is a logging skeleton + dispatcher wiring task only; factory call, commit writer, marker removal, and full completion wiring are deferred to T030B.
 
 - [ ] T011 Add `beforeClarify` hook contract test (RED).
   - Paths: `src/main/hooks/beforeClarify.hook.test.ts`.
@@ -198,6 +198,18 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
   - Dependencies: T029.
   - Acceptance: The hook exports the dispatcher-compatible entry point, preserves Review manifest metadata, logs through `createMainLogger`, and its test passes.
 
+## Phase 3b - Hook lifecycle wiring after primitives exist
+
+- [ ] T030A Wire before-hook pending lifecycle for all six steps (GREEN).
+  - Paths: `src/main/hooks/beforeSpecify.hook.ts`, `src/main/hooks/beforeClarify.hook.ts`, `src/main/hooks/beforePlan.hook.ts`, `src/main/hooks/beforeTasks.hook.ts`, `src/main/hooks/beforeAnalyze.hook.ts`, `src/main/hooks/beforeReview.hook.ts`, `src/main/hooks/dispatcher.ts`.
+  - Dependencies: T049, T050.
+  - Acceptance: Each before hook proves prerequisite validation succeeds before lifecycle transition, calls `writeInFlightMarker(sessionId, step)` (T049-T050 marker primitives MUST exist before this task can be implemented), emits a `step-pending` log/activity event with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/pending` action.
+
+- [ ] T030B Wire after-hook completion lifecycle for all six steps (GREEN).
+  - Paths: `src/main/hooks/afterSpecify.hook.ts`, `src/main/hooks/afterClarify.hook.ts`, `src/main/hooks/afterPlan.hook.ts`, `src/main/hooks/afterTasks.hook.ts`, `src/main/hooks/afterAnalyze.hook.ts`, `src/main/hooks/afterReview.hook.ts`, `src/main/hooks/dispatcher.ts`.
+  - Dependencies: T031, T032, T033, T034, T035, T036, T037, T038, T039, T040, T041, T042, T043, T044, T045, T046, T047, T048, T049, T050, T051, T052.
+  - Acceptance: Each after hook invokes the step's Step Contract factory (T031-T042 factories MUST exist), calls `commitWithTrailer` on factory success (T043-T048 commit writer MUST exist), calls `removeInFlightMarker(sessionId, step)` only after commit success (T051-T052 marker removal primitive MUST exist), emits `step-commit-written` and `step-complete` log/activity events with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/complete` action.
+
 ## Phase 4 - Six Step Contract factories with seven-case floors
 
 - [ ] T031 Add `specify` Step Contract factory floor tests (RED).
@@ -297,7 +309,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T049 Add in-flight marker write test (RED).
   - Paths: `src/main/hooks/inFlightMarker.test.ts`.
   - Dependencies: T048.
-  - Acceptance: The failing test writes a marker at `userData/in-flight/${sessionId}/${step}.marker` with JSON containing `step`, `startedAt`, `sessionId`, and `expectedArtifacts`, using existing safe-write/fsync discipline.
+  - Acceptance: The failing test writes a marker at `userData/in-flight/${sessionId}/${step}.marker` with JSON containing `step`, `startedAt`, `sessionId`, and `expectedArtifacts`, using existing safe-write/fsync discipline. Marker writes in tests MUST use a per-test OS temp directory created via `fs.mkdtemp(os.tmpdir() + '/concierge-marker-test-')`. `afterEach` MUST clean up the temp dir. Tests MUST NOT write to the user's home directory or the project's userData path. Real marker writes are required; in-memory stubs FAIL.
 
 - [ ] T050 Implement marker write primitive (GREEN).
   - Paths: `src/main/hooks/inFlightMarker.ts`.
