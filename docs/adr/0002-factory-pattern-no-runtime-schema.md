@@ -19,6 +19,7 @@ Principle IV and constitution v1.0.3 already make factories the contract seam. K
 - Factory return types are the typed shapes.
 - Trust-boundary validation stays co-located with the transform.
 - Later runs must not reintroduce a schema library by habit.
+- Run 1 remains a foundation-only shell: no factories, runtime schemas, Redux slices, IPC handlers, product UI, business logic, HTTP API, MCP detection, ACP client, or spec-kit hook implementations are introduced.
 
 ## References
 

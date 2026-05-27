@@ -1,0 +1,48 @@
+{
+  "name": "spec-kit-concierge-v",
+  "version": "0.1.0",
+  "description": "Foundation shell for the Spec-kit Concierge Electron app.",
+  "private": true,
+  "main": ".vite/build/main.js",
+  "config": {
+    "forge": "./electron-forge.config.ts"
+  },
+  "scripts": {
+    "dev": "electron-forge start",
+    "lint": "eslint *.ts *.mjs src e2e",
+    "lint:fix": "eslint *.ts *.mjs src e2e --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.renderer.json",
+    "test": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage --passWithNoTests",
+    "test:watch": "vitest --passWithNoTests",
+    "e2e": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && vite build --config vite.renderer.config.ts && playwright test",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "dependencies": {
+    "pino": "^9.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.6.0",
+    "@electron-forge/maker-nsis": "npm:electron-forge-maker-nsis@^26.8.1",
+    "@electron-forge/plugin-vite": "^7.6.0",
+    "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.49.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^2.1.8",
+    "electron": "^33.2.1",
+    "eslint": "^9.17.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}
