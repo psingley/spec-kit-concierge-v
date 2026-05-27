@@ -1,12 +1,10 @@
 ---
 description: Create Jira hierarchy from spec and tasks
 tools:
-- '{mcp_server}/createJiraIssue'
-- '{mcp_server}/editJiraIssue'
-- '{mcp_server}/searchJiraIssuesUsingJql'
-- '{mcp_server}/getJiraIssue'
-- '{mcp_server}/createIssueLink'
-- '{mcp_server}/getIssueLinkTypes'
+- 'read'
+- 'search'
+- 'edit'
+- 'agent'
 ---
 
 
@@ -68,8 +66,16 @@ When `task_artifact` is empty (`""`) or `"none"`, the extension operates in 2-le
 - `mapping.relationships.spec_phase`: How Phase links to Spec (default: "Epic Link")
 - `mapping.relationships.phase_task`: How Task links to Phase (default: "Relates")
 - `mapping.relationships.spec_task`: Direct Task-Spec link (default: "Epic Link")
+- `mapping.relationship_field` or top-level `relationship_field`: optional custom field id for company-managed Epic Link. Use `customfield_10014` when the relationship is `"Epic Link"` and no configured field is present.
 
 Relationship options: `"Parent"`, `"Epic Link"`, `"Relates"`, `"Blocks"`, `"Implements"`, `"is child of"`, `"none"`
+
+When building each filer payload, pass `relationship_field` from
+`jira-config.yml` for company-managed Epic Link relationships. Pass `null` for
+`"Parent"`, `"Relates"`, `"Blocks"`, `"Implements"`, `"is child of"`, and
+`"none"`. For task payloads whose `issue_type` is `Sub-task` or `Subtask`, pass
+`null` even if a configured Epic Link field exists; subtasks must use direct
+Jira parent linkage and must not receive an Epic Link field.
 
 **Backward Compatibility:**
 
@@ -238,197 +244,149 @@ If the mapping file does **not** exist:
 2. Continue directly to issue creation
 3. Save a brand-new `jira-mapping.json` at the end of the command
 
-### 7. Create Spec Issue from SPEC.md
+### 7. Build Jira Submission DAG
 
-Use the configured MCP server to create the Spec issue:
+Before invoking any live Jira call, build the complete creation DAG from the
+approved dry-run preview and local source artifacts:
 
-```
-Tool: {mcp_server}/createJiraIssue
-Parameters:
-  - projectKey: {project.key}
-  - issueTypeName: {mapping.spec_artifact}
-  - summary: {spec_title}
-  - description: {structured_spec_description}
-  - additional_fields: {defaults.spec.custom_fields}
+```text
+Epic -> Stories -> Subtasks
 ```
 
-Build `structured_spec_description` from the spec instead of dumping raw content
-blindly. Use an explicit standalone body contract:
+Each node in the DAG must have a deterministic `idempotency_id`, expected
+`parent_key`, issue type, summary, description, base labels, optional
+`relationship_field`, and state-record path. `idempotency_id` must match
+`[a-zA-Z0-9_-]+`; use hyphens instead of colons.
+Use:
 
-- opening summary paragraph
-- `## Key outcomes`
-- `## Scope constraints`
-- `## Acceptance highlights`
-
-Prefer concrete, behavior-facing bullets under each heading. Do not rely on raw
-spec excerpts when a concise synthesized summary would read more clearly in Jira.
-
-Store the created spec issue key (e.g., "PROJ-100") for linking later phase and task issues.
-
-Display:
-```
-✅ Created spec issue: PROJ-100 - User Authentication System
-   URL: https://your-jira.atlassian.net/browse/PROJ-100
+```bash
+state_dir="specs/$spec_name/jira-submission-state"
+state_file="$state_dir/$idempotency_id.json"
 ```
 
-### 8. Create Phase Issues for Each Phase
+The DAG preserves the existing mode behavior:
 
-For each phase extracted from TASKS.md, create a phase issue and link it to the spec issue.
+- 2-level mode creates the Epic and Story nodes only; task checklists stay
+  embedded in Story descriptions.
+- 3-level mode creates the Epic, every Story, and every task as a separate Jira
+  issue.
 
-**First, check if 2-level mode is enabled:**
+Build descriptions using the existing body contracts:
 
-```
-is_two_level_mode = (task_artifact == "" OR task_artifact == "none" OR task_artifact is not set)
-```
+- Epic: opening summary paragraph, `## Key outcomes`,
+  `## Scope constraints`, `## Acceptance highlights`
+- Story: user story, behavior-facing acceptance criteria, goal,
+  independent test, value summary, implementation outline
+- Task: concise contribution line, concrete delivery sentence, affected files
+  when known, and `Done when` criteria
 
-**Step 7a: Create the Phase Issue**
+Do not call `createJiraIssue`, `getJiraIssue`, or `createIssueLink` directly
+from this outer agent. The outer agent owns DAG order and disk verification;
+the per-ticket filer agent owns Jira create/read-back for one node.
 
-The Phase description varies based on mode:
+Do not precompute or pass a `skc-idem-*` label. The filer normalizes the
+payload, computes `payload_hash`, derives `skc-idem-<hash12>`, and adds that
+label to the Jira submission after hashing. The label is derived from the first
+12 characters of `payload_hash`, not from `idempotency_id`; it is
+hyphen-separated, uses no colon, and fits Jira's 255-character label limit at
+18 characters total (9 prefix + 12 hash).
 
-**3-Level Mode (default):** Hybrid story-plus-execution contract
-```
-Tool: {mcp_server}/createJiraIssue
-Parameters:
-  - projectKey: {project.key}
-  - issueTypeName: {mapping.phase_artifact}
-  - summary: {phase_name}
-  - description: |
-      As a {phase_actor}, I want {phase_capability} so that {phase_value}.
+### 8. Delegate Epic And Story Creation To The Filer
 
-      ## Acceptance Criteria
+For each DAG node, invoke the filer with the custom-agent form:
 
-      **{acceptance_scenario_1_title}**
-      Given ...
-      When ...
-      Then ...
-
-      **{acceptance_scenario_2_title}**
-      Given ...
-      When ...
-      Then ...
-
-      Goal: {phase_goal}
-      Independent Test: {phase_independent_test}
-
-      Why this phase matters:
-      {phase_value_summary}
-
-      Implementation outline:
-      - T001: ...
-      - T002: ...
-  - additional_fields: {defaults.phase.custom_fields}
+```text
+/agent concierge.jira-file-ticket
 ```
 
-When building the Phase description:
+Then provide exactly one JSON payload. Do not invoke a slash-command prompt
+file for this delegation.
 
-- prefer an explicit `As a ... I want ... so that ...` user-story statement from
-  the source artifacts; if one is not present, synthesize one from the spec and
-  Phase goal
-- express acceptance criteria as behavior-oriented scenarios, preferably in
-  `Given / When / Then` form
-- keep the `Goal`, `Independent Test`, and implementation outline so the issue
-  remains actionable for engineering and QA
-- do not let the implementation outline replace the story statement or
-  acceptance criteria
-
-**2-Level Mode:** Full task checklist embedded in description
-```
-Tool: {mcp_server}/createJiraIssue
-Parameters:
-  - projectKey: {project.key}
-  - issueTypeName: {mapping.phase_artifact}
-  - summary: {phase_name}
-  - description: |
-      As a {phase_actor}, I want {phase_capability} so that {phase_value}.
-
-      ## Acceptance Criteria
-
-      **{acceptance_scenario_1_title}**
-      Given ...
-      When ...
-      Then ...
-
-      Goal: {phase_goal}
-      Independent Test: {phase_independent_test}
-
-      ## Tasks
-
-      - [x] T001: Initialize pnpm workspace with Nx and NestJS presets
-      - [x] T002: Add root tsconfig.base.json with path aliases
-      - [ ] T003: Configure root eslint.config.mjs
-      ...
-  - additional_fields: {defaults.phase.custom_fields}
+```json
+{
+  "idempotency_id": "0001-foundation-shell-epic",
+  "state_dir": "specs/0001-foundation-shell/jira-submission-state",
+  "project_key": "PROJ",
+  "issue_type": "Epic",
+  "summary": "User Authentication System",
+  "description": "structured standalone body",
+  "labels": ["spec-kit"],
+  "parent_key": null,
+  "relationship_field": null
+}
 ```
 
-**Step 7b: Link Phase to Spec based on `relationships.spec_phase`**
+For Story payloads linked to an Epic with company-managed `"Epic Link"`, pass
+`relationship_field` from `jira-config.yml`, defaulting to `customfield_10014`
+when the config does not name one. For team-managed `"Parent"` relationships,
+pass `relationship_field: null` and use `parent_key`.
 
-| spec_phase value | Action |
-|------------------|--------|
-| `"Parent"` | Set Phase's parent field to Spec key |
-| `"Epic Link"` | Set Epic Link custom field on Phase to Spec key |
-| `"Relates"` / `"Blocks"` / etc. | Create issue link from Phase to Spec |
-| `"none"` | No link created |
+After each filer invocation, read the state record from disk. Advance only when
+all of these are true:
 
-Store each Phase key for linking tasks (if 3-level mode).
+1. `status == "verified"`
+2. `payload_hash` matches the payload sent to the filer
+3. `live_key` is populated
+4. `verified_at` is populated
 
-Display (3-level mode):
-```
-✅ Created Phase: PROJ-101 - Phase 1: Setup (Shared Infrastructure)
-   URL: https://your-jira.atlassian.net/browse/PROJ-101
-   Linked to Spec via: {relationships.spec_phase}
-   Tasks: 9 tasks to create
-```
+Use the verified `live_key` from the Epic state record as the parent key for
+Story payloads when the configured relationship uses Jira parent linkage or
+company-managed Epic Link. Store each verified Story key for task creation.
 
-Display (2-level mode):
-```
-✅ Created Phase: PROJ-101 - Phase 1: Setup (Shared Infrastructure)
-   URL: https://your-jira.atlassian.net/browse/PROJ-101
-   Linked to Spec via: {relationships.spec_phase}
-   Tasks: 9 tasks (embedded in description)
-```
+If any state record is missing, malformed, not `verified`, or has a mismatched
+hash, halt immediately. Surface:
 
-### 9. Create Individual Jira Issues for EACH Task
+- the failed `idempotency_id`
+- the state directory
+- the current state record content if present
+- the next safe action: retry this idempotency id or inspect the live Jira issue
+
+Do not continue to later DAG nodes after a failure.
+
+### 9. Delegate Individual Jira Issues for EACH Task
 
 **⚠️ SKIP THIS STEP IF 2-LEVEL MODE IS ENABLED**
 
-If `task_artifact` is empty (`""`) or `"none"`, skip this entire step and proceed to Step 9.
-In 2-level mode, tasks are already embedded in Phase descriptions.
+If `task_artifact` is empty (`""`) or `"none"`, skip this entire step and
+proceed to Step 10. In 2-level mode, tasks are already embedded in Phase
+descriptions.
 
 ---
 
 #### 3-Level Mode Only
 
-**CRITICAL: This step is MANDATORY in 3-level mode. You MUST create a separate Jira issue for EVERY task listed in TASKS.md.**
+**CRITICAL: This step is MANDATORY in 3-level mode. You MUST create a separate
+Jira issue for EVERY task listed in TASKS.md.**
 
-DO NOT skip this step in 3-level mode. DO NOT just put tasks in the Phase description. Each `- [ ] T001 ...` line in TASKS.md becomes its own Jira issue.
+DO NOT skip this step in 3-level mode. DO NOT just put tasks in the Phase
+description. Each `- [ ] T001 ...` line in TASKS.md becomes its own Jira issue.
 
-**For each task item** (e.g., `- [x] T001 Initialize pnpm workspace...`):
+Create and verify tasks for **one Phase at a time**. Do not interleave task
+creation across multiple Phases. Before invoking the filer for a task, read the
+verified current Phase key from that Phase's state record and confirm that the
+task belongs to that Phase from `TASKS.md`.
 
-**Step 8a: Create the Jira Task issue**
+For each task item, invoke `/agent concierge.jira-file-ticket` with one JSON
+payload:
 
-Call the MCP tool to create the task with a standalone description:
-
-```
-Tool: {mcp_server}/createJiraIssue
-Parameters:
-  - projectKey: {project.key}
-  - issueTypeName: {mapping.task_artifact}
-  - summary: "{task_id}: {task_description}"
-  - description: |
-      Contributes to: {phase_story_summary}
-
-      {task_delivery_sentence}
-
-      Affected files:
-      - path/from/task.ts
-
-      Done when:
-      - {task_done_when_1}
-      - {task_done_when_2}
-  - additional_fields: {defaults.task.custom_fields}
+```json
+{
+  "idempotency_id": "0001-foundation-shell-T001",
+  "state_dir": "specs/0001-foundation-shell/jira-submission-state",
+  "project_key": "PROJ",
+  "issue_type": "Sub-task",
+  "summary": "T001: Initialize pnpm workspace with Nx and NestJS presets",
+  "description": "Contributes to: ...\n\nDone when:\n- ...",
+  "labels": ["spec-kit"],
+  "parent_key": "PROJ-101",
+  "relationship_field": null
+}
 ```
 
-When building task descriptions:
+Task/Subtask payloads must pass `relationship_field: null`; the filer will set
+the direct Jira parent and omit Epic Link fields entirely.
+
+The task payload must preserve the existing standalone body rules:
 
 - `phase_story_summary` should stay concise and user-story-oriented
 - `task_delivery_sentence` should be a direct plain-language description of the
@@ -442,79 +400,63 @@ When building task descriptions:
 - do not let the task body collapse into only source metadata when the task can
   be described as a concrete deliverable
 
-**Step 8b: Link Task to Phase based on `relationships.phase_task`**
-
-| phase_task value | Action |
-|------------------|--------|
-| `"Parent"` | Set Task's parent field to Phase key |
-| `"Relates"` / `"Blocks"` / etc. | Create issue link from Task to Phase |
-| `"none"` | No link created |
-
-**Step 8c: Link Task to Spec based on `relationships.spec_task`**
-
-| spec_task value | Action |
-|-----------------|--------|
-| `"Epic Link"` | Set Epic Link custom field on Task to Spec key |
-| `"Relates"` / `"Blocks"` / etc. | Create issue link from Task to Spec |
-| `"none"` | No direct Task-Spec link |
-
-**CRITICAL EXECUTION RULE:** Create and verify tasks for **one Phase at a time**.
-Do not interleave task creation across multiple Phases. Before creating a task,
-hold the current Phase key in working memory and confirm that the task being
-created belongs to that Phase from `TASKS.md`.
-
-**Step 8d: Verify the live task issue before continuing**
-
-After creating each task issue, immediately call `getJiraIssue` for the newly
-created task key and verify all of the following against the local source
-artifacts before moving to the next task:
-
-1. the live task `summary` matches `{task_id}: {task_description}`
-2. the live `description` preserves the expected `Contributes to` line and
-   `Done when` criteria for the task
-3. the live task `parent.key` matches the expected current Phase key whenever
-   `relationships.phase_task` is `"Parent"`
+After each filer invocation, read
+`specs/<spec-name>/jira-submission-state/<idempotency_id>.json` from disk and
+confirm `status == "verified"` before moving to the next task. The filer
+performs the live `createJiraIssue` and `getJiraIssue` calls and verifies
+description existence, summary, parent, and idempotency label.
 
 If any verification fails:
 
 - stop the run immediately
-- report the mismatch clearly
+- report the failed `idempotency_id`
+- report the state directory
+- report the mismatch from the state record
 - do **not** continue creating additional tasks
 - do **not** save or trust `jira-mapping.json` until the mismatch is resolved
 
-**Repeat steps 8a-8d for EVERY task** in the phase before moving to the next Phase.
+**Repeat this delegation + disk-read verification for EVERY task** in the
+phase before moving to the next Phase.
 
-Example: If Phase 1 has 9 tasks (T001-T009), you create 9 Jira issues:
-```
-Creating tasks for Story PROJ-101 (Phase 1: Setup):
-  ├── ✅ PROJ-110 - T001: Initialize pnpm workspace
-  ├── ✅ PROJ-111 - T002: Add root tsconfig.base.json
-  ├── ✅ PROJ-112 - T003: Configure root eslint.config.mjs
-  ├── ✅ PROJ-113 - T004: Configure prettier
-  ├── ✅ PROJ-114 - T005: Add root vitest.config.ts
-  ├── ✅ PROJ-115 - T006: Add .npmrc
-  ├── ✅ PROJ-116 - T007: Add Nx workspace config
-  ├── ✅ PROJ-117 - T008: Add workspace lint/test scripts
-  └── ✅ PROJ-118 - T009: Add .gitignore updates
-
-9 tasks created for Phase 1
-```
-
-**IMPORTANT**: The jira-mapping.json must include ALL created task keys and must
-reflect the **verified live Jira state**, not just the intended local plan. If
-tasks are missing from the mapping, or if a task was created under the wrong
+**IMPORTANT**: The jira-mapping.json must include ALL verified task keys and
+must reflect the **verified disk state**, not just the intended local plan. If
+tasks are missing from the mapping, or if a task was verified under the wrong
 parent, you have not completed this step correctly.
 
 ### 10. Save Issue Mapping
 
 Save a comprehensive mapping file at `specs/<spec-name>/jira-mapping.json`.
 
-Before writing the mapping file, perform one final verification pass:
+Before writing the mapping file, perform one final disk-truth verification pass:
 
-1. fetch each created Phase issue and confirm it matches the expected Phase title
-2. fetch each created task issue and confirm its live parent matches the
-   expected Phase key
-3. only then write `jira-mapping.json`
+1. read the Epic state record and confirm it is `verified`
+2. read each created Phase state record and confirm it is `verified`, has the
+   expected payload hash, and has a populated `live_key`
+3. read each task state record and confirm it is `verified`, has the expected
+   payload hash, and was sent with the expected Phase `parent_key`
+4. collect `agent_model`, `agent_effort`, `copilot_session_id`, and
+   `cost_multiplier` from every verified state record for cost rollup metadata
+5. only then write `jira-mapping.json`
+
+Use this model multiplier table as the cost rollup source of truth. Sum each
+verified state record's `cost_multiplier`; if a verified state record lacks
+`cost_multiplier` but has `agent_model`, derive the multiplier from this table
+before summing.
+
+| Model | Multiplier |
+|---|---:|
+| `gpt-5-mini` | 0 |
+| `gpt-4.1` | 0 |
+| `gpt-5.4-mini` | 0.33 |
+| `claude-haiku-4.5` | 0.33 |
+| `gpt-5.4` | 1 |
+| `gpt-5.3-codex` | 1 |
+| `gpt-5.2-codex` | 1 |
+| `gpt-5.2` | 1 |
+| `claude-sonnet-4.5` | 1 |
+| `claude-sonnet-4.6` | 1 |
+| `gpt-5.5` | 7.5 |
+| `claude-opus-4.7` | 15 |
 
 **Include `"mode": "2-level"` or `"mode": "3-level"`** to indicate the hierarchy type used.
 
@@ -572,6 +514,12 @@ Before writing the mapping file, perform one final verification pass:
     }
   ],
   "mode": "3-level",
+  "cost_rollup": {
+    "estimate_type": "model_multiplier_sum",
+    "total_multiplier_units": 0,
+    "by_model": {"gpt-5-mini": 0},
+    "copilot_session_ids": ["session-or-null"]
+  },
   "summary": {
     "total_stories": 10,
     "total_tasks": 94,
@@ -608,6 +556,12 @@ Before writing the mapping file, perform one final verification pass:
       ]
     }
   ],
+  "cost_rollup": {
+    "estimate_type": "model_multiplier_sum",
+    "total_multiplier_units": 0,
+    "by_model": {"gpt-5-mini": 0},
+    "copilot_session_ids": ["session-or-null"]
+  },
   "summary": {
     "total_stories": 10,
     "total_embedded_tasks": 94,
@@ -619,9 +573,11 @@ Before writing the mapping file, perform one final verification pass:
 
 Note: In 2-level mode, `embedded_tasks` contains task metadata without Jira keys (since no Jira issues were created for tasks).
 
-### 10. Display Summary
+### 11. Display Summary
 
-Output a complete summary based on the mode used.
+Output a complete summary based on the mode used. Include cost rollup metadata
+from verified state records. Label it as a model-multiplier estimate, not true
+Premium request cost.
 
 #### 3-Level Mode Summary
 
@@ -647,6 +603,8 @@ Summary:
   • Total task issues: 94
   • Completed: 87 (93%)
   • Pending: 7 (7%)
+  • Cost estimate: 0 model-multiplier units (gpt-5-mini=0)
+  • Copilot sessions: session-or-null
 
 💾 Mapping saved to: specs/001-user-auth/jira-mapping.json
 
@@ -679,6 +637,8 @@ Summary:
   • Mode: 2-level (spec issue → phase issues only)
   • Total phase issues: 10
   • Total tasks: 94 (embedded in phase issue descriptions)
+  • Cost estimate: 0 model-multiplier units (gpt-5-mini=0)
+  • Copilot sessions: session-or-null
 
 💾 Mapping saved to: specs/001-user-auth/jira-mapping.json
 
@@ -700,6 +660,7 @@ Edit `.specify/extensions/jira/jira-config.yml` to customize:
 | `mapping.phase_artifact` | Issue type for Phases | "Story" |
 | `mapping.task_artifact` | Issue type for Tasks. Set to `""` or `"none"` for 2-level mode | "Task" |
 | `mapping.relationships.*` | Link types between issues | See docs |
+| `mapping.relationship_field` | Company-managed Epic Link custom field passed to the filer when needed | `customfield_10014` |
 | `defaults.spec.labels` | Labels for Spec | [] |
 | `defaults.phase.labels` | Labels for Phases | [] |
 | `defaults.task.labels` | Labels for Tasks (3-level only) | [] |
