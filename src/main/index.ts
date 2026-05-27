@@ -1,6 +1,8 @@
 import path from 'node:path';
-import { app, BrowserWindow } from 'electron';
-import { createMainLogger, type MainLogger } from './main/logging';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { loadAgentManifest } from './data-layer/agents/loader';
+import { registerAppVersionIpc } from './ipc/appVersion';
+import { createMainLogger, type MainLogger } from './logging';
 
 const createWindow = (logger: MainLogger): BrowserWindow => {
   const mainWindow = new BrowserWindow({
@@ -23,10 +25,12 @@ const createWindow = (logger: MainLogger): BrowserWindow => {
   return mainWindow;
 };
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   const logger = createMainLogger();
   logger.info('app ready');
 
+  await loadAgentManifest(logger);
+  registerAppVersionIpc({ ipcMain, logger });
   createWindow(logger);
 
   app.on('activate', () => {

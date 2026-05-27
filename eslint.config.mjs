@@ -50,7 +50,7 @@ export default tseslint.config(
     }
   },
   {
-    files: ['src/renderer/**/*.{ts,tsx}', 'src/renderer.tsx'],
+    files: ['src/renderer/**/*.{ts,tsx}', 'src/renderer/api/**/*.{ts,tsx}', 'src/renderer/index.tsx'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -62,7 +62,7 @@ export default tseslint.config(
     }
   },
   {
-    files: ['src/main/**/*.{ts,tsx}', 'src/main.ts', 'src/preload.ts'],
+    files: ['src/main/**/*.{ts,tsx}', 'src/main/index.ts', 'src/preload/index.ts'],
     rules: {
       'no-restricted-imports': [
         'error',

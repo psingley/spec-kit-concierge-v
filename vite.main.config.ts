@@ -10,11 +10,11 @@ export default defineConfig({
     outDir: '.vite/build',
     emptyOutDir: false,
     lib: {
-      entry: 'src/main.ts',
+      entry: 'src/main/index.ts',
       formats: ['cjs']
     },
     rollupOptions: {
-      external: ['electron', 'pino', ...builtinModules, ...builtinModules.map((name) => `node:${name}`)],
+      external: ['electron', 'pino', 'pino-pretty', ...builtinModules, ...builtinModules.map((name) => `node:${name}`)],
       output: {
         entryFileNames: 'main.js'
       }
