@@ -406,7 +406,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T073 Add `workspace:read` main factory floor tests (RED).
   - Paths: `src/main/ipc/workspace.factory.spec.ts`.
   - Dependencies: T072.
-  - Acceptance: The failing spec covers all six factory-floor cases for `workspace:read` request and response payloads, including active repo path and agent manifest summary.
+  - Acceptance: The failing spec covers all six factory-floor cases for `workspace:read` request and response payloads, including active repo path and agent manifest summary. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T074 Implement `workspace:read` main factory (GREEN).
   - Paths: `src/main/ipc/workspace.factory.ts`.
@@ -426,7 +426,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T077 Add `workspace:read` structured logging and failure test (RED).
   - Paths: `src/main/ipc/workspace.test.ts`.
   - Dependencies: T076.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that data-layer errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that data-layer errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T078 Implement `workspace:read` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/workspace.ts`.
@@ -436,7 +436,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T079 Add `git:read` main factory floor tests (RED).
   - Paths: `src/main/ipc/git.factory.spec.ts`.
   - Dependencies: T078.
-  - Acceptance: The failing spec covers all six factory-floor cases for `git:read` request and response payloads, including branch, ahead, behind, dirty, and uncommitted paths.
+  - Acceptance: The failing spec covers all six factory-floor cases for `git:read` request and response payloads, including branch, ahead, behind, dirty, and uncommitted paths. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T080 Implement `git:read` main factory (GREEN).
   - Paths: `src/main/ipc/git.factory.ts`.
@@ -456,7 +456,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T083 Add `git:read` structured logging and failure test (RED).
   - Paths: `src/main/ipc/git.test.ts`.
   - Dependencies: T082.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that git reader errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that git reader errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T084 Implement `git:read` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/git.ts`.
@@ -466,7 +466,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T085 Add `steps:read` main factory floor tests (RED).
   - Paths: `src/main/ipc/steps.factory.spec.ts`.
   - Dependencies: T084.
-  - Acceptance: The failing spec covers all six factory-floor cases for `steps:read` request and response payloads, including Concierge-Step trailer-derived state.
+  - Acceptance: The failing spec covers all six factory-floor cases for `steps:read` request and response payloads, including Concierge-Step trailer-derived state. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T086 Implement `steps:read` main factory (GREEN).
   - Paths: `src/main/ipc/steps.factory.ts`.
@@ -486,7 +486,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T089 Add `steps:read` structured logging and failure test (RED).
   - Paths: `src/main/ipc/steps.test.ts`.
   - Dependencies: T088.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that trailer-reader errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that trailer-reader errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T090 Implement `steps:read` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/steps.ts`.
@@ -496,7 +496,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T091 Add `preferences:read` main factory floor tests (RED).
   - Paths: `src/main/ipc/preferences.factory.spec.ts`.
   - Dependencies: T090.
-  - Acceptance: The failing spec covers all six factory-floor cases for `preferences:read` request and response payloads, including persisted minimal preferences.
+  - Acceptance: The failing spec covers all six factory-floor cases for `preferences:read` request and response payloads, including persisted minimal preferences. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T092 Implement `preferences:read` main factory support (GREEN).
   - Paths: `src/main/ipc/preferences.factory.ts`.
@@ -516,7 +516,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T095 Add `preferences:read` structured logging and failure test (RED).
   - Paths: `src/main/ipc/preferences.test.ts`.
   - Dependencies: T094.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that filesystem read errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that filesystem read errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T096 Implement `preferences:read` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/preferences.ts`.
@@ -526,7 +526,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T097 Add `preferences:write` main factory floor tests (RED).
   - Paths: `src/main/ipc/preferences.factory.spec.ts`.
   - Dependencies: T096.
-  - Acceptance: The failing spec extends `preferences.factory.spec.ts` with all six factory-floor cases for `preferences:write` request and response payloads, including a hostile malformed theme or unexpected write shape.
+  - Acceptance: The failing spec extends `preferences.factory.spec.ts` with all six factory-floor cases for `preferences:write` request and response payloads, including a hostile malformed theme or unexpected write shape. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T098 Implement `preferences:write` main factory support (GREEN).
   - Paths: `src/main/ipc/preferences.factory.ts`.
@@ -546,7 +546,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T101 Add `preferences:write` structured logging and failure test (RED).
   - Paths: `src/main/ipc/preferences.test.ts`.
   - Dependencies: T100.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that safe-write errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that safe-write errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T102 Implement `preferences:write` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/preferences.ts`.
@@ -556,7 +556,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T103 Add `auth:status` main factory floor tests (RED).
   - Paths: `src/main/ipc/auth.factory.spec.ts`.
   - Dependencies: T102.
-  - Acceptance: The failing spec covers all six factory-floor cases for `auth:status` request and response payloads, including nullable `copilotLoggedIn` and `githubLoggedIn` booleans.
+  - Acceptance: The failing spec covers all six factory-floor cases for `auth:status` request and response payloads, including nullable `copilotLoggedIn` and `githubLoggedIn` booleans. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T104 Implement `auth:status` main factory (GREEN).
   - Paths: `src/main/ipc/auth.factory.ts`.
@@ -576,7 +576,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T107 Add `auth:status` structured logging and failure test (RED).
   - Paths: `src/main/ipc/auth.test.ts`.
   - Dependencies: T106.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that process-boundary errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that process-boundary errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T108 Implement `auth:status` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/auth.ts`.
@@ -586,7 +586,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T109 Add `session:listAcp` main factory floor tests (RED).
   - Paths: `src/main/ipc/session.factory.spec.ts`.
   - Dependencies: T108.
-  - Acceptance: The failing spec covers all six factory-floor cases for `session:listAcp` request and response payloads, including typed ACP session summaries.
+  - Acceptance: The failing spec covers all six factory-floor cases for `session:listAcp` request and response payloads, including typed ACP session summaries. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T110 Implement `session:listAcp` main factory support (GREEN).
   - Paths: `src/main/ipc/session.factory.ts`.
@@ -606,7 +606,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T113 Add `session:listAcp` structured logging and failure test (RED).
   - Paths: `src/main/ipc/session.test.ts`.
   - Dependencies: T112.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that ACP session-list errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that ACP session-list errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T114 Implement `session:listAcp` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/session.ts`.
@@ -616,7 +616,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T115 Add `session:createAcp` main factory floor tests (RED).
   - Paths: `src/main/ipc/session.factory.spec.ts`.
   - Dependencies: T114.
-  - Acceptance: The failing spec extends `session.factory.spec.ts` with all six factory-floor cases for `session:createAcp` request and response payloads, including working directory, optional MCP server metadata, mode/model request fields, and created session identity.
+  - Acceptance: The failing spec extends `session.factory.spec.ts` with all six factory-floor cases for `session:createAcp` request and response payloads, including working directory, optional MCP server metadata, mode/model request fields, and created session identity. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T116 Implement `session:createAcp` main factory support (GREEN).
   - Paths: `src/main/ipc/session.factory.ts`.
@@ -636,7 +636,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T119 Add `session:createAcp` structured logging and failure test (RED).
   - Paths: `src/main/ipc/session.test.ts`.
   - Dependencies: T118.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that ACP session-create errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that ACP session-create errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T120 Implement `session:createAcp` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/session.ts`.
@@ -646,7 +646,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T121 Add `activity:read` main factory floor tests (RED).
   - Paths: `src/main/ipc/activity.factory.spec.ts`.
   - Dependencies: T120.
-  - Acceptance: The failing spec covers all six factory-floor cases for `activity:read` request and response payloads, including capped structured activity entries.
+  - Acceptance: The failing spec covers all six factory-floor cases for `activity:read` request and response payloads, including capped structured activity entries. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T122 Implement `activity:read` main factory (GREEN).
   - Paths: `src/main/ipc/activity.factory.ts`.
@@ -666,7 +666,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T125 Add `activity:read` structured logging and failure test (RED).
   - Paths: `src/main/ipc/activity.test.ts`.
   - Dependencies: T124.
-  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that filesystem log read errors propagate explicitly.
+  - Acceptance: The failing test asserts success and failure logs include channel, context, success flag, latency, and error details, and that filesystem log read errors propagate explicitly. **PINO DISCIPLINE: the test MUST mock `createMainLogger` (or the pino logger instance) and assert `logger.info`/`logger.error` was called via the project pino adapter — not a generic console mock or local `console.log`. Generic field-shape assertions are insufficient.**
 
 - [ ] T126 Implement `activity:read` structured logging and failure path (GREEN).
   - Paths: `src/main/ipc/activity.ts`.
@@ -678,7 +678,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T127 Add `workspace` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/workspace.factory.spec.ts`.
   - Dependencies: T126.
-  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for workspace state.
+  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for workspace state. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T128 Implement `workspace` renderer-entry factory (GREEN).
   - Paths: `src/renderer/api/workspace.factory.ts`.
@@ -698,7 +698,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T131 Add `git` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/git.factory.spec.ts`.
   - Dependencies: T130.
-  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for git state.
+  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for git state. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T132 Implement `git` renderer-entry factory (GREEN).
   - Paths: `src/renderer/api/git.factory.ts`.
@@ -718,7 +718,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T135 Add `steps` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/steps.factory.spec.ts`.
   - Dependencies: T134.
-  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for step state.
+  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for step state. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T136 Implement `steps` renderer-entry factory (GREEN).
   - Paths: `src/renderer/api/steps.factory.ts`.
@@ -744,6 +744,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
   - Paths: `src/renderer/api/preferences.factory.ts`.
   - Dependencies: T139.
   - Acceptance: The factory validates preload-returned `unknown`, returns typed preference-read data or stable named errors, imports no Electron/Node APIs, and the read cases in `preferences.factory.spec.ts` pass.
+  - **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T141 Add `preferences:read` endpoint behavior test (RED).
   - Paths: `src/renderer/api/preferences.endpoint.test.ts`.
@@ -758,7 +759,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T143 Add `preferences:write` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/preferences.factory.spec.ts`.
   - Dependencies: T142.
-  - Acceptance: The failing spec extends `preferences.factory.spec.ts` with all six factory-floor cases for unknown preload results entering the renderer for preference writes.
+  - Acceptance: The failing spec extends `preferences.factory.spec.ts` with all six factory-floor cases for unknown preload results entering the renderer for preference writes. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T144 Implement `preferences:write` renderer-entry factory support (GREEN).
   - Paths: `src/renderer/api/preferences.factory.ts`.
@@ -778,7 +779,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T147 Add `auth` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/auth.factory.spec.ts`.
   - Dependencies: T146.
-  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for auth status.
+  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for auth status. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T148 Implement `auth` renderer-entry factory (GREEN).
   - Paths: `src/renderer/api/auth.factory.ts`.
@@ -798,7 +799,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T151 Add `session:listAcp` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/session.factory.spec.ts`.
   - Dependencies: T150.
-  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for ACP session lists.
+  - Acceptance: The failing spec covers all six factory-floor cases for unknown preload results entering the renderer for ACP session lists. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T152 Implement `session:listAcp` renderer-entry factory support (GREEN).
   - Paths: `src/renderer/api/session.factory.ts`.
@@ -818,7 +819,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 - [ ] T155 Add `session:createAcp` renderer-entry factory floor tests (RED).
   - Paths: `src/renderer/api/session.factory.spec.ts`.
   - Dependencies: T154.
-  - Acceptance: The failing spec extends `session.factory.spec.ts` with all six factory-floor cases for unknown preload results entering the renderer for ACP session creation.
+  - Acceptance: The failing spec extends `session.factory.spec.ts` with all six factory-floor cases for unknown preload results entering the renderer for ACP session creation. **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T156 Implement `session:createAcp` renderer-entry factory support (GREEN).
   - Paths: `src/renderer/api/session.factory.ts`.
@@ -849,6 +850,7 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
   - Paths: `src/renderer/api/activity.endpoint.test.ts`.
   - Dependencies: T160.
   - Acceptance: The failing endpoint test uses the real preload bridge mock, calls `activity:read` through `ipcBaseQuery`, validates through the renderer factory, preserves IPC/factory errors, and provides the `Transcript` tag where activity entries expose transcript/log state.
+  - **VERTICAL DISCIPLINE: implementer MUST execute the six cases as SEQUENTIAL sub-tracer-bullets — write case 1 RED, run, confirm fail, write minimal factory code GREEN, run pass; then case 2 RED, tighten factory GREEN; ... through case 6. Six cases batched in one RED commit violates Pocock TDD vertical tracer-bullet discipline per .agents/skills/tdd/SKILL.md.**
 
 - [ ] T162 Implement `activity` endpoint (GREEN).
   - Paths: `src/renderer/api/activity.endpoint.ts`, `src/renderer/api/baseQuery.ts`, `src/renderer/api/index.ts`.
