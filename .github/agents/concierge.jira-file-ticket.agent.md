@@ -3,6 +3,9 @@ description: File one Jira ticket deterministically — idempotent create + read
 model: gpt-5-mini
 effort: low
 tools:
+- read
+- edit
+- bash
 - atlassian/createJiraIssue
 - atlassian/searchJiraIssuesUsingJql
 - atlassian/getJiraIssue
@@ -23,7 +26,7 @@ agent; the model and tool frontmatter are honored on the custom-agent path.
 ## Prerequisites
 
 1. Atlassian MCP server configured as `atlassian`
-2. Jira configuration file exists: `.specify/extensions/jira/jira-config.yml`
+2. Jira configuration file exists: `.specify/extensions/concierge-jira/jira-config.yml`
 3. A JSON payload is provided in `$ARGUMENTS`
 
 ## User Input
@@ -48,6 +51,18 @@ incoming label beginning with `skc-idem-` because this agent derives that label
 after hashing.
 
 ## Steps
+
+### 0. Write Entry Trace (debugging)
+
+Before doing ANY other work, write a debug trace line to
+`{state_dir}/_filer.debug.log` (use `{state_dir}` derived from the input
+JSON if parseable, else `/tmp/concierge-filer.debug.log` as fallback):
+
+```
+[ISO-8601 timestamp] FILER_ENTRY idempotency_id={raw idempotency_id} arg_length={length of $ARGUMENTS}
+```
+
+Use `mkdir -p` + atomic append. This proves the filer started executing.
 
 ### 1. Parse, Validate, Normalize, And Hash Payload
 
@@ -126,7 +141,9 @@ failure status.
 
 ### 4. Read Existing State
 
-If `state_file` exists, read it from disk before calling Jira.
+**IMPORTANT:** `state_file` not existing is the NORMAL case for a fresh ticket. If a view/read of the state file returns "file not found" or any equivalent error, this is a fresh idempotency_id with NO prior state. **DO NOT halt or return create_failed.** Skip ahead to Step 5 (orphan check), then Step 6 (write creating state), then Step 7 (create the Jira issue). Treat the absence of a state file as the expected first-call condition.
+
+If `state_file` DOES exist, read it from disk before calling Jira.
 
 If the existing state has `status == "verified"` and its `payload_hash`
 matches the incoming `payload_hash`, do not call Jira. Return exactly one
@@ -151,7 +168,7 @@ constructing the JQL string.
 project = '{project_key}' AND labels = '{idempotency_label}'
 ```
 
-Use `searchJiraIssuesUsingJql` with that exact JQL.
+Use `searchJiraIssuesUsingJql` with that exact JQL. **Always pass `cloudId` from `atlassian_cloud_id` in `.specify/extensions/concierge-jira/jira-config.yml` as a required parameter on every Atlassian MCP call (createJiraIssue, getJiraIssue, searchJiraIssuesUsingJql). Do NOT rely on auto-resolve — it fails in sub-agent runtimes.**
 
 If exactly one issue is found, call `getJiraIssue` for that key and verify it
 using Step 8. If verification passes, write `verified` and return a single-line
@@ -190,23 +207,51 @@ Call `createJiraIssue` with the base labels plus `idempotency_label`:
 ```text
 Tool: atlassian/createJiraIssue
 Parameters:
+  - cloudId: {atlassian_cloud_id from jira-config.yml}
   - projectKey: {project_key}
   - issueTypeName: {issue_type}
   - summary: {summary}
   - description: {description}
-  - labels: {labels plus idempotency_label}
+  - additional_fields: {
+      "labels": {labels plus idempotency_label},
+      [parent linkage per branching rules below — see Relationship branching]
+    }
+
+**CRITICAL:** Labels MUST be passed inside additional_fields, NOT as a top-level
+parameter. Top-level labels are silently dropped by the Atlassian MCP for at
+least Epic issue types (verified empirically: SKC-2 created with top-level
+labels parameter returned labels:[]; SKC-3 created with additional_fields.labels
+returned all 4 labels attached). Same rule for parent linkage — every parent
+field goes inside additional_fields.
 ```
 
-Relationship branching:
+Relationship branching (CORRECTED 2026-05-27 from empirical failure diag of phase-1 story):
 
-1. If `parent_key` is `null`, omit parent and relationship fields.
-2. If `issue_type` is `Sub-task` or `Subtask`, set the direct Jira parent from
-   `parent_key` and omit Epic Link / `relationship_field` entirely.
-3. If `relationship_field` is present and `parent_key` is not `null`, set that
-   custom field to `parent_key`. For company-managed Epic Link, use
-   `customfield_10014` unless the caller passed a different configured field.
-4. If `relationship_field` is absent and `parent_key` is not `null`, set the
-   direct Jira parent from `parent_key`.
+The Atlassian MCP's `createJiraIssue` has a TOP-LEVEL `parent` parameter (string,
+issue key). Use it for direct Jira parent linkage on BOTH Subtasks and
+Stories-under-Epics in team-managed projects. Do NOT pass `"Parent"` (capital P)
+as a key inside `additional_fields` — that gets interpreted as a custom field
+name and Jira rejects with "Field 'Parent' cannot be set" (verified empirically:
+SKC-10 Epic verified; phase-1 Story create_failed with this exact error when
+filer wrote `additional_fields: {"Parent": "SKC-10"}`).
+
+1. If `parent_key` is `null`, omit `parent` from the top-level call and omit
+   any parent-related fields from `additional_fields`.
+2. If `issue_type` is `Sub-task` or `Subtask`, pass `parent_key` as the
+   TOP-LEVEL `parent` parameter (string value, e.g. `"parent": "SKC-10"`).
+   Do NOT pass anything for parent inside `additional_fields`.
+3. If `issue_type` is `Story` (or other non-Subtask) AND `relationship_field`
+   is null/absent AND `parent_key` is not null, pass `parent_key` as the
+   TOP-LEVEL `parent` parameter (same as Subtask case). This is the team-managed
+   Story-under-Epic linkage and is the path SKC uses.
+4. If `relationship_field` is the literal string `"Epic Link"` (company-managed
+   legacy projects) AND `parent_key` is not null, set the Epic Link custom field
+   inside `additional_fields`. Use `customfield_10014` unless the caller passed
+   a different configured field id. Do NOT also set the top-level `parent`.
+5. If `relationship_field` is any other value (`"Relates"`, `"Blocks"`,
+   `"Implements"`, `"is child of"`, `"none"`), the filer does NOT set parent
+   linkage at create time — these are post-create issue links and are out of
+   scope for this filer protocol.
 
 Attempt creation at most five total times.
 

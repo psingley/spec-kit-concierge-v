@@ -277,16 +277,47 @@ the state record from disk before advancing.
 
 ## Invocation Caveats
 
-Use the custom-agent invocation form for the filer:
+Two invocation paths, picked by caller type:
+
+### Human interactive selection
 
 ```text
 /agent concierge.jira-file-ticket
 ```
 
+Honors frontmatter `model` and `effort`. Suitable for ad-hoc human-driven
+single-ticket diagnostics.
+
+### Outer-agent orchestration (the actual production path)
+
+The outer `speckit.concierge-jira.specstoissues` agent uses **`bash` to shell
+out** to a fresh Copilot process per ticket:
+
+```bash
+PAYLOAD='{"idempotency_id":"...","state_dir":"...","project_key":"...","issue_type":"...","summary":"...","description":"...","labels":["..."],"parent_key":null,"relationship_field":null}'
+copilot --agent=concierge.jira-file-ticket --allow-all-tools -p "$PAYLOAD"
+```
+
+Each invocation spawns a fresh Copilot session at `gpt-5-mini` + `effort: low`
+(0x pricing per call). Filer writes its state file, returns single-line JSON
+on stdout, exits.
+
+### Anti-pattern: in-session sub-agent invocation
+
+DO NOT use Copilot's in-session `task` tool or write inline prose like "invoke
+the filer" to delegate. Empirically verified failure mode: in-session sub-agent
+delegation produced SKC-8 in Jira but **no state file on disk** because the
+sub-agent skipped the Step 0 entry trace and Step 9 final write while
+completing the middle Atlassian calls. The shell-out pattern at
+`scripts/diag-filer-run.sh` produced SKC-9 with both the Jira ticket AND the
+state file written every time. Use shell-out only.
+
+### Prompt-pointer caveat
+
 Do not use the prompt pointer as a slash command. The prompt pointer exists
 only to route humans toward the custom agent; model and tool frontmatter
-are honored by the `/agent` custom-agent path, not by treating the prompt
-file itself as the executable command.
+are honored by the `/agent` custom-agent path and by `--agent=` shell
+invocation, not by treating the prompt file itself as the executable command.
 
 For custom-agent `tools:` frontmatter, MCP tools are referenced with the
 configured server name followed by `/` and the tool name, for example

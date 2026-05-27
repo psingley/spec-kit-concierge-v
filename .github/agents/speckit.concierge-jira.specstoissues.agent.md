@@ -4,7 +4,7 @@ tools:
 - 'read'
 - 'search'
 - 'edit'
-- 'agent'
+- 'bash'
 ---
 
 
@@ -21,7 +21,7 @@ This command creates a complete Jira issue hierarchy from your specification and
 ## Prerequisites
 
 1. MCP server providing Jira tools configured and running (server name configured in jira-config.yml)
-2. Jira configuration file exists: `.specify/extensions/jira/jira-config.yml`
+2. Jira configuration file exists: `.specify/extensions/concierge-jira/jira-config.yml`
 3. Specification directory with `spec.md` and `tasks.md` files in `specs/<spec-name>/`
 
 ## User Input
@@ -46,7 +46,7 @@ Read the specification directory and validate that both `spec.md` and `tasks.md`
 
 ### 2. Load Jira Configuration
 
-Load the Jira configuration from `.specify/extensions/jira/jira-config.yml`:
+Load the Jira configuration from `.specify/extensions/concierge-jira/jira-config.yml`:
 
 **Artifact Mapping:**
 - `mapping.spec_artifact`: Issue type for SPEC.md (default: "Epic")
@@ -293,14 +293,30 @@ hyphen-separated, uses no colon, and fits Jira's 255-character label limit at
 
 ### 8. Delegate Epic And Story Creation To The Filer
 
-For each DAG node, invoke the filer with the custom-agent form:
+For each DAG node, invoke the filer by **shelling out via `bash`** to a fresh
+Copilot process. Do NOT use the in-session `task` tool or `/agent` slash-form
+delegation — both are unreliable in 2026 and silently skip the filer's
+state-file write steps (verified empirically: in-session sub-agent delegation
+produced SKC-8 in Jira but no state file on disk; shell-invocation pattern at
+`scripts/diag-filer-run.sh` produced SKC-9 with both the Jira ticket and the
+state file written every time).
 
-```text
-/agent concierge.jira-file-ticket
+Use this exact bash invocation per ticket:
+
+```bash
+PAYLOAD='{"idempotency_id":"...","state_dir":"...","project_key":"SKC","issue_type":"...","summary":"...","description":"...","labels":["..."],"parent_key":null,"relationship_field":null}'
+copilot --agent=concierge.jira-file-ticket --allow-all-tools -p "$PAYLOAD"
 ```
 
-Then provide exactly one JSON payload. Do not invoke a slash-command prompt
-file for this delegation.
+The filer runs in its own fresh Copilot process at `gpt-5-mini` + `effort: low`
+(0x pricing per invocation), writes its state file to disk, returns a
+single-line JSON summary on stdout, and exits.
+
+After the shell command completes, READ the state file from disk at
+`{state_dir}/{idempotency_id}.json` before constructing the next ticket's
+payload. The state file is the source of truth — not the stdout return.
+
+Build the payload below and pass it to the bash command above:
 
 ```json
 {
@@ -366,8 +382,16 @@ creation across multiple Phases. Before invoking the filer for a task, read the
 verified current Phase key from that Phase's state record and confirm that the
 task belongs to that Phase from `TASKS.md`.
 
-For each task item, invoke `/agent concierge.jira-file-ticket` with one JSON
-payload:
+For each task item, **shell out via `bash`** to invoke the filer in a fresh
+Copilot process (NOT the in-session `task` tool — see Step 8 for rationale).
+Build the JSON payload below and pass it to:
+
+```bash
+copilot --agent=concierge.jira-file-ticket --allow-all-tools -p "$PAYLOAD"
+```
+
+Then read the state file at `{state_dir}/{idempotency_id}.json` to confirm
+`status == "verified"` before moving to the next task. Payload shape:
 
 ```json
 {
@@ -650,7 +674,7 @@ Next steps:
 
 ## Configuration Reference
 
-Edit `.specify/extensions/jira/jira-config.yml` to customize:
+Edit `.specify/extensions/concierge-jira/jira-config.yml` to customize:
 
 | Config Key | Description | Default |
 |------------|-------------|---------|
@@ -671,7 +695,7 @@ Edit `.specify/extensions/jira/jira-config.yml` to customize:
 
 Copy the template and configure:
 ```bash
-cp .specify/extensions/jira/jira-config.template.yml .specify/extensions/jira/jira-config.yml
+cp .specify/extensions/concierge-jira/jira-config.template.yml .specify/extensions/concierge-jira/jira-config.yml
 # Edit jira-config.yml with your project settings
 ```
 

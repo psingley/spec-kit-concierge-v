@@ -8,6 +8,10 @@
 # to "Parent" accordingly.
 
 # MCP Server Configuration
+# Atlassian Cloud ID — required on every Atlassian MCP call.
+# Hardcoded so per-ticket agents don't need to re-resolve at runtime.
+atlassian_cloud_id: "20a57dd3-0f9f-41ca-94d0-0def6f4ff476"
+
 mcp_server: "atlassian"
 
 # Jira Project Configuration
