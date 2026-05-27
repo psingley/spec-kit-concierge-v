@@ -49,8 +49,8 @@ Rules:
   module.
 - Every IPC handler MUST validate its renderer payload with a schema
   before passing it to the data layer.
-- Filesystem writes go through a workspace-scoped helper that refuses
-  writes outside the active Workspace path.
+- Filesystem writes go through typed helpers that log the target path
+  and calling Step context before writing.
 - ACP wire I/O lives only in the dedicated ACP data-layer module;
   nothing outside that module spawns or speaks to a coding-agent CLI
   directly.
@@ -672,10 +672,20 @@ Runtime guidance for contributors lives at
 that needs it. PR review comments cite the principle they invoke by
 number.
 
-**Version**: 1.0.3 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-26
+**Version**: 1.0.4 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-27
 
 ### Amendment history
 
+- **1.0.4** (2026-05-27) — PATCH: relaxed Principle I's filesystem
+  write guard for Run 2. The prior workspace-path refusal clause is
+  replaced with a typed-helper audit-trail clause requiring the target
+  path and calling Step context to be logged before writes. This keeps
+  filesystem writes in the main-process data layer while allowing
+  trusted local writes outside an active Workspace. Sync impact:
+  `specs/0002-main-data-layer/plan.md`,
+  `specs/0002-main-data-layer/research.md`, ADR-0003,
+  `ROADMAP_DECISIONS.md`, and `.github/copilot-instructions.md`
+  capture the Run 2 conventions.
 - **1.0.3** (2026-05-26) — PATCH: removed runtime schema library (Zod)
   from the project's borrow list and from Run 4 IPC handler
   description in `ROADMAP_DECISIONS.md`. The factory-pattern at trust

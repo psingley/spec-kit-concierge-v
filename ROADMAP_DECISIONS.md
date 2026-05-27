@@ -40,7 +40,7 @@ followed by the full canonical six-step flow per the constitution
 2. **Main Data Layer Foundation**
    `main/data-layer/fs/safeWrite.ts`, git read primitives (read
    `Concierge-Step:` trailers from log, read branch state, check for
-   uncommitted changes to a path set), workspace path guard, the
+   uncommitted changes to a path set), typed safe-write audit helper, the
    `agents.json` manifest shape and loader, pino-based structured
    logger writing to `userData/logs/`. **Depends on 1. Blocks 3.**
 
@@ -637,7 +637,7 @@ Token + port discovery: per-launch token + random port written to
 - HTTP-to-Redux-action adapter (no library exists)
 - SSE in Electron main
 - `agents.json` manifest loader
-- `fs/safeWrite` workspace-scoped helper
+- `fs/safeWrite` typed audit helper
 - Trust-boundary factories for every cross-boundary payload (IPC,
   ACP, HTTP, FS, MCP). Hand-written predicates and normalizers. The
   factory is the single source of truth for the typed shape; the
