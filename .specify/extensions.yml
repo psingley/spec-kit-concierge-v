@@ -5,6 +5,13 @@ settings:
   auto_execute_hooks: true
 hooks:
   after_specify:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_specify lifecycle hook?
+    description: Validate Specify artifacts and write Step Commit
+    condition: null
   - extension: spec-validate
     command: speckit.spec-validate.validate
     enabled: true
@@ -20,6 +27,13 @@ hooks:
     description: Auto-commit after specification
     condition: null
   after_tasks:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_tasks lifecycle hook?
+    description: Validate Tasks artifacts and write Step Commit
+    condition: null
   - extension: spec-validate
     command: speckit.spec-validate.validate-tasks
     enabled: true
@@ -65,6 +79,13 @@ hooks:
     description: Initialize Git repository before constitution setup
     condition: null
   before_specify:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_specify lifecycle hook?
+    description: Validate prerequisites and mark Specify pending
+    condition: null
   - extension: git
     command: speckit.git.feature
     enabled: true
@@ -73,6 +94,13 @@ hooks:
     description: Create feature branch before specification
     condition: null
   before_clarify:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_clarify lifecycle hook?
+    description: Validate prerequisites and mark Clarify pending
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -81,6 +109,13 @@ hooks:
     description: Auto-commit before spec clarification
     condition: null
   before_plan:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_plan lifecycle hook?
+    description: Validate prerequisites and mark Plan pending
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -89,6 +124,13 @@ hooks:
     description: Auto-commit before implementation planning
     condition: null
   before_tasks:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_tasks lifecycle hook?
+    description: Validate prerequisites and mark Tasks pending
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -105,6 +147,13 @@ hooks:
     description: Auto-commit before checklist generation
     condition: null
   before_analyze:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_analyze lifecycle hook?
+    description: Validate prerequisites and mark Analyze pending
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -129,6 +178,13 @@ hooks:
     description: Auto-commit after constitution update
     condition: null
   after_clarify:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_clarify lifecycle hook?
+    description: Validate Clarify artifacts and write Step Commit
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -137,6 +193,13 @@ hooks:
     description: Auto-commit after spec clarification
     condition: null
   after_plan:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_plan lifecycle hook?
+    description: Validate Plan artifacts and write Step Commit
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -161,6 +224,13 @@ hooks:
     description: Auto-commit after checklist generation
     condition: null
   after_analyze:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_analyze lifecycle hook?
+    description: Validate Analyze artifacts and write Step Commit
+    condition: null
   - extension: git
     command: speckit.git.commit
     enabled: true
@@ -175,4 +245,20 @@ hooks:
     optional: true
     prompt: Commit after syncing issues?
     description: Auto-commit after tasks-to-issues conversion
+    condition: null
+  before_review:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge before_review lifecycle hook?
+    description: Validate prerequisites and mark Review pending
+    condition: null
+  after_review:
+  - extension: concierge
+    command: concierge.stepLifecycle.dispatch
+    enabled: true
+    optional: false
+    prompt: Execute Concierge after_review lifecycle hook?
+    description: Validate Review artifacts and write Step Commit
     condition: null

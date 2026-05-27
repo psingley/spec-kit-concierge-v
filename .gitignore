@@ -62,3 +62,7 @@ design/project/Spec-kit Concierge (standalone).html
 # specify extension uninstall/reinstall backup churn
 .specify/extensions/.backup/
 .specify/extensions/spec-validate/local/
+
+# Run 5 lesson: TS-emitted .js files alongside .ts sources are forbidden.
+# tsconfig has noEmit:true; this is belt-and-suspenders for any tsc misconfiguration.
+/*.js

@@ -10,6 +10,7 @@ import { registerPreferencesIpc } from './ipc/preferences';
 import { registerSessionIpc } from './ipc/session';
 import { registerStepsIpc } from './ipc/steps';
 import { registerWorkspaceIpc } from './ipc/workspace';
+import { verifyAgentManifestDrift } from './hooks/driftVerifier';
 import { createMainLogger, type MainLogger } from './logging';
 
 const createWindow = (logger: MainLogger): BrowserWindow => {
@@ -38,6 +39,10 @@ app.whenReady().then(async () => {
   logger.info('app ready');
 
   await loadAgentManifest(logger);
+  await verifyAgentManifestDrift({
+    agentsDirectory: path.join(process.cwd(), '.github', 'agents'),
+    logger
+  });
   registerAppVersionIpc({ ipcMain, logger });
   registerAcpProbeIpc({ ipcMain, logger });
   registerWorkspaceIpc({ ipcMain, logger });

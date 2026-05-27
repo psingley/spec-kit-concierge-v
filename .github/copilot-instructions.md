@@ -1,9 +1,10 @@
 <!-- SPECKIT START -->
-Plan: `specs/0004-ipc-bridge-redux-skeleton/plan.md`
+Plan: `specs/0005-step-lifecycle-hooks/plan.md`
 
 Run 1 plan: `specs/0001-foundation-shell/plan.md`
 Run 2 plan: `specs/0002-main-data-layer/plan.md`
 Run 3 plan: `specs/0003-acp-adapter/plan.md`
+Run 4 plan: `specs/0004-ipc-bridge-redux-skeleton/plan.md`
 
 Run 1 conventions:
 - TypeScript: `strict` + `noUncheckedIndexedAccess`.
@@ -49,4 +50,17 @@ Run 4 conventions:
 - Run 4 IPC adds `workspace:read`, `git:read`, `steps:read`, `preferences:read`, `preferences:write`, `auth:status`, `session:listAcp`, `session:createAcp`, and `activity:read`; `preferences:write` is the only Run 4 write handler.
 - Trust-boundary factories are required at both main-side IPC entry and renderer-side preload-bridge exit; renderer endpoint tests use the real preload bridge mock and do not mock internal supervisors or slice reducers.
 - Run 4 introduces no runtime dependencies and does not redo Runs 2-3.
+
+Run 5 conventions:
+- Hook executor layout is fixed by `specs/0005-step-lifecycle-hooks/grill.md`: `src/main/hooks/dispatcher.ts`, `src/main/hooks/manifest.ts`, `src/main/hooks/driftVerifier.ts`, and exactly twelve named hook files: `beforeSpecify.hook.ts`, `afterSpecify.hook.ts`, `beforeClarify.hook.ts`, `afterClarify.hook.ts`, `beforePlan.hook.ts`, `afterPlan.hook.ts`, `beforeTasks.hook.ts`, `afterTasks.hook.ts`, `beforeAnalyze.hook.ts`, `afterAnalyze.hook.ts`, `beforeReview.hook.ts`, and `afterReview.hook.ts`.
+- Step Contract disk-entry factories live under `src/main/domain/factories/` as one file per step (`specify`, `clarify`, `plan`, `tasks`, `analyze`, `review`) plus shared `types.ts`; IPC-entry and renderer-entry factories keep the existing Run 4 paths under `src/main/ipc/` and `src/renderer/api/` when Run 5 data crosses those boundaries.
+- Disk-entry factories use the seven-case floor: the six standard factory cases plus extra-key rejection for malicious JSON/frontmatter payloads. Write each floor case as a sequential RED -> GREEN sub-tracer bullet, not a horizontal batch.
+- Step state vocabulary is exactly `not_available | pending | complete`. Ordinary progression is `not_available -> pending -> complete`; Step Escape Hatch resets to `not_available`. Trailer restoration maps `pass -> complete`, `pending -> pending`, and `fail | skipped -> not_available` per `docs/adr/0008-step-state-machine.md`.
+- `.specify/extensions.yml` Run 5 lifecycle entries register all twelve `before_<step>` and `after_<step>` hooks for specify, clarify, plan, tasks, analyze, and review. Each Concierge lifecycle entry points to the single dispatcher command and preserves existing extension entries.
+- In-flight markers live at `userData/in-flight/${sessionId}/${step}.marker` and contain JSON with step, start time, session id, and expected artifacts. Markers are written by before-hook success and removed only after Step Commit success.
+- Step Commits use real `git` shell-outs through the Run 2 `gitCommand.ts` path, append exactly one `Concierge-Step: <step>:pass` trailer with `git interpret-trailers`, honor pre-commit hooks, and never use `--no-verify`, simple-git, or nodegit. Analyze is the only step that may use `--allow-empty`.
+- Run 5 fills only `stepLifecycle.listener.ts` and `transcriptCapture.listener.ts`; the other four Run 4 listener bodies stay empty. Clarify re-ask lives in `stepLifecycle.listener.ts`, is bounded to three attempts per malformed question, and exhausts with Step Escape Hatch reason `clarify-rigor-exhausted` per `docs/adr/0009-clarify-reask-listener.md`.
+- Hang detection is based only on ACP stream silence: check every 30 seconds, emit `hang-suspected` at exactly 20 minutes or later, and never auto-fail, auto-cancel, or auto-retry a step.
+- Step lifecycle structured log event names are fixed: `step-before-hook-start`, `step-before-hook-end`, `step-pending`, `step-prompt-issued`, `step-prompt-complete`, `step-after-hook-start`, `step-after-hook-end`, `step-commit-written`, `step-complete`, `step-escape-hatch-triggered`, `workspace-dirty-resume`, `agent-manifest-drift`, and `hang-suspected`. Fields include `event`, `step`, `sessionId`, optional `latencyMs`, optional `reason`, and optional `trailer`. Handler/hook logging tests mock `createMainLogger`, not duck-typed logger shapes.
+- Run 5 introduces no runtime dependencies and does not redo Runs 2-4.
 <!-- SPECKIT END -->

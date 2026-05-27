@@ -1,0 +1,26 @@
+# Clarifications: Run 5 Step Lifecycle & Hook Infrastructure
+
+**Session Date**: 2026-05-27
+**Spec**: `specs/0005-step-lifecycle-hooks/spec.md`
+**Grill Resolutions**: `specs/0005-step-lifecycle-hooks/grill.md`
+
+## Result
+
+Residual ambiguities found. The items below do not reopen the 13 settled grill decisions; they resolve seams left between those decisions, the Run 5 spec, and the constitutional Step Lifecycle / Clarify Rigor requirements.
+
+## Residual Ambiguities and Proposed Defaults
+
+| ID | Ambiguity | Proposed default | Why this default |
+|---|---|---|---|
+| R5-C01 | Clarify factory result shape conflicts with bounded re-ask. FR-009 says every factory returns either a commit candidate or Step Escape Hatch reason, while Clarify malformations must remain visible and route through re-ask before escape. | Clarify factory uses a three-way discriminated result: successful commit candidate, malformed-question partial result, or escape-hatch result. A malformed-question partial result includes well-formed questions, malformed questions, reasons, and raw text; it is not a Step Escape Hatch until the per-question three-attempt bound is exhausted with `clarify-rigor-exhausted`. | Preserves Constitution VIII's "re-ask, not full escape hatch" rule while keeping normal step factories on the common commit-or-escape path. |
+| R5-C02 | Before-hook prerequisite scope is underspecified, especially because Constitution VII names auth, prior step commits, and MCP config presence, while Run 5 excludes MCP integration and later Run 11 owns MCP config detection plus Atlassian auth. | Run 5 before-hooks implement the prerequisite gate shape and the step-order/prior-Step-Commit checks now. Auth and MCP checks are named prerequisite slots with injected status inputs and tests, but Run 5 does not implement MCP config read/write or Atlassian auth UI. Run 11 supplies those concrete inputs without changing hook contracts. | Keeps the Step Lifecycle seam load-bearing without pulling Run 11 external-surface work into Run 5. |
+| R5-C03 | Step Escape Hatch reset target has an internal wording conflict: one grill passage says reset to `pending`, while the spec, specify prompt, and later hatch wording say reset to `not_available` for manual retry. | `not_available` is canonical after Step Escape Hatch. Retry manually re-enters `pending` only after the next `before_<step>` succeeds. | Matches FR-017, FR-022, the three-state monotonic model, and "manual retry" semantics. |
+| R5-C04 | A valid Clarify run with no questions is not defined, even though the Clarify artifact is required and this command itself allows "no questions needed". | A Clarify artifact containing the exact trimmed sentinel `no questions needed` and no question blocks is valid zero-question output. The Clarify factory treats it as success, not malformed output. | Prevents correct no-ambiguity Clarify runs from failing the strict Clarify factory. |
+| R5-C05 | The spec restores trailer statuses `pending`, `pass`, `fail`, and `skipped`, but does not state which statuses Run 5 may write. | Run 5 writes only successful `pass` Step Commit trailers from after-hooks. It may restore `pending`, `fail`, and `skipped` trailers already present in history, but it does not manufacture failure or skipped commits. In-flight markers represent active work. | Aligns with Constitution VII's "after hook emits a single Step Commit on pass; on fail triggers Step Escape Hatch" rule. |
+| R5-C06 | Plan's context-file exception is a boolean in the grill manifest, but commit/revert needs a concrete path. | When `contextFileException: true` is set for Plan, resolve the extra path from the installed Spec Kit context-file setting, defaulting to `.github/copilot-instructions.md` as recorded in `.specify/init-options.json` and `ROADMAP_DECISIONS.md`. No other step may resolve or stage an outside-feature path. | Makes the exception executable without broadening the manifest or allowing accidental outside-feature writes. |
+| R5-C07 | Review is registered as a lifecycle step but is not a canonical Spec Kit agent and Run 5 excludes product review/JIRA UI. | Run 5 registers, dispatches, and tests `before_review` and `after_review` as hook infrastructure only. Actual invocation is the later internal Concierge review/JIRA lifecycle, not a Spec Kit CLI command or Run 5 product UI surface. | Keeps the six-step state machine complete while avoiding accidental scope creep into Runs 9 and 12. |
+| R5-C08 | Clarify parser rigor names markdown and rendered UI constraints, but the validation target is not explicit. | Validate normalized persisted Clarify question blocks in the required artifact, not surrounding chat text, slash-command chrome, or future renderer container markup. Renderer visibility tests assert malformed persisted question blocks remain visible. | Enforces Constitution VIII without letting host-rendering details create false malformation failures. |
+
+## Settled Decisions Not Reopened
+
+Hook file granularity, the six step names, dirty-resume silence, marker path, 20-minute hang threshold, startup drift verifier, structured log schema, listener-mediated re-ask routing, last-trailer-wins restore, and the grill-locked manifest entries remain settled.
