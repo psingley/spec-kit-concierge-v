@@ -1,0 +1,18 @@
+{
+  "idempotency_id": "0001-foundation-shell-T012",
+  "status": "verified",
+  "issue_key": "SKC-44",
+  "issue_url": "https://collette.atlassian.net/browse/SKC-44",
+  "payload_hash": "c0762669ea8c51ab07e9ee7f4fb9d4b729b2b92b0129d7a937d3ebb141bef870",
+  "idempotency_label": "SKC-idem-c0762669ea8c",
+  "attempts": 1,
+  "started_at": "2026-05-27T05:21:34.545Z",
+  "completed_at": "2026-05-27T05:21:52.665Z",
+  "agent_model": "gpt-5-mini",
+  "agent_effort": "low",
+  "copilot_session_id": null,
+  "cost_multiplier": 0,
+  "orphan_jql": "project = SKC AND labels = \"SKC-idem-c0762669ea8c\" ORDER BY created DESC",
+  "orphan_match": null,
+  "error": null
+}

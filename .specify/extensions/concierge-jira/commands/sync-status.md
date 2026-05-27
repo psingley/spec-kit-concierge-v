@@ -1,12 +1,11 @@
 ---
 description: "Sync task completion status to Jira"
 tools:
-  # Server name is configurable via mcp_server in jira-config.yml (default: "atlassian")
-  - '{mcp_server}/addCommentToJiraIssue'
-  - '{mcp_server}/editJiraIssue'
-  - '{mcp_server}/getJiraIssue'
-  - '{mcp_server}/getTransitionsForJiraIssue'
-  - '{mcp_server}/transitionJiraIssue'
+  - 'atlassian/addCommentToJiraIssue'
+  - 'atlassian/editJiraIssue'
+  - 'atlassian/getJiraIssue'
+  - 'atlassian/getTransitionsForJiraIssue'
+  - 'atlassian/transitionJiraIssue'
 ---
 
 # Sync Task Completion Status to Jira
@@ -216,11 +215,11 @@ For each Jira issue you plan to update, query its current status and available t
 
 ```markdown
 Call the configured MCP server to get available transitions:
-- Tool: getJiraIssue
-- Parameters: { "issueIdOrKey": "$task_key" }
+- Tool: atlassian/getJiraIssue
+- Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$task_key" }
 
-- Tool: getTransitionsForJiraIssue
-- Parameters: { "issueIdOrKey": "$task_key" }
+- Tool: atlassian/getTransitionsForJiraIssue
+- Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$task_key" }
 
 Common transitions:
 - "To Do" → "In Progress" → "Done"
@@ -264,8 +263,8 @@ echo ""
 #   local_status="${local_task_status[$task_id]}"
 #
 #   # Load current Jira status
-#   # Tool: getJiraIssue
-#   # Parameters: { "issueIdOrKey": "$task_key" }
+#   # Tool: atlassian/getJiraIssue
+#   # Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$task_key" }
 #
 #   # Completed locally: keep transitioning until Jira reaches done/closed/resolved
 #   if [[ "$local_status" == "completed" ]]; then
@@ -273,19 +272,20 @@ echo ""
 #
 #     # Loop with a small max step count to avoid infinite workflow loops
 #     # while current_status not in completed_statuses:
-#     #   Tool: getTransitionsForJiraIssue
-#     #   Parameters: { "issueIdOrKey": "$task_key" }
+#     #   Tool: atlassian/getTransitionsForJiraIssue
+#     #   Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$task_key" }
 #     #
 #     #   1. Prefer a transition whose target status is a completed status
 #     #   2. Otherwise prefer a forward-progress transition like Start Work / In Progress
 #     #   3. Apply one transition, then re-read status and transitions
 #     #
-#     # Tool: transitionJiraIssue
-#     # Parameters: { "issueIdOrKey": "$task_key", "transition": { "id": "$transition_id" } }
+#     # Tool: atlassian/transitionJiraIssue
+#     # Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$task_key", "transition": { "id": "$transition_id" } }
 #     #
 #     # After the issue reaches a completed status:
-#     # Tool: addCommentToJiraIssue
+#     # Tool: atlassian/addCommentToJiraIssue
 #     # Parameters: {
+#     #   "cloudId": "$atlassian_cloud_id",
 #     #   "issueIdOrKey": "$task_key",
 #     #   "commentBody": "Marked complete from specs/$spec_name/tasks.md via /speckit.concierge-jira.sync-status",
 #     #   "contentFormat": "markdown"
@@ -313,8 +313,8 @@ echo ""
 echo "📊 Overall Progress: $completed_count / $total_tasks tasks ($completion_pct%)"
 
 # Update the spec issue description with progress (optional)
-# Tool: editJiraIssue
-# Parameters: { "issueIdOrKey": "$epic_key", "description": "...\\n\\nProgress: $completion_pct% ($completed_count/$total_tasks tasks completed)" }
+# Tool: atlassian/editJiraIssue
+# Parameters: { "cloudId": "$atlassian_cloud_id", "issueIdOrKey": "$epic_key", "description": "...\\n\\nProgress: $completion_pct% ($completed_count/$total_tasks tasks completed)" }
 ```
 
 ### 8. Display Summary

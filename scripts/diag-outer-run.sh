@@ -40,16 +40,16 @@ Source artifacts:
 - .specify/extensions/concierge-jira/jira-config.yml
 
 DAG to file (5 tickets):
-1. Epic (idempotency_id: 0001-foundation-shell-epic-v2) — derived from spec.md.
-2. Story 1 (idempotency_id: 0001-foundation-shell-phase-1-v2) — derived from plan.md Phase 1 "Generate the shell scaffold." Parent: the Epic's live_key from disk.
-3. Subtask T001 (idempotency_id: 0001-foundation-shell-T001-v2) — from tasks.md T001. Parent: Story 1's live_key from disk.
-4. Subtask T002 (idempotency_id: 0001-foundation-shell-T002-v2). Parent: Story 1's live_key from disk.
-5. Subtask T003 (idempotency_id: 0001-foundation-shell-T003-v2). Parent: Story 1's live_key from disk.
+1. Epic (idempotency_id: 0001-foundation-shell-epic-v4) — derived from spec.md.
+2. Story 1 (idempotency_id: 0001-foundation-shell-phase-1-v4) — derived from plan.md Phase 1 "Generate the shell scaffold." Parent: the Epic's live_key from disk.
+3. Subtask T001 (idempotency_id: 0001-foundation-shell-T001-v4) — from tasks.md T001. Parent: Story 1's live_key from disk.
+4. Subtask T002 (idempotency_id: 0001-foundation-shell-T002-v4). Parent: Story 1's live_key from disk.
+5. Subtask T003 (idempotency_id: 0001-foundation-shell-T003-v4). Parent: Story 1's live_key from disk.
 
 RULES (NON-NEGOTIABLE):
 - Skip the dry-run preview step. We've already approved the design.
 - For EACH ticket, invoke the filer by shelling out via bash:
-  copilot --agent=concierge.jira-file-ticket --allow-all-tools -p "$PAYLOAD"
+  copilot --agent=speckit.concierge-jira.file-ticket --allow-all-tools -p "$PAYLOAD"
 - Do NOT use the in-session task tool. Do NOT use prose like "invoke the filer agent." Use bash, every time, every ticket.
 - After each bash invocation, read the state file at specs/0001-foundation-shell/jira-submission-state/<idempotency_id>.json BEFORE constructing the next payload.
 - Thread parent_key from the just-written state file's live_key field.
@@ -88,7 +88,7 @@ fi
 # 7. Snapshot state dir AFTER + copy state records
 ls -la "$STATE_DIR_REL/" 2>&1 > "$DIAG_DIR/state-dir-after.txt"
 mkdir -p "$DIAG_DIR/state-records"
-cp "$STATE_DIR_ABS"/0001-foundation-shell-*-v2.json "$DIAG_DIR/state-records/" 2>/dev/null || true
+cp "$STATE_DIR_ABS"/0001-foundation-shell-*-v4.json "$DIAG_DIR/state-records/" 2>/dev/null || true
 
 # 8. Summarize
 echo "--- diag complete ---"

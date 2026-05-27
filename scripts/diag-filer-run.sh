@@ -61,7 +61,7 @@ ls -t ~/.copilot/session-state/ > "$DIAG_DIR/sessions-before.txt"
 cd "$REPO"
 echo "--- invoking copilot ---"
 PAYLOAD=$(cat "$DIAG_DIR/payload.json")
-copilot --agent=concierge.jira-file-ticket --allow-all-tools -p "$PAYLOAD" \
+copilot --agent=speckit.concierge-jira.file-ticket --allow-all-tools -p "$PAYLOAD" \
   > "$DIAG_DIR/stdout.txt" 2> "$DIAG_DIR/stderr.txt"
 RC=$?
 echo "copilot exit code: $RC"

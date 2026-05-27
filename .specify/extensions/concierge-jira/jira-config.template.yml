@@ -2,6 +2,12 @@
 # Copy this to jira-config.yml and customize for your project
 
 # MCP Server Configuration
+# Atlassian Cloud ID — required on every Atlassian MCP call.
+# Visit https://admin.atlassian.com, select your organization/site, and copy
+# the UUID cloud ID from the URL. Hardcoded so per-ticket agents do not need
+# to re-resolve it at runtime.
+atlassian_cloud_id: ""
+
 mcp_server: "atlassian"
 
 # Jira Project Configuration

@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: "concierge-jira"
   name: "Concierge Jira"
-  version: "0.1.0"
+  version: "0.2.2"
   description: "Concierge fork of spec-kit-jira: hardened Jira spec/phase/task issue creation from spec-kit artifacts, with dry-run preflight, live verification, and a gold-standard ticket contract"
   author: "Peter Singley"
   repository: "https://github.com/psingley/concierge-jira"
@@ -29,6 +29,10 @@ provides:
     - name: "speckit.concierge-jira.sync-status"
       file: "commands/sync-status.md"
       description: "Sync task completion status to Jira"
+
+    - name: "speckit.concierge-jira.file-ticket"
+      file: "commands/file-ticket.md"
+      description: "File one Jira ticket with isolated stateful verification"
 
   config:
     - name: "jira-config.yml"

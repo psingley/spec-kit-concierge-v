@@ -1,7 +1,7 @@
 # Concierge Jira — Spec Kit Extension
 
 [![Spec Kit](https://img.shields.io/badge/spec--kit-extension-blue?logo=github)](https://github.com/github/spec-kit)
-[![Version](https://img.shields.io/badge/version-0.1.0-green)](https://github.com/psingley/concierge-jira/releases)
+[![Version](https://img.shields.io/badge/version-0.2.0-green)](https://github.com/psingley/concierge-jira/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Issues](https://img.shields.io/github/issues/psingley/concierge-jira)](https://github.com/psingley/concierge-jira/issues)
 
@@ -23,13 +23,14 @@ Concierge fork of [`mbachorik/spec-kit-jira`](https://github.com/mbachorik/spec-
 - **Custom Field Discovery**: Discover and configure Jira custom fields
 - **Status Synchronization**: Match checkbox-based stable task IDs and handle multi-step workflows
 - **Flexible Configuration**: Project-level config with local overrides and environment variables
-- **MCP Integration**: Works with any MCP server providing Jira/Atlassian tools (configurable)
+- **MCP Integration**: Uses the Atlassian MCP server with explicit `cloudId` on every call
+- **Isolated Per-Ticket Filing**: `specstoissues` delegates each ticket to `file-ticket` through bash shell-out for deterministic state writes
 
 ## Installation
 
 ### Prerequisites
 
-1. **Spec Kit** version 0.1.0 or higher
+1. **Spec Kit** version 0.2.0 or higher
 2. **MCP server providing Jira tools** configured in your AI agent (e.g., "atlassian", "jira-mcp-server")
 3. Valid Jira account with project access
 
@@ -45,7 +46,17 @@ specify extension add --dev /path/to/concierge-jira
 
 ## Configuration
 
-### 1. Set MCP Server and Jira Project Key
+### MCP Setup
+
+Concierge Jira uses the Atlassian MCP server from Claude Code/Copilot-compatible agent runtimes. Register the Atlassian MCP server before running any command that talks to Jira:
+
+```bash
+claude mcp add --transport http atlassian https://mcp.atlassian.com/v1/mcp
+```
+
+Run the first Atlassian MCP call interactively so the OAuth browser flow can complete. After OAuth succeeds, resolve your `cloudId` once by visiting https://admin.atlassian.com, selecting your Atlassian site, and copying the UUID from the URL. Put that UUID in `.specify/extensions/jira/jira-config.yml` as `atlassian_cloud_id`. Every Atlassian MCP call is made with this explicit `cloudId` so isolated filer invocations do not rely on runtime auto-resolution.
+
+### 1. Set MCP Server, Cloud ID, and Jira Project Key
 
 After installing the extension, create your project config from the template:
 
@@ -58,6 +69,7 @@ Then edit `.specify/extensions/jira/jira-config.yml`:
 
 ```yaml
 # MCP server providing Jira tools (default: "atlassian")
+atlassian_cloud_id: "20a57dd3-0f9f-41ca-94d0-0def6f4ff476"  # Replace with your cloud ID
 mcp_server: "atlassian"
 
 project:
@@ -127,8 +139,9 @@ This will:
 2. Render a read-only dry-run preview of the proposed hierarchy and descriptions
 3. Create a Jira spec issue from `specs/<spec-name>/spec.md` (default issue type: `Epic`)
 4. Create phase issues from Phase headers in `specs/<spec-name>/tasks.md` (default issue type: `Story`)
-5. In 3-level mode, create one task issue per task and verify the live result before continuing
-6. Save mapping to `specs/<spec-name>/jira-mapping.json` only after a final verification pass
+5. In 3-level mode, shell out once per ticket to `/speckit.concierge-jira.file-ticket`, which runs isolated on `gpt-5-mini`
+6. Read each filer state file from disk before continuing; only `created` or `duplicate` can advance the run
+7. Save mapping to `specs/<spec-name>/jira-mapping.json` only after a final verification pass
 
 **Hierarchy Modes:**
 
@@ -194,6 +207,22 @@ Create complete Jira issue hierarchy from spec and tasks.
 - Mapping file written from verified live Jira state
 - Mapping file: `specs/<spec-name>/jira-mapping.json`
 
+
+### `/speckit.concierge-jira.file-ticket`
+
+File one Jira ticket from a JSON payload. This command is intended to be invoked by `/speckit.concierge-jira.specstoissues`, not run manually for a full hierarchy. The outer orchestrator shells out once per ticket so each filer invocation starts fresh with `gpt-5-mini`, writes one state file, and returns one single-line JSON summary. Per-run cost for the filer is `gpt-5-mini = 0x Premium tokens` per invocation.
+
+**Prerequisites:**
+
+- `.specify/extensions/concierge-jira/jira-config.yml` exists
+- `atlassian_cloud_id` is configured
+- Payload contains one ticket, its `state_dir`, labels, parent key, and issue details
+
+**Output:**
+
+- One atomic state file in the requested state directory
+- Terminal status: `created`, `duplicate`, `failed`, `skipped`, `orphaned`, or `invalid`
+
 ### `/speckit.concierge-jira.discover-fields`
 
 Discover available custom fields in Jira instance.
@@ -239,7 +268,8 @@ Sync local task completion to Jira.
 # .specify/extensions/jira/jira-config.yml
 
 # MCP Server Configuration
-mcp_server: "atlassian"  # or "jira-mcp-server", "jira", etc.
+atlassian_cloud_id: "20a57dd3-0f9f-41ca-94d0-0def6f4ff476"
+mcp_server: "atlassian"
 
 # Jira Project Configuration
 project:

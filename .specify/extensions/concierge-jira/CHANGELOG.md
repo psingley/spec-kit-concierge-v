@@ -5,13 +5,41 @@ All notable changes to Concierge Jira will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-05-27
+
+### Fixed
+- Added missing `description:` frontmatter field to `commands/file-ticket.md`. Without it, Copilot CLI 1.0.54 silently refuses to register the custom agent. During v0.2.1 live validation (SKC-20 through SKC-24), the outer agent (speckit.concierge-jira.specstoissues) detected the registration failure on first Epic-filing shell-out, inspected the agent file, added the field in-place, and retried successfully. This release ships the fix so a fresh install requires no self-correction.
+
+## [0.2.1] - 2026-05-27
+
+### Fixed
+
+- **Bug 1 — Story-under-Epic parent linkage (team-managed Jira):** Live validation against `collette.atlassian.net` project SKC (cloudId `20a57dd3-0f9f-41ca-94d0-0def6f4ff476`) showed SKC-16 (Story) created with no Epic parent despite outer agent passing `parent_key: SKC-15`. Subtasks SKC-17/18/19 correctly linked to SKC-16. Session event inspection (session `9c92783f-ceda-44a7-bd29-6d7c66df07de` events.jsonl line 101) confirmed the filer sent no `parent` field for the Story — only labels. Root cause: relationship branching rule 3 instructed top-level `parent` (string), which is silently ignored by team-managed Jira for Story-under-Epic. Fix: Story-under-Epic now routes Epic linkage through `additional_fields: {"parent": {"key": epic_key}}` (object form required by team-managed Jira). Top-level `parent` string and `customfield_10014` are not used for this path. Validation issues: SKC-15 through SKC-19.
+
+- **Bug 2 — Verify status vocabulary:** After Step 8 verify passes all 4 checks, the filer now writes terminal state with `status: "verified"` (previously `status: "created"`, a transient intermediate). If any check fails, `status: "verify_mismatch"` is written with failing check details in the `error` field. Outer agent disk-truth gate in `specstoissues.md` updated to match: `status == "verified"` is the gate-passing condition. Terminal statuses list corrected in both `file-ticket.md` and `specstoissues.md` — `created` is removed from the terminal set; `verified` and `verify_mismatch` are the two possible Step 8 outcomes. Validation evidence: SKC-15 through SKC-19 on `collette.atlassian.net`.
+
+
+## [0.2.0] - 2026-05-26
+
+Validated Jira filing protocol based on SKC-1..SKC-14 dogfood evidence.
+
+### Fixed
+
+- Bucket A: corrected Atlassian MCP call shape so labels live in `additional_fields.labels`, parent linkage uses top-level `parent`, tool names use literal `atlassian/<tool>` syntax, and every Atlassian MCP call documents explicit `cloudId`.
+
+### Added
+
+- Bucket D: added `atlassian_cloud_id` configuration and MCP setup documentation, including OAuth and cloud ID resolution.
+- Bucket B: documented atomic state writes, first-call missing-state behavior, Step 0 debug trace, generalized `<project_key>-idem-<hash12>` labels, retry plus orphan-search recovery, and the six terminal states validated by the SKC run.
+- Bucket C: added `file-ticket` as the isolated per-ticket filer and rewrote `specstoissues` as the outer bash-delegating orchestrator with a disk-truth gate, anti-pattern warning, and cost/observability rollup.
+
 ## [0.1.0] - 2026-05-23
 
 Initial Concierge fork of `mbachorik/spec-kit-jira` at upstream `v3.0.0`.
 
 ### Added (on top of upstream v3.0.0)
 
-- Atlassian MCP command-name alignment (`createJiraIssue`, `editJiraIssue`, `searchJiraIssuesUsingJql`) with `{mcp_server}` placeholder (`be2c4a4`)
+- Atlassian MCP command-name alignment (`createJiraIssue`, `editJiraIssue`, `searchJiraIssuesUsingJql`) with the legacy configurable server placeholder (`be2c4a4`)
 - Mandatory dry-run preflight before any Jira write (`f93a377`)
 - First-run-safe `jira-mapping.json` handling (`f93a377`)
 - Live read-back verification of created issues before mapping writes (`f93a377`)

@@ -48,3 +48,6 @@ design/project/Spec-kit Concierge (standalone).html
 
 # `skills` CLI top-level dir is a workspace artifact, not source.
 /skills/
+
+# specify extension uninstall/reinstall backup churn
+.specify/extensions/.backup/
