@@ -1,0 +1,75 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { STEP_ARTIFACT_MANIFEST, type StepName } from '../../hooks/manifest';
+import type { ConciergeStepCommit, StepContractContext, StepContractResult } from './types';
+
+export const factoryEscape = (escapeHatchReason = 'factory-rejected' as const): StepContractResult => ({
+  ok: false,
+  kind: 'escape-hatch',
+  escapeHatchReason
+});
+
+const frontmatterPattern = /^---\r?\n([\s\S]*?)\r?\n---/;
+
+const rejectFrontmatterKeys = (contents: string): boolean => {
+  const match = frontmatterPattern.exec(contents);
+  if (match === null) {
+    return false;
+  }
+
+  const body = match[1] ?? '';
+  return body
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .some((line) => /^[A-Za-z0-9_-]+\s*:/.test(line));
+};
+
+export const readRequiredArtifact = async (
+  featureDir: string,
+  file: string
+): Promise<string | undefined> => {
+  try {
+    return await readFile(path.join(featureDir, file), 'utf8');
+  } catch {
+    return undefined;
+  }
+};
+
+export const validateRequiredMarkdown = async (
+  step: StepName,
+  featureDir: string,
+  hostilePattern: RegExp,
+  partialPattern?: RegExp
+): Promise<StepContractResult | undefined> => {
+  const requiredFiles = STEP_ARTIFACT_MANIFEST[step].requiredFiles;
+  for (const file of requiredFiles) {
+    const contents = await readRequiredArtifact(featureDir, file);
+    if (contents === undefined || contents.trim().length === 0) {
+      return factoryEscape();
+    }
+    if (rejectFrontmatterKeys(contents) || hostilePattern.test(contents)) {
+      return factoryEscape();
+    }
+    if (partialPattern?.test(contents)) {
+      return factoryEscape();
+    }
+  }
+
+  return undefined;
+};
+
+export const commitCandidate = (
+  step: StepName,
+  files: string[],
+  context: StepContractContext = {}
+): ConciergeStepCommit => ({
+  step,
+  status: 'pass',
+  files,
+  message: `Concierge ${step} step`,
+  ...(step === 'analyze' ? { allowEmptyCommit: true } : {}),
+  ...(step === 'plan' && context.contextFilePath !== undefined
+    ? { files: [...files, context.contextFilePath] }
+    : {})
+});
