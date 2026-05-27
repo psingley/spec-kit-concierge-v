@@ -13,7 +13,11 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 
 **Scope guard**: These tasks intentionally exclude ADR-0008, ADR-0009, `.github/copilot-instructions.md` Run 5 conventions, constitution v1.0.4, ADRs 0002-0007, Run 2-4 infrastructure, RTK Query baseQuery/tag taxonomy, installed runtime dependencies, and pre-populated spec-validate state JSON. Run 5 fills only the planned lifecycle surfaces and does not redo Runs 2-4.
 
-**Pino discipline**: Handler and hook logging tests MUST mock `createMainLogger` from `src/main/logging.ts` and assert `logger.info`/`logger.error` calls. Generic logger-shaped mocks, `console` mocks, or field-shape assertions alone are not acceptable.
+**Pino discipline**: Handler and hook logging tests MUST mock `createMainLogger` from `src/main/logging.ts` and assert `logger.info`/`logger.warn`/`logger.error` calls with the expected structured fields. Generic logger-shaped mocks, `console` mocks, or field-shape assertions alone are not acceptable. This rider is contractual for T011/T013/T015/T017/T019/T021/T023/T025/T027/T029/T063 and every other logging test.
+
+**Before-hook lifecycle discipline**: Every before-hook task acceptance in T007-T030 MUST prove prerequisite validation succeeds before lifecycle transition, then calls `writeInFlightMarker(sessionId, step)`, emits a `step-pending` log/activity event with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/pending` action. A before hook that only logs metadata or only returns success is incomplete.
+
+**After-hook lifecycle discipline**: Every after-hook task acceptance in T009-T030 MUST prove the hook invokes the step's Step Contract factory, calls `commitWithTrailer` on factory success, calls `removeInFlightMarker(sessionId, step)` only after commit success, emits `step-commit-written` and `step-complete` log/activity events with the grill Q13 schema, and returns a result the dispatcher uses to dispatch the renderer `steps/complete` action. An after hook that bypasses factory validation, commit writing, marker removal, or completion dispatch is incomplete.
 
 **Factory-floor discipline**: Each Step Contract factory uses the six standard factory-floor cases as SIX sequential sub-tracer bullets, followed by the seventh disk-entry extra-key rejection sub-tracer bullet. Implementers MUST run each case as RED -> GREEN before adding the next case. A single RED test containing all cases violates the vertical discipline.
 
@@ -55,7 +59,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T005 Add dispatcher public-route tests (RED).
   - Paths: `src/main/hooks/dispatcher.test.ts`.
   - Dependencies: T004.
-  - Acceptance: The failing tests exercise `dispatchStepHook` through public inputs and cover, as sequential sub-tracer bullets, one route at a time: `before_specify`, `after_specify`, `before_clarify`, `after_clarify`, `before_plan`, `after_plan`, `before_tasks`, `after_tasks`, `before_analyze`, `after_analyze`, `before_review`, `after_review`, then unknown hook/phase/step rejection.
+  - Acceptance: The failing tests exercise `dispatchStepHook` through public inputs and cover, as sequential sub-tracer bullets, one route at a time: `before_specify`, `after_specify`, `before_clarify`, `after_clarify`, `before_plan`, `after_plan`, `before_tasks`, `after_tasks`, `before_analyze`, `after_analyze`, `before_review`, `after_review`, then unknown hook/phase/step rejection. Vertical discipline rider: implement each route as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all routes violates this task.
 
 - [ ] T006 Implement dispatcher routing and logging shell (GREEN).
   - Paths: `src/main/hooks/dispatcher.ts`.
@@ -64,9 +68,19 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 
 ## Phase 3 - Twelve hook files, RED+GREEN per file
 
+- [ ] T006A Add shared prerequisite gate tests (RED).
+  - Paths: `src/main/hooks/prerequisiteGate.test.ts`, `src/main/hooks/prerequisiteGate.ts`.
+  - Dependencies: T006.
+  - Acceptance: The failing tests prove the shared gate checks prior Step Commit existence in branch trailers for prerequisite steps, accepts auth status only through an injected slot, accepts MCP config status only through an injected slot, never reads MCP/Atlassian state directly, and returns gate failure as the named `StepEscapeHatchReason` for prerequisite/auth/MCP failures.
+
+- [ ] T006B Implement shared prerequisite gate helper (GREEN).
+  - Paths: `src/main/hooks/prerequisiteGate.ts`, `src/main/hooks/types.ts`.
+  - Dependencies: T006A.
+  - Acceptance: The helper exposes a dispatcher-injectable prerequisite check used by before hooks, maps all gate failures to named Step Escape Hatch reasons, keeps auth/MCP statuses dependency-injected, reads prior Step Commit state only through the trailer reader seam, and `prerequisiteGate.test.ts` passes.
+
 - [ ] T007 Add `beforeSpecify` hook contract test (RED).
   - Paths: `src/main/hooks/beforeSpecify.hook.test.ts`.
-  - Dependencies: T006.
+  - Dependencies: T006B.
   - Acceptance: The failing test imports the public hook entry point, invokes it with injected context, mocks `createMainLogger`, and asserts `logger.info`/`logger.error` usage for `step-before-hook-start`/failure paths.
 
 - [ ] T008 Implement `beforeSpecify` hook shell (GREEN).
@@ -189,7 +203,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T031 Add `specify` Step Contract factory floor tests (RED).
   - Paths: `src/main/domain/factories/specify.factory.spec.ts`.
   - Dependencies: T030.
-  - Acceptance: The spec exercises `validateSpecifyArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `spec.md`; empty object; `null`; `undefined`; hostile malformed frontmatter/body; partial plausible `spec.md`; extra-key rejection on disk-derived payload.
+  - Acceptance: The spec exercises `validateSpecifyArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `spec.md`; empty object; `null`; `undefined`; hostile malformed frontmatter/body; partial plausible `spec.md`; extra-key rejection on disk-derived payload. Vertical discipline rider: implement each floor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task.
 
 - [ ] T032 Implement `specify` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/specify.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -199,7 +213,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T033 Add `clarify` Step Contract factory floor and rigor tests (RED).
   - Paths: `src/main/domain/factories/clarify.factory.spec.ts`.
   - Dependencies: T032.
-  - Acceptance: The spec exercises `validateClarifyArtifacts(featureDir, context)` through the seven sequential floor sub-tracer bullets plus separate RED -> GREEN rigor bullets for non-empty question text, at least two choices with key/label, short-answer affordance, no start-of-line parser-breaking emphasis, consistent line endings, visible malformed partial result, and `no questions needed` sentinel success.
+  - Acceptance: The spec exercises `validateClarifyArtifacts(featureDir, context)` through the seven sequential floor sub-tracer bullets plus separate RED -> GREEN rigor bullets for non-empty question text, at least two choices with key/label, short-answer affordance, no start-of-line parser-breaking emphasis, consistent line endings, visible malformed partial result, and `no questions needed` sentinel success. Vertical discipline rider: implement each floor and rigor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task. Malformation observability rider: malformed Clarify questions MUST emit a pino `warn` log with `{ questionId, malformationCategory, rawOutput, timestamp, modelId }`, and `transcriptCapture.listener.ts` MUST receive the same structured record into the activity slice.
 
 - [ ] T034 Implement `clarify` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/clarify.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -209,7 +223,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T035 Add `plan` Step Contract factory floor tests (RED).
   - Paths: `src/main/domain/factories/plan.factory.spec.ts`.
   - Dependencies: T034.
-  - Acceptance: The spec exercises `validatePlanArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `plan.md` + `research.md`; empty object; `null`; `undefined`; hostile malformed plan metadata; partial plausible missing `research.md`; extra-key rejection; it proves only Plan may include the context-file exception.
+  - Acceptance: The spec exercises `validatePlanArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `plan.md` + `research.md`; empty object; `null`; `undefined`; hostile malformed plan metadata; partial plausible missing `research.md`; extra-key rejection; it proves only Plan may include the context-file exception. Vertical discipline rider: implement each floor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task.
 
 - [ ] T036 Implement `plan` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/plan.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -219,7 +233,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T037 Add `tasks` Step Contract factory floor tests (RED).
   - Paths: `src/main/domain/factories/tasks.factory.spec.ts`.
   - Dependencies: T036.
-  - Acceptance: The spec exercises `validateTasksArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `tasks.md`; empty object; `null`; `undefined`; hostile malformed task payload; partial plausible task file; extra-key rejection.
+  - Acceptance: The spec exercises `validateTasksArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `tasks.md`; empty object; `null`; `undefined`; hostile malformed task payload; partial plausible task file; extra-key rejection. Vertical discipline rider: implement each floor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task.
 
 - [ ] T038 Implement `tasks` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/tasks.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -229,7 +243,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T039 Add `analyze` Step Contract factory floor tests (RED).
   - Paths: `src/main/domain/factories/analyze.factory.spec.ts`.
   - Dependencies: T038.
-  - Acceptance: The spec exercises `validateAnalyzeArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `analyze.md`; empty object; `null`; `undefined`; hostile malformed analysis payload; partial plausible analysis file; extra-key rejection; it asserts the commit candidate carries `allowEmptyCommit: true`.
+  - Acceptance: The spec exercises `validateAnalyzeArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy `analyze.md`; empty object; `null`; `undefined`; hostile malformed analysis payload; partial plausible analysis file; extra-key rejection; it asserts the commit candidate carries `allowEmptyCommit: true`. Vertical discipline rider: implement each floor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task.
 
 - [ ] T040 Implement `analyze` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/analyze.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -239,7 +253,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
 - [ ] T041 Add `review` Step Contract factory floor tests (RED).
   - Paths: `src/main/domain/factories/review.factory.spec.ts`.
   - Dependencies: T040.
-  - Acceptance: The spec exercises `validateReviewArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy no-required-artifact Review; empty object; `null`; `undefined`; hostile malformed review payload; partial plausible review payload; extra-key rejection.
+  - Acceptance: The spec exercises `validateReviewArtifacts(featureDir, context)` through seven sequential sub-tracer bullets: happy no-required-artifact Review; empty object; `null`; `undefined`; hostile malformed review payload; partial plausible review payload; extra-key rejection. Vertical discipline rider: implement each floor case as RED case 1 -> GREEN, RED case 2 -> tighten GREEN, and so on; a single batched RED test for all cases violates this task.
 
 - [ ] T042 Implement `review` Step Contract factory (GREEN).
   - Paths: `src/main/domain/factories/review.factory.ts`, `src/main/domain/factories/types.ts`, `src/main/domain/factories/factoryUtils.ts`.
@@ -496,6 +510,7 @@ source_plan: specs/0005-step-lifecycle-hooks/plan.md
     - Hang detection checks every 30 seconds and emits `hang-suspected` only at or after exactly 20 minutes.
     - Drift verifier presence is covered and startup drift warns without failing.
     - Real git Step Commit tests prove pre-commit hooks are honored and Analyze supports no-diff empty commits.
+    - Grill Q13 lifecycle schema coverage is explicit: ALL 13 locked event names (`step-before-hook-start`, `step-before-hook-end`, `step-pending`, `step-prompt-issued`, `step-prompt-complete`, `step-after-hook-start`, `step-after-hook-end`, `step-commit-written`, `step-complete`, `step-escape-hatch-triggered`, `workspace-dirty-resume`, `agent-manifest-drift`, `hang-suspected`) appear in test output, and each event assertion includes required fields `event`, `step`, `sessionId` plus optional `latencyMs`, `reason`, and `trailer` where applicable. This may be enforced by a coverage-style grep over test files or by a runtime assertion proving the activity slice captures all 13 event types.
     - **SC-011 test-count threshold (executable assertion):** Run the following and require exit code 0:
       ```sh
       count=$(npm run test:coverage 2>&1 | grep -oE "Tests +[0-9]+ passed" | grep -oE "[0-9]+" | head -1)
