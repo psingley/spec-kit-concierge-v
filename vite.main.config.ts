@@ -10,7 +10,7 @@ export default defineConfig({
     outDir: '.vite/build',
     emptyOutDir: false,
     lib: {
-      entry: 'src/main.ts',
+      entry: 'src/main/index.ts',
       formats: ['cjs']
     },
     rollupOptions: {

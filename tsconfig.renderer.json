@@ -7,7 +7,7 @@
     "noEmit": true
   },
   "include": [
-    "src/renderer.tsx",
+    "src/renderer/index.tsx",
     "src/test/**/*.ts",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
