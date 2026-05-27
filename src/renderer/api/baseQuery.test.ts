@@ -77,4 +77,34 @@ describe('ipcBaseQuery', () => {
       data: { protocolVersion: 1 }
     });
   });
+
+  it.each([
+    ['workspace:read', 'workspace', 'read'],
+    ['git:read', 'git', 'read'],
+    ['steps:read', 'steps', 'read'],
+    ['preferences:read', 'preferences', 'read'],
+    ['preferences:write', 'preferences', 'write'],
+    ['auth:status', 'auth', 'status'],
+    ['session:listAcp', 'session', 'listAcp'],
+    ['session:createAcp', 'session', 'createAcp'],
+    ['activity:read', 'activity', 'read']
+  ] as const)('routes %s through the preload bridge', async (channel, group, method) => {
+    const bridgeMethod = vi.fn(async () => ({ ok: channel }));
+    window.concierge = {
+      app: {
+        getVersion: vi.fn()
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
+      },
+      [group]: {
+        [method]: bridgeMethod
+      }
+    };
+
+    await expect(ipcBaseQuery({ channel, payload: { proof: true } }, {} as never, {})).resolves.toEqual({
+      data: { ok: channel }
+    });
+    expect(bridgeMethod).toHaveBeenCalledWith({ proof: true });
+  });
 });

@@ -10,6 +10,29 @@ type ConciergePreloadBridge = {
   acp: {
     probeBoundCLI: () => Promise<unknown>;
   };
+  workspace?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
+  git?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
+  steps?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
+  preferences?: {
+    read: (request: unknown) => Promise<unknown>;
+    write: (request: unknown) => Promise<unknown>;
+  };
+  auth?: {
+    status: (request: unknown) => Promise<unknown>;
+  };
+  session?: {
+    listAcp: (request: unknown) => Promise<unknown>;
+    createAcp: (request: unknown) => Promise<unknown>;
+  };
+  activity?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
 };
 
 interface Window {

@@ -1,0 +1,52 @@
+import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit';
+import { api } from './api';
+import { activityReducer } from './slices/activity';
+import { authReducer } from './slices/auth';
+import { copilotReducer } from './slices/copilot';
+import { preferencesReducer } from './slices/preferences';
+import { sessionReducer } from './slices/session';
+import { stepsReducer } from './slices/steps';
+import { uiReducer } from './slices/ui';
+import { workspaceReducer } from './slices/workspace';
+import { setupAcpStreamSubscriptionListener } from './listeners/acpStreamSubscription.listener';
+import { setupPreferencesPersistenceListener } from './listeners/preferencesPersistence.listener';
+import { setupSessionLifecycleListener } from './listeners/sessionLifecycle.listener';
+import { setupStepLifecycleListener } from './listeners/stepLifecycle.listener';
+import { setupTranscriptCaptureListener } from './listeners/transcriptCapture.listener';
+import { setupWorkspaceChangeListener } from './listeners/workspaceChange.listener';
+
+const reducer = {
+  ui: uiReducer,
+  preferences: preferencesReducer,
+  auth: authReducer,
+  workspace: workspaceReducer,
+  steps: stepsReducer,
+  session: sessionReducer,
+  activity: activityReducer,
+  copilot: copilotReducer,
+  [api.reducerPath]: api.reducer
+};
+
+export const createProductStore = () => {
+  const listenerMiddleware = createListenerMiddleware();
+  const startListening = listenerMiddleware.startListening;
+
+  setupAcpStreamSubscriptionListener(startListening);
+  setupPreferencesPersistenceListener(startListening);
+  setupSessionLifecycleListener(startListening);
+  setupStepLifecycleListener(startListening);
+  setupTranscriptCaptureListener(startListening);
+  setupWorkspaceChangeListener(startListening);
+
+  return configureStore({
+    reducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().prepend(listenerMiddleware.middleware).concat(api.middleware)
+  });
+};
+
+export const store = createProductStore();
+
+export type AppStore = ReturnType<typeof createProductStore>;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch'];
