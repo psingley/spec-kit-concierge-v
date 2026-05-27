@@ -11,7 +11,13 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
 
 **TDD discipline**: Run 4 must proceed vertically: one RED behavior test, one minimal GREEN implementation, then repeat. Do not batch all slice tests, handler tests, endpoint tests, or listener tests ahead of implementation. Tests must exercise public interfaces and may mock only system boundaries: Electron IPC, preload bridge, filesystem, git/process commands, child process, and time. Do not mock Run 3 ACP internal collaborators such as `BoundCLISupervisor`, `BoundCLISession`, `ClientSideConnection`, slice reducers, or listener setup modules except where a test proves store assembly invocation order.
 
-**Scope guard**: These tasks intentionally exclude ADR-0007, constitution v1.0.4, ADRs 0002-0006, `.github/copilot-instructions.md` Run 4 conventions, dependency installation for `@reduxjs/toolkit`, `react-redux`, and `@agentclientprotocol/sdk`, Run 2 data-layer work, Run 3 ACP supervisor work, RTK Query `baseQuery` and fixed tag taxonomy, and existing `app:getVersion` plus `acp:probeBoundCLI` handlers/endpoints. These tasks also exclude domain reducers, domain extra reducers, non-empty listener effect bodies, product UI beyond the existing proof surface, Step Commit writers, hook execution, MCP integration, Jira submission, and packaging changes.
+**Scope guard**: These tasks intentionally exclude ADR-0007 (already authored in plan step; T169 verifies presence), constitution v1.0.4, ADRs 0002-0006, dependency installation for `@reduxjs/toolkit`, `react-redux`, and `@agentclientprotocol/sdk`, Run 2 data-layer work, Run 3 ACP supervisor work, RTK Query `baseQuery` and fixed tag taxonomy, and existing `app:getVersion` plus `acp:probeBoundCLI` handlers/endpoints. These tasks also exclude domain reducers, domain extra reducers, non-empty listener effect bodies, product UI beyond the existing proof surface, Step Commit writers, hook execution, MCP integration, Jira submission, and packaging changes.
+
+**NOTE: `.github/copilot-instructions.md` Run 4 conventions block was authored during /speckit.plan.** Run 4 implement VERIFIES its presence + content via T168 per FR-034 + SC-009.
+
+**Pino-logger discipline (per FR-022-FR-024):** Every IPC handler logging test MUST assert use of the project's pino logger/log adapter (`createMainLogger` from `src/main/logging.ts`), NOT a generic console mock or unstructured logger. Mock pino at the boundary; assert `logger.info`/`logger.error` was called with the expected fields. Field-shape assertions alone are insufficient because they let a console.log slip through.
+
+**Factory-test discipline (per Pocock TDD vertical tracer bullets):** When a factory-floor RED task says "covers the 6-case floor," implementers MUST execute the cases ONE AT A TIME with paired GREEN refactor between them. Six cases batched in one RED before any GREEN violates the vertical tracer-bullet rule. Treat each acceptance bullet as a sub-tracer-bullet: RED case 1 → GREEN handler → RED case 2 → GREEN handler tightening → ... → RED case 6 → GREEN final.
 
 **Task format**: Each task names concrete paths, explicit dependencies, and the acceptance condition that must be true before the task is marked complete.
 
@@ -890,13 +896,52 @@ source_plan: specs/0004-ipc-bridge-redux-skeleton/plan.md
     - `rg "from ['\\\"](electron|node:|fs|child_process|path|os)" src/renderer --type ts` returns no renderer matches.
     - The test count grows by at least the Run 4 floor: one store assembly test, eight slice initial-state tests, eight selector test groups, six listener presence tests, factory/handler/logging coverage for all nine IPC channels, and renderer factory/endpoint coverage for all nine renderer operations.
 
+- [ ] T168 Verify `.github/copilot-instructions.md` Run 4 conventions (FR-034 + SC-009).
+  - Paths: `.github/copilot-instructions.md`.
+  - Dependencies: T167.
+  - Acceptance: ALL must pass:
+    - `grep -c "Run 4 conventions" .github/copilot-instructions.md` >= 1
+    - `grep -cE "ui.*preferences.*auth.*workspace.*steps.*session.*activity.*copilot" .github/copilot-instructions.md` >= 1 (slice catalog referenced)
+    - `grep -cE "acpStreamSubscription|stepLifecycle|sessionLifecycle|workspaceChange|preferencesPersistence|transcriptCapture" .github/copilot-instructions.md` matches at least 4 (listener catalog referenced)
+    - `grep -c "useAppDispatch\|useAppSelector\|useAppStore" .github/copilot-instructions.md` >= 1 (typed hooks referenced)
+    - `grep -c "src/renderer/store.ts\|store assembly" .github/copilot-instructions.md` >= 1 (store path referenced)
+
+- [ ] T169 Verify Run 4 governance + listener inventory + dependencies + ADR-0007 enforcement (FR-035 + SC-004 + ADR-0007 enforcement gap from analyze A005/A006).
+  - Paths: `package.json`, `package-lock.json`, `docs/adr/0007-listener-middleware-catalog.md`, `src/renderer/listeners/`, `src/main/data-layer/acp/`.
+  - Dependencies: T168.
+  - Acceptance: ALL must pass:
+    - **FR-035 dependency invariant (executable assertion):** Run the following node script and require exit code 0:
+      ```sh
+      node -e "
+        const main = require('child_process').execSync('git show main:package.json', {encoding:'utf8'});
+        const cur = require('./package.json');
+        const mainPkg = JSON.parse(main);
+        const mainDeps = Object.keys(mainPkg.dependencies||{}).sort().join(',');
+        const curDeps = Object.keys(cur.dependencies||{}).sort().join(',');
+        if (mainDeps !== curDeps) { console.error('Run 4 violated FR-035: dependency set changed.\\nmain:', mainDeps, '\\ncurrent:', curDeps); process.exit(1); }
+        console.log('FR-035 dependency invariant: ok');
+      "
+      ```
+    - **SC-004 test-count threshold (executable assertion):** Run the following and require exit code 0:
+      ```sh
+      count=$(npm run test:coverage 2>&1 | grep -oE "Tests +[0-9]+ passed" | grep -oE "[0-9]+" | head -1)
+      if [ -z "$count" ] || [ "$count" -lt 180 ]; then
+        echo "SC-004 violated: expected >= 180 tests, got $count"; exit 1
+      fi
+      echo "SC-004 test-count: $count (>= 180)"
+      ```
+    - **ADR-0007 presence:** `docs/adr/0007-listener-middleware-catalog.md` exists with `**Status:** Accepted`.
+    - **ADR-0007 exact-six-listener inventory:** `ls src/renderer/listeners/*.listener.ts | wc -l` == 6; the six files MUST be EXACTLY `acpStreamSubscription.listener.ts`, `preferencesPersistence.listener.ts`, `sessionLifecycle.listener.ts`, `stepLifecycle.listener.ts`, `transcriptCapture.listener.ts`, `workspaceChange.listener.ts` (no seventh, no rename).
+    - **Single ACP-stream-subscription owner (ADR-0007 + constitution V line 455):** `rg "acp.*subscribe|connection\\.subscribe|onSessionUpdate" src/renderer --type ts` returns matches ONLY from `acpStreamSubscription.listener.ts` (no second renderer-side subscription path).
+    - **Run 5 catalog references for SC-009:** `.github/copilot-instructions.md` mentions slice catalog, listener catalog, selector convention, typed hooks, and store assembly path (covered by T168).
+
 ## Dependencies and execution order
 
 - Execute tasks in numeric order. Run 4 intentionally has no `[P]` implementation tasks because the plan requires vertical tracer bullets.
 - For every RED task, run the focused test and confirm it fails for the expected missing behavior before starting the paired GREEN task.
 - For every GREEN task, implement only the minimal behavior required for the immediately preceding RED task, then run the focused test until it passes before continuing.
 - Do not start a later channel, endpoint, listener, or selector until the current RED/GREEN pair is complete.
-- Final verification begins only after T166 is green.
+- Final verification begins only after T166 is green; T167-T169 are the verification sequence and MUST all pass before merge.
 
 ## Implementation strategy
 

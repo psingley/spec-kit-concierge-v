@@ -75,7 +75,7 @@ endpoints. Specifically:
     + session.newSession.
   - `activity:read` — reads pino log tail; surfaces structured events
     to renderer (the `activity` slice needs an initial-hydration source
-    just like preferences does — spec.md FR-104 made this explicit).
+    just like preferences does — spec.md FR-031 made this explicit).
 
 Domain action handlers (e.g., `step:run`, `step:cancel`,
 `workspace:setActiveRepo`) are NOT in Run 4. They land in Run 5 (Step
@@ -352,13 +352,29 @@ state shape (Q4). GREEN: assemble the store. Then expand to
 per-handler vertical slices (workspace:read → workspace.slice
 extraReducer wiring → workspace selector → renderer hook).
 
+**SCOPE CLARIFICATION (analyze A009 fix):** The "extraReducer wiring"
+and "renderer hook" cascade in the preceding paragraph describes the
+PATTERN that Run 4 establishes for future runs, NOT in-scope Run 4
+implementation work. Run 4 itself ships:
+- Empty `extraReducers: (builder) => {}` in every slice (spec FR-010)
+- Renderer hooks DEFINED (`useAppDispatch`, `useAppSelector`,
+  `useAppStore`) but NOT exercised by domain UI
+- Renderer endpoints DEFINED but not consumed by product UI
+
+Domain `addCase` calls to RTK Query endpoints inside slice
+extraReducers, and domain hook usage from product components, are
+explicitly Run 5-9 work. The Q8 cascade language above is forward-
+looking architectural intent. If implementers misread "expand to
+extraReducer wiring" as Run-4 work, they violate FR-010 + FR-036.
+
 **Reasoning:**
 - Per Pocock SKILL.md: first test "proves the path works end-to-end."
   Store assembly is the end-to-end integration point for Run 4.
 - Subsequent tracer bullets cascade per-handler: each IPC handler
-  RED test, GREEN handler, RED selector test, GREEN selector, RED
-  hook usage test, GREEN renderer wiring. Vertical slices through
-  the whole stack one feature at a time.
+  RED test, GREEN handler, RED renderer-entry factory test, GREEN
+  factory, RED renderer endpoint test, GREEN endpoint definition.
+  Vertical slices through the IPC-to-RTK-Query pipeline. Per-slice
+  extraReducer hookups + hook usage = Run 5-9 scope.
 
 **ADR candidate?** No.
 
