@@ -1,8 +1,9 @@
 <!-- SPECKIT START -->
-Plan: `specs/0003-acp-adapter/plan.md`
+Plan: `specs/0004-ipc-bridge-redux-skeleton/plan.md`
 
 Run 1 plan: `specs/0001-foundation-shell/plan.md`
 Run 2 plan: `specs/0002-main-data-layer/plan.md`
+Run 3 plan: `specs/0003-acp-adapter/plan.md`
 
 Run 1 conventions:
 - TypeScript: `strict` + `noUncheckedIndexedAccess`.
@@ -38,4 +39,14 @@ Run 3 conventions:
 - The ACP SDK is an internal collaborator; do not mock it. Mock only system boundaries such as `child_process`, filesystem writes, time, and Electron IPC.
 - Session modes use full ACP URIs. Agent mode is default; Plan and Autopilot are supported; Autopilot is opt-in only and requires recording the user's `allow` decision.
 - Copilot model selection uses standard `configOptions[id=model]` via `setSessionConfigOption`; `unstable_setSessionModel` is not the Copilot 1.0.54 source of truth.
+
+Run 4 conventions:
+- Store assembly lives at `src/renderer/store.ts`; the first implementation test must be the product store assembly test asserting canonical initial state across all 8 slices.
+- Slice catalog is fixed by `specs/0004-ipc-bridge-redux-skeleton/plan.md`: `ui`, `preferences`, `auth`, `workspace`, `steps`, `session`, `activity`, `copilot`; Run 4 slice reducers and extra reducers stay empty.
+- Listener catalog is fixed by `docs/adr/0007-listener-middleware-catalog.md`: `acpStreamSubscription`, `preferencesPersistence`, `sessionLifecycle`, `stepLifecycle`, `transcriptCapture`, `workspaceChange`; initialize listener setup functions alphabetically by filename, and keep ACP stream subscription ownership single.
+- Per-slice selectors live at `src/renderer/slices/<slice>.selectors.ts` and use `select<Slice><Field>` names; selectors returning fresh objects, arrays, or derived multi-field values must be memoized.
+- Typed store hooks live only at `src/renderer/hooks/store.ts` as `useAppDispatch`, `useAppSelector`, and `useAppStore`.
+- Run 4 IPC adds `workspace:read`, `git:read`, `steps:read`, `preferences:read`, `preferences:write`, `auth:status`, `session:listAcp`, `session:createAcp`, and `activity:read`; `preferences:write` is the only Run 4 write handler.
+- Trust-boundary factories are required at both main-side IPC entry and renderer-side preload-bridge exit; renderer endpoint tests use the real preload bridge mock and do not mock internal supervisors or slice reducers.
+- Run 4 introduces no runtime dependencies and does not redo Runs 2-3.
 <!-- SPECKIT END -->
