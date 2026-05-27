@@ -6,6 +6,9 @@ describe('ipcBaseQuery', () => {
     window.concierge = {
       app: {
         getVersion: vi.fn(async () => ({ version: '0.1.0' }))
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
       }
     };
 
@@ -20,6 +23,9 @@ describe('ipcBaseQuery', () => {
         getVersion: vi.fn(async () => {
           throw new Error('ipc rejected');
         })
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
       }
     };
 
@@ -40,6 +46,9 @@ describe('ipcBaseQuery', () => {
         getVersion: vi.fn(() => {
           throw new TypeError('ipc threw');
         })
+      },
+      acp: {
+        probeBoundCLI: vi.fn()
       }
     };
 
@@ -51,6 +60,21 @@ describe('ipcBaseQuery', () => {
           message: 'ipc threw'
         }
       }
+    });
+  });
+
+  it('returns data for successful ACP proof preload invocation', async () => {
+    window.concierge = {
+      app: {
+        getVersion: vi.fn()
+      },
+      acp: {
+        probeBoundCLI: vi.fn(async () => ({ protocolVersion: 1 }))
+      }
+    };
+
+    await expect(ipcBaseQuery({ channel: 'acp:probeBoundCLI' }, {} as never, {})).resolves.toEqual({
+      data: { protocolVersion: 1 }
     });
   });
 });

@@ -2,6 +2,7 @@ import path from 'node:path';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { loadAgentManifest } from './data-layer/agents/loader';
 import { registerAppVersionIpc } from './ipc/appVersion';
+import { registerAcpProbeIpc } from './ipc/acpProbe';
 import { createMainLogger, type MainLogger } from './logging';
 
 const createWindow = (logger: MainLogger): BrowserWindow => {
@@ -31,6 +32,7 @@ app.whenReady().then(async () => {
 
   await loadAgentManifest(logger);
   registerAppVersionIpc({ ipcMain, logger });
+  registerAcpProbeIpc({ ipcMain, logger });
   createWindow(logger);
 
   app.on('activate', () => {

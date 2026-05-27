@@ -1,7 +1,8 @@
 <!-- SPECKIT START -->
-Plan: `specs/0002-main-data-layer/plan.md`
+Plan: `specs/0003-acp-adapter/plan.md`
 
 Run 1 plan: `specs/0001-foundation-shell/plan.md`
+Run 2 plan: `specs/0002-main-data-layer/plan.md`
 
 Run 1 conventions:
 - TypeScript: `strict` + `noUncheckedIndexedAccess`.
@@ -26,4 +27,15 @@ TDD discipline (Run 3 onward):
 - Test through public interfaces, not implementation details. Mock at system boundaries only (external APIs, DBs, time) — never internal collaborators.
 - See `.agents/skills/tdd/tests.md` for good-vs-bad test examples, `mocking.md` for boundary rules, `interface-design.md` for testability patterns, `deep-modules.md` for Ousterhout's deep-module heuristic.
 - Run 2 factory specs were horizontal-sliced for delivery speed; Run 3+ uses vertical tracer bullets.
+
+Run 3 conventions:
+- ACP-only bound CLI modules live under `src/main/data-layer/acp/`; no code outside this directory may spawn or speak to a coding-agent binary.
+- Run 3 adds only `@agentclientprotocol/sdk@0.22.1`; use `ClientSideConnection`/`ndJsonStream` for framing and do not hand-roll JSON-RPC correlation.
+- IPC registration remains under `src/main/ipc/`; Run 3 adds only `acp:probeBoundCLI`.
+- Renderer ACP access remains under `src/renderer/api/`, uses the preload bridge, and must not import Electron APIs or Node built-ins.
+- ACP transcript fixtures live at `tests/fixtures/acp-transcripts/<scenario>.jsonl` as sanitized annotated JSONL: one ACP message per line with `direction` set to `client->agent` or `agent->client`; strip `direction` before wire/schema validation.
+- `src/main/data-layer/acp/capabilities.ts` is the only Run 3 trust-boundary factory with the six-case floor. Trailer-style lenient parsers do not apply here, and transcript replay helpers do not get a factory-floor requirement.
+- The ACP SDK is an internal collaborator; do not mock it. Mock only system boundaries such as `child_process`, filesystem writes, time, and Electron IPC.
+- Session modes use full ACP URIs. Agent mode is default; Plan and Autopilot are supported; Autopilot is opt-in only and requires recording the user's `allow` decision.
+- Copilot model selection uses standard `configOptions[id=model]` via `setSessionConfigOption`; `unstable_setSessionModel` is not the Copilot 1.0.54 source of truth.
 <!-- SPECKIT END -->
