@@ -3,6 +3,13 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { loadAgentManifest } from './data-layer/agents/loader';
 import { registerAppVersionIpc } from './ipc/appVersion';
 import { registerAcpProbeIpc } from './ipc/acpProbe';
+import { registerActivityIpc } from './ipc/activity';
+import { registerAuthIpc } from './ipc/auth';
+import { registerGitIpc } from './ipc/git';
+import { registerPreferencesIpc } from './ipc/preferences';
+import { registerSessionIpc } from './ipc/session';
+import { registerStepsIpc } from './ipc/steps';
+import { registerWorkspaceIpc } from './ipc/workspace';
 import { createMainLogger, type MainLogger } from './logging';
 
 const createWindow = (logger: MainLogger): BrowserWindow => {
@@ -33,6 +40,13 @@ app.whenReady().then(async () => {
   await loadAgentManifest(logger);
   registerAppVersionIpc({ ipcMain, logger });
   registerAcpProbeIpc({ ipcMain, logger });
+  registerWorkspaceIpc({ ipcMain, logger });
+  registerGitIpc({ ipcMain, logger });
+  registerStepsIpc({ ipcMain, logger });
+  registerPreferencesIpc({ ipcMain, logger });
+  registerAuthIpc({ ipcMain, logger });
+  registerSessionIpc({ ipcMain, logger });
+  registerActivityIpc({ ipcMain, logger });
   createWindow(logger);
 
   app.on('activate', () => {

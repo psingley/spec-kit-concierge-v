@@ -1,57 +1,28 @@
-import { createApi } from '@reduxjs/toolkit/query';
-import { ipcBaseQuery } from './baseQuery';
-import {
-  parseRendererBoundCLICapabilities,
-  type RendererBoundCLICapabilities
-} from './capabilities.factory';
+import './workspace.endpoint';
+import './git.endpoint';
+import './steps.endpoint';
+import './preferences.endpoint';
+import './auth.endpoint';
+import './session.endpoint';
+import './activity.endpoint';
+import { api as rootApi, RUN2_TAG_TYPES } from './rootApi';
+import type { activityApi } from './activity.endpoint';
+import type { authApi } from './auth.endpoint';
+import type { gitApi } from './git.endpoint';
+import type { preferencesApi } from './preferences.endpoint';
+import type { sessionApi } from './session.endpoint';
+import type { stepsApi } from './steps.endpoint';
+import type { workspaceApi } from './workspace.endpoint';
+import type { AppVersionProof } from './rootApi';
 
-export const RUN2_TAG_TYPES = [
-  'Workspace',
-  'StepState',
-  'GitState',
-  'Agent',
-  'Session',
-  'Step',
-  'Transcript',
-  'Preferences'
-] as const;
+type Run4Endpoints = typeof rootApi.endpoints &
+  typeof workspaceApi.endpoints &
+  typeof gitApi.endpoints &
+  typeof stepsApi.endpoints &
+  typeof preferencesApi.endpoints &
+  typeof authApi.endpoints &
+  typeof sessionApi.endpoints &
+  typeof activityApi.endpoints;
 
-export type AppVersionProof = {
-  version: string;
-};
-
-export const api = createApi({
-  reducerPath: 'conciergeApi',
-  baseQuery: ipcBaseQuery,
-  tagTypes: RUN2_TAG_TYPES,
-  endpoints: (builder) => ({
-    getAppVersion: builder.query<AppVersionProof, void>({
-      query: () => ({ channel: 'app:getVersion' })
-    }),
-    getBoundCLICapabilities: builder.query<RendererBoundCLICapabilities, void>({
-      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
-        const response = await baseQuery({ channel: 'acp:probeBoundCLI' });
-
-        if (response.error !== undefined) {
-          return { error: response.error };
-        }
-
-        const parsed = parseRendererBoundCLICapabilities(response.data);
-        if (!parsed.ok) {
-          return {
-            error: {
-              status: 'PARSING_ERROR',
-              data: {
-                name: parsed.error.name,
-                message: parsed.error.message
-              }
-            }
-          };
-        }
-
-        return { data: parsed.value };
-      },
-      providesTags: ['Agent']
-    })
-  })
-});
+export const api = rootApi as typeof rootApi & { endpoints: Run4Endpoints };
+export { RUN2_TAG_TYPES, type AppVersionProof };

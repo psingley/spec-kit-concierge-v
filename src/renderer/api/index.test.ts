@@ -4,8 +4,20 @@ import { api, RUN2_TAG_TYPES } from './index';
 import { rendererVerifiedCapabilities } from './capabilities.factory.spec';
 
 describe('renderer API slice', () => {
-  it('exposes only proof endpoints', () => {
-    expect(Object.keys(api.endpoints)).toEqual(['getAppVersion', 'getBoundCLICapabilities']);
+  it('exposes proof endpoints and all Run 4 bridge endpoints', () => {
+    expect(Object.keys(api.endpoints)).toEqual([
+      'getAppVersion',
+      'getBoundCLICapabilities',
+      'getWorkspace',
+      'getGitState',
+      'getStepState',
+      'getPreferences',
+      'writePreferences',
+      'getAuthStatus',
+      'listAcpSessions',
+      'createAcpSession',
+      'getActivity'
+    ]);
   });
 
   it('dispatches getAppVersion successfully through the base query', async () => {

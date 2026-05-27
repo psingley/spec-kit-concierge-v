@@ -61,3 +61,4 @@ design/project/Spec-kit Concierge (standalone).html
 
 # specify extension uninstall/reinstall backup churn
 .specify/extensions/.backup/
+.specify/extensions/spec-validate/local/
