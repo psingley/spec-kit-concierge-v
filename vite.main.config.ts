@@ -14,7 +14,7 @@ export default defineConfig({
       formats: ['cjs']
     },
     rollupOptions: {
-      external: ['electron', 'pino', ...builtinModules, ...builtinModules.map((name) => `node:${name}`)],
+      external: ['electron', 'pino', 'pino-pretty', ...builtinModules, ...builtinModules.map((name) => `node:${name}`)],
       output: {
         entryFileNames: 'main.js'
       }

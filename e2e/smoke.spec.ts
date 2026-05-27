@@ -1,6 +1,7 @@
 import { expect, test, _electron as electron } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import path from 'node:path';
+import packageJson from '../package.json';
 
 test('opens the blank Electron shell without console errors', async () => {
   const consoleErrors: string[] = [];
@@ -24,6 +25,7 @@ test('opens the blank Electron shell without console errors', async () => {
 
     await firstWindow.waitForLoadState('domcontentloaded');
     await expect(firstWindow).toHaveTitle('Spec-kit Concierge');
+    await expect(firstWindow.getByTestId('app-version-proof')).toHaveText(packageJson.version);
     expect(consoleErrors).toEqual([]);
   } finally {
     await electronApp.close();
