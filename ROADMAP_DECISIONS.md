@@ -38,7 +38,7 @@ followed by the full canonical six-step flow per the constitution
    `npm run e2e` succeeds with one smoke test. **Blocks everything.**
 
 2. **Main Data Layer Foundation**
-   `main/data-layer/fs/safeWrite.ts`, git read primitives (read
+   `src/main/data-layer/fs/safeWrite.ts`, git read primitives (read
    `Concierge-Step:` trailers from log, read branch state, check for
    uncommitted changes to a path set), typed safe-write audit helper, the
    `agents.json` manifest shape and loader, pino-based structured
@@ -47,7 +47,7 @@ followed by the full canonical six-step flow per the constitution
 ### Phase B — Constitutional Seams (serial)
 
 3. **ACP Adapter & Bound CLI Supervisor**
-   `main/data-layer/acp/` — process supervisor, JSON-RPC 2.0 stdio
+   `src/main/data-layer/acp/` — process supervisor, JSON-RPC 2.0 stdio
    framing, capability discovery, model selection messages,
    cancellation, recorded-transcript contract tests fixture format
    (`tests/fixtures/acp-transcripts/<scenario>.jsonl`). v1 binds
@@ -55,7 +55,7 @@ followed by the full canonical six-step flow per the constitution
    ACP agent. **Depends on 1, 2. Highest risk. Blocks 4 and 6.**
 
 4. **IPC Bridge & Redux Store Skeleton**
-   `main/ipc/` handlers with factory-pattern validation at the IPC
+   `src/main/ipc/` handlers with factory-pattern validation at the IPC
    trust boundary; renderer's eight slices
    (`ui`, `preferences`, `auth`, `workspace`, `steps`, `session`,
    `activity`, `copilot`) wired but empty of business logic; RTK
@@ -69,9 +69,9 @@ followed by the full canonical six-step flow per the constitution
 
 5. **Step Lifecycle & Hook Infrastructure**
    `.specify/extensions.yml` registering all `before_<step>` and
-   `after_<step>` hooks; the hook executor (`main/hooks/`); the
+   `after_<step>` hooks; the hook executor (`src/main/hooks/`); the
    per-step artifact manifest (load-bearing-gap resolved in this
-   document below); factory infrastructure under `domain/factories/`
+   document below); factory infrastructure under `src/main/domain/factories/`
    with one factory per step writing the Step Commit on pass;
    the `steps` slice's reducer with all monotonic-transition
    invariants; the `stepsRestoredFromDisk` listener that reads
@@ -186,7 +186,7 @@ copilot --allow-all-tools --acp
 
 The exact flag for ACP mode may differ; the ACP spec (Run 3) verifies
 against the installed Copilot CLI's `--help` output at first run and
-records the canonical flag in `main/data-layer/acp/agents.json`. If
+records the canonical flag in `src/main/data-layer/agents/agents.json`. If
 the installed CLI's flag has drifted, the spec MUST surface the
 mismatch and update the manifest entry before any other Bound-CLI
 work proceeds.
@@ -447,33 +447,33 @@ with the error-code enum below.
   UI patterns), `formulahendry/vscode-acp` (MIT — editor-client
   conventions), `agentclientprotocol/agent-client-protocol`
   (Apache-2.0 — normative spec).
-- **Data-layer module path:** `main/data-layer/acp/`. Single typed
-  `CodingAgent` interface at `main/data-layer/acp/agent.ts`. No code
-  outside this directory spawns a coding-agent binary.
-- **Bound CLI manifest:** `main/data-layer/acp/agents.json`. Each
-  entry declares binary path, args, unrestricted-permission flag,
-  ACP-mode flag, capability tags. Adding an agent = one manifest
-  entry + transcript contract tests.
+- **Data-layer module path:** `src/main/data-layer/acp/`. Single typed
+  `CodingAgent` interface at `src/main/data-layer/acp/agent.ts`. No
+  code outside this directory spawns a coding-agent binary.
+- **Bound CLI manifest:** `src/main/data-layer/agents/agents.json`.
+  Each entry declares binary path, args, unrestricted-permission flag,
+  ACP-mode flag, capability tags. Adding an agent = one manifest entry
+  + transcript contract tests.
 - **v1 default Bound CLI:** GitHub Copilot CLI, launched in ACP mode
-  with `--allow-all-tools` (the documented full-permission flag per
-  GitHub Copilot CLI docs). The ACP-mode flag is verified against
-  the installed Copilot CLI's `--help` output during Run 3 and
-  recorded in the manifest. Best evidence as of 2026-05 suggests
-  `--acp` or `--acp --stdio`; verify before locking.
-- **Model swap mechanism:** `unstable_setSessionModel` on the
-  `ClientSideConnection` from `@agentclientprotocol/sdk` v0.22.1 if
-  the method is present and the bound CLI supports it. The SDK
-  marks the method `UNSTABLE` and "not part of the spec yet."
-  Fallback when unavailable: restart the Bound CLI with the new
-  model selected via the launch-time `--model` flag. User-visible
-  behavior is identical either way.
+  with `--allow-all-tools` and `--acp` from the verified Run 2
+  manifest entry for Copilot CLI 1.0.54.
+- **Model swap mechanism:** use the verified standard ACP
+  `configOptions[id=model]` selector path for Copilot CLI 1.0.54,
+  applied through the session configuration option API. The
+  verify-now `session/new` transcript returns `models.availableModels`,
+  `models.currentModelId`, and a `configOptions` select entry with
+  `id: "model"`. Do NOT treat `unstable_setSessionModel` as the
+  Copilot source of truth. Keep restart-with-launch-model only as a
+  bounded fallback posture for future/non-Copilot bound CLIs that do
+  not expose the standard config option.
 - **Constraint:** Model swap allowed only when `steps.pending`
   step's status is `not_available` or `complete` — never `pending`
   and running (constitution III). UI model picker disables during a
   running step.
-- **Transcript recording:** raw ACP JSON-RPC, full fidelity, written
-  to `userData/transcripts/<sessionId>/<step>-<timestamp>.jsonl`.
-  Used by contract tests, verifier-agent E2E, and audit.
+- **Transcript recording:** sanitized annotated ACP JSONL, one message
+  per line with `direction` set to `client->agent` or `agent->client`,
+  written to `userData/transcripts/<sessionId>/<step>-<timestamp>.jsonl`.
+  Contract tests strip `direction` before validating wire shape.
 
 ### Cancel and recovery behavior (extracted from Principle VII)
 
@@ -621,7 +621,7 @@ Token + port discovery: per-launch token + random port written to
 - **Storybook:** deferred from v1.
 - **ACP layer:** recorded-transcript contract tests at
   `tests/fixtures/acp-transcripts/<scenario>.jsonl`. Carve-out for
-  line-coverage in `main/data-layer/acp/` if/when transcript-based
+  line-coverage in `src/main/data-layer/acp/` if/when transcript-based
   coverage proves equivalent.
 
 ### Build-vs-borrow audit (extracted from Round 6)
