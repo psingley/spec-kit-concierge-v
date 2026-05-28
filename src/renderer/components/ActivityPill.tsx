@@ -12,5 +12,6 @@ export const ActivityPill = ({ busy, currentStatus, logRate, onToggle }: Activit
   <button type="button" className="activity-pill" onClick={onToggle} aria-live="polite">
     <PixelCSpinner busy={busy} speed={1 + logRate * 2} pixelation={1 + logRate} />
     <span>{currentStatus}</span>
+    <span aria-hidden="true">⌄</span>
   </button>
 );

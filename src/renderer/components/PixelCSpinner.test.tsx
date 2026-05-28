@@ -56,6 +56,17 @@ describe('PixelCSpinner', () => {
     expect(window.cancelAnimationFrame).toHaveBeenCalledWith(1);
   });
 
+  it('keeps the drawing loop alive when speed changes', () => {
+    const { rerender } = render(<PixelCSpinner busy speed={1} />);
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+
+    rerender(<PixelCSpinner busy speed={2} />);
+
+    expect(window.cancelAnimationFrame).not.toHaveBeenCalled();
+    rafCallbacks[0]?.(0);
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(2);
+  });
+
   it('changes the draw trace when pixelation changes', () => {
     render(<PixelCSpinner busy size={16} cell={4} pixelation={1} />);
     rafCallbacks[0]?.(0);

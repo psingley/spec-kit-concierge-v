@@ -18,6 +18,11 @@ export const PixelCSpinner = ({
   speed = 1
 }: PixelCSpinnerProps): React.ReactElement => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const propsRef = useRef({ cell, color, pixelation, size, speed });
+
+  useEffect(() => {
+    propsRef.current = { cell, color, pixelation, size, speed };
+  }, [cell, color, pixelation, size, speed]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,15 +37,16 @@ export const PixelCSpinner = ({
     let frame = 0;
     let raf = 0;
     const draw = (): void => {
-      drawingContext.clearRect(0, 0, size, size);
-      drawingContext.fillStyle = color;
-      const cells = Math.max(4, Math.floor(size / cell));
+      const current = propsRef.current;
+      drawingContext.clearRect(0, 0, current.size, current.size);
+      drawingContext.fillStyle = current.color;
+      const cells = Math.max(4, Math.floor(current.size / current.cell));
       for (let i = 0; i < cells; i += 1) {
-        const angle = (i / cells) * Math.PI * 2 + frame * 0.08 * speed;
-        const radius = size / 2 - cell;
-        const alpha = (i + frame * pixelation) % cells === 0 ? 1 : 0.25;
+        const angle = (i / cells) * Math.PI * 2 + frame * 0.08 * current.speed;
+        const radius = current.size / 2 - current.cell;
+        const alpha = (i + frame * current.pixelation) % cells === 0 ? 1 : 0.25;
         drawingContext.globalAlpha = alpha;
-        drawingContext.fillRect(size / 2 + Math.cos(angle) * radius, size / 2 + Math.sin(angle) * radius, cell, cell);
+        drawingContext.fillRect(current.size / 2 + Math.cos(angle) * radius, current.size / 2 + Math.sin(angle) * radius, current.cell, current.cell);
       }
       drawingContext.globalAlpha = 1;
       frame += 1;
@@ -48,7 +54,7 @@ export const PixelCSpinner = ({
     };
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [busy, cell, color, pixelation, size, speed]);
+  }, [busy]);
 
   return <canvas aria-hidden="true" ref={canvasRef} width={size} height={size} className="pixel-spinner" />;
 };

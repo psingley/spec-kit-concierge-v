@@ -19,20 +19,27 @@ export const CustomizeModal = ({ open, accent, density, activitySide, requireScr
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="customize-title" className="modal">
       <h2 id="customize-title">Customize</h2>
-      <label>Accent <input aria-label="Accent" value={accent} onChange={(event) => onChange({ accent: event.target.value })} /></label>
-      <label>Density
-        <select aria-label="Density" value={density} onChange={(event) => onChange({ density: event.target.value as 'compact' | 'comfortable' })}>
-          <option value="comfortable">Comfortable</option>
-          <option value="compact">Compact</option>
-        </select>
-      </label>
-      <fieldset>
+      <section className="modal-section" aria-label="Accent">
+        <span>Accent</span>
+        <span className="swatch" aria-label={`Teal accent ${accent}`} role="img" />
+      </section>
+      <section className="modal-section">
+        <span>Density</span>
+        <div className="tile-row">
+          {(['comfortable', 'compact'] as const).map((value) => (
+            <button key={value} type="button" className="tile" aria-pressed={density === value} onClick={() => onChange({ density: value })}>{value}</button>
+          ))}
+        </div>
+      </section>
+      <fieldset className="modal-section">
         <legend>Activity side</legend>
-        {(['left', 'right', 'hidden'] as const).map((side) => (
+        <div className="tile-row">
+        {(['right', 'hidden'] as const).map((side) => (
           <button key={side} type="button" aria-pressed={activitySide === side} onClick={() => onChange({ activitySide: side })}>{side}</button>
         ))}
+        </div>
       </fieldset>
-      <button type="button" role="switch" aria-checked={requireScroll} onClick={() => onChange({ requireScroll: !requireScroll })}>Require scroll to unlock</button>
+      <button type="button" className="switch" role="switch" aria-checked={requireScroll} onClick={() => onChange({ requireScroll: !requireScroll })}>Require scroll to unlock</button>
       <button ref={closeRef} type="button" onClick={onClose}>Close</button>
     </div>
   );

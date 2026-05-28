@@ -33,7 +33,7 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     await page.getByRole('button', { name: /GitHub CLI/i }).click();
     await expect(page.getByRole('button', { name: /GitHub CLI.*Connected/i })).toBeVisible();
     await page.getByRole('button', { name: /Copilot CLI/i }).click();
-    await expect(page.getByRole('heading', { name: /Choose a repository/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
 
     await expectNoSeriousA11yViolations();
     await page.getByRole('button', { name: new RegExp(fixture.repoName) }).click();

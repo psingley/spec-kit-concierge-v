@@ -7,6 +7,8 @@ export type StepperProps = {
   onSelectStep: (step: StepName) => void;
 };
 
+// Intentional design deviation: the fetched prototype swaps Tasks and Analyze,
+// but constitution v1.0.4 and ROADMAP_DECISIONS govern the shipped step order.
 export const stepOrder: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
 
 export const Stepper = ({ states, viewedStep, onSelectStep }: StepperProps): React.ReactElement => (

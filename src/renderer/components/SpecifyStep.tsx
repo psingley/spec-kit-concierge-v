@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Markdown } from './Markdown';
 
 export type SpecifyStepProps = {
@@ -24,7 +24,18 @@ export const SpecifyStep = ({
 }: SpecifyStepProps): React.ReactElement => {
   const [mode, setMode] = useState<'preview' | 'edit'>('preview');
   const [editorOpen, setEditorOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(requireScroll ? 0 : 100);
+  const reviewRef = useRef<HTMLDivElement | null>(null);
   const complete = specMarkdown.trim().length > 0;
+  const gateUnlocked = !requireScroll || scrollProgress >= 100;
+  const updateScrollProgress = (): void => {
+    const node = reviewRef.current;
+    if (node === null) return;
+    const scrollable = node.scrollHeight - node.clientHeight;
+    const nextProgress = scrollable <= 0 ? 100 : Math.min(100, Math.round((node.scrollTop / scrollable) * 100));
+    setScrollProgress(nextProgress);
+  };
+
   return (
     <section className="specify-step" aria-labelledby="specify-heading">
       <div className="section-heading">
@@ -52,10 +63,27 @@ export const SpecifyStep = ({
             {running ? 'Specify running...' : 'Begin Specify'}
           </button>
         </>
-      ) : mode === 'preview' ? (
-        <Markdown text={specMarkdown} />
       ) : (
-        <textarea aria-label="Specification editor" value={specMarkdown} readOnly />
+        <div className="complete-review">
+          {requireScroll ? (
+            <div className="scroll-gate" aria-label="Review scroll progress">
+              <div className="scroll-gate-track" aria-hidden="true">
+                <div className="scroll-gate-fill" style={{ '--scroll-progress': `${scrollProgress}%` } as React.CSSProperties} />
+              </div>
+              <span className="hint">{gateUnlocked ? 'Review complete.' : `Review ${scrollProgress}% read.`}</span>
+            </div>
+          ) : null}
+          {mode === 'preview' ? (
+            <div ref={reviewRef} className="spec-review-scroll" data-testid="spec-review-scroll" onScroll={updateScrollProgress}>
+              <Markdown text={specMarkdown} />
+            </div>
+          ) : (
+            <textarea aria-label="Specification editor" value={specMarkdown} readOnly />
+          )}
+          <button type="button" className="primary" disabled={!gateUnlocked || running} onClick={onBegin}>
+            Continue
+          </button>
+        </div>
       )}
       {running ? <p role="status" aria-live="polite">Specify is generating your spec...</p> : null}
       {failureReason !== null ? <p role="alert">{failureReason}</p> : null}
