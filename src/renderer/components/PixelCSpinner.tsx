@@ -36,23 +36,62 @@ export const PixelCSpinner = ({
     const drawingContext = context;
     let frame = 0;
     let raf = 0;
+    const resolveColor = (value: string): string => {
+      if (!value.startsWith('var(')) return value;
+      const variable = value.slice(4, -1).trim();
+      return getComputedStyle(canvas).getPropertyValue(variable).trim() || 'currentColor';
+    };
     const draw = (): void => {
       const current = propsRef.current;
       drawingContext.clearRect(0, 0, current.size, current.size);
-      drawingContext.fillStyle = current.color;
+      drawingContext.fillStyle = resolveColor(current.color);
       const cells = Math.max(4, Math.floor(current.size / current.cell));
-      for (let i = 0; i < cells; i += 1) {
-        const angle = (i / cells) * Math.PI * 2 + frame * 0.08 * current.speed;
-        const radius = current.size / 2 - current.cell;
-        const alpha = (i + frame * current.pixelation) % cells === 0 ? 1 : 0.25;
-        drawingContext.globalAlpha = alpha;
-        drawingContext.fillRect(current.size / 2 + Math.cos(angle) * radius, current.size / 2 + Math.sin(angle) * radius, current.cell, current.cell);
+      if (cells === 9) {
+        const pattern = ['.#####...', '########.', '########.', '###..##..', '###......', '########.', '########.', '#######..', '..##.....'];
+        drawingContext.globalAlpha = 0.9;
+        for (const [y, row] of pattern.entries()) {
+          for (let x = 0; x < row.length; x += 1) {
+            if (row[x] === '#') {
+              drawingContext.fillRect(x * current.cell, y * current.cell, current.cell, current.cell);
+            }
+          }
+        }
+        drawingContext.globalAlpha = 1;
+        frame += 1;
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      const center = (cells - 1) / 2;
+      const maxRadius = Math.hypot(center, center);
+      const phase = (frame * 0.03 * current.speed) % 1;
+      const breath = (1 - Math.cos(phase * Math.PI * 2)) / 2;
+      const outerRadius = (0.78 + breath * 0.2) * maxRadius + 0.3;
+      const innerRadius = Math.max(1.4, outerRadius * 0.45);
+      const wedge = Math.PI * 0.32 * (0.6 + breath * 0.4);
+      const outerJitter = 0.9 * current.pixelation;
+      const innerJitter = 0.8 * current.pixelation;
+      const wedgeJitter = 0.15 * current.pixelation;
+
+      drawingContext.globalAlpha = 0.9;
+      for (let y = 0; y < cells; y += 1) {
+        for (let x = 0; x < cells; x += 1) {
+          const dx = x - center;
+          const dy = y - center;
+          const distance = Math.hypot(dx, dy);
+          const angle = Math.atan2(dy, dx);
+          const deterministicJitter = Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
+          if (Math.abs(dx) >= center - 0.25 && Math.abs(dy) >= center - 0.25) continue;
+          if (outerRadius - distance < deterministicJitter * outerJitter - 0.15) continue;
+          if (distance - innerRadius < -deterministicJitter * innerJitter - 0.1) continue;
+          if (Math.abs(angle) < wedge / 2 + deterministicJitter * wedgeJitter - 0.05) continue;
+          drawingContext.fillRect(x * current.cell, y * current.cell, current.cell, current.cell);
+        }
       }
       drawingContext.globalAlpha = 1;
       frame += 1;
       raf = requestAnimationFrame(draw);
     };
-    raf = requestAnimationFrame(draw);
+    draw();
     return () => cancelAnimationFrame(raf);
   }, [busy]);
 

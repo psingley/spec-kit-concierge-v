@@ -1349,18 +1349,68 @@ textarea {
   right: 14px;
   bottom: 14px;
   z-index: 30;
-  height: var(--pill-h);
+  height: 26px;
   display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  max-width: min(520px, calc(100vw - 28px));
-  padding: 0 14px 0 10px;
-  border: 1px solid var(--line-strong);
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--bg-2);
-  color: var(--text);
+  background: var(--surface);
+  color: var(--text-dim);
   box-shadow: var(--shadow-2);
   cursor: pointer;
+  font-family: inherit;
+  overflow: hidden;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.activity-pill:hover {
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.activity-pill.is-busy {
+  border-color: var(--accent-dim);
+}
+
+.activity-pill .ap-term {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.activity-pill .ap-divider {
+  width: 1px;
+  background: var(--line);
+  margin: 4px 0;
+}
+
+.activity-pill .ap-spinner-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.activity-pill .pixel-spinner {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+}
+
+.ap-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .pixel-spinner {

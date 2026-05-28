@@ -1,13 +1,13 @@
 {
-  "runId": "2026-05-28T21:33:03.977Z",
+  "runId": "2026-05-28T21:40:37.875Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 11,
-    "fail": 13,
+    "pass": 12,
+    "fail": 12,
     "warn": 0,
     "worstScreen": "workspace-titlebar-repo-dropdown-open"
   },
@@ -155,7 +155,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 2.97,
+      "pixelResidual": 2.94,
       "priorityScore": 100
     },
     {
@@ -235,7 +235,7 @@
           "actual": "8px 10px"
         }
       ],
-      "pixelResidual": 3,
+      "pixelResidual": 2.97,
       "priorityScore": 100
     },
     {
@@ -291,7 +291,7 @@
           "actual": ".spec-input-actions .btn.primary"
         }
       ],
-      "pixelResidual": 2.88,
+      "pixelResidual": 2.84,
       "priorityScore": 100
     },
     {
@@ -329,7 +329,7 @@
           "actual": ".spec-loading"
         }
       ],
-      "pixelResidual": 2.95,
+      "pixelResidual": 2.93,
       "priorityScore": 100
     },
     {
@@ -493,7 +493,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.55,
+      "pixelResidual": 3.53,
       "priorityScore": 100
     },
     {
@@ -669,7 +669,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.38,
+      "pixelResidual": 5.45,
       "priorityScore": 100
     },
     {
@@ -845,119 +845,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.86,
-      "priorityScore": 100
-    },
-    {
-      "name": "activity-pill-idle",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Idle'",
-          "expected": "Idle",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Idle' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-terminal-icon' at [data-vd-role=\"activity-terminal-icon\"]",
-          "expected": "[data-vd-role=\"activity-terminal-icon\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-pill-divider' at [data-vd-role=\"activity-pill-divider\"]",
-          "expected": "[data-vd-role=\"activity-pill-divider\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill.background-color: expected 'oklch(0.2 0.005 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.2 0.005 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill.border-top-color: expected 'oklch(0.285 0.006 280)', got 'rgb(60, 77, 85)'",
-          "expected": "oklch(0.285 0.006 280)",
-          "actual": "rgb(60, 77, 85)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill.padding: expected '0px', got '0px 14px 0px 10px'",
-          "expected": "0px",
-          "actual": "0px 14px 0px 10px"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 19.29% exceeds 7%",
-          "expected": "7%",
-          "actual": "19.29%"
-        }
-      ],
-      "pixelResidual": 19.29,
-      "priorityScore": 100
-    },
-    {
-      "name": "activity-pill-busy",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Build a hello-world feature'",
-          "expected": "Build a hello-world feature",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Build a hello-world feature' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-terminal-icon' at [data-vd-role=\"activity-terminal-icon\"]",
-          "expected": "[data-vd-role=\"activity-terminal-icon\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-pill-divider' at [data-vd-role=\"activity-pill-divider\"]",
-          "expected": "[data-vd-role=\"activity-pill-divider\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill busy.background-color: expected 'oklch(0.2 0.005 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.2 0.005 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill busy.border-top-color: expected 'rgb(19, 47, 59)', got 'rgb(60, 77, 85)'",
-          "expected": "rgb(19, 47, 59)",
-          "actual": "rgb(60, 77, 85)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill busy.padding: expected '0px', got '0px 14px 0px 10px'",
-          "expected": "0px",
-          "actual": "0px 14px 0px 10px"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 19.76% exceeds 7%",
-          "expected": "7%",
-          "actual": "19.76%"
-        }
-      ],
-      "pixelResidual": 19.76,
+      "pixelResidual": 5.95,
       "priorityScore": 100
     },
     {
@@ -1256,12 +1144,12 @@
         },
         {
           "layer": "pixels",
-          "message": "cropped pixel residual 12.09% exceeds 7%",
+          "message": "cropped pixel residual 12.1% exceeds 7%",
           "expected": "7%",
-          "actual": "12.09%"
+          "actual": "12.1%"
         }
       ],
-      "pixelResidual": 12.09,
+      "pixelResidual": 12.1,
       "priorityScore": 100
     },
     {
@@ -1459,6 +1347,38 @@
       "priorityScore": 100
     },
     {
+      "name": "activity-pill-idle",
+      "status": "FAIL",
+      "failures": [
+        {
+          "layer": "elements",
+          "message": "missing text: expected 'Idle'",
+          "expected": "Idle",
+          "actual": "missing"
+        },
+        {
+          "layer": "elements",
+          "message": "wrong control count: expected button 'Idle' x1, got 0",
+          "expected": "1",
+          "actual": "0"
+        },
+        {
+          "layer": "styles",
+          "message": "style drift on activity pill.border-top-color: expected 'oklch(0.285 0.006 280)', got 'rgb(42, 55, 61)'",
+          "expected": "oklch(0.285 0.006 280)",
+          "actual": "rgb(42, 55, 61)"
+        },
+        {
+          "layer": "pixels",
+          "message": "cropped pixel residual 17.28% exceeds 7%",
+          "expected": "7%",
+          "actual": "17.28%"
+        }
+      ],
+      "pixelResidual": 17.28,
+      "priorityScore": 82
+    },
+    {
       "name": "signin-fresh",
       "status": "PASS",
       "failures": [],
@@ -1497,28 +1417,28 @@
       "name": "workspace-titlebar-closed-menus",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5,
+      "pixelResidual": 4.99,
       "priorityScore": 5
     },
     {
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.92,
+      "pixelResidual": 4.94,
       "priorityScore": 5
     },
     {
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
@@ -1532,14 +1452,21 @@
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.09,
+      "priorityScore": 5
+    },
+    {
+      "name": "activity-pill-busy",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.21,
       "priorityScore": 5
     },
     {
