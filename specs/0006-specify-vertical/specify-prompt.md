@@ -293,10 +293,15 @@ decompression-shaped — user's explicit "55" call). Cost projection
 25. **Listener middleware bodies filled** at
     `src/renderer/listeners/`:
     - `preferencesPersistence.listener.ts` — debounced (250ms) write
-      to `<userData>/preferences.json` via Run 2 safeWrite IPC. Run
-      4 empty → Run 6 fills.
-    - Other 4 listener bodies stay empty until their dispatching runs
-      land (Runs 7-9).
+      via existing Run 4 `preferences:write` IPC handler (NOT a new
+      channel; reuses the established preferences-persist contract).
+      Run 4 empty → Run 6 fills.
+    - The remaining 3 listener bodies stay empty until their
+      dispatching runs land (Runs 7-9). For accounting: of 6 listener
+      middleware files, Run 5 filled stepLifecycle.listener.ts +
+      transcriptCapture.listener.ts; Run 6 fills
+      preferencesPersistence.listener.ts; remaining empty bodies:
+      acpStreamSubscription, sessionLifecycle, workspaceChange.
 
 26. **ADR-0010** at `docs/adr/0010-streaming-mutation-pattern.md` —
     documents the streaming-mutation pattern for spec-kit step
