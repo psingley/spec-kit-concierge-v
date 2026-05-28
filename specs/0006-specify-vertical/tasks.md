@@ -27,9 +27,9 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Acceptance: The failing test asserts SC-001 and SC-002 through the public app: fresh launch, GitHub login, Copilot login, Atlassian left disconnected, repository selection, new draft session creation, prompt `"Build a hello-world feature"`, Begin Specify, visible progress, rendered non-empty `spec.md`, exactly one `Concierge-Step: specify:pass` trailer on the active branch, `specify=complete`, and `clarify=pending`.
 
 - [ ] T002 Implement the thinnest deterministic end-to-end Specify path (GREEN).
-  - Paths: `e2e/specify-vertical.spec.ts`, `src/main/ipc/`, `src/preload/index.ts`, `src/renderer/`.
+  - Paths: `e2e/specify-vertical.spec.ts`, `e2e/support/boundaries.ts` (NEW), `src/main/ipc/`, `src/preload/index.ts`, `src/renderer/`.
   - Dependencies: T001.
-  - Acceptance: The e2e uses deterministic shell-out/ACP/artifact boundaries in test mode, production code still routes through sanctioned IPC/preload/Run 3/Run 5 seams, no design-only mock pipeline remains on the production path, and T001 passes.
+  - Acceptance: The e2e MUST exercise the full production IPC/preload/Run 3 ACP supervisor/Run 5 hook+factory+Step Commit path. Mocking is applied ONLY at the OS boundary via env-var-scoped adapter injection: `process.env.CONCIERGE_TEST_GH_ADAPTER`, `process.env.CONCIERGE_TEST_COPILOT_ADAPTER`, and `process.env.CONCIERGE_TEST_ACP_ADAPTER` route to fake shell-out + fake ACP supervisor implementations that satisfy the same interfaces as the production adapters. The main process's IPC handler registration MUST read these env vars at boot and substitute the adapter; production code path is unchanged. **FORBIDDEN:** renderer-only success fixtures, a "test mode" branch in the production code, any RTK Query mock that bypasses preload, any short-circuit that skips the real Step Commit. The e2e's `Concierge-Step: specify:pass` trailer assertion is the proof-of-real-path — it can only pass if Run 5's commitWithTrailer actually ran. T001 passes via this real-path-with-boundary-mocks pattern.
 
 ## Phase 2 - Font dependencies and single CSS port
 
@@ -802,9 +802,23 @@ source_plan: specs/0006-specify-vertical/plan.md
     - `rg "streaming channel|IPC.*naming|copilot:specify:event" .github/copilot-instructions.md`
 
 - [ ] T141b Manually verify the first-run Specify app journey.
-  - Paths: implement run notes, `specs/0006-specify-vertical/tasks.md`.
+  - Paths: `specs/0006-specify-vertical/manual-verification.md` (NEW — durable evidence artifact at this exact path), `e2e/artifacts/run6-manual-trace/` (Playwright trace + screenshot output directory).
   - Dependencies: T141a.
-  - Acceptance: Implementer MUST record evidence in the implement run's notes after launching the app with `npm run dev`, signing into mocked auth, picking a repo, typing a prompt, clicking Begin, seeing Specify pipeline progress including orb animation, activity log, and spinner, and seeing the rendered `spec.md` viewer. This is deliberate human-eye verification, NOT automated.
+  - Acceptance: Implementer MUST write a durable evidence file at `specs/0006-specify-vertical/manual-verification.md` containing AT MINIMUM these fields:
+    - `npm_run_dev_started_at` (ISO timestamp from `date -u +%Y-%m-%dT%H:%M:%SZ`)
+    - `npm_run_dev_finished_at` (ISO timestamp at the end of the manual session)
+    - `auth_mode`: `mocked` (which env-var adapter set was active per T002)
+    - `repo`: the chosen repo name
+    - `branch_before_specify`: the branch state before clicking Begin (usually `main`)
+    - `branch_after_specify`: the `spec/draft-<suffix>` branch name created by `git:createDraft`
+    - `prompt`: the prompt text typed (verbatim)
+    - `screenshot_path`: relative path to a screenshot of the rendered spec.md viewer (e.g., `e2e/artifacts/run6-manual-trace/rendered-spec-md.png`)
+    - `playwright_trace_path`: relative path to a Playwright trace.zip recorded via `npx playwright codegen` or equivalent (e.g., `e2e/artifacts/run6-manual-trace/trace.zip`)
+    - `git_log_output`: paste of `git log -1 --format=%B` showing the `Concierge-Step: specify:pass` trailer
+    - `observations`: free-text notes on orb animation visible, activity log scrolling, PixelCSpinner pixelation level matching specify=1.0 step
+    - `result`: `pass | partial | fail`
+    
+    The file is committed alongside the implement landing. This is deliberate human-eye verification; the artifact prevents skipping by requiring concrete proof.
 
 - [ ] T141c Verify accessibility e2e coverage for Run 6 major screens.
   - Paths: `src/renderer/**/*.tsx`, `e2e/**/*.spec.ts`, `package.json`.
