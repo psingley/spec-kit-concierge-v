@@ -1,157 +1,17 @@
 {
-  "runId": "2026-05-28T21:59:21.391Z",
+  "runId": "2026-05-28T22:07:03.677Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 15,
-    "fail": 9,
+    "pass": 16,
+    "fail": 8,
     "warn": 0,
-    "worstScreen": "workspace-titlebar-repo-dropdown-open"
+    "worstScreen": "workspace-titlebar-gear-menu-open"
   },
   "screens": [
-    {
-      "name": "workspace-titlebar-repo-dropdown-open",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected '2h ago'",
-          "expected": "2h ago",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-web'",
-          "expected": "concierge-web",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '2'",
-          "expected": "2",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'yesterday'",
-          "expected": "yesterday",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-mobile'",
-          "expected": "concierge-mobile",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '3d ago'",
-          "expected": "3d ago",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'booking-engine'",
-          "expected": "booking-engine",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '1w ago'",
-          "expected": "1w ago",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'All repos'",
-          "expected": "All repos",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'itinerary-service'",
-          "expected": "itinerary-service",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'pricing-rules'",
-          "expected": "pricing-rules",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'guest-profile-svc'",
-          "expected": "guest-profile-svc",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'supplier-sync'",
-          "expected": "supplier-sync",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'loyalty-ledger'",
-          "expected": "loyalty-ledger",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'ops-dashboard'",
-          "expected": "ops-dashboard",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-shared-ui'",
-          "expected": "concierge-shared-ui",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'incident-bot'",
-          "expected": "incident-bot",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'voucher-redeem'",
-          "expected": "voucher-redeem",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'data-warehouse-etl'",
-          "expected": "data-warehouse-etl",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'concierge-api42h ago' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'itinerary-servicemain' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on repo dropdown menu.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
-          "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
-          "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
-        }
-      ],
-      "pixelResidual": 2.94,
-      "priorityScore": 100
-    },
     {
       "name": "workspace-titlebar-gear-menu-open",
       "status": "FAIL",
@@ -229,7 +89,7 @@
           "actual": "8px 10px"
         }
       ],
-      "pixelResidual": 2.96,
+      "pixelResidual": 2.97,
       "priorityScore": 100
     },
     {
@@ -487,7 +347,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.54,
+      "pixelResidual": 3.52,
       "priorityScore": 100
     },
     {
@@ -663,7 +523,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.57,
+      "pixelResidual": 5.52,
       "priorityScore": 100
     },
     {
@@ -839,7 +699,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.91,
+      "pixelResidual": 6,
       "priorityScore": 100
     },
     {
@@ -920,14 +780,14 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.92,
+      "pixelResidual": 4.93,
       "priorityScore": 5
     },
     {
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -948,21 +808,21 @@
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.21,
+      "pixelResidual": 4.97,
       "priorityScore": 5
     },
     {
@@ -980,6 +840,13 @@
       "priorityScore": 4
     },
     {
+      "name": "workspace-titlebar-repo-dropdown-open",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.1,
+      "priorityScore": 3
+    },
+    {
       "name": "customize-modal",
       "status": "PASS",
       "failures": [],
@@ -990,7 +857,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.55,
+      "pixelResidual": 1.54,
       "priorityScore": 2
     }
   ]

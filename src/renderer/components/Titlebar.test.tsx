@@ -71,11 +71,14 @@ describe('Titlebar dropdowns', () => {
     renderTitlebar();
 
     fireEvent.click(screen.getByRole('button', { name: 'collette-travel/booking-engine' }));
-    expect(screen.getByRole('menu', { name: /repository/i })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: /repository/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'concierge-api42h ago' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'itinerary-servicemain' })).toBeInTheDocument();
+    expect(screen.getByText('All repos')).toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole('button', { name: /outside target/i }));
 
-    expect(screen.queryByRole('menu', { name: /repository/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /repository/i })).not.toBeInTheDocument();
   });
 
   it('traps tab focus inside an open menu and closes on escape', () => {

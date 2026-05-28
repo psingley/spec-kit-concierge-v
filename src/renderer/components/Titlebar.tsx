@@ -33,6 +33,38 @@ const COPILOT_MODELS = [
 
 const getModelOption = (model: string | null): (typeof COPILOT_MODELS)[number] => COPILOT_MODELS.find((entry) => entry.id === model) ?? COPILOT_MODELS[0];
 
+const REPO_MENU_RECENT = [
+  { name: 'concierge-api', branches: '4', meta: '2h ago' },
+  { name: 'concierge-web', branches: '2', meta: 'yesterday' },
+  { name: 'concierge-mobile', branches: '1', meta: '3d ago' },
+  { name: 'booking-engine', branches: '', meta: '1w ago' }
+] as const;
+
+const REPO_MENU_ALL = [
+  { name: 'itinerary-service', branches: 'main' },
+  { name: 'pricing-rules', branches: '' },
+  { name: 'guest-profile-svc', branches: '' },
+  { name: 'supplier-sync', branches: '' },
+  { name: 'loyalty-ledger', branches: '' },
+  { name: 'ops-dashboard', branches: '' },
+  { name: 'concierge-shared-ui', branches: '' },
+  { name: 'incident-bot', branches: '' },
+  { name: 'voucher-redeem', branches: '' },
+  { name: 'data-warehouse-etl', branches: '' }
+] as const;
+
+const RepoMenuRow = ({ name, branches, meta, active = false }: { name: string; branches?: string; meta?: string; active?: boolean }): React.ReactElement => {
+  const ariaLabel = `${name}${branches ?? ''}${meta ?? ''}`;
+  return (
+    <button type="button" aria-label={ariaLabel} className={`tb-menu-row repo-menu-row ${active ? 'is-active' : ''}`}>
+      <Ico.Folder size={12} />
+      <span className="tb-menu-row-name">{name}</span>
+      {branches ? <span className="tb-menu-row-pill">{branches}</span> : null}
+      {meta ? <span className="tb-menu-row-meta">{meta}</span> : null}
+    </button>
+  );
+};
+
 const MenuWrap = ({
   id,
   open,
@@ -95,12 +127,23 @@ const MenuWrap = ({
         {trailing}
       </button>
       {active ? (
-        <div ref={menuRef} role="menu" aria-label={label} className={`tb-menu ${id}-menu`} tabIndex={-1} onKeyDown={onMenuKeyDown}>
+        <div ref={menuRef} role={id === 'repository' ? 'dialog' : 'menu'} aria-label={label} className={`tb-menu ${id}-menu`} tabIndex={-1} onKeyDown={onMenuKeyDown}>
           {id === 'repository' ? (
             <>
-              <div className="tb-menu-h">Repository</div>
-              <button type="button" role="menuitem" className="tb-menu-row">Open repository browser</button>
-              <button type="button" role="menuitem" className="tb-menu-row">Refresh repositories</button>
+              <div className="tb-menu-search">
+                <Ico.Search size={12} />
+                <input aria-label="Filter repos" placeholder="Filter repos…" readOnly />
+              </div>
+              <div className="tb-menu-scroll">
+                <div className="tb-menu-group"><Ico.Clock size={10} />Recent</div>
+                {REPO_MENU_RECENT.map((entry) => (
+                  <RepoMenuRow key={entry.name} name={entry.name} branches={entry.branches} meta={entry.meta} active={entry.name === 'concierge-api'} />
+                ))}
+                <div className="tb-menu-group">All repos</div>
+                {REPO_MENU_ALL.map((entry) => (
+                  <RepoMenuRow key={entry.name} name={entry.name} branches={entry.branches} />
+                ))}
+              </div>
             </>
           ) : null}
           {id === 'branch' ? (

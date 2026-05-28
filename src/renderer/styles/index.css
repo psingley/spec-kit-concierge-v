@@ -172,7 +172,7 @@ small {
   background: color-mix(in srgb, var(--bg-2) 94%, transparent);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-3);
+  box-shadow: var(--shadow-2);
   padding: 22px;
 }
 
@@ -487,7 +487,11 @@ small {
   background: var(--bg-2);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-3);
+  box-shadow: var(--shadow-2);
+}
+
+.tb-menu.repository-menu {
+  width: 360px;
 }
 
 .tb-menu.gear-menu {
@@ -503,6 +507,47 @@ small {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+}
+
+.tb-menu-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-faint);
+}
+
+.tb-menu-search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.tb-menu-scroll {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.tb-menu-group {
+  padding: 8px 10px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dim);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.tb-menu-group:first-child {
+  padding-top: 4px;
 }
 
 .tb-menu-row,
@@ -528,6 +573,52 @@ small {
 .tb-menu-row.is-active {
   color: var(--accent-text);
   background: var(--accent-bg);
+}
+
+.repo-menu-row {
+  min-height: 30px;
+}
+
+.repo-menu-row > svg {
+  flex-shrink: 0;
+  color: var(--text-faint);
+}
+
+.repo-menu-row:hover > svg,
+.repo-menu-row.is-active > svg {
+  color: var(--accent-text);
+}
+
+.tb-menu-row-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tb-menu-row-pill {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.repo-menu-row.is-active .tb-menu-row-pill {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.tb-menu-row-meta {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
 }
 
 /* ============ Stepper ============ */
