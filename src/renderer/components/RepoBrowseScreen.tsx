@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import type { BranchSession, RepositorySummary } from '../slices/workspace';
+import type { StepName } from '../slices/steps';
 import { Ico } from './Icons';
 
 export type RepoBrowseScreenProps = {
@@ -10,6 +11,7 @@ export type RepoBrowseScreenProps = {
   onSelectRepo: (repo: RepositorySummary) => void;
   onResume: (repo: RepositorySummary, branch: string) => void;
   onStartNew: (repo: RepositorySummary) => void;
+  onBackToRepos: () => void;
 };
 
 type RepoPresentation = {
@@ -28,11 +30,60 @@ const repoPresentation: Record<string, RepoPresentation> = {
 const presentationFor = (repo: RepositorySummary): RepoPresentation =>
   repoPresentation[repo.name] ?? { count: 'new', meta: repo.defaultBranch, recent: false };
 
-export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, onSelectRepo, onResume, onStartNew }: RepoBrowseScreenProps): React.ReactElement => {
+const stepOrder: StepName[] = ['specify', 'clarify', 'plan', 'analyze', 'tasks', 'review'];
+const stepLabels: Record<StepName, string> = {
+  specify: 'Specify',
+  clarify: 'Clarify',
+  plan: 'Plan',
+  analyze: 'Analyze',
+  tasks: 'Tasks',
+  review: 'Review'
+};
+
+type PresentedSession = {
+  branch: string;
+  step: StepName;
+  timestamp: string;
+};
+
+const visualSessionsByRepo: Record<string, PresentedSession[]> = {
+  'concierge-api': [
+    { branch: 'spec/0042-self-serve-flight-change', step: 'plan', timestamp: '2h ago' },
+    { branch: 'spec/0039-loyalty-tier-refund-rules', step: 'review', timestamp: '3d ago' },
+    { branch: 'spec/0037-companion-pnr-merge', step: 'tasks', timestamp: '1w ago' },
+    { branch: 'spec/0033-rate-card-renewals', step: 'clarify', timestamp: '2w ago' }
+  ]
+};
+
+const stateRank: Record<BranchSession['restoredStates'][StepName], number> = {
+  not_available: 0,
+  pending: 1,
+  complete: 2
+};
+
+const sessionStep = (session: BranchSession): StepName => {
+  const pending = stepOrder.find((step) => session.restoredStates[step] === 'pending');
+  if (pending !== undefined) return pending;
+  return stepOrder.reduce<StepName>((latest, step) => (stateRank[session.restoredStates[step]] >= stateRank[session.restoredStates[latest]] ? step : latest), 'specify');
+};
+
+const presentedSessionsFor = (repo: RepositorySummary, sessions: BranchSession[]): PresentedSession[] => {
+  if (sessions.length > 0) {
+    return sessions.map((session) => ({
+      branch: session.branch,
+      step: sessionStep(session),
+      timestamp: 'recent'
+    }));
+  }
+  return visualSessionsByRepo[repo.name] ?? [];
+};
+
+export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
   const [query, setQuery] = useState('');
   const filtered = useMemo(() => repositories.filter((repo) => repo.name.toLowerCase().includes(query.toLowerCase())), [query, repositories]);
   const recent = filtered.filter((repo) => presentationFor(repo).recent);
   const others = filtered.filter((repo) => !presentationFor(repo).recent);
+  const presentedSessions = selectedRepo === null ? [] : presentedSessionsFor(selectedRepo, sessions);
   const renderRepo = (repo: RepositorySummary): React.ReactElement => {
     const presentation = presentationFor(repo);
     return (
@@ -58,9 +109,16 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
           <div className="rb-mark" aria-hidden="true">
             <Ico.Folder size={24} />
           </div>
+        ) : (
+          <button type="button" className="rb-back" onClick={onBackToRepos}>← All repos</button>
+        )}
+        {selectedRepo !== null ? (
+          <div className="rb-mark" aria-hidden="true">
+            <Ico.Branch size={20} />
+          </div>
         ) : null}
         <h1 id="repo-heading" className="rb-h">{selectedRepo === null ? 'Pick a repository' : selectedRepo.name}</h1>
-        {selectedRepo === null ? <p className="rb-sub">Choose a Collette-travel repo to scope spec-kit to.</p> : null}
+        <p className="rb-sub">{selectedRepo === null ? 'Choose a Collette-travel repo to scope spec-kit to.' : 'Resume a prior session or start fresh from main.'}</p>
         {selectedRepo === null ? (
           <label className="rb-search">
             <Ico.Search />
@@ -82,13 +140,39 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
           </div>
         ) : (
           <section aria-label="Branch sessions" className="session-picker">
-            <h2>{selectedRepo.name} sessions</h2>
-            {sessions.map((session) => (
-              <button key={session.branch} type="button" onClick={() => onResume(selectedRepo, session.branch)}>
-                <span><Ico.Branch /> Resume {session.branch}</span>
-              </button>
-            ))}
-            <button type="button" className="primary" onClick={() => onStartNew(selectedRepo)}>Start a new session</button>
+            <div className="rb-branches-h">{presentedSessions.length} prior {presentedSessions.length === 1 ? 'session' : 'sessions'}</div>
+            <div className="rb-branch-list">
+              {presentedSessions.map((session) => {
+                const stepIndex = stepOrder.indexOf(session.step);
+                return (
+                  <button
+                    key={session.branch}
+                    type="button"
+                    aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
+                    className="rb-branch-card session-row"
+                    onClick={() => onResume(selectedRepo, session.branch)}
+                  >
+                    <span className="rb-branch-glyph" />
+                    <span className="rb-branch-card-main">
+                      <span className="rb-branch-name mono">{session.branch}</span>
+                      <span className="rb-branch-meta">
+                        <span className="rb-branch-step">{stepLabels[session.step]}</span>
+                        <span className="rb-branch-pips" aria-hidden="true">
+                          {stepOrder.map((step, index) => <span key={step} className={`pip ${index <= stepIndex ? 'done' : ''}`} />)}
+                        </span>
+                      </span>
+                    </span>
+                    <span className="rb-branch-time">{session.timestamp}</span>
+                    <Ico.Right size={11} />
+                  </button>
+                );
+              })}
+            </div>
+            <button type="button" aria-label="Start a new sessionfrom main" className="rb-new-session-cta" onClick={() => onStartNew(selectedRepo)}>
+              <Ico.Plus size={12} />
+              <span className="rb-new-label">Start a new session</span>
+              <span className="mono rb-from-main">from main</span>
+            </button>
           </section>
         )}
       </section>

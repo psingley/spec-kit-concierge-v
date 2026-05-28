@@ -3,7 +3,7 @@ import { branchesApi } from '../api/branches.endpoint';
 import { gitApi } from '../api/git.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
-import { branchSessionsLoaded, repositorySelected, workspaceEntered, type RepositorySummary } from '../slices/workspace';
+import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type RepositorySummary } from '../slices/workspace';
 import { selectWorkspaceSelectedRepo, selectWorkspaceSessions } from '../slices/workspace.selectors';
 import { RepoBrowseScreen } from './RepoBrowseScreen';
 
@@ -38,6 +38,7 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
       onSelectRepo={(repo) => dispatch(repositorySelected(repo))}
       onResume={resume}
       onStartNew={(repo) => void createDraftBranch({ repo })}
+      onBackToRepos={() => dispatch(repositoryBrowseReset())}
     />
   );
 };

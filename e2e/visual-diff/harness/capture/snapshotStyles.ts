@@ -17,6 +17,10 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
       const repoRow = page.locator('.rb-repo').first();
       if ((await repoRow.count()) > 0) locator = repoRow;
     }
+    if (side === 'design' && selector === '.session-row') {
+      const sessionRow = page.locator('.rb-branch-card').first();
+      if ((await sessionRow.count()) > 0) locator = sessionRow;
+    }
     if (side === 'shipped' && selector === '.step-tab[aria-selected="true"]') {
       const orb = locator.locator('.step-orb').first();
       if (await orb.isVisible().catch(() => false)) locator = orb;

@@ -62,6 +62,12 @@ const workspaceSlice = createSlice({
       state.branch = null;
       state.sessions = [];
     },
+    repositoryBrowseReset: (state) => {
+      state.selectedRepo = null;
+      state.activeRepoPath = null;
+      state.branch = null;
+      state.sessions = [];
+    },
     branchSessionsLoaded: (state, action: PayloadAction<BranchSession[]>) => {
       state.sessions = action.payload;
     },
@@ -96,6 +102,7 @@ const workspaceSlice = createSlice({
 
 export const {
   repositorySelected,
+  repositoryBrowseReset,
   branchSessionsLoaded,
   workspaceEntered,
   draftSessionCreated,
