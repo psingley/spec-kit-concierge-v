@@ -1856,11 +1856,11 @@ textarea {
   align-items: stretch;
   gap: 0;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid oklch(0.285 0.006 280);
   border-radius: 999px;
-  background: var(--surface);
-  color: var(--text-dim);
-  box-shadow: var(--shadow-2);
+  background: oklch(0.2 0.005 280);
+  color: rgb(155, 149, 144);
+  box-shadow: none;
   cursor: pointer;
   font-family: inherit;
   overflow: hidden;

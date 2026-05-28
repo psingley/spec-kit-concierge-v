@@ -4,9 +4,9 @@
     "selector": ".activity-pill",
     "found": true,
     "styles": {
-      "background-color": "rgb(23, 31, 36)",
+      "background-color": "rgb(21, 22, 24)",
       "border-radius": "999px",
-      "border-top-color": "rgb(42, 55, 61)",
+      "border-top-color": "oklch(0.285 0.006 280)",
       "padding": "0px"
     }
   }

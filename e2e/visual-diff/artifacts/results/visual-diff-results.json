@@ -1,54 +1,29 @@
 {
-  "runId": "2026-05-28T22:53:14.344Z",
+  "runId": "2026-05-28T23:01:50.977Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 22,
-    "fail": 2,
+    "pass": 23,
+    "fail": 1,
     "warn": 0,
-    "worstScreen": "activity-pill-idle"
+    "worstScreen": "activity-rail-idle"
   },
   "screens": [
     {
-      "name": "activity-pill-idle",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Idle'",
-          "expected": "Idle",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Idle' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity pill.border-top-color: expected 'oklch(0.285 0.006 280)', got 'rgb(42, 55, 61)'",
-          "expected": "oklch(0.285 0.006 280)",
-          "actual": "rgb(42, 55, 61)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 17.28% exceeds 7%",
-          "expected": "7%",
-          "actual": "17.28%"
-        }
-      ],
-      "pixelResidual": 17.28,
-      "priorityScore": 82
+      "name": "activity-rail-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.55,
+      "priorityScore": 7
     },
     {
       "name": "activity-rail-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.74,
+      "pixelResidual": 6.8,
       "priorityScore": 7
     },
     {
@@ -62,7 +37,7 @@
       "name": "signin-github-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.99,
+      "pixelResidual": 6,
       "priorityScore": 6
     },
     {
@@ -84,13 +59,6 @@
       "status": "PASS",
       "failures": [],
       "pixelResidual": 5.6,
-      "priorityScore": 6
-    },
-    {
-      "name": "activity-rail-idle",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 6.35,
       "priorityScore": 6
     },
     {
@@ -150,13 +118,6 @@
       "priorityScore": 5
     },
     {
-      "name": "activity-pill-busy",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 4.97,
-      "priorityScore": 5
-    },
-    {
       "name": "about-modal",
       "status": "PASS",
       "failures": [],
@@ -167,7 +128,14 @@
       "name": "specify-input",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.97,
+      "pixelResidual": 3.99,
+      "priorityScore": 4
+    },
+    {
+      "name": "activity-pill-busy",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.91,
       "priorityScore": 4
     },
     {
@@ -181,14 +149,14 @@
       "name": "workspace-titlebar-repo-dropdown-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.45,
+      "pixelResidual": 3.46,
       "priorityScore": 3
     },
     {
       "name": "workspace-titlebar-gear-menu-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.23,
+      "pixelResidual": 3.24,
       "priorityScore": 3
     },
     {
@@ -202,7 +170,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.54,
+      "pixelResidual": 1.55,
       "priorityScore": 2
     },
     {
@@ -211,6 +179,13 @@
       "failures": [],
       "pixelResidual": 2.32,
       "priorityScore": 2
+    },
+    {
+      "name": "activity-pill-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 0.12,
+      "priorityScore": 0
     }
   ]
 }

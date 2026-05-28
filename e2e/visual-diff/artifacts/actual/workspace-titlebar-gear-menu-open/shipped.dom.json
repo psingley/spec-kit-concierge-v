@@ -588,11 +588,11 @@
             },
             {
               "tag": "button",
-              "text": "Copilot connected",
+              "text": "Idle",
               "children": [
                 {
                   "tag": "span",
-                  "text": "Copilot connected",
+                  "text": "Idle",
                   "children": []
                 },
                 {

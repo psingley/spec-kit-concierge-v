@@ -7,6 +7,7 @@ const createContext = () => {
   const alphaTrace: number[] = [];
   const context = {
   clearRect: vi.fn(),
+    setTransform: vi.fn(),
     fillRect: vi.fn(() => {
       alphaTrace.push(context.globalAlpha);
     }),
@@ -69,8 +70,9 @@ describe('PixelCSpinner', () => {
 
   it('changes the draw trace when pixelation changes', () => {
     render(<PixelCSpinner busy size={16} cell={4} pixelation={1} />);
-    rafCallbacks[0]?.(0);
-    rafCallbacks[1]?.(16);
+    const firstStart = performance.now();
+    rafCallbacks[0]?.(firstStart);
+    rafCallbacks[1]?.(firstStart + 50);
     const pixelationOneAlpha = [...context.alphaTrace];
 
     vi.restoreAllMocks();
@@ -84,8 +86,9 @@ describe('PixelCSpinner', () => {
     vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => undefined);
 
     render(<PixelCSpinner busy size={16} cell={4} pixelation={2} />);
-    rafCallbacks[0]?.(0);
-    rafCallbacks[1]?.(16);
+    const secondStart = performance.now();
+    rafCallbacks[0]?.(secondStart);
+    rafCallbacks[1]?.(secondStart + 50);
     const pixelationTwoAlpha = [...context.alphaTrace];
 
     expect(pixelationTwoAlpha).not.toEqual(pixelationOneAlpha);

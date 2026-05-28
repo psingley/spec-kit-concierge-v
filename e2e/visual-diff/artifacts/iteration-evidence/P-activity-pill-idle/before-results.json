@@ -1,0 +1,32 @@
+{
+  "name": "activity-pill-idle",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Idle'",
+      "expected": "Idle",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Idle' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on activity pill.border-top-color: expected 'oklch(0.285 0.006 280)', got 'rgb(42, 55, 61)'",
+      "expected": "oklch(0.285 0.006 280)",
+      "actual": "rgb(42, 55, 61)"
+    },
+    {
+      "layer": "pixels",
+      "message": "cropped pixel residual 17.28% exceeds 7%",
+      "expected": "7%",
+      "actual": "17.28%"
+    }
+  ],
+  "pixelResidual": 17.28,
+  "priorityScore": 82
+}
