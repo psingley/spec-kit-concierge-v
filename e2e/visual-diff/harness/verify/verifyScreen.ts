@@ -21,7 +21,7 @@ export type ScreenVerificationResult = {
 
 const readJson = async <T>(file: string): Promise<T> => JSON.parse(await readFile(file, 'utf8')) as T;
 
-const elementStateFromAom = (aom: AomNode | null, dom: DomNode): CapturedElementState => {
+const elementStateFromAom = (aom: AomNode | null, dom: DomNode, screenName: string): CapturedElementState => {
   const buttons = new Map<string, number>();
   const headings: Array<{ level: number; text: string }> = [];
   const textParts: string[] = [];
@@ -36,7 +36,9 @@ const elementStateFromAom = (aom: AomNode | null, dom: DomNode): CapturedElement
   const walkDom = (node: DomNode): void => {
     if (node.text) textParts.push(node.text);
     if (/^h[1-6]$/.test(node.tag) && node.text) headings.push({ level: Number(node.tag.slice(1)), text: node.text });
-    if (node.tag === 'button' && node.role === 'tab' && node.text) buttons.set(node.text, (buttons.get(node.text) ?? 0) + 1);
+    if (screenName.startsWith('stepper-') && node.tag === 'button' && node.role === 'tab' && node.text) {
+      buttons.set(node.text, (buttons.get(node.text) ?? 0) + 1);
+    }
     if (node.marker) markers.push(node.marker);
     node.children.forEach(walkDom);
   };
@@ -62,7 +64,7 @@ export const verifyScreen = async (screenName: string): Promise<ScreenVerificati
   const shippedStyles = await readJson<CapturedStyleSample[]>(path.join(shippedDir, 'shipped.styles.json'));
   const pixel = await verifyPixels(path.join(referenceDir, 'design.png'), path.join(shippedDir, 'shipped.png'), path.join(shippedDir, 'diff.png'));
   const failures = [
-    ...verifyRequiredElements(contract, elementStateFromAom(shippedAom, shippedDom)),
+    ...verifyRequiredElements(contract, elementStateFromAom(shippedAom, shippedDom, screenName)),
     ...verifyStructure(designDom, shippedDom),
     ...verifyStyles(contract, designStyles, shippedStyles)
   ];

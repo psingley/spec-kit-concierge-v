@@ -17,7 +17,7 @@ const baseContract: VisualDiffContract = {
 };
 
 describe('required element verification', () => {
-  it('reports missing text, wrong heading, wrong button count, and missing visual markers', () => {
+  it('reports missing text, missing heading, wrong button count, and missing visual markers', () => {
     const failures = verifyRequiredElements(baseContract, {
       text: 'Connect your tools GitHub CLI Copilot CLI',
       headings: [{ level: 1, text: 'Connect your tools' }],
@@ -27,7 +27,7 @@ describe('required element verification', () => {
 
     expect(failures.map((failure) => failure.message)).toEqual([
       "missing text: expected 'GitHub Copilot CLI'",
-      "wrong heading level 1: expected 'Spec-kit Concierge', got 'Connect your tools'",
+      "missing heading level 1: expected 'Spec-kit Concierge'",
       "wrong control count: expected button 'Sign in' x3, got 1",
       "missing visual marker: expected 'signin-mark' at [data-vd-role=\"signin-mark\"]"
     ]);

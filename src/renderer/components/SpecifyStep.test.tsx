@@ -24,7 +24,7 @@ describe('SpecifyStep scroll gate', () => {
   it('keeps the complete-state continue action locked until the review is fully scrolled', () => {
     const { onBegin } = renderComplete(true);
 
-    const continueButton = screen.getByRole('button', { name: /continue/i });
+    const continueButton = screen.getByRole('button', { name: /clarify/i });
     expect(continueButton).toBeDisabled();
 
     const review = screen.getByTestId('spec-review-scroll');
@@ -43,7 +43,7 @@ describe('SpecifyStep scroll gate', () => {
   it('leaves the complete-state continue action unlocked when the scroll gate is disabled', () => {
     const { onBegin } = renderComplete(false);
 
-    const continueButton = screen.getByRole('button', { name: /continue/i });
+    const continueButton = screen.getByRole('button', { name: /clarify/i });
     expect(continueButton).toBeEnabled();
     fireEvent.click(continueButton);
     expect(onBegin).toHaveBeenCalledTimes(1);

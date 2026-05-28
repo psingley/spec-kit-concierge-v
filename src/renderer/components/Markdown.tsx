@@ -8,7 +8,8 @@ const escapeText = (text: string): string =>
   text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const Markdown = ({ text }: MarkdownProps): React.ReactElement => {
-  const blocks = text.split(/\n{2,}/).filter((block) => block.trim().length > 0);
+  const normalized = text.replace(/^(#{1,6} .+)\n(?!\n)/gm, '$1\n\n');
+  const blocks = normalized.split(/\n{2,}/).filter((block) => block.trim().length > 0);
   return (
     <article className="markdown" data-testid="spec-markdown">
       {blocks.map((block, index) => {

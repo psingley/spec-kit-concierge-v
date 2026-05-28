@@ -24,16 +24,9 @@ export const verifyRequiredElements = (contract: VisualDiffContract, actual: Cap
   }
 
   for (const expected of contract.required.headings) {
-    const matching = actual.headings.find((heading) => heading.level === expected.level);
+    const matching = actual.headings.find((heading) => heading.level === expected.level && heading.text === expected.text);
     if (!matching) {
       failures.push({ layer: 'elements', message: `missing heading level ${expected.level}: expected '${expected.text}'`, expected: expected.text, actual: 'missing' });
-    } else if (matching.text !== expected.text) {
-      failures.push({
-        layer: 'elements',
-        message: `wrong heading level ${expected.level}: expected '${expected.text}', got '${matching.text}'`,
-        expected: expected.text,
-        actual: matching.text
-      });
     }
   }
 

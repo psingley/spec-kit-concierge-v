@@ -100,11 +100,16 @@ const beginSpecify = async (page: Page): Promise<void> => {
 
 const reachWorkspaceWithSamplePrompt = async (page: Page): Promise<void> => {
   await reachWorkspace(page);
+  await page.getByRole('button', { name: /collette-travel\/concierge-api/i }).waitFor({ timeout: 5_000 }).catch(() => undefined);
+  await page.getByRole('button', { name: 'main' }).waitFor({ timeout: 5_000 }).catch(() => undefined);
   await page.locator('[aria-label="Specify prompt"], .prompt-input').first().fill(samplePrompt);
 };
 
 const completeSpecify = async (page: Page): Promise<void> => {
-  await beginSpecify(page);
+  await reachWorkspaceWithSamplePrompt(page);
+  const begin = page.getByRole('button', { name: /Begin specify/i });
+  await begin.waitFor({ state: 'visible' });
+  await begin.click();
   await page.locator('[data-testid="spec-markdown"], .md-panel').first().waitFor({ timeout: 20_000 });
 };
 
