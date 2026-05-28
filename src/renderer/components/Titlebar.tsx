@@ -104,7 +104,7 @@ const MenuWrap = ({
       return;
     }
     if (event.key !== 'Tab') return;
-    const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'));
+    const items = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, [role="menuitem"]'));
     const currentIndex = items.findIndex((item) => item === document.activeElement);
     if (items.length === 0) return;
     event.preventDefault();
@@ -127,7 +127,7 @@ const MenuWrap = ({
         {trailing}
       </button>
       {active ? (
-        <div ref={menuRef} role={id === 'repository' ? 'dialog' : 'menu'} aria-label={label} className={`tb-menu ${id}-menu`} tabIndex={-1} onKeyDown={onMenuKeyDown}>
+        <div ref={menuRef} role={id === 'repository' || id === 'settings' ? 'dialog' : 'menu'} aria-label={label} className={`tb-menu ${id === 'settings' ? 'gear' : id}-menu`} tabIndex={-1} onKeyDown={onMenuKeyDown}>
           {id === 'repository' ? (
             <>
               <div className="tb-menu-search">
@@ -170,9 +170,10 @@ const MenuWrap = ({
           ) : null}
           {id === 'settings' ? (
             <>
-              <button type="button" role="menuitem" className="gear-item" onClick={onCustomize}><Ico.Gear />Customize</button>
-              <button type="button" role="menuitem" className="gear-item" onClick={onAbout}><Ico.Info />About</button>
-              <button type="button" role="menuitem" className="gear-item" onClick={onRequest}><Ico.Mail />Request access</button>
+              <button type="button" className="gear-item" onClick={onCustomize} data-vd-role="gear-menu-icons"><Ico.Gear size={13} /><span>Customize</span></button>
+              <button type="button" className="gear-item" onClick={onRequest}><Ico.Bug size={13} /><span>Report a bug</span></button>
+              <button type="button" className="gear-item"><Ico.Download size={13} /><span>Export activity log</span><span className="gear-item-sub mono">14 lines</span></button>
+              <button type="button" className="gear-item" onClick={onAbout}><Ico.Info size={13} /><span>About</span></button>
             </>
           ) : null}
         </div>

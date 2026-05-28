@@ -1,97 +1,17 @@
 {
-  "runId": "2026-05-28T22:07:03.677Z",
+  "runId": "2026-05-28T22:13:17.852Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 16,
-    "fail": 8,
+    "pass": 17,
+    "fail": 7,
     "warn": 0,
-    "worstScreen": "workspace-titlebar-gear-menu-open"
+    "worstScreen": "specify-input"
   },
   "screens": [
-    {
-      "name": "workspace-titlebar-gear-menu-open",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Report a bug'",
-          "expected": "Report a bug",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Export activity log'",
-          "expected": "Export activity log",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '14 lines'",
-          "expected": "14 lines",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Customize' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Report a bug' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Export activity log14 lines' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'About' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'gear-menu-icons' at [data-vd-role=\"gear-menu-icons\"]",
-          "expected": "[data-vd-role=\"gear-menu-icons\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: gear menu panel",
-          "expected": ".gear-menu",
-          "actual": ".gear-menu"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on gear menu row.height: expected '32px', got '35.5px'",
-          "expected": "32px",
-          "actual": "35.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on gear menu row.gap: expected '10px', got '8px'",
-          "expected": "10px",
-          "actual": "8px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on gear menu row.padding: expected '9px 12px', got '8px 10px'",
-          "expected": "9px 12px",
-          "actual": "8px 10px"
-        }
-      ],
-      "pixelResidual": 2.97,
-      "priorityScore": 100
-    },
     {
       "name": "specify-input",
       "status": "FAIL",
@@ -523,7 +443,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.52,
+      "pixelResidual": 5.39,
       "priorityScore": 100
     },
     {
@@ -699,7 +619,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 6,
+      "pixelResidual": 5.88,
       "priorityScore": 100
     },
     {
@@ -808,7 +728,7 @@
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -822,7 +742,7 @@
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.97,
+      "pixelResidual": 5.21,
       "priorityScore": 5
     },
     {
@@ -847,6 +767,13 @@
       "priorityScore": 3
     },
     {
+      "name": "workspace-titlebar-gear-menu-open",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 2.89,
+      "priorityScore": 3
+    },
+    {
       "name": "customize-modal",
       "status": "PASS",
       "failures": [],
@@ -857,7 +784,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.54,
+      "pixelResidual": 1.55,
       "priorityScore": 2
     }
   ]

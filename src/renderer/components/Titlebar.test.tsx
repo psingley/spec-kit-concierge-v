@@ -85,14 +85,16 @@ describe('Titlebar dropdowns', () => {
     renderTitlebar();
 
     fireEvent.click(screen.getByRole('button', { name: /settings/i }));
-    const menu = screen.getByRole('menu', { name: /settings/i });
-    const menuItems = within(menu).getAllByRole('menuitem');
+    const menu = screen.getByRole('dialog', { name: /settings/i });
+    expect(screen.getByRole('button', { name: 'Report a bug' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Export activity log 14 lines' })).toBeInTheDocument();
+    const menuItems = within(menu).getAllByRole('button');
     menuItems[0]?.focus();
 
     fireEvent.keyDown(menu, { key: 'Tab' });
     expect(menuItems[1]).toHaveFocus();
 
     fireEvent.keyDown(menu, { key: 'Escape' });
-    expect(screen.queryByRole('menu', { name: /settings/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /settings/i })).not.toBeInTheDocument();
   });
 });

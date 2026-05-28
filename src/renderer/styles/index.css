@@ -565,6 +565,33 @@ small {
   cursor: pointer;
 }
 
+.gear-item {
+  gap: 10px;
+  padding: 9px 12px;
+  height: 32px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.gear-item > svg {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.gear-item:hover > svg {
+  color: var(--text);
+}
+
+.gear-item span:first-of-type {
+  flex: 1;
+}
+
+.gear-item-sub {
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+
 .tb-menu-row:hover,
 .gear-item:hover {
   background: var(--surface);

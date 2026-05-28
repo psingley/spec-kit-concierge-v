@@ -108,21 +108,21 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
 
   test('surface CustomizeModal', async () => {
     await page.getByRole('button', { name: /Settings/i }).click();
-    await page.getByRole('menuitem', { name: /Customize/i }).click();
+    await page.getByRole('button', { name: /Customize/i }).click();
     await screenshot('surface-customize-modal', page.getByRole('dialog', { name: /Customize/i }));
     await page.getByRole('button', { name: /^Close$/i }).click();
   });
 
   test('surface AboutModal', async () => {
     await page.getByRole('button', { name: /Settings/i }).click();
-    await page.getByRole('menuitem', { name: /About/i }).click();
+    await page.getByRole('button', { name: /About/i }).click();
     await screenshot('surface-about-modal', page.getByRole('dialog', { name: /About Concierge/i }));
     await page.getByRole('button', { name: /^Close$/i }).click();
   });
 
   test('surface RequestModal stub', async () => {
     await page.getByRole('button', { name: /Settings/i }).click();
-    await page.getByRole('menuitem', { name: /Request access/i }).click();
+    await page.getByRole('button', { name: /Report a bug/i }).click();
     await screenshot('surface-request-modal', page.getByRole('dialog', { name: /Request support/i }));
     await page.getByRole('button', { name: /^Cancel$/i }).click();
   });
