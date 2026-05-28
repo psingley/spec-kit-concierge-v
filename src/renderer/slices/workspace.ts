@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { StepName } from './steps';
 
 export type WorkspaceAgentSummary = {
   id: string;
@@ -13,6 +14,28 @@ export type WorkspaceState = {
   ahead: number;
   behind: number;
   dirty: boolean;
+  selectedRepo: RepositorySummary | null;
+  sessions: BranchSession[];
+  activeStep: StepName;
+  maxReachedStep: StepName;
+  viewedStep: StepName;
+};
+
+export type RepositorySummary = {
+  id: string;
+  name: string;
+  owner: string;
+  path: string;
+  defaultBranch: string;
+  description?: string;
+  language?: string;
+  updatedAt?: string;
+};
+
+export type BranchSession = {
+  branch: string;
+  label: string;
+  restoredStates: Record<StepName, 'not_available' | 'pending' | 'complete'>;
 };
 
 export const workspaceInitialState: WorkspaceState = {
@@ -21,15 +44,63 @@ export const workspaceInitialState: WorkspaceState = {
   branch: null,
   ahead: 0,
   behind: 0,
-  dirty: false
+  dirty: false,
+  selectedRepo: null,
+  sessions: [],
+  activeStep: 'specify',
+  maxReachedStep: 'specify',
+  viewedStep: 'specify'
 };
 
 const workspaceSlice = createSlice({
   name: 'workspace',
   initialState: workspaceInitialState,
-  reducers: {},
+  reducers: {
+    repositorySelected: (state, action: PayloadAction<RepositorySummary>) => {
+      state.selectedRepo = action.payload;
+      state.activeRepoPath = action.payload.path;
+      state.branch = null;
+      state.sessions = [];
+    },
+    branchSessionsLoaded: (state, action: PayloadAction<BranchSession[]>) => {
+      state.sessions = action.payload;
+    },
+    workspaceEntered: (
+      state,
+      action: PayloadAction<{ repo: RepositorySummary; branch: string; restoredStates?: BranchSession['restoredStates'] }>
+    ) => {
+      state.selectedRepo = action.payload.repo;
+      state.activeRepoPath = action.payload.repo.path;
+      state.branch = action.payload.branch;
+      state.activeStep = 'specify';
+      state.viewedStep = 'specify';
+      state.maxReachedStep = action.payload.restoredStates?.clarify === 'pending' || action.payload.restoredStates?.specify === 'complete' ? 'clarify' : 'specify';
+    },
+    draftSessionCreated: (state, action: PayloadAction<{ branch: string }>) => {
+      state.branch = action.payload.branch;
+      state.activeStep = 'specify';
+      state.viewedStep = 'specify';
+      state.maxReachedStep = 'specify';
+    },
+    workspaceStepViewed: (state, action: PayloadAction<StepName>) => {
+      state.viewedStep = action.payload;
+    },
+    specifyCompletedInWorkspace: (state) => {
+      state.activeStep = 'clarify';
+      state.maxReachedStep = 'clarify';
+      state.viewedStep = 'specify';
+    }
+  },
   extraReducers: () => {}
 });
 
+export const {
+  repositorySelected,
+  branchSessionsLoaded,
+  workspaceEntered,
+  draftSessionCreated,
+  workspaceStepViewed,
+  specifyCompletedInWorkspace
+} = workspaceSlice.actions;
 export const workspaceReducer = workspaceSlice.reducer;
 export default workspaceReducer;

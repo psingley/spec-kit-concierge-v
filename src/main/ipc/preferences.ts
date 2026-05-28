@@ -49,7 +49,7 @@ export const registerPreferencesIpc = ({
   const write =
     writePreferences ??
     (async (request: PreferencesWriteRequest): Promise<PreferencesPayload> => {
-      const payload: PreferencesPayload = { hydratedFromDisk: true, theme: request.theme };
+      const payload: PreferencesPayload = { hydratedFromDisk: true, ...request };
       await safeWrite(
         {
           targetPath: preferencesPath(userDataPath),

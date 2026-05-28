@@ -67,9 +67,9 @@ Run 5 conventions:
 
 Run 6 conventions:
 - Run 6 plan is `specs/0006-specify-vertical/plan.md`; renderer shape is canonical from `design/v3-fetch/project/`, with locked overrides from `grill.md` and `clarifications.md`.
-- Component file naming uses PascalCase TSX under `src/renderer/components/`: `AppShell.tsx`, `SignInScreen.tsx`, `RepoBrowseScreen.tsx`, `Titlebar.tsx`, `Stepper.tsx`, `SpecifyStep.tsx`, `Activity.tsx`, `ActivityPill.tsx`, `PixelCSpinner.tsx`, `CustomizeModal.tsx`, `AboutModal.tsx`, `RequestModal.tsx`, `Icons.tsx`, and `Markdown.tsx`; smart containers use `*Container.tsx`.
-- Smart containers are the only renderer components that use `useAppSelector`, `useAppDispatch`, or RTK Query hooks. Props-only components stay dumb and receive all data/callbacks via props.
-- Port design CSS to one file at `src/renderer/styles/index.css`, imported once from `src/renderer/index.tsx`; drop the orphan declarations after the first `:root` block in `design/v3-fetch/project/styles.css` lines ~29-40 unless a later design artifact proves they are intentional.
+- Component file naming convention / component naming uses PascalCase TSX under `src/renderer/components/`: `AppShell.tsx`, `SignInScreen.tsx`, `RepoBrowseScreen.tsx`, `Titlebar.tsx`, `Stepper.tsx`, `SpecifyStep.tsx`, `Activity.tsx`, `ActivityPill.tsx`, `PixelCSpinner.tsx`, `CustomizeModal.tsx`, `AboutModal.tsx`, `RequestModal.tsx`, `Icons.tsx`, and `Markdown.tsx`; smart containers use `*Container.tsx`.
+- Smart containers are the only renderer components that use `useAppSelector`, `useAppDispatch`, or RTK Query hooks. props-only components stay dumb and receive all data/callbacks via props.
+- Port design CSS to one single stylesheet at `src/renderer/styles/index.css`, imported once from `src/renderer/index.tsx`; drop the orphan declarations after the first `:root` block in `design/v3-fetch/project/styles.css` lines ~29-40 unless a later design artifact proves they are intentional.
 - Run 6 adds only `@fontsource/geist-sans` and `@fontsource/geist-mono`; no markdown, icon, UI, or animation runtime dependency is added.
 - `PixelCSpinner` remains a canvas + `requestAnimationFrame` component. Use it in `ActivityPill` as the always-visible busy/progress affordance; mock canvas/RAF at browser boundaries in tests.
 - Step order stays spec-kit canonical: `specify -> clarify -> plan -> tasks -> analyze -> review`. The design's `final` label maps to `review`; the design's `plan -> analyze -> tasks` order is not used.
@@ -77,7 +77,7 @@ Run 6 conventions:
 - `tweaks-panel.jsx` is not ported. Gear menu opens `CustomizeModal`, which edits accent, density, activity side, and require-scroll preferences.
 - Activity history cap remains 256. Do not adopt the design's larger implied log cap.
 - Run 6 new IPC capabilities are exactly `copilot:specify`, `auth:gh:login`, `auth:copilot:login`, `auth:atlassian:login`, `repos:list`, `branches:sessions`, `git:checkout`, `git:createDraft`, and `artifacts:read`.
-- Step pipeline streaming uses `copilot:<step>` capability names and derived transport event names `<capability>:event`; Run 6 implements `copilot:specify` and emits the ADR-0010 `StepStreamEvent` shape with progress events plus exactly one terminal `done`.
+- Step pipeline streaming channel / IPC naming uses `copilot:<step>` capability names and derived transport event names `<capability>:event`; Run 6 implements `copilot:specify`, transports events on `copilot:specify:event`, and emits the ADR-0010 `StepStreamEvent` shape with progress events plus exactly one terminal `done`.
 - RTK Query streaming mutations use `onCacheEntryAdded` to subscribe through preload, dispatch public slice actions, and unsubscribe on `cacheEntryRemoved`.
 - Preferences persistence listener reuses the existing Run 4 `preferences:write` channel; do not add a new persistence channel.
 - Trust-boundary factories for Run 6 use the seven-case floor: the six standard cases plus extra-key rejection. Handler logging tests must mock `createMainLogger`.

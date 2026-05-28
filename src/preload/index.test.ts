@@ -2,13 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const exposeInMainWorld = vi.fn();
 const invoke = vi.fn();
+const on = vi.fn();
+const off = vi.fn();
 
 vi.mock('electron', () => ({
   contextBridge: {
     exposeInMainWorld
   },
   ipcRenderer: {
-    invoke
+    invoke,
+    on,
+    off
   }
 }));
 
@@ -33,7 +37,11 @@ describe('preload concierge bridge', () => {
       'preferences',
       'auth',
       'session',
-      'activity'
+      'activity',
+      'repos',
+      'branches',
+      'artifacts',
+      'copilot'
     ]);
     expect(Object.keys(bridge.app as Record<string, unknown>)).toEqual(['getVersion']);
     expect(Object.keys(bridge.acp as Record<string, unknown>)).toEqual(['probeBoundCLI']);
@@ -55,13 +63,22 @@ describe('preload concierge bridge', () => {
   it.each([
     ['workspace', 'read', 'workspace:read'],
     ['git', 'read', 'git:read'],
+    ['git', 'checkout', 'git:checkout'],
+    ['git', 'createDraft', 'git:createDraft'],
     ['steps', 'read', 'steps:read'],
     ['preferences', 'read', 'preferences:read'],
     ['preferences', 'write', 'preferences:write'],
     ['auth', 'status', 'auth:status'],
+    ['auth', 'loginGitHub', 'auth:gh:login'],
+    ['auth', 'loginCopilot', 'auth:copilot:login'],
+    ['auth', 'loginAtlassian', 'auth:atlassian:login'],
     ['session', 'listAcp', 'session:listAcp'],
     ['session', 'createAcp', 'session:createAcp'],
-    ['activity', 'read', 'activity:read']
+    ['activity', 'read', 'activity:read'],
+    ['repos', 'list', 'repos:list'],
+    ['branches', 'sessions', 'branches:sessions'],
+    ['artifacts', 'read', 'artifacts:read'],
+    ['copilot', 'specify', 'copilot:specify']
   ])('routes %s.%s to %s through ipcRenderer.invoke', async (group, method, channel) => {
     await import('./index');
     const bridge = exposeInMainWorld.mock.calls[0]?.[1] as Record<string, Record<string, (payload: unknown) => Promise<unknown>>>;

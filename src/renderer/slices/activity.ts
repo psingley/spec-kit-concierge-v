@@ -18,6 +18,8 @@ export type ActivityEntry = {
 export type ActivityState = {
   entries: ActivityEntry[];
   cap: 256;
+  currentStatus: string;
+  busy: boolean;
   lastAcpEventAt?: string;
   lastAcpSessionId?: string;
   lastAcpStep?: StepName;
@@ -26,7 +28,9 @@ export type ActivityState = {
 
 export const activityInitialState: ActivityState = {
   entries: [],
-  cap: 256
+  cap: 256,
+  currentStatus: 'Idle',
+  busy: false
 };
 
 export type RecordActivityPayload = Omit<ActivityEntry, 'id'> & { id?: string };
@@ -53,6 +57,14 @@ const activitySlice = createSlice({
   reducers: {
     recordActivity: (state, action: PayloadAction<RecordActivityPayload>) => {
       appendEntry(state, action.payload);
+      state.currentStatus = action.payload.message;
+      state.busy = action.payload.level === 'progress' || action.payload.event === 'step-prompt-issued';
+    },
+    activityBusyChanged: (state, action: PayloadAction<{ busy: boolean; status?: string }>) => {
+      state.busy = action.payload.busy;
+      if (action.payload.status !== undefined) {
+        state.currentStatus = action.payload.status;
+      }
     },
     markAcpEventSeen: (
       state,
@@ -70,6 +82,6 @@ const activitySlice = createSlice({
   extraReducers: () => {}
 });
 
-export const { recordActivity, markAcpEventSeen, hangSuspectedRecorded } = activitySlice.actions;
+export const { recordActivity, activityBusyChanged, markAcpEventSeen, hangSuspectedRecorded } = activitySlice.actions;
 export const activityReducer = activitySlice.reducer;
 export default activityReducer;

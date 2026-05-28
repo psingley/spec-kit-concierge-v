@@ -12,7 +12,9 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
       read: vi.fn()
     },
     git: {
-      read: vi.fn()
+      read: vi.fn(),
+      checkout: vi.fn(),
+      createDraft: vi.fn()
     },
     steps: {
       read: vi.fn()
@@ -22,7 +24,10 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
       write: vi.fn()
     },
     auth: {
-      status: vi.fn()
+      status: vi.fn(),
+      loginGitHub: vi.fn(),
+      loginCopilot: vi.fn(),
+      loginAtlassian: vi.fn()
     },
     session: {
       listAcp: vi.fn(),
@@ -30,6 +35,19 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     },
     activity: {
       read: vi.fn()
+    },
+    repos: {
+      list: vi.fn()
+    },
+    branches: {
+      sessions: vi.fn()
+    },
+    artifacts: {
+      read: vi.fn()
+    },
+    copilot: {
+      specify: vi.fn(),
+      subscribeSpecify: vi.fn(() => vi.fn())
     },
     ...overrides
   };

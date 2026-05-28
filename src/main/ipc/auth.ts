@@ -1,16 +1,23 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { IpcMain } from 'electron';
+import { loginCopilot, loginGitHub, type LoginResult } from '../data-layer/auth/cliAuth';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
+  createAuthLoginRequest,
+  createAuthLoginResponse,
   createAuthStatusRequest,
   createAuthStatusResponse,
+  type AuthLoginResponse,
   type AuthStatusRequest,
   type AuthStatusResponse
 } from './auth.factory';
 
 export const AUTH_STATUS_CHANNEL = 'auth:status';
+export const AUTH_GH_LOGIN_CHANNEL = 'auth:gh:login';
+export const AUTH_COPILOT_LOGIN_CHANNEL = 'auth:copilot:login';
+export const AUTH_ATLASSIAN_LOGIN_CHANNEL = 'auth:atlassian:login';
 
 type AuthProvider = AuthStatusRequest['providers'][number];
 
@@ -18,6 +25,9 @@ export type RegisterAuthIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'error'>;
   checkStatus?: (provider: AuthProvider) => Promise<boolean | null>;
+  loginGitHubAdapter?: () => Promise<LoginResult>;
+  loginCopilotAdapter?: (githubConnected: boolean) => Promise<LoginResult>;
+  setTimeoutFn?: typeof setTimeout;
   now?: () => number;
 };
 
@@ -39,8 +49,13 @@ export const registerAuthIpc = ({
   ipcMain,
   logger,
   checkStatus = defaultCheckStatus,
+  loginGitHubAdapter = loginGitHub,
+  loginCopilotAdapter = loginCopilot,
+  setTimeoutFn = setTimeout,
   now = () => performance.now()
 }: RegisterAuthIpcOptions): void => {
+  let githubConnected = false;
+
   ipcMain.handle(AUTH_STATUS_CHANNEL, async (event, ...args: unknown[]): Promise<AuthStatusResponse> => {
     const startedAt = now();
     const context = getSenderContext(event);
@@ -54,6 +69,9 @@ export const registerAuthIpc = ({
         copilotLoggedIn: request.value.providers.includes('copilot') ? await checkStatus('copilot') : null,
         githubLoggedIn: request.value.providers.includes('github') ? await checkStatus('github') : null
       });
+      if (response.ok && response.value.githubLoggedIn === true) {
+        githubConnected = true;
+      }
       if (!response.ok) {
         throw toError(response.error.message);
       }
@@ -64,5 +82,42 @@ export const registerAuthIpc = ({
       logger.error({ channel: AUTH_STATUS_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
       throw error;
     }
+  });
+
+  const handleLogin = (
+    channel: typeof AUTH_GH_LOGIN_CHANNEL | typeof AUTH_COPILOT_LOGIN_CHANNEL | typeof AUTH_ATLASSIAN_LOGIN_CHANNEL,
+    provider: 'github' | 'copilot' | 'atlassian',
+    work: () => Promise<AuthLoginResponse>
+  ): void => {
+    ipcMain.handle(channel, async (event, ...args: unknown[]): Promise<AuthLoginResponse> => {
+      const startedAt = now();
+      const context = getSenderContext(event);
+      try {
+        const request = createAuthLoginRequest(assertOnePayload(channel, args), provider);
+        if (!request.ok) {
+          throw toError(request.error.message);
+        }
+        const response = createAuthLoginResponse(await work());
+        if (!response.ok) {
+          throw toError(response.error.message);
+        }
+        logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+        return response.value;
+      } catch (error) {
+        logger.error({ channel, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+        throw error;
+      }
+    });
+  };
+
+  handleLogin(AUTH_GH_LOGIN_CHANNEL, 'github', async () => {
+    const result = await loginGitHubAdapter();
+    githubConnected = true;
+    return result;
+  });
+  handleLogin(AUTH_COPILOT_LOGIN_CHANNEL, 'copilot', async () => loginCopilotAdapter(githubConnected));
+  handleLogin(AUTH_ATLASSIAN_LOGIN_CHANNEL, 'atlassian', async () => {
+    await new Promise<void>((resolve) => setTimeoutFn(resolve, 200));
+    return { status: 'ok', provider: 'atlassian', label: 'Atlassian visual stub' };
   });
 };

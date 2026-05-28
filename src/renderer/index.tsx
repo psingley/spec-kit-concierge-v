@@ -1,9 +1,14 @@
-import React from 'react';
+import '@fontsource/geist-sans/400.css';
+import '@fontsource/geist-sans/700.css';
+import '@fontsource/geist-mono/400.css';
+import './styles/index.css';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { api } from './api';
 import type { RendererBoundCLICapabilities } from './api/capabilities.factory';
 import type { AppVersionProof } from './api';
+import { App } from './App';
 import { store } from './store';
 
 const rootElement = document.getElementById('root');
@@ -12,66 +17,41 @@ if (rootElement === null) {
   throw new Error('Renderer root element was not found.');
 }
 
-const root = createRoot(rootElement);
+const ProofBadges = (): React.ReactElement => {
+  const [version, setVersion] = useState<string | null>(null);
+  const [agentVersion, setAgentVersion] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
 
-type ProofState = {
-  version: string | null;
-  agentVersion: string | null;
-  model: string | null;
-};
+  useEffect(() => {
+    void store
+      .dispatch(api.endpoints.getAppVersion.initiate())
+      .unwrap()
+      .then((payload: AppVersionProof) => setVersion(payload.version))
+      .catch(() => setVersion(null));
+    void store
+      .dispatch(api.endpoints.getBoundCLICapabilities.initiate())
+      .unwrap()
+      .then((payload: RendererBoundCLICapabilities) => {
+        setAgentVersion(`${payload.agent.name} ${payload.agent.version}`);
+        setModel(payload.models.current ?? null);
+      })
+      .catch(() => {
+        setAgentVersion(null);
+        setModel(null);
+      });
+  }, []);
 
-const proofState: ProofState = {
-  version: null,
-  agentVersion: null,
-  model: null
-};
-
-const renderProof = (): void => {
-  root.render(
-    React.createElement(Provider, {
-      store,
-      children: React.createElement(
-        React.Fragment,
-        null,
-        proofState.version === null
-          ? null
-          : React.createElement('span', { 'data-testid': 'app-version-proof' }, proofState.version),
-        proofState.agentVersion === null
-          ? null
-          : React.createElement(
-              'span',
-              { 'data-testid': 'bound-cli-proof' },
-              `${proofState.agentVersion}:${proofState.model ?? 'unknown-model'}`
-            )
-      )
-    })
+  return (
+    <div className="proof-badges" aria-hidden="true">
+      {version === null ? null : <span data-testid="app-version-proof">{version}</span>}
+      {agentVersion === null ? null : <span data-testid="bound-cli-proof">{`${agentVersion}:${model ?? 'unknown-model'}`}</span>}
+    </div>
   );
 };
 
-renderProof();
-
-void store
-  .dispatch(api.endpoints.getAppVersion.initiate())
-  .unwrap()
-  .then((payload: AppVersionProof) => {
-    proofState.version = payload.version;
-    renderProof();
-  })
-  .catch(() => {
-    proofState.version = null;
-    renderProof();
-  });
-
-void store
-  .dispatch(api.endpoints.getBoundCLICapabilities.initiate())
-  .unwrap()
-  .then((payload: RendererBoundCLICapabilities) => {
-    proofState.agentVersion = `${payload.agent.name} ${payload.agent.version}`;
-    proofState.model = payload.models.current ?? null;
-    renderProof();
-  })
-  .catch(() => {
-    proofState.agentVersion = null;
-    proofState.model = null;
-    renderProof();
-  });
+createRoot(rootElement).render(
+  <Provider store={store}>
+    <App />
+    <ProofBadges />
+  </Provider>
+);
