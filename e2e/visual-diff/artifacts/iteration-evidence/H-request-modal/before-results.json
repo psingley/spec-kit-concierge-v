@@ -1,0 +1,170 @@
+{
+  "name": "request-modal",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Report a bug or request a feature'",
+      "expected": "Report a bug or request a feature",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Request type'",
+      "expected": "Request type",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Feature'",
+      "expected": "Feature",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Bug'",
+      "expected": "Bug",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Title'",
+      "expected": "Title",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Details'",
+      "expected": "Details",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Severity'",
+      "expected": "Severity",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Low'",
+      "expected": "Low",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Normal'",
+      "expected": "Normal",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'High'",
+      "expected": "High",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Blocker'",
+      "expected": "Blocker",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Attach context (auto)'",
+      "expected": "Attach context (auto)",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '#concierge-triage'",
+      "expected": "#concierge-triage",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Cancel'",
+      "expected": "Cancel",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Send request'",
+      "expected": "Send request",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Report a bug or request a feature', got 'Request support'",
+      "expected": "Report a bug or request a feature",
+      "actual": "Request support"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Feature' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Bug' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Low' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Normal' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'High' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Blocker' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Cancel' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Send request' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
+      "expected": "[data-vd-role=\"modal-veil\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: request primary action",
+      "expected": ".modal .btn.primary",
+      "actual": ".modal .btn.primary"
+    },
+    {
+      "layer": "pixels",
+      "message": "cropped pixel residual 9.79% exceeds 7%",
+      "expected": "7%",
+      "actual": "9.79%"
+    }
+  ],
+  "pixelResidual": 9.79,
+  "priorityScore": 100
+}

@@ -1,13 +1,13 @@
 {
-  "runId": "2026-05-28T21:54:58.029Z",
+  "runId": "2026-05-28T21:59:21.391Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 14,
-    "fail": 10,
+    "pass": 15,
+    "fail": 9,
     "warn": 0,
     "worstScreen": "workspace-titlebar-repo-dropdown-open"
   },
@@ -487,7 +487,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.52,
+      "pixelResidual": 3.54,
       "priorityScore": 100
     },
     {
@@ -663,7 +663,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.51,
+      "pixelResidual": 5.57,
       "priorityScore": 100
     },
     {
@@ -839,177 +839,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 6.01,
-      "priorityScore": 100
-    },
-    {
-      "name": "request-modal",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Report a bug or request a feature'",
-          "expected": "Report a bug or request a feature",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Request type'",
-          "expected": "Request type",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Feature'",
-          "expected": "Feature",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Bug'",
-          "expected": "Bug",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Title'",
-          "expected": "Title",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Details'",
-          "expected": "Details",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Severity'",
-          "expected": "Severity",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Low'",
-          "expected": "Low",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Normal'",
-          "expected": "Normal",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'High'",
-          "expected": "High",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Blocker'",
-          "expected": "Blocker",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Attach context (auto)'",
-          "expected": "Attach context (auto)",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '#concierge-triage'",
-          "expected": "#concierge-triage",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Cancel'",
-          "expected": "Cancel",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Send request'",
-          "expected": "Send request",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong heading level 2: expected 'Report a bug or request a feature', got 'Request support'",
-          "expected": "Report a bug or request a feature",
-          "actual": "Request support"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Feature' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Bug' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Low' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Normal' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'High' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Blocker' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Cancel' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Send request' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
-          "expected": "[data-vd-role=\"modal-veil\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: request primary action",
-          "expected": ".modal .btn.primary",
-          "actual": ".modal .btn.primary"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 9.76% exceeds 7%",
-          "expected": "7%",
-          "actual": "9.76%"
-        }
-      ],
-      "pixelResidual": 9.76,
+      "pixelResidual": 5.91,
       "priorityScore": 100
     },
     {
@@ -1055,7 +885,7 @@
       "name": "signin-github-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.99,
+      "pixelResidual": 6,
       "priorityScore": 6
     },
     {
@@ -1097,21 +927,21 @@
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.12,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
@@ -1125,14 +955,14 @@
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.97,
+      "pixelResidual": 5.21,
       "priorityScore": 5
     },
     {
@@ -1141,6 +971,13 @@
       "failures": [],
       "pixelResidual": 5.44,
       "priorityScore": 5
+    },
+    {
+      "name": "request-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.49,
+      "priorityScore": 4
     },
     {
       "name": "customize-modal",
@@ -1153,7 +990,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.54,
+      "pixelResidual": 1.55,
       "priorityScore": 2
     }
   ]

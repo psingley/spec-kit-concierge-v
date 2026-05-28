@@ -124,7 +124,7 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
     await page.getByRole('button', { name: /Settings/i }).click();
     await page.getByRole('menuitem', { name: /Request access/i }).click();
     await screenshot('surface-request-modal', page.getByRole('dialog', { name: /Request support/i }));
-    await page.getByRole('button', { name: /^Close$/i }).click();
+    await page.getByRole('button', { name: /^Cancel$/i }).click();
   });
 
   test('full-window workspace specify complete', async () => {
