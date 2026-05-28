@@ -85,7 +85,7 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('surface Titlebar dropdown', async () => {
-    await page.getByRole('button', { name: /Repository/i }).click();
+    await page.getByRole('button', { name: /collette-travel\/concierge-api/i }).click();
     await screenshot('surface-titlebar-dropdown', page.getByRole('menu', { name: /Repository/i }));
     await page.keyboard.press('Escape');
   });

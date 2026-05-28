@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
-import { selectAuthAtlassianStatus, selectAuthCopilotStatus, selectAuthGithubStatus } from '../slices/auth.selectors';
+import { selectAuthAtlassianStatus, selectAuthCopilotStatus, selectAuthGithubStatus, selectAuthIdentity } from '../slices/auth.selectors';
 import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.selectors';
 import { modalOpened } from '../slices/ui';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
@@ -12,6 +12,7 @@ export const TitlebarContainer = (): React.ReactElement => {
     <Titlebar
       repo={useAppSelector(selectWorkspaceSelectedRepo)}
       branch={useAppSelector(selectWorkspaceBranch)}
+      identity={useAppSelector(selectAuthIdentity)}
       github={useAppSelector(selectAuthGithubStatus)}
       copilot={useAppSelector(selectAuthCopilotStatus)}
       atlassian={useAppSelector(selectAuthAtlassianStatus)}

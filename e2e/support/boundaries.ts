@@ -23,7 +23,7 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   await execFileAsync('git', ['add', 'README.md'], { cwd: repoPath });
   await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: repoPath });
 
-  const repoName = 'hello-world-fixture';
+  const repoName = 'concierge-api';
   const ghAdapterPath = path.join(repoPath, 'gh-adapter.json');
   const copilotAdapterPath = path.join(repoPath, 'copilot-adapter.json');
   const acpAdapterPath = path.join(repoPath, 'acp-adapter.json');
@@ -31,7 +31,7 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
     ghAdapterPath,
     JSON.stringify(
       {
-        identity: { login: 'run6-user', displayName: 'Run 6 User' },
+        identity: { login: 'a.kim', displayName: 'Anika Kim' },
         repositories: [
           {
             id: 'fixture',
@@ -59,4 +59,9 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
 export const gitLogLastMessage = async (repoPath: string): Promise<string> => {
   const { stdout } = await execFileAsync('git', ['log', '-1', '--format=%B'], { cwd: repoPath });
   return stdout;
+};
+
+export const gitCurrentBranch = async (repoPath: string): Promise<string> => {
+  const { stdout } = await execFileAsync('git', ['branch', '--show-current'], { cwd: repoPath });
+  return stdout.trim();
 };

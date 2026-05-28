@@ -1,0 +1,156 @@
+{
+  "runId": "2026-05-28T20:01:25.220Z",
+  "summary": {
+    "total": 24,
+    "pass": 3,
+    "fail": 21,
+    "warn": 0,
+    "worstScreen": "signin-all-ok"
+  },
+  "screens": [
+    {
+      "name": "signin-all-ok",
+      "status": "FAIL",
+      "failureCount": 39,
+      "residual": 4.17
+    },
+    {
+      "name": "repo-browse-empty-search",
+      "status": "FAIL",
+      "failureCount": 15,
+      "residual": 1.36
+    },
+    {
+      "name": "repo-browse-repo-selected",
+      "status": "FAIL",
+      "failureCount": 29,
+      "residual": 4.99
+    },
+    {
+      "name": "workspace-titlebar-repo-dropdown-open",
+      "status": "FAIL",
+      "failureCount": 23,
+      "residual": 2.98
+    },
+    {
+      "name": "workspace-titlebar-gear-menu-open",
+      "status": "FAIL",
+      "failureCount": 12,
+      "residual": 3.03
+    },
+    {
+      "name": "stepper-specify-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.92
+    },
+    {
+      "name": "stepper-clarify-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.73
+    },
+    {
+      "name": "stepper-plan-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.73
+    },
+    {
+      "name": "stepper-tasks-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.73
+    },
+    {
+      "name": "stepper-analyze-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.73
+    },
+    {
+      "name": "stepper-review-current",
+      "status": "FAIL",
+      "failureCount": 24,
+      "residual": 10.73
+    },
+    {
+      "name": "specify-input",
+      "status": "FAIL",
+      "failureCount": 8,
+      "residual": 2.97
+    },
+    {
+      "name": "specify-running",
+      "status": "FAIL",
+      "failureCount": 5,
+      "residual": 3.12
+    },
+    {
+      "name": "specify-complete",
+      "status": "FAIL",
+      "failureCount": 28,
+      "residual": 3.65
+    },
+    {
+      "name": "activity-rail-idle",
+      "status": "FAIL",
+      "failureCount": 28,
+      "residual": 5.56
+    },
+    {
+      "name": "activity-rail-busy",
+      "status": "FAIL",
+      "failureCount": 28,
+      "residual": 6.08
+    },
+    {
+      "name": "activity-pill-idle",
+      "status": "FAIL",
+      "failureCount": 8,
+      "residual": 19.29
+    },
+    {
+      "name": "activity-pill-busy",
+      "status": "FAIL",
+      "failureCount": 8,
+      "residual": 19.53
+    },
+    {
+      "name": "customize-modal",
+      "status": "FAIL",
+      "failureCount": 25,
+      "residual": 16.51
+    },
+    {
+      "name": "about-modal",
+      "status": "FAIL",
+      "failureCount": 23,
+      "residual": 12.12
+    },
+    {
+      "name": "request-modal",
+      "status": "FAIL",
+      "failureCount": 31,
+      "residual": 10.63
+    },
+    {
+      "name": "signin-fresh",
+      "status": "PASS",
+      "failureCount": 0,
+      "residual": 6.27
+    },
+    {
+      "name": "signin-github-ok",
+      "status": "PASS",
+      "failureCount": 0,
+      "residual": 5.99
+    },
+    {
+      "name": "workspace-titlebar-closed-menus",
+      "status": "PASS",
+      "failureCount": 0,
+      "residual": 4.99
+    }
+  ]
+}

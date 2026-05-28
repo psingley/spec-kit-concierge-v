@@ -9,6 +9,7 @@ const renderTitlebar = () =>
       <Titlebar
         repo={{ id: 'repo-1', owner: 'collette-travel', name: 'booking-engine', path: '/work/booking-engine', defaultBranch: 'main', language: 'TypeScript' }}
         branch="spec/demo"
+        identity={{ login: 'a.kim', displayName: 'Anika Kim' }}
         github="ok"
         copilot="ok"
         atlassian="out"
@@ -22,10 +23,54 @@ const renderTitlebar = () =>
   );
 
 describe('Titlebar dropdowns', () => {
+  it('renders the workspace titlebar chips required by the visual contract', () => {
+    render(
+      <Titlebar
+        repo={{ id: 'repo-2', owner: 'collette-travel', name: 'concierge-api', path: '/work/concierge-api', defaultBranch: 'main', language: 'TypeScript' }}
+        branch="main"
+        identity={{ login: 'a.kim', displayName: 'Anika Kim' }}
+        github="ok"
+        copilot="ok"
+        atlassian="ok"
+        model={null}
+        onCustomize={vi.fn()}
+        onAbout={vi.fn()}
+        onRequest={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Spec-kit Concierge')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'a.kim' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'collette-travel/concierge-api' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'main' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Claude Sonnet 4.5default' })).toBeInTheDocument();
+    expect(document.querySelector('[data-vd-role="brand-orb"]')).toBeInTheDocument();
+    expect(document.querySelector('[data-vd-role="auth-identity-dot"]')).toBeInTheDocument();
+  });
+
+  it('shows the default branch for generated draft sessions in the titlebar', () => {
+    render(
+      <Titlebar
+        repo={{ id: 'repo-2', owner: 'collette-travel', name: 'concierge-api', path: '/work/concierge-api', defaultBranch: 'main', language: 'TypeScript' }}
+        branch="spec/draft-abcd1234"
+        identity={{ login: 'a.kim', displayName: 'Anika Kim' }}
+        github="ok"
+        copilot="ok"
+        atlassian="ok"
+        model={null}
+        onCustomize={vi.fn()}
+        onAbout={vi.fn()}
+        onRequest={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'main' })).toBeInTheDocument();
+  });
+
   it('closes an open menu when the user clicks outside', () => {
     renderTitlebar();
 
-    fireEvent.click(screen.getByRole('button', { name: /repository/i }));
+    fireEvent.click(screen.getByRole('button', { name: 'collette-travel/booking-engine' }));
     expect(screen.getByRole('menu', { name: /repository/i })).toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole('button', { name: /outside target/i }));
