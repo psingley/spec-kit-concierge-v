@@ -17,6 +17,7 @@ export const snapshotDom = async (page: Page, selector: string): Promise<DomNode
       getAttribute: (name: string) => string | null;
     };
     const visibleText = (element: BrowserElement): string => {
+      if (element.tagName.toLowerCase() === 'button') return element.getAttribute('aria-label') ?? (element.textContent ?? '').replace(/\s+/g, ' ').trim();
       if (![...element.children].length || ['button', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(element.tagName.toLowerCase())) {
         return (element.textContent ?? '').replace(/\s+/g, ' ').trim();
       }

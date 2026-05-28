@@ -1,13 +1,13 @@
 {
-  "runId": "2026-05-28T18:38:12.571Z",
+  "runId": "2026-05-28T21:12:32.130Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 2,
-    "fail": 22,
+    "pass": 6,
+    "fail": 18,
     "warn": 0,
     "worstScreen": "signin-all-ok"
   },
@@ -56,12 +56,6 @@
           "layer": "elements",
           "message": "missing text: expected 'Choose a Collette-travel repo to scope spec-kit to.'",
           "expected": "Choose a Collette-travel repo to scope spec-kit to.",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
           "actual": "missing"
         },
         {
@@ -257,7 +251,7 @@
           "actual": ".repo-card"
         }
       ],
-      "pixelResidual": 1.74,
+      "pixelResidual": 4.17,
       "priorityScore": 100
     },
     {
@@ -418,12 +412,6 @@
         },
         {
           "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
           "message": "missing text: expected 'Resume a prior session or start fresh from main.'",
           "expected": "Resume a prior session or start fresh from main.",
           "actual": "missing"
@@ -514,12 +502,6 @@
         },
         {
           "layer": "elements",
-          "message": "wrong heading level 1: expected 'concierge-api', got 'hello-world-fixture'",
-          "expected": "concierge-api",
-          "actual": "hello-world-fixture"
-        },
-        {
-          "layer": "elements",
           "message": "wrong control count: expected button '← All repos' x1, got 0",
           "expected": "1",
           "actual": "0"
@@ -549,7 +531,7 @@
           "actual": ".session-row"
         }
       ],
-      "pixelResidual": 5.03,
+      "pixelResidual": 4.99,
       "priorityScore": 100
     },
     {
@@ -558,150 +540,36 @@
       "failures": [
         {
           "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'a.kim' x1, got 0",
+          "message": "wrong control count: expected button 'a.kim' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 0",
+          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'main' x1, got 0",
+          "message": "wrong control count: expected button 'main' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 0",
+          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 2",
           "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'auth-identity-dot' at [data-vd-role=\"auth-identity-dot\"]",
-          "expected": "[data-vd-role=\"auth-identity-dot\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: titlebar repo chip",
-          "expected": ".tb-chip.repo",
-          "actual": ".tb-chip.repo"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: titlebar gear icon button",
-          "expected": ".titlebar .icon-btn",
-          "actual": ".titlebar .icon-btn"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 9.41% exceeds 7%",
-          "expected": "7%",
-          "actual": "9.41%"
+          "actual": "2"
         }
       ],
-      "pixelResidual": 9.41,
+      "pixelResidual": 4.99,
       "priorityScore": 100
     },
     {
       "name": "workspace-titlebar-repo-dropdown-open",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '4'",
-          "expected": "4",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected '2h ago'",
@@ -818,9 +686,9 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'a.kim' x1, got 0",
+          "message": "wrong control count: expected button 'a.kim' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
@@ -836,15 +704,9 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 0",
+          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 2",
           "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
+          "actual": "2"
         },
         {
           "layer": "styles",
@@ -859,49 +721,13 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 3.23,
+      "pixelResidual": 2.97,
       "priorityScore": 100
     },
     {
       "name": "workspace-titlebar-gear-menu-open",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected 'Report a bug'",
@@ -922,12 +748,6 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'Customize' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
           "message": "wrong control count: expected button 'Report a bug' x1, got 0",
           "expected": "1",
           "actual": "0"
@@ -937,18 +757,6 @@
           "message": "wrong control count: expected button 'Export activity log14 lines' x1, got 0",
           "expected": "1",
           "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'About' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
         },
         {
           "layer": "elements",
@@ -981,961 +789,13 @@
           "actual": "8px 10px"
         }
       ],
-      "pixelResidual": 3.19,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-specify-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.88% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.88%"
-        }
-      ],
-      "pixelResidual": 10.88,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-clarify-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.74% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.74%"
-        }
-      ],
-      "pixelResidual": 10.74,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-plan-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.73% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.73%"
-        }
-      ],
-      "pixelResidual": 10.73,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-tasks-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.74% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.74%"
-        }
-      ],
-      "pixelResidual": 10.74,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-analyze-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.74% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.74%"
-        }
-      ],
-      "pixelResidual": 10.74,
-      "priorityScore": 100
-    },
-    {
-      "name": "stepper-review-current",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specify'",
-          "expected": "Specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Plan'",
-          "expected": "Plan",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Tasks'",
-          "expected": "Tasks",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Analyze'",
-          "expected": "Analyze",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Review'",
-          "expected": "Review",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Plan' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Tasks' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Analyze' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Review' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
-          "expected": "[data-vd-role=\"stepper-track\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
-          "expected": "[data-vd-role=\"stepper-track-fill\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
-          "expected": "[data-vd-role=\"step-orb\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
-          "expected": "[data-vd-role=\"step-separator\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
-          "expected": "14px",
-          "actual": "206px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
-          "expected": "14px",
-          "actual": "36.5px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
-          "expected": "50%",
-          "actual": "0px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
-          "expected": "oklch(0.82 0.18 90)",
-          "actual": "rgba(0, 0, 0, 0)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
-          "expected": "500",
-          "actual": "400"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
-          "expected": "12px 18px 16px",
-          "actual": "0px 12px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(129, 145, 152)"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 10.74% exceeds 7%",
-          "expected": "7%",
-          "actual": "10.74%"
-        }
-      ],
-      "pixelResidual": 10.74,
+      "pixelResidual": 3,
       "priorityScore": 100
     },
     {
       "name": "specify-input",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected 'Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook'",
@@ -1956,27 +816,27 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'a.kim' x1, got 0",
+          "message": "wrong control count: expected button 'a.kim' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 0",
+          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'main' x1, got 0",
+          "message": "wrong control count: expected button 'main' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 0",
+          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
@@ -1989,12 +849,6 @@
           "message": "wrong control count: expected button 'Begin specify' x1, got 0",
           "expected": "1",
           "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
         },
         {
           "layer": "elements",
@@ -2015,43 +869,13 @@
           "actual": ".spec-input-actions .btn.primary"
         }
       ],
-      "pixelResidual": 3.23,
+      "pixelResidual": 2.88,
       "priorityScore": 100
     },
     {
       "name": "specify-running",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected 'spec/draft-rpg3'",
@@ -2072,15 +896,15 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'a.kim' x1, got 0",
+          "message": "wrong control count: expected button 'a.kim' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 0",
+          "message": "wrong control count: expected button 'collette-travel/concierge-api' x1, got 2",
           "expected": "1",
-          "actual": "0"
+          "actual": "2"
         },
         {
           "layer": "elements",
@@ -2090,15 +914,9 @@
         },
         {
           "layer": "elements",
-          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 0",
+          "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 2",
           "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
+          "actual": "2"
         },
         {
           "layer": "styles",
@@ -2107,43 +925,13 @@
           "actual": ".spec-loading"
         }
       ],
-      "pixelResidual": 3.35,
+      "pixelResidual": 2.95,
       "priorityScore": 100
     },
     {
       "name": "specify-complete",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Spec-kit Concierge'",
-          "expected": "Spec-kit Concierge",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel/concierge-api'",
-          "expected": "collette-travel/concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Claude Sonnet 4.5'",
-          "expected": "Claude Sonnet 4.5",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected 'spec/draft-rr6q'",
@@ -2230,12 +1018,6 @@
         },
         {
           "layer": "elements",
-          "message": "missing text: expected 'Clarify'",
-          "expected": "Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
           "message": "wrong heading level 1: expected 'Self-serve flight-change for loyalty guests', got 'Specify'",
           "expected": "Self-serve flight-change for loyalty guests",
           "actual": "Specify"
@@ -2296,21 +1078,21 @@
         },
         {
           "layer": "elements",
+          "message": "wrong control count: expected button 'Preview' x1, got 2",
+          "expected": "1",
+          "actual": "2"
+        },
+        {
+          "layer": "elements",
+          "message": "wrong control count: expected button 'Edit' x1, got 2",
+          "expected": "1",
+          "actual": "2"
+        },
+        {
+          "layer": "elements",
           "message": "wrong control count: expected button 'Jump to end' x1, got 0",
           "expected": "1",
           "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clarify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
-          "expected": "[data-vd-role=\"brand-orb\"]",
-          "actual": "missing"
         },
         {
           "layer": "styles",
@@ -2319,7 +1101,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.89,
+      "pixelResidual": 3.55,
       "priorityScore": 100
     },
     {
@@ -2495,7 +1277,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.3,
+      "pixelResidual": 5.29,
       "priorityScore": 100
     },
     {
@@ -2671,7 +1453,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.77,
+      "pixelResidual": 5.78,
       "priorityScore": 100
     },
     {
@@ -2722,12 +1504,12 @@
         },
         {
           "layer": "pixels",
-          "message": "cropped pixel residual 19.05% exceeds 7%",
+          "message": "cropped pixel residual 19.29% exceeds 7%",
           "expected": "7%",
-          "actual": "19.05%"
+          "actual": "19.29%"
         }
       ],
-      "pixelResidual": 19.05,
+      "pixelResidual": 19.29,
       "priorityScore": 100
     },
     {
@@ -2778,12 +1560,12 @@
         },
         {
           "layer": "pixels",
-          "message": "cropped pixel residual 20.36% exceeds 7%",
+          "message": "cropped pixel residual 19.76% exceeds 7%",
           "expected": "7%",
-          "actual": "20.36%"
+          "actual": "19.76%"
         }
       ],
-      "pixelResidual": 20.36,
+      "pixelResidual": 19.76,
       "priorityScore": 100
     },
     {
@@ -2986,12 +1768,6 @@
         },
         {
           "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
           "message": "missing text: expected 'Branch'",
           "expected": "Branch",
           "actual": "missing"
@@ -3058,6 +1834,12 @@
         },
         {
           "layer": "elements",
+          "message": "wrong control count: expected button 'Close' x1, got 2",
+          "expected": "1",
+          "actual": "2"
+        },
+        {
+          "layer": "elements",
           "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
           "expected": "[data-vd-role=\"modal-veil\"]",
           "actual": "missing"
@@ -3088,12 +1870,12 @@
         },
         {
           "layer": "pixels",
-          "message": "cropped pixel residual 12.13% exceeds 7%",
+          "message": "cropped pixel residual 12.06% exceeds 7%",
           "expected": "7%",
-          "actual": "12.13%"
+          "actual": "12.06%"
         }
       ],
-      "pixelResidual": 12.13,
+      "pixelResidual": 12.06,
       "priorityScore": 100
     },
     {
@@ -3292,17 +2074,73 @@
     },
     {
       "name": "signin-fresh",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 6.25,
-      "priorityScore": 6
+      "status": "FAIL",
+      "failures": [
+        {
+          "layer": "elements",
+          "message": "wrong control count: expected button 'Sign in' x3, got 6",
+          "expected": "3",
+          "actual": "6"
+        }
+      ],
+      "pixelResidual": 6.27,
+      "priorityScore": 36
     },
     {
       "name": "signin-github-ok",
+      "status": "FAIL",
+      "failures": [
+        {
+          "layer": "elements",
+          "message": "wrong control count: expected button 'Sign in' x2, got 4",
+          "expected": "2",
+          "actual": "4"
+        }
+      ],
+      "pixelResidual": 5.99,
+      "priorityScore": 36
+    },
+    {
+      "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.97,
-      "priorityScore": 6
+      "pixelResidual": 4.92,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-clarify-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-plan-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.09,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-tasks-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-analyze-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.1,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-review-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
     }
   ]
 }

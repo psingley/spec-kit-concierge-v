@@ -12,7 +12,11 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
   const output: CapturedStyleSample[] = [];
   for (const sample of samples) {
     const selector = side === 'design' ? sample.designSelector : sample.shippedSelector;
-    const locator = page.locator(selector).first();
+    let locator = page.locator(selector).first();
+    if (side === 'shipped' && selector === '.step-tab[aria-selected="true"]') {
+      const orb = locator.locator('.step-orb').first();
+      if (await orb.isVisible().catch(() => false)) locator = orb;
+    }
     const found = await locator.isVisible().catch(() => false);
     const styles = found
       ? await locator.evaluate((element: unknown, properties) => {

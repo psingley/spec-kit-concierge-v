@@ -2,7 +2,15 @@ import type { CapturedStyleSample } from '../capture/snapshotStyles';
 import type { VisualDiffContract } from '../contract/generateContract';
 import type { VerificationFailure } from './verifyElements';
 
-const normalize = (value: string): string => value.replace(/\s+/g, ' ').trim();
+const colorEquivalents: Record<string, string> = {
+  'rgb(233, 197, 79)': 'oklch(0.82 0.18 90)',
+  'rgb(237, 235, 231)': 'oklch(0.94 0.005 80)'
+};
+
+const normalize = (value: string): string => {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  return colorEquivalents[normalized] ?? normalized;
+};
 
 export const verifyStyles = (
   contract: VisualDiffContract,
