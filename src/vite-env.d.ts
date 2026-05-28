@@ -15,6 +15,8 @@ type ConciergePreloadBridge = {
   };
   git?: {
     read: (request: unknown) => Promise<unknown>;
+    checkout?: (request: unknown) => Promise<unknown>;
+    createDraft?: (request: unknown) => Promise<unknown>;
   };
   steps?: {
     read: (request: unknown) => Promise<unknown>;
@@ -25,6 +27,9 @@ type ConciergePreloadBridge = {
   };
   auth?: {
     status: (request: unknown) => Promise<unknown>;
+    loginGitHub?: (request: unknown) => Promise<unknown>;
+    loginCopilot?: (request: unknown) => Promise<unknown>;
+    loginAtlassian?: (request: unknown) => Promise<unknown>;
   };
   session?: {
     listAcp: (request: unknown) => Promise<unknown>;
@@ -32,6 +37,19 @@ type ConciergePreloadBridge = {
   };
   activity?: {
     read: (request: unknown) => Promise<unknown>;
+  };
+  repos?: {
+    list: (request: unknown) => Promise<unknown>;
+  };
+  branches?: {
+    sessions: (request: unknown) => Promise<unknown>;
+  };
+  artifacts?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
+  copilot?: {
+    specify: (request: unknown) => Promise<unknown>;
+    subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
   };
 };
 

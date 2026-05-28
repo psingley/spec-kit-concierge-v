@@ -10,11 +10,11 @@ describe('preferences persistence listener', () => {
     expect(preferencesPersistenceTopic.topic).toBe('preferencesPersistence');
   });
 
-  it('accepts startListening without registering Run 4 effects', () => {
+  it('registers the Run 6 debounced persistence effect', () => {
     const startListening = vi.fn() as unknown as AppStartListening;
 
     setupPreferencesPersistenceListener(startListening);
 
-    expect(startListening).not.toHaveBeenCalled();
+    expect(startListening).toHaveBeenCalledTimes(1);
   });
 });

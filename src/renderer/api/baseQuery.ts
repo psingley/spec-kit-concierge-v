@@ -6,13 +6,22 @@ export type IpcQueryArgs = {
     | 'acp:probeBoundCLI'
     | 'workspace:read'
     | 'git:read'
+    | 'git:checkout'
+    | 'git:createDraft'
     | 'steps:read'
     | 'preferences:read'
     | 'preferences:write'
     | 'auth:status'
+    | 'auth:gh:login'
+    | 'auth:copilot:login'
+    | 'auth:atlassian:login'
     | 'session:listAcp'
     | 'session:createAcp'
-    | 'activity:read';
+    | 'activity:read'
+    | 'repos:list'
+    | 'branches:sessions'
+    | 'artifacts:read'
+    | 'copilot:specify';
   payload?: unknown;
 };
 
@@ -55,6 +64,10 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.workspace!.read(args.payload) };
       case 'git:read':
         return { data: await window.concierge.git!.read(args.payload) };
+      case 'git:checkout':
+        return { data: await window.concierge.git!.checkout!(args.payload) };
+      case 'git:createDraft':
+        return { data: await window.concierge.git!.createDraft!(args.payload) };
       case 'steps:read':
         return { data: await window.concierge.steps!.read(args.payload) };
       case 'preferences:read':
@@ -63,12 +76,26 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.preferences!.write(args.payload) };
       case 'auth:status':
         return { data: await window.concierge.auth!.status(args.payload) };
+      case 'auth:gh:login':
+        return { data: await window.concierge.auth!.loginGitHub!(args.payload) };
+      case 'auth:copilot:login':
+        return { data: await window.concierge.auth!.loginCopilot!(args.payload) };
+      case 'auth:atlassian:login':
+        return { data: await window.concierge.auth!.loginAtlassian!(args.payload) };
       case 'session:listAcp':
         return { data: await window.concierge.session!.listAcp(args.payload) };
       case 'session:createAcp':
         return { data: await window.concierge.session!.createAcp(args.payload) };
       case 'activity:read':
         return { data: await window.concierge.activity!.read(args.payload) };
+      case 'repos:list':
+        return { data: await window.concierge.repos!.list(args.payload) };
+      case 'branches:sessions':
+        return { data: await window.concierge.branches!.sessions(args.payload) };
+      case 'artifacts:read':
+        return { data: await window.concierge.artifacts!.read(args.payload) };
+      case 'copilot:specify':
+        return { data: await window.concierge.copilot!.specify(args.payload) };
     }
   } catch (error) {
     return {

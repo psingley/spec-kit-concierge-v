@@ -19,7 +19,12 @@ describe('workspace slice', () => {
       branch: null,
       ahead: 0,
       behind: 0,
-      dirty: false
+      dirty: false,
+      selectedRepo: null,
+      sessions: [],
+      activeStep: 'specify',
+      maxReachedStep: 'specify',
+      viewedStep: 'specify'
     });
   });
 

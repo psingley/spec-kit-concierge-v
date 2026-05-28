@@ -7,7 +7,12 @@ describe('auth slice', () => {
   it('initializes to the Run 4 locked state', () => {
     expect(authReducer(undefined, { type: 'test/init' })).toEqual({
       copilotLoggedIn: null,
-      githubLoggedIn: null
+      githubLoggedIn: null,
+      github: 'unknown',
+      copilot: 'locked',
+      atlassian: 'out',
+      identity: null,
+      lastError: null
     });
   });
 

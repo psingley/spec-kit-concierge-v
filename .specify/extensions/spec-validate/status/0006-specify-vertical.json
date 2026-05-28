@@ -1,0 +1,11 @@
+{
+  "feature": "0006-specify-vertical",
+  "spec_hash": "sha256:5de1bf58866b8be8d7a10db585f964eb9c333424505d407d4194617a3b77b3f6",
+  "tasks_hash": null,
+  "spec_self_validation": "passed",
+  "tasks_self_validation": "not-run",
+  "spec_validated_at": "2026-05-28T03:36:50Z",
+  "tasks_validated_at": null,
+  "spec_critical_count": 0,
+  "spec_missed_items": []
+}

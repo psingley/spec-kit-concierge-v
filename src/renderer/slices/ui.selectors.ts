@@ -4,3 +4,8 @@ export const selectUiState = (state: RootState) => state.ui;
 export const selectUiTheme = (state: RootState) => state.ui.theme;
 export const selectUiSidebarOpen = (state: RootState) => state.ui.sidebarOpen;
 export const selectUiActiveView = (state: RootState) => state.ui.activeView;
+export const selectUiShowActivity = (state: RootState) => state.ui.showActivity;
+export const selectUiShowCustomize = (state: RootState) => state.ui.showCustomize;
+export const selectUiShowAbout = (state: RootState) => state.ui.showAbout;
+export const selectUiShowRequest = (state: RootState) => state.ui.showRequest;
+export const selectUiOpenMenu = (state: RootState) => state.ui.openMenu;

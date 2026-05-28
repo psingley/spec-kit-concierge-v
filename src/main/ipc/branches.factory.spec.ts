@@ -1,0 +1,36 @@
+import { describe, expect, it } from 'vitest';
+import { createBranchSessionsRequest, createBranchSessionsResponse } from './branches.factory';
+
+const restoredStates = { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' };
+const request = { repositoryPath: '/repo' };
+const response = { sessions: [{ branch: 'spec/0006-specify-vertical', label: 'Specify vertical', restoredStates }] };
+
+describe('branches IPC factory', () => {
+  it('accepts happy path payloads', () => {
+    expect(createBranchSessionsRequest(request)).toEqual({ ok: true, value: request });
+    expect(createBranchSessionsResponse(response)).toEqual({ ok: true, value: response });
+  });
+  it('rejects empty objects', () => {
+    expect(createBranchSessionsRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+    expect(createBranchSessionsResponse({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+  it('rejects null', () => {
+    expect(createBranchSessionsRequest(null)).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+    expect(createBranchSessionsResponse(null)).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+  it('rejects undefined', () => {
+    expect(createBranchSessionsRequest(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+    expect(createBranchSessionsResponse(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+  it('rejects hostile branch refs', () => {
+    expect(createBranchSessionsResponse({ sessions: [{ ...response.sessions[0], branch: 'main' }] })).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+  it('rejects partial fields', () => {
+    expect(createBranchSessionsRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+    expect(createBranchSessionsResponse({ sessions: [{ branch: 'spec/x' }] })).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+  it('rejects extra keys', () => {
+    expect(createBranchSessionsRequest({ ...request, injected: true })).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+    expect(createBranchSessionsResponse({ sessions: [{ ...response.sessions[0], injected: true }] })).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
+  });
+});

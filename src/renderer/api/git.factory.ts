@@ -11,6 +11,7 @@ import {
 } from './factoryUtils';
 
 type ErrorName = 'InvalidGitState';
+type GitMutationErrorName = 'InvalidGitMutation';
 
 export type RendererGitState = {
   branch: string;
@@ -18,6 +19,10 @@ export type RendererGitState = {
   behind: number;
   dirty: boolean;
   uncommittedPaths: string[];
+};
+
+export type RendererGitBranchResult = {
+  branch: string;
 };
 
 export const parseRendererGitState = (
@@ -61,4 +66,19 @@ export const parseRendererGitState = (
       uncommittedPaths: root.value.uncommittedPaths
     }
   };
+};
+
+export const parseRendererGitBranchResult = (
+  value: unknown
+): RendererFactoryResult<RendererGitBranchResult, RendererBoundaryErrorName<GitMutationErrorName>> => {
+  const root = requireRecord(value, 'InvalidGitMutation', '$');
+  if (!root.ok) return root;
+  const exactKeys = requireExactKeys<GitMutationErrorName>(root.value, ['branch']);
+  if (!exactKeys.ok) return exactKeys;
+  const branch = requireString(root.value.branch, 'InvalidGitMutation', '$.branch');
+  if (!branch.ok) return branch;
+  if (branch.value.includes('..') || branch.value.startsWith('-')) {
+    return invalid('InvalidGitMutation', 'branch must be a safe ref', '$.branch');
+  }
+  return { ok: true, value: { branch: branch.value } };
 };

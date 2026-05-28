@@ -8,7 +8,12 @@ describe('ui slice', () => {
     expect(uiReducer(undefined, { type: 'test/init' })).toEqual({
       theme: 'system',
       sidebarOpen: true,
-      activeView: null
+      activeView: null,
+      showActivity: true,
+      showCustomize: false,
+      showAbout: false,
+      showRequest: false,
+      openMenu: null
     });
   });
 

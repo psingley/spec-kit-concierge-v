@@ -13,7 +13,15 @@ describe('session slice', () => {
     expect(sessionReducer(undefined, { type: 'test/init' })).toEqual({
       activeSessionId: null,
       modelId: null,
-      modeId: null
+      modeId: null,
+      specifyPrompt: '',
+      specifyRunning: false,
+      specifyStarted: false,
+      specMarkdown: '',
+      artifactPath: null,
+      commitSha: null,
+      scrollProgress: 0,
+      failureReason: null
     });
   });
 

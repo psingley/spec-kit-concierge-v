@@ -4,19 +4,28 @@ import { api, RUN2_TAG_TYPES } from './index';
 import { rendererVerifiedCapabilities } from './capabilities.factory.spec';
 
 describe('renderer API slice', () => {
-  it('exposes proof endpoints and all Run 4 bridge endpoints', () => {
+  it('exposes proof endpoints plus Run 4 and Run 6 bridge endpoints', () => {
     expect(Object.keys(api.endpoints)).toEqual([
       'getAppVersion',
       'getBoundCLICapabilities',
       'getWorkspace',
       'getGitState',
+      'checkoutBranch',
+      'createDraftBranch',
       'getStepState',
       'getPreferences',
       'writePreferences',
       'getAuthStatus',
+      'loginGitHub',
+      'loginCopilot',
+      'loginAtlassianStub',
       'listAcpSessions',
       'createAcpSession',
-      'getActivity'
+      'getActivity',
+      'listRepos',
+      'listBranchSessions',
+      'readArtifact',
+      'runSpecify'
     ]);
   });
 

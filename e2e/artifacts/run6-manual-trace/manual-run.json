@@ -1,0 +1,8 @@
+{
+  "repoPath": "/var/folders/sh/sfmk619j3s72vbwgsjcwyxd80000gn/T/concierge-run6-iWi1my",
+  "repoName": "hello-world-fixture",
+  "branchAfterSpecify": "spec/draft-mpp01p6c",
+  "screenshotPath": "e2e/artifacts/run6-manual-trace/rendered-spec-md.png",
+  "tracePath": "e2e/artifacts/run6-manual-trace/trace.zip",
+  "gitLogOutput": "Concierge specify step\n\nConcierge-Step: specify:pass\n\n"
+}

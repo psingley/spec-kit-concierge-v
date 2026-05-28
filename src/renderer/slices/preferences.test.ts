@@ -11,7 +11,15 @@ describe('preferences slice', () => {
   it('initializes to the Run 4 locked state', () => {
     expect(preferencesReducer(undefined, { type: 'test/init' })).toEqual({
       hydratedFromDisk: false,
-      theme: 'system'
+      theme: 'system',
+      accent: '#8b5cf6',
+      density: 'comfortable',
+      activitySide: 'right',
+      requireScrollToUnlock: true,
+      recentRepositories: [],
+      selectedCopilotModel: null,
+      persistenceStatus: 'idle',
+      lastPersistenceError: null
     });
   });
 

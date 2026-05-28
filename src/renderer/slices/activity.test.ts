@@ -7,7 +7,9 @@ describe('activity slice', () => {
   it('initializes to the Run 4 locked state', () => {
     expect(activityReducer(undefined, { type: 'test/init' })).toEqual({
       entries: [],
-      cap: 256
+      cap: 256,
+      currentStatus: 'Idle',
+      busy: false
     });
   });
 

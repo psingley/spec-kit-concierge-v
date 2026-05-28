@@ -8,6 +8,12 @@ export type PreferencesReadArgs = {
 
 export type PreferencesWriteArgs = {
   theme: RendererPreferencesState['theme'];
+  accent?: string;
+  density?: 'compact' | 'comfortable';
+  activitySide?: 'left' | 'right' | 'hidden';
+  requireScrollToUnlock?: boolean;
+  recentRepositories?: string[];
+  selectedCopilotModel?: string | null;
 };
 
 export const preferencesApi = api.injectEndpoints({

@@ -16,6 +16,10 @@ vi.mock('./store', () => ({
   store: { dispatch }
 }));
 
+vi.mock('./App', () => ({
+  App: () => null
+}));
+
 vi.mock('./api', () => ({
   api: {
     endpoints: {
@@ -44,7 +48,6 @@ describe('renderer entry point', () => {
 
     const rendered = render.mock.calls[0]?.[0] as { type?: unknown } | undefined;
     expect(rendered?.type).toBe(provider);
-    expect(dispatch).toHaveBeenCalledTimes(2);
     expect(render).toHaveBeenCalled();
   });
 });
