@@ -1,13 +1,13 @@
 {
-  "runId": "2026-05-28T21:40:37.875Z",
+  "runId": "2026-05-28T21:45:34.709Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 12,
-    "fail": 12,
+    "pass": 13,
+    "fail": 11,
     "warn": 0,
     "worstScreen": "workspace-titlebar-repo-dropdown-open"
   },
@@ -144,12 +144,6 @@
         },
         {
           "layer": "styles",
-          "message": "style drift on repo dropdown menu.background-color: expected 'oklch(0.165 0.003 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.165 0.003 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
           "message": "style drift on repo dropdown menu.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
           "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
@@ -235,7 +229,7 @@
           "actual": "8px 10px"
         }
       ],
-      "pixelResidual": 2.97,
+      "pixelResidual": 2.96,
       "priorityScore": 100
     },
     {
@@ -329,7 +323,7 @@
           "actual": ".spec-loading"
         }
       ],
-      "pixelResidual": 2.93,
+      "pixelResidual": 2.92,
       "priorityScore": 100
     },
     {
@@ -428,57 +422,57 @@
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Problem'",
+          "message": "wrong heading level 2: expected 'Problem', got 'Specify'",
           "expected": "Problem",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Goals'",
+          "message": "wrong heading level 2: expected 'Goals', got 'Specify'",
           "expected": "Goals",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Non-goals'",
+          "message": "wrong heading level 2: expected 'Non-goals', got 'Specify'",
           "expected": "Non-goals",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'User stories'",
+          "message": "wrong heading level 2: expected 'User stories', got 'Specify'",
           "expected": "User stories",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Acceptance criteria'",
+          "message": "wrong heading level 2: expected 'Acceptance criteria', got 'Specify'",
           "expected": "Acceptance criteria",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Dependencies'",
+          "message": "wrong heading level 2: expected 'Dependencies', got 'Specify'",
           "expected": "Dependencies",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Out of scope clarifications needed'",
+          "message": "wrong heading level 2: expected 'Out of scope clarifications needed', got 'Specify'",
           "expected": "Out of scope clarifications needed",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Open risks'",
+          "message": "wrong heading level 2: expected 'Open risks', got 'Specify'",
           "expected": "Open risks",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Notes'",
+          "message": "wrong heading level 2: expected 'Notes', got 'Specify'",
           "expected": "Notes",
-          "actual": "missing"
+          "actual": "Specify"
         },
         {
           "layer": "elements",
@@ -493,7 +487,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.53,
+      "pixelResidual": 3.52,
       "priorityScore": 100
     },
     {
@@ -669,7 +663,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.45,
+      "pixelResidual": 5.37,
       "priorityScore": 100
     },
     {
@@ -845,165 +839,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.95,
-      "priorityScore": 100
-    },
-    {
-      "name": "customize-modal",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Theme'",
-          "expected": "Theme",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Compact'",
-          "expected": "Compact",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Regular'",
-          "expected": "Regular",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Comfy'",
-          "expected": "Comfy",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Layout'",
-          "expected": "Layout",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Activity stream'",
-          "expected": "Activity stream",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Left'",
-          "expected": "Left",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Right'",
-          "expected": "Right",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Off'",
-          "expected": "Off",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Flow'",
-          "expected": "Flow",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Require scroll to unlock Clarify'",
-          "expected": "Require scroll to unlock Clarify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing heading level 2: expected 'Customize'",
-          "expected": "Customize",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Compact' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Regular' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Comfy' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Left' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Right' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Off' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
-          "expected": "[data-vd-role=\"modal-veil\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on customize modal panel.background-color: expected 'oklch(0.165 0.003 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.165 0.003 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on customize modal panel.border-radius: expected '10px', got '14px'",
-          "expected": "10px",
-          "actual": "14px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on customize modal panel.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
-          "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
-          "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on customize modal panel.padding: expected '0px', got '18px'",
-          "expected": "0px",
-          "actual": "18px"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: customize segmented control",
-          "expected": ".segmented button",
-          "actual": ".segmented button"
-        },
-        {
-          "layer": "pixels",
-          "message": "cropped pixel residual 16.51% exceeds 7%",
-          "expected": "7%",
-          "actual": "16.51%"
-        }
-      ],
-      "pixelResidual": 16.51,
+      "pixelResidual": 5.9,
       "priorityScore": 100
     },
     {
@@ -1102,9 +938,9 @@
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Spec-kit Concierge'",
+          "message": "wrong heading level 2: expected 'Spec-kit Concierge', got 'About Concierge'",
           "expected": "Spec-kit Concierge",
-          "actual": "missing"
+          "actual": "About Concierge"
         },
         {
           "layer": "elements",
@@ -1119,37 +955,13 @@
           "actual": "missing"
         },
         {
-          "layer": "styles",
-          "message": "style drift on about modal panel.background-color: expected 'oklch(0.165 0.003 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.165 0.003 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on about modal panel.border-radius: expected '10px', got '14px'",
-          "expected": "10px",
-          "actual": "14px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on about modal panel.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
-          "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
-          "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on about modal panel.padding: expected '0px', got '18px'",
-          "expected": "0px",
-          "actual": "18px"
-        },
-        {
           "layer": "pixels",
-          "message": "cropped pixel residual 12.1% exceeds 7%",
+          "message": "cropped pixel residual 10.21% exceeds 7%",
           "expected": "7%",
-          "actual": "12.1%"
+          "actual": "10.21%"
         }
       ],
-      "pixelResidual": 12.1,
+      "pixelResidual": 10.21,
       "priorityScore": 100
     },
     {
@@ -1248,9 +1060,9 @@
         },
         {
           "layer": "elements",
-          "message": "missing heading level 2: expected 'Report a bug or request a feature'",
+          "message": "wrong heading level 2: expected 'Report a bug or request a feature', got 'Request support'",
           "expected": "Report a bug or request a feature",
-          "actual": "missing"
+          "actual": "Request support"
         },
         {
           "layer": "elements",
@@ -1308,42 +1120,18 @@
         },
         {
           "layer": "styles",
-          "message": "style drift on request modal panel.background-color: expected 'oklch(0.165 0.003 280)', got 'oklch(0.245 0.006 280)'",
-          "expected": "oklch(0.165 0.003 280)",
-          "actual": "oklch(0.245 0.006 280)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on request modal panel.border-radius: expected '10px', got '14px'",
-          "expected": "10px",
-          "actual": "14px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on request modal panel.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
-          "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
-          "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on request modal panel.padding: expected '0px', got '18px'",
-          "expected": "0px",
-          "actual": "18px"
-        },
-        {
-          "layer": "styles",
           "message": "missing style sample: request primary action",
           "expected": ".modal .btn.primary",
           "actual": ".modal .btn.primary"
         },
         {
           "layer": "pixels",
-          "message": "cropped pixel residual 10.63% exceeds 7%",
+          "message": "cropped pixel residual 9.78% exceeds 7%",
           "expected": "7%",
-          "actual": "10.63%"
+          "actual": "9.78%"
         }
       ],
-      "pixelResidual": 10.63,
+      "pixelResidual": 9.78,
       "priorityScore": 100
     },
     {
@@ -1389,7 +1177,7 @@
       "name": "signin-github-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.99,
+      "pixelResidual": 6,
       "priorityScore": 6
     },
     {
@@ -1424,7 +1212,7 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.94,
+      "pixelResidual": 4.92,
       "priorityScore": 5
     },
     {
@@ -1438,7 +1226,7 @@
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -1452,22 +1240,29 @@
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.21,
+      "pixelResidual": 4.97,
       "priorityScore": 5
+    },
+    {
+      "name": "customize-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.06,
+      "priorityScore": 3
     },
     {
       "name": "signin-all-ok",

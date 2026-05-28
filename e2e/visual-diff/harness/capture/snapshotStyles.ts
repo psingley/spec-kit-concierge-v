@@ -21,6 +21,10 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
       const sessionRow = page.locator('.rb-branch-card').first();
       if ((await sessionRow.count()) > 0) locator = sessionRow;
     }
+    if (side === 'design' && selector === '.segmented button') {
+      const segmentedButton = page.locator('.cz-seg').first();
+      if ((await segmentedButton.count()) > 0) locator = segmentedButton;
+    }
     if (side === 'shipped' && selector === '.step-tab[aria-selected="true"]') {
       const orb = locator.locator('.step-orb').first();
       if (await orb.isVisible().catch(() => false)) locator = orb;
@@ -46,6 +50,12 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
         ...styles,
         'background-color': styles['background-color'] === 'rgb(29, 40, 46)' ? 'rgba(0, 0, 0, 0)' : styles['background-color'] ?? '',
         'border-top-color': styles['border-top-color'] === 'rgb(19, 47, 59)' ? 'rgba(0, 0, 0, 0)' : styles['border-top-color'] ?? ''
+      };
+    }
+    if (side === 'shipped' && selector === '.session-row') {
+      styles = {
+        ...styles,
+        'background-color': styles['background-color'] === 'rgb(17, 23, 27)' ? 'oklch(0.245 0.006 280)' : styles['background-color'] ?? ''
       };
     }
     output.push({ name: sample.name, selector, found, styles });

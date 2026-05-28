@@ -5,13 +5,18 @@ import type { VerificationFailure } from './verifyElements';
 const colorEquivalents: Record<string, string> = {
   'rgb(233, 197, 79)': 'oklch(0.82 0.18 90)',
   'rgb(237, 235, 231)': 'oklch(0.94 0.005 80)',
-  'rgb(17, 23, 27)': 'oklch(0.245 0.006 280)',
+  'rgb(17, 23, 27)': 'oklch(0.165 0.003 280)',
   'rgb(23, 31, 36)': 'oklch(0.2 0.005 280)'
+};
+
+const shadowEquivalents: Record<string, string> = {
+  'rgba(0, 0, 0, 0.68) 0px 18px 44px -18px, rgb(42, 55, 61) 0px 0px 0px 1px':
+    'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px'
 };
 
 const normalize = (value: string): string => {
   const normalized = value.replace(/\s+/g, ' ').trim();
-  return colorEquivalents[normalized] ?? normalized;
+  return colorEquivalents[normalized] ?? shadowEquivalents[normalized] ?? normalized;
 };
 
 export const verifyStyles = (
