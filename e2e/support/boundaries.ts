@@ -24,6 +24,31 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   await execFileAsync('git', ['commit', '-m', 'Initial fixture'], { cwd: repoPath });
 
   const repoName = 'concierge-api';
+  const repositories = ([
+    ['concierge-api', 'TypeScript'],
+    ['concierge-web', 'TypeScript'],
+    ['concierge-mobile', 'TypeScript'],
+    ['booking-engine', 'Go'],
+    ['itinerary-service', 'Go'],
+    ['pricing-rules', 'Python'],
+    ['guest-profile-svc', 'TypeScript'],
+    ['supplier-sync', 'Python'],
+    ['loyalty-ledger', 'Rust'],
+    ['ops-dashboard', 'TypeScript'],
+    ['concierge-shared-ui', 'TypeScript'],
+    ['incident-bot', 'Python'],
+    ['voucher-redeem', 'Go'],
+    ['data-warehouse-etl', 'Python']
+  ] as Array<[string, string]>).map(([name, language]) => ({
+    id: name,
+    name,
+    owner: 'collette-travel',
+    path: name === repoName ? repoPath : path.join(path.dirname(repoPath), name),
+    defaultBranch: name === 'concierge-mobile' ? 'develop' : 'main',
+    description: 'Deterministic Run 6 fixture',
+    language,
+    updatedAt: '2026-05-27T00:00:00Z'
+  }));
   const ghAdapterPath = path.join(repoPath, 'gh-adapter.json');
   const copilotAdapterPath = path.join(repoPath, 'copilot-adapter.json');
   const acpAdapterPath = path.join(repoPath, 'acp-adapter.json');
@@ -32,18 +57,7 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
     JSON.stringify(
       {
         identity: { login: 'a.kim', displayName: 'Anika Kim' },
-        repositories: [
-          {
-            id: 'fixture',
-            name: repoName,
-            owner: 'collette-travel',
-            path: repoPath,
-            defaultBranch: 'main',
-            description: 'Deterministic Run 6 fixture',
-            language: 'TypeScript',
-            updatedAt: '2026-05-27T00:00:00Z'
-          }
-        ]
+        repositories
       },
       null,
       2

@@ -35,7 +35,7 @@ const elementStateFromAom = (aom: AomNode | null, dom: DomNode): CapturedElement
   };
   const walkDom = (node: DomNode): void => {
     if (node.text) textParts.push(node.text);
-    if (node.tag === 'button' && node.text) buttons.set(node.text, (buttons.get(node.text) ?? 0) + 1);
+    if (node.tag === 'button' && node.role === 'tab' && node.text) buttons.set(node.text, (buttons.get(node.text) ?? 0) + 1);
     if (node.marker) markers.push(node.marker);
     node.children.forEach(walkDom);
   };

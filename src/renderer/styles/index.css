@@ -846,26 +846,116 @@ small {
   gap: 14px;
 }
 
-.repo-list {
+.repo-browser {
+  min-height: 0;
+  height: 100%;
+  padding: 32px 24px;
+  overflow-y: auto;
+}
+
+.repo-browser .rb-card {
+  width: 560px;
+  max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 18px;
+  box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.6);
+}
+
+.rb-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
   display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+}
+
+.rb-h {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+  text-align: center;
+}
+
+.rb-sub {
+  margin: 0 auto 20px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  text-align: center;
+  max-width: 380px;
+}
+
+.rb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  color: var(--text-faint);
+}
+
+.rb-search input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.repo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 48vh;
+  overflow-y: auto;
+  margin: 0 -8px;
+  padding: 0 8px;
+}
+
+.rb-group-h {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-faint);
+  padding: 10px 8px 4px;
+  display: flex;
+  align-items: center;
   gap: 6px;
-  max-height: 50vh;
-  overflow: auto;
-  padding-right: 4px;
+}
+
+.rb-empty {
+  padding: 28px 8px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-faint);
+  font-style: italic;
 }
 
 .repo-card,
 .session-picker button {
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 12px;
+  display: flex;
   align-items: center;
-  padding: 10px 12px;
-  background: var(--surface);
-  border: 1px solid var(--line);
+  gap: 10px;
+  padding: 11px 12px;
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: var(--radius);
   color: var(--text);
+  font-family: inherit;
   text-align: left;
   cursor: pointer;
 }
@@ -876,9 +966,49 @@ small {
   border-color: var(--accent-dim);
 }
 
-.repo-card span,
-.repo-card small {
-  grid-column: 1 / -1;
+.rb-repo-name {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rb-repo-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 7px;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  border-radius: 3px;
+}
+
+.repo-card:hover .rb-repo-count {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+}
+
+.rb-repo-count-new {
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+}
+
+.rb-repo-meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+.rb-repo.is-recent .rb-repo-meta {
+  color: var(--accent-text);
+}
+
+.rb-repo.is-recent .rb-repo-count {
+  color: var(--accent-text);
 }
 
 .session-picker {

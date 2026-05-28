@@ -1,0 +1,242 @@
+{
+  "name": "signin-all-ok",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Spec-kit Concierge'",
+      "expected": "Spec-kit Concierge",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'a.kim'",
+      "expected": "a.kim",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'collette-travel/pick repo'",
+      "expected": "collette-travel/pick repo",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'pick repo'",
+      "expected": "pick repo",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Claude Sonnet 4.5'",
+      "expected": "Claude Sonnet 4.5",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'default'",
+      "expected": "default",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Choose a Collette-travel repo to scope spec-kit to.'",
+      "expected": "Choose a Collette-travel repo to scope spec-kit to.",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '4 sessions'",
+      "expected": "4 sessions",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '2h ago'",
+      "expected": "2h ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'concierge-web'",
+      "expected": "concierge-web",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '2 sessions'",
+      "expected": "2 sessions",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'yesterday'",
+      "expected": "yesterday",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'concierge-mobile'",
+      "expected": "concierge-mobile",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '1 session'",
+      "expected": "1 session",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '3d ago'",
+      "expected": "3d ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'booking-engine'",
+      "expected": "booking-engine",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '1w ago'",
+      "expected": "1w ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'All repos'",
+      "expected": "All repos",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'itinerary-service'",
+      "expected": "itinerary-service",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'new'",
+      "expected": "new",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'pricing-rules'",
+      "expected": "pricing-rules",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'guest-profile-svc'",
+      "expected": "guest-profile-svc",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'supplier-sync'",
+      "expected": "supplier-sync",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'loyalty-ledger'",
+      "expected": "loyalty-ledger",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'ops-dashboard'",
+      "expected": "ops-dashboard",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'concierge-shared-ui'",
+      "expected": "concierge-shared-ui",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'incident-bot'",
+      "expected": "incident-bot",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'voucher-redeem'",
+      "expected": "voucher-redeem",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'data-warehouse-etl'",
+      "expected": "data-warehouse-etl",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'a.kim' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'collette-travel/pick repo' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Claude Sonnet 4.5default' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'concierge-api4 sessions2h ago' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'concierge-web2 sessionsyesterday' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'concierge-mobile1 session3d ago' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'booking-engine1 session1w ago' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'itinerary-servicenewmain' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'brand-orb' at [data-vd-role=\"brand-orb\"]",
+      "expected": "[data-vd-role=\"brand-orb\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: repo card action",
+      "expected": ".repo-card",
+      "actual": ".repo-card"
+    }
+  ],
+  "pixelResidual": 4.17,
+  "priorityScore": 100
+}
