@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { Ico } from './Icons';
 import { Markdown } from './Markdown';
 
 export type SpecifyStepProps = {
@@ -52,17 +53,25 @@ export const SpecifyStep = ({
         ) : null}
       </div>
       {!complete ? (
-        <>
-          <textarea
-            aria-label="Specify prompt"
-            placeholder="What do you want to build today?"
-            value={prompt}
-            onChange={(event) => onPromptChange(event.target.value)}
-          />
-          <button type="button" className="primary" disabled={!canBegin || running} onClick={onBegin}>
-            {running ? 'Specify running...' : 'Begin Specify'}
-          </button>
-        </>
+        <div className="specify-shell">
+          <div className="prompt-input-card">
+            <textarea
+              className="prompt-input"
+              aria-label="Specify prompt"
+              placeholder="What do you want to build today?"
+              value={prompt}
+              onChange={(event) => onPromptChange(event.target.value)}
+            />
+            <span className="vd-text-mirror" aria-hidden="true">{prompt}</span>
+            <div className="prompt-input-foot spec-input-actions">
+              <button type="button" className="btn ghost" disabled={!prompt} onClick={() => onPromptChange('')}>Clear</button>
+              <span className="prompt-input-spacer" />
+              <button type="button" className="btn primary" disabled={!canBegin || running} onClick={onBegin}>
+                {running ? 'Specifying...' : <><Ico.Sparkles size={13} data-vd-role="begin-sparkle" />Begin specify</>}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="complete-review">
           {requireScroll ? (

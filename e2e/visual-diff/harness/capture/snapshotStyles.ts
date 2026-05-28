@@ -25,6 +25,10 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
       const segmentedButton = page.locator('.cz-seg').first();
       if ((await segmentedButton.count()) > 0) locator = segmentedButton;
     }
+    if (side === 'design' && selector === '.spec-input-actions .btn.primary') {
+      const promptButton = page.locator('.prompt-input-foot .btn.primary').first();
+      if ((await promptButton.count()) > 0) locator = promptButton;
+    }
     if (side === 'shipped' && selector === '.step-tab[aria-selected="true"]') {
       const orb = locator.locator('.step-orb').first();
       if (await orb.isVisible().catch(() => false)) locator = orb;

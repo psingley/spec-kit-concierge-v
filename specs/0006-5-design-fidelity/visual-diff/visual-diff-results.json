@@ -1,73 +1,17 @@
 {
-  "runId": "2026-05-28T22:13:17.852Z",
+  "runId": "2026-05-28T22:19:05.623Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 17,
-    "fail": 7,
+    "pass": 18,
+    "fail": 6,
     "warn": 0,
-    "worstScreen": "specify-input"
+    "worstScreen": "specify-running"
   },
   "screens": [
-    {
-      "name": "specify-input",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook'",
-          "expected": "Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clear'",
-          "expected": "Clear",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Begin specify'",
-          "expected": "Begin specify",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clear' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Begin specify' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'begin-sparkle' at [data-vd-role=\"begin-sparkle\"]",
-          "expected": "[data-vd-role=\"begin-sparkle\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: specify prompt input",
-          "expected": ".prompt-input",
-          "actual": ".prompt-input"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: begin specify button",
-          "expected": ".spec-input-actions .btn.primary",
-          "actual": ".spec-input-actions .btn.primary"
-        }
-      ],
-      "pixelResidual": 2.84,
-      "priorityScore": 100
-    },
     {
       "name": "specify-running",
       "status": "FAIL",
@@ -267,7 +211,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.52,
+      "pixelResidual": 3.53,
       "priorityScore": 100
     },
     {
@@ -443,7 +387,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.39,
+      "pixelResidual": 5.51,
       "priorityScore": 100
     },
     {
@@ -619,7 +563,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.88,
+      "pixelResidual": 5.85,
       "priorityScore": 100
     },
     {
@@ -700,21 +644,21 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.93,
+      "pixelResidual": 4.92,
       "priorityScore": 5
     },
     {
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
@@ -728,14 +672,14 @@
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
@@ -753,6 +697,13 @@
       "priorityScore": 5
     },
     {
+      "name": "specify-input",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.98,
+      "priorityScore": 4
+    },
+    {
       "name": "request-modal",
       "status": "PASS",
       "failures": [],
@@ -763,14 +714,14 @@
       "name": "workspace-titlebar-repo-dropdown-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.1,
+      "pixelResidual": 3.45,
       "priorityScore": 3
     },
     {
       "name": "workspace-titlebar-gear-menu-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 2.89,
+      "pixelResidual": 3.23,
       "priorityScore": 3
     },
     {
@@ -784,7 +735,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.55,
+      "pixelResidual": 1.54,
       "priorityScore": 2
     }
   ]

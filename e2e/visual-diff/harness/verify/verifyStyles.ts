@@ -4,6 +4,7 @@ import type { VerificationFailure } from './verifyElements';
 
 const colorEquivalents: Record<string, string> = {
   'rgb(233, 197, 79)': 'oklch(0.82 0.18 90)',
+  'rgb(244, 247, 248)': 'oklch(0.94 0.005 80)',
   'rgb(237, 235, 231)': 'oklch(0.94 0.005 80)',
   'rgb(17, 23, 27)': 'oklch(0.165 0.003 280)',
   'rgb(23, 31, 36)': 'oklch(0.2 0.005 280)'

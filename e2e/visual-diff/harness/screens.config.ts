@@ -35,6 +35,9 @@ const scrollbarMask = {
   reason: 'Scrollbar gutter painting differs by Chromium host and is not product UI fidelity.'
 };
 
+const samplePrompt =
+  'Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook rules, push events to the itinerary service, and surface a confirmation receipt in the guest app.';
+
 const signIn = async (page: Page, count: 1 | 2 | 3): Promise<void> => {
   for (let i = 0; i < count; i += 1) {
     const designButton = page.locator('.signin-card').getByRole('button', { name: /Sign in/i }).first();
@@ -92,7 +95,12 @@ const setCurrentStep = async (page: Page, step: string): Promise<void> => {
 const beginSpecify = async (page: Page): Promise<void> => {
   await reachWorkspace(page);
   await page.locator('[aria-label="Specify prompt"], .prompt-input').first().fill('Build a hello-world feature');
-  await page.getByRole('button', { name: /Begin Specify/i }).click();
+  await page.getByRole('button', { name: /Begin specify/i }).click();
+};
+
+const reachWorkspaceWithSamplePrompt = async (page: Page): Promise<void> => {
+  await reachWorkspace(page);
+  await page.locator('[aria-label="Specify prompt"], .prompt-input').first().fill(samplePrompt);
 };
 
 const completeSpecify = async (page: Page): Promise<void> => {
@@ -150,7 +158,7 @@ export const screens: VisualDiffScreen[] = [
     shippedSetup: (page: Page) => setCurrentStep(page, step),
     masks: [scrollbarMask]
   })),
-  { name: 'specify-input', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachWorkspace, shippedSetup: reachWorkspace, masks: [bodyTextMask, scrollbarMask] },
+  { name: 'specify-input', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachWorkspaceWithSamplePrompt, shippedSetup: reachWorkspaceWithSamplePrompt, masks: [bodyTextMask, scrollbarMask] },
   { name: 'specify-running', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: beginSpecify, shippedSetup: beginSpecify, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'specify-complete', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: completeSpecify, shippedSetup: completeSpecify, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'activity-rail-idle', designPath: 'design/v3-fetch/project/activity.jsx', designSetup: openActivity, shippedSetup: openActivity, masks: [timestampMask, scrollbarMask] },
