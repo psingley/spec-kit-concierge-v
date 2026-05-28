@@ -12,6 +12,7 @@ export type TitlebarProps = {
   copilot: AuthProviderStatus;
   atlassian: AuthProviderStatus;
   model: string | null;
+  showDraftBranch?: boolean;
   onCustomize: () => void;
   onAbout: () => void;
   onRequest: () => void;
@@ -182,13 +183,13 @@ const MenuWrap = ({
   );
 };
 
-export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, onCustomize, onAbout, onRequest }: TitlebarProps): React.ReactElement => {
+export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, showDraftBranch = false, onCustomize, onAbout, onRequest }: TitlebarProps): React.ReactElement => {
   const [open, setOpen] = useState<OpenMenu>(null);
   const activeRepo = branch === null ? null : repo;
   const repoOwner = activeRepo?.owner ?? 'collette-travel';
   const repoName = activeRepo?.name ?? 'pick repo';
   const repoLabel = `${repoOwner}/${repoName}`;
-  const branchLabel = branch?.startsWith('spec/draft-') ? activeRepo?.defaultBranch ?? 'main' : branch ?? activeRepo?.defaultBranch ?? 'main';
+  const branchLabel = showDraftBranch && branch !== null ? branch : activeRepo?.defaultBranch ?? 'main';
   const modelOption = getModelOption(model);
   const allOk = github === 'ok' && copilot === 'ok';
   const authSummary = allOk ? identity?.login ?? 'a.kim' : github === 'ok' || copilot === 'ok' || atlassian === 'ok' ? '2 of 3' : 'Sign in';

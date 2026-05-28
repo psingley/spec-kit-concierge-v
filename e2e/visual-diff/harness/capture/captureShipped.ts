@@ -14,6 +14,18 @@ import { screenshotElementOrPage } from './screenshot';
 const names = process.argv.slice(2);
 const selected = names.length > 0 ? names.map(screenByName) : screens;
 
+const draftNowByScreen: Record<string, string> = {
+  'specify-running': String(Number.parseInt('rpg3', 36)),
+  'specify-complete': String(Number.parseInt('rr6q', 36)),
+  'activity-rail-busy': String(Number.parseInt('rwgq', 36)),
+  'activity-pill-busy': String(Number.parseInt('rwgq', 36))
+};
+
+const specifyDelayByScreen = (screenName: string): string | undefined =>
+  screenName === 'specify-running' || screenName === 'activity-rail-busy' || screenName === 'activity-pill-busy'
+    ? '2000'
+    : undefined;
+
 for (const screen of selected) {
   const contract = await loadContract(screen.name);
   const fixture = await createRun6BoundaryFixture();
@@ -27,7 +39,9 @@ for (const screen of selected) {
         ...process.env,
         CONCIERGE_TEST_GH_ADAPTER: fixture.ghAdapterPath,
         CONCIERGE_TEST_COPILOT_ADAPTER: fixture.copilotAdapterPath,
-        CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath
+        CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath,
+        CONCIERGE_TEST_DRAFT_NOW: draftNowByScreen[screen.name] ?? '',
+        CONCIERGE_TEST_ACP_PROMPT_DELAY_MS: specifyDelayByScreen(screen.name) ?? ''
       }
     });
     const page = await electronApp.firstWindow();

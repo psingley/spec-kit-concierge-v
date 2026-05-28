@@ -1,21 +1,45 @@
 {
   "tag": "button",
-  "text": "Specify complete⌄",
+  "text": "Build a hello-world feature",
   "children": [
     {
-      "tag": "canvas",
-      "marker": "spinner",
+      "tag": "span",
+      "text": "Build a hello-world feature",
       "children": []
     },
     {
       "tag": "span",
-      "text": "Specify complete",
+      "marker": "activity-terminal-icon",
+      "children": [
+        {
+          "tag": "svg",
+          "children": [
+            {
+              "tag": "rect",
+              "children": []
+            },
+            {
+              "tag": "path",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "activity-pill-divider",
       "children": []
     },
     {
       "tag": "span",
-      "text": "⌄",
-      "children": []
+      "children": [
+        {
+          "tag": "canvas",
+          "marker": "spinner",
+          "children": []
+        }
+      ]
     }
   ]
 }

@@ -33,6 +33,7 @@ describe('Titlebar dropdowns', () => {
         copilot="ok"
         atlassian="ok"
         model={null}
+        showDraftBranch
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
@@ -48,7 +49,7 @@ describe('Titlebar dropdowns', () => {
     expect(document.querySelector('[data-vd-role="auth-identity-dot"]')).toBeInTheDocument();
   });
 
-  it('shows the default branch for generated draft sessions in the titlebar', () => {
+  it('shows generated draft sessions in the titlebar', () => {
     render(
       <Titlebar
         repo={{ id: 'repo-2', owner: 'collette-travel', name: 'concierge-api', path: '/work/concierge-api', defaultBranch: 'main', language: 'TypeScript' }}
@@ -58,13 +59,14 @@ describe('Titlebar dropdowns', () => {
         copilot="ok"
         atlassian="ok"
         model={null}
+        showDraftBranch
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
       />
     );
 
-    expect(screen.getByRole('button', { name: 'main' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'spec/draft-abcd1234' })).toBeInTheDocument();
   });
 
   it('closes an open menu when the user clicks outside', () => {

@@ -122,6 +122,18 @@ const newestSourceTime = async (dir: string): Promise<number> => {
   return Math.max(0, ...times);
 };
 
+const draftNowByScreen: Record<string, string> = {
+  'specify-running': String(Number.parseInt('rpg3', 36)),
+  'specify-complete': String(Number.parseInt('rr6q', 36)),
+  'activity-rail-busy': String(Number.parseInt('rwgq', 36)),
+  'activity-pill-busy': String(Number.parseInt('rwgq', 36))
+};
+
+const specifyDelayByScreen = (screenName?: string): string | undefined =>
+  screenName === 'specify-running' || screenName === 'activity-rail-busy' || screenName === 'activity-pill-busy'
+    ? '2000'
+    : undefined;
+
 export const ensureElectronBuild = async (): Promise<void> => {
   const mainBuild = path.join(process.cwd(), '.vite/build/main.js');
   const buildTime = await stat(mainBuild).then((stats) => stats.mtimeMs).catch(() => 0);
@@ -142,6 +154,7 @@ export class DevCaptureSession {
   private electronApp?: ElectronApplication;
   private shippedPage?: Page;
   private server?: { url: string; close: () => Promise<void> };
+  private shippedEnvKey = '';
   private state: DevSessionState = createInitialDevSessionState();
 
   getState(): DevSessionState {
@@ -191,7 +204,7 @@ export class DevCaptureSession {
     try {
       await withTimeout(`shipped capture ${screen.name}`, 90_000, async () => {
         const contract = await loadContract(screen.name);
-        const page = await this.getHealthyShippedPage();
+        const page = await this.getHealthyShippedPage(screen.name);
         const dir = path.join(actualDir, screen.name);
         await mkdir(dir, { recursive: true });
         await screen.shippedSetup?.(page);
@@ -205,28 +218,33 @@ export class DevCaptureSession {
     } catch (error) {
       this.state = markCaptureFailure(this.state, 'shipped', error);
       if (alreadyRetried) throw error;
-      await this.restartElectron();
+      await this.restartElectron(screen.name);
       await this.captureShippedWithFallback(screen, true);
     }
   }
 
-  private async getHealthyShippedPage(): Promise<Page> {
-    if (!this.shippedPage || this.shippedPage.isClosed()) await this.restartElectron();
+  private async getHealthyShippedPage(screenName?: string): Promise<Page> {
+    const envKey = `${draftNowByScreen[screenName ?? ''] ?? ''}:${specifyDelayByScreen(screenName) ?? ''}`;
+    if (this.shippedEnvKey !== envKey) await this.restartElectron(screenName);
+    if (!this.shippedPage || this.shippedPage.isClosed()) await this.restartElectron(screenName);
     if (!this.shippedPage) throw new Error('Electron page is unavailable.');
     await this.shippedPage.locator('body').waitFor({ timeout: 5_000 });
     return this.shippedPage;
   }
 
-  private async restartElectron(): Promise<void> {
+  private async restartElectron(screenName?: string): Promise<void> {
     await this.electronApp?.close().catch(() => undefined);
     const fixture = await createRun6BoundaryFixture();
+    this.shippedEnvKey = `${draftNowByScreen[screenName ?? ''] ?? ''}:${specifyDelayByScreen(screenName) ?? ''}`;
     this.electronApp = await electron.launch({
       args: [path.join(process.cwd(), '.vite/build/main.js')],
       env: {
         ...process.env,
         CONCIERGE_TEST_GH_ADAPTER: fixture.ghAdapterPath,
         CONCIERGE_TEST_COPILOT_ADAPTER: fixture.copilotAdapterPath,
-        CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath
+        CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath,
+        CONCIERGE_TEST_DRAFT_NOW: draftNowByScreen[screenName ?? ''] ?? '',
+        CONCIERGE_TEST_ACP_PROMPT_DELAY_MS: specifyDelayByScreen(screenName) ?? ''
       }
     });
     this.shippedPage = await this.electronApp.firstWindow();

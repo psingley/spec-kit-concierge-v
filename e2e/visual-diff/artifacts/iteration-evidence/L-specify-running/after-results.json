@@ -1,0 +1,23 @@
+{
+  "runId": "2026-05-28T22:24:07.188Z",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "summary": {
+    "total": 1,
+    "pass": 1,
+    "fail": 0,
+    "warn": 0,
+    "worstScreen": "specify-running"
+  },
+  "screens": [
+    {
+      "name": "specify-running",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 2.32,
+      "priorityScore": 2
+    }
+  ]
+}

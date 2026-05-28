@@ -315,6 +315,10 @@ class TestAcpAdapterSession implements BoundCLISession {
   }
 
   async prompt(_sessionId: BoundCLISessionId, text: string): Promise<BoundCLIPromptResult> {
+    const delayMs = Number.parseInt(process.env.CONCIERGE_TEST_ACP_PROMPT_DELAY_MS ?? '0', 10);
+    if (Number.isFinite(delayMs) && delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
     await mkdir(this.#cwd, { recursive: true });
     await writeFile(
       path.join(this.#cwd, 'spec.md'),

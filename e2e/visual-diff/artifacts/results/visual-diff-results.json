@@ -1,65 +1,21 @@
 {
-  "runId": "2026-05-28T22:19:05.623Z",
+  "runId": "2026-05-28T22:28:26.332Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 18,
-    "fail": 6,
+    "pass": 19,
+    "fail": 5,
     "warn": 0,
-    "worstScreen": "specify-running"
+    "worstScreen": "specify-complete"
   },
   "screens": [
-    {
-      "name": "specify-running",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'spec/draft-rpg3'",
-          "expected": "spec/draft-rpg3",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Specifying…'",
-          "expected": "Specifying…",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Watch progress in the activity stream.'",
-          "expected": "Watch progress in the activity stream.",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'spec/draft-rpg3' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: spec loading panel",
-          "expected": ".spec-loading",
-          "actual": ".spec-loading"
-        }
-      ],
-      "pixelResidual": 2.93,
-      "priorityScore": 100
-    },
     {
       "name": "specify-complete",
       "status": "FAIL",
       "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'spec/draft-rr6q'",
-          "expected": "spec/draft-rr6q",
-          "actual": "missing"
-        },
         {
           "layer": "elements",
           "message": "missing text: expected 'spec.md · 63 lines'",
@@ -211,7 +167,7 @@
           "actual": ".md-panel"
         }
       ],
-      "pixelResidual": 3.53,
+      "pixelResidual": 3.54,
       "priorityScore": 100
     },
     {
@@ -387,7 +343,7 @@
           "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
         }
       ],
-      "pixelResidual": 5.51,
+      "pixelResidual": 5.54,
       "priorityScore": 100
     },
     {
@@ -563,7 +519,7 @@
           "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.85,
+      "pixelResidual": 5.83,
       "priorityScore": 100
     },
     {
@@ -651,35 +607,35 @@
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -736,6 +692,13 @@
       "status": "PASS",
       "failures": [],
       "pixelResidual": 1.54,
+      "priorityScore": 2
+    },
+    {
+      "name": "specify-running",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 2.32,
       "priorityScore": 2
     }
   ]

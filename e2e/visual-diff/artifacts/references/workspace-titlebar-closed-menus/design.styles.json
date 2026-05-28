@@ -2,8 +2,13 @@
   {
     "name": "titlebar repo chip",
     "selector": ".tb-chip.repo",
-    "found": false,
-    "styles": {}
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.2 0.005 280)",
+      "border-radius": "6px",
+      "border-top-color": "oklch(0.285 0.006 280)",
+      "padding": "7px 10px"
+    }
   },
   {
     "name": "titlebar gear icon button",

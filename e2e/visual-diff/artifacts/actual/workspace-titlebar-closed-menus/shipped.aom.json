@@ -7,9 +7,37 @@
       "name": "",
       "children": [
         {
-          "role": "button",
-          "name": "collette-travel/hello-world-fixture",
-          "children": []
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "a.kim",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "collette-travel/concierge-api",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "main",
+              "children": []
+            }
+          ]
         }
       ]
     },
@@ -18,41 +46,30 @@
       "name": "",
       "children": [
         {
-          "role": "button",
-          "name": "spec/draft-mppu5adl",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Claude Sonnet 4.5default",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "",
+              "children": []
+            }
+          ]
+        },
         {
           "role": "button",
-          "name": "Ready · Atlassian Run 11",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "default",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "Settings",
+          "name": "",
           "children": []
         }
       ]

@@ -11,36 +11,125 @@
               "tag": "header",
               "children": [
                 {
-                  "tag": "strong",
-                  "text": "Concierge",
-                  "children": []
-                },
-                {
                   "tag": "div",
                   "children": [
                     {
-                      "tag": "button",
-                      "text": "collette-travel/hello-world-fixture",
+                      "tag": "div",
+                      "marker": "brand-orb",
                       "children": [
                         {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        },
-                        {
                           "tag": "span",
-                          "text": "collette-travel/hello-world-fixture",
                           "children": []
                         },
                         {
-                          "tag": "svg",
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "text": "Spec-kit Concierge",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "a.kim",
                           "children": [
                             {
-                              "tag": "path",
+                              "tag": "span",
+                              "marker": "auth-identity-dot",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "a.kim",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "collette-travel/concierge-api",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "text": "collette-travel",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "/",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "concierge-api",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "spec/draft-rpg3",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "spec/draft-rpg3",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
                               "children": []
                             }
                           ]
@@ -53,153 +142,87 @@
                   "tag": "div",
                   "children": [
                     {
-                      "tag": "button",
-                      "text": "spec/draft-mppu5o7b",
+                      "tag": "div",
                       "children": [
                         {
-                          "tag": "svg",
+                          "tag": "button",
+                          "text": "Claude Sonnet 4.5default",
                           "children": [
                             {
-                              "tag": "circle",
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Claude Sonnet 4.5",
                               "children": []
                             },
                             {
-                              "tag": "circle",
+                              "tag": "span",
+                              "text": "default",
                               "children": []
                             },
                             {
-                              "tag": "circle",
-                              "children": []
-                            },
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        },
-                        {
-                          "tag": "span",
-                          "text": "spec/draft-mppu5o7b",
-                          "children": []
-                        },
-                        {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
+                              "tag": "span",
                               "children": []
                             }
                           ]
                         }
                       ]
-                    }
-                  ]
-                },
-                {
-                  "tag": "div",
-                  "children": [
+                    },
                     {
-                      "tag": "button",
-                      "text": "Ready · Atlassian Run 11",
+                      "tag": "div",
                       "children": [
                         {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        },
-                        {
-                          "tag": "span",
-                          "text": "Ready · Atlassian Run 11",
-                          "children": []
-                        },
-                        {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "tag": "div",
-                  "children": [
-                    {
-                      "tag": "button",
-                      "text": "default",
-                      "children": [
-                        {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
-                              "children": []
-                            },
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        },
-                        {
-                          "tag": "span",
-                          "text": "default",
-                          "children": []
-                        },
-                        {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "tag": "div",
-                  "children": [
-                    {
-                      "tag": "button",
-                      "text": "Settings",
-                      "children": [
-                        {
-                          "tag": "svg",
-                          "children": [
-                            {
-                              "tag": "circle",
-                              "children": []
-                            },
-                            {
-                              "tag": "path",
-                              "children": []
-                            }
-                          ]
-                        },
-                        {
-                          "tag": "span",
+                          "tag": "button",
                           "text": "Settings",
-                          "children": []
-                        },
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "button",
+                      "text": "Activity",
+                      "children": [
                         {
                           "tag": "svg",
                           "children": [
+                            {
+                              "tag": "rect",
+                              "children": []
+                            },
                             {
                               "tag": "path",
                               "children": []
                             }
                           ]
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
                         }
                       ]
                     }
@@ -214,101 +237,167 @@
                 {
                   "tag": "button",
                   "role": "tab",
-                  "text": "specifycomplete",
+                  "text": "Specify",
                   "children": [
                     {
                       "tag": "span",
-                      "text": "specify",
+                      "marker": "step-orb",
                       "children": []
                     },
-                    {
-                      "tag": "strong",
-                      "text": "complete",
-                      "children": []
-                    }
-                  ]
-                },
-                {
-                  "tag": "button",
-                  "role": "tab",
-                  "text": "clarifypending",
-                  "children": [
                     {
                       "tag": "span",
-                      "text": "clarify",
+                      "text": "Specify",
                       "children": []
                     },
                     {
-                      "tag": "strong",
+                      "tag": "span",
                       "text": "pending",
                       "children": []
                     }
                   ]
                 },
                 {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
                   "tag": "button",
                   "role": "tab",
-                  "text": "plannot_available",
+                  "text": "Clarify",
                   "children": [
                     {
                       "tag": "span",
-                      "text": "plan",
+                      "marker": "step-orb",
                       "children": []
                     },
                     {
-                      "tag": "strong",
+                      "tag": "span",
+                      "text": "Clarify",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
                       "text": "not_available",
                       "children": []
                     }
                   ]
                 },
                 {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
                   "tag": "button",
                   "role": "tab",
-                  "text": "tasksnot_available",
+                  "text": "Plan",
                   "children": [
                     {
                       "tag": "span",
-                      "text": "tasks",
+                      "marker": "step-orb",
                       "children": []
                     },
                     {
-                      "tag": "strong",
+                      "tag": "span",
+                      "text": "Plan",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
                       "text": "not_available",
                       "children": []
                     }
                   ]
                 },
                 {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
                   "tag": "button",
                   "role": "tab",
-                  "text": "analyzenot_available",
+                  "text": "Tasks",
                   "children": [
                     {
                       "tag": "span",
-                      "text": "analyze",
+                      "marker": "step-orb",
                       "children": []
                     },
                     {
-                      "tag": "strong",
+                      "tag": "span",
+                      "text": "Tasks",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
                       "text": "not_available",
                       "children": []
                     }
                   ]
                 },
                 {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
                   "tag": "button",
                   "role": "tab",
-                  "text": "reviewnot_available",
+                  "text": "Analyze",
                   "children": [
                     {
                       "tag": "span",
-                      "text": "review",
+                      "marker": "step-orb",
                       "children": []
                     },
                     {
-                      "tag": "strong",
+                      "tag": "span",
+                      "text": "Analyze",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
                       "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Review",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Review",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "stepper-track",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "stepper-track-fill",
                       "children": []
                     }
                   ]
@@ -338,27 +427,6 @@
                               "children": []
                             }
                           ]
-                        },
-                        {
-                          "tag": "div",
-                          "role": "group",
-                          "children": [
-                            {
-                              "tag": "button",
-                              "text": "Preview",
-                              "children": []
-                            },
-                            {
-                              "tag": "button",
-                              "text": "Edit",
-                              "children": []
-                            },
-                            {
-                              "tag": "button",
-                              "text": "Pop out",
-                              "children": []
-                            }
-                          ]
                         }
                       ]
                     },
@@ -373,57 +441,48 @@
                               "children": [
                                 {
                                   "tag": "div",
+                                  "marker": "spinner",
                                   "children": []
                                 }
                               ]
                             },
                             {
-                              "tag": "span",
-                              "text": "Review 0% read.",
+                              "tag": "div",
+                              "text": "Specifying…",
                               "children": []
-                            }
-                          ]
-                        },
-                        {
-                          "tag": "div",
-                          "children": [
+                            },
                             {
-                              "tag": "article",
+                              "tag": "div",
                               "children": [
                                 {
-                                  "tag": "h1",
-                                  "text": "Hello-world feature",
+                                  "tag": "span",
+                                  "text": "spec.md",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "span",
                                   "children": []
                                 },
                                 {
-                                  "tag": "p",
-                                  "text": "Prompt: Create or update spec.md for this Spec Kit feature request. Keep the generated specification concise and valid markdown.",
-                                  "children": []
-                                },
-                                {
-                                  "tag": "p",
-                                  "text": "Build a hello-world feature",
-                                  "children": []
-                                },
-                                {
-                                  "tag": "p",
-                                  "text": "This specification was generated by the Run 6 Specify adapter.",
+                                  "tag": "span",
+                                  "text": "Watch progress in the activity stream.",
                                   "children": []
                                 }
                               ]
                             }
                           ]
-                        },
-                        {
-                          "tag": "button",
-                          "text": "Continue",
-                          "children": []
                         }
                       ]
                     },
                     {
                       "tag": "p",
-                      "text": "Scroll review gate is enabled.",
+                      "role": "status",
+                      "text": "Specify is generating your spec...",
                       "children": []
                     }
                   ]
@@ -432,22 +491,46 @@
             },
             {
               "tag": "button",
-              "text": "Specify complete⌄",
+              "text": "Build a hello-world feature",
               "children": [
                 {
-                  "tag": "canvas",
-                  "marker": "spinner",
+                  "tag": "span",
+                  "text": "Build a hello-world feature",
                   "children": []
                 },
                 {
                   "tag": "span",
-                  "text": "Specify complete",
+                  "marker": "activity-terminal-icon",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "rect",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "activity-pill-divider",
                   "children": []
                 },
                 {
                   "tag": "span",
-                  "text": "⌄",
-                  "children": []
+                  "children": [
+                    {
+                      "tag": "canvas",
+                      "marker": "spinner",
+                      "children": []
+                    }
+                  ]
                 }
               ]
             }

@@ -4,10 +4,10 @@
     "selector": ".activity-pill",
     "found": true,
     "styles": {
-      "background-color": "rgb(17, 23, 27)",
+      "background-color": "rgb(23, 31, 36)",
       "border-radius": "999px",
-      "border-top-color": "rgb(60, 77, 85)",
-      "padding": "0px 14px 0px 10px"
+      "border-top-color": "rgb(19, 47, 59)",
+      "padding": "0px"
     }
   }
 ]

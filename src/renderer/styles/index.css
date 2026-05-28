@@ -1372,6 +1372,77 @@ textarea {
   flex: 1;
 }
 
+.spec-loading {
+  padding: 40px 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.spec-loading-ring {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-dim);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--accent-dim);
+  border-top-color: var(--accent-text);
+  border-radius: 50%;
+  animation: spinner-rotate 0.9s linear infinite;
+}
+
+.spinner.sm {
+  width: 12px;
+  height: 12px;
+}
+
+.spec-loading-h {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.spec-loading-sub {
+  max-width: 560px;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.spec-loading-stream {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.spec-loading-stream .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 3px var(--good-bg);
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .specify-step,
 .placeholder {
   max-width: 960px;

@@ -98,7 +98,7 @@
                       "children": [
                         {
                           "tag": "button",
-                          "text": "spec/draft-4ndf",
+                          "text": "spec/draft-cvue",
                           "children": [
                             {
                               "tag": "svg",
@@ -123,7 +123,7 @@
                             },
                             {
                               "tag": "span",
-                              "text": "spec/draft-4ndf",
+                              "text": "spec/draft-cvue",
                               "children": []
                             },
                             {

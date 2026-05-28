@@ -52,7 +52,24 @@ export const SpecifyStep = ({
           </div>
         ) : null}
       </div>
-      {!complete ? (
+      {running && !complete ? (
+        <div className="specify-shell">
+          <div className="spec-loading">
+            <div className="spec-loading-ring">
+              <div className="spinner" data-vd-role="spinner" />
+            </div>
+            <div className="spec-loading-h">Specifying…</div>
+            <div className="spec-loading-sub">
+              Drafting <span className="mono">spec.md</span> from your prompt. Grounding against the codebase, generating goals and acceptance criteria, flagging ambiguities for the next step.
+            </div>
+            <div className="spec-loading-stream">
+              <span className="dot" />
+              <span>Watch progress in the activity stream.</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {!complete && !running ? (
         <div className="specify-shell">
           <div className="prompt-input-card">
             <textarea
@@ -72,7 +89,7 @@ export const SpecifyStep = ({
             </div>
           </div>
         </div>
-      ) : (
+      ) : !running ? (
         <div className="complete-review">
           {requireScroll ? (
             <div className="scroll-gate" aria-label="Review scroll progress">
@@ -93,7 +110,7 @@ export const SpecifyStep = ({
             Continue
           </button>
         </div>
-      )}
+      ) : null}
       {running ? <p role="status" aria-live="polite">Specify is generating your spec...</p> : null}
       {failureReason !== null ? <p role="alert">{failureReason}</p> : null}
       {requireScroll && complete ? <p className="hint">Scroll review gate is enabled.</p> : null}
