@@ -1,13 +1,13 @@
 {
-  "runId": "2026-05-28T23:01:50.977Z",
+  "runId": "2026-05-28T23:06:53.255Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 23,
-    "fail": 1,
+    "pass": 24,
+    "fail": 0,
     "warn": 0,
     "worstScreen": "activity-rail-idle"
   },
@@ -23,7 +23,7 @@
       "name": "activity-rail-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.8,
+      "pixelResidual": 6.88,
       "priorityScore": 7
     },
     {
@@ -38,20 +38,6 @@
       "status": "PASS",
       "failures": [],
       "pixelResidual": 6,
-      "priorityScore": 6
-    },
-    {
-      "name": "repo-browse-empty-search",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "styles",
-          "message": "missing style sample: repo browser empty state",
-          "expected": ".repo-browser",
-          "actual": ".repo-browser"
-        }
-      ],
-      "pixelResidual": 1.34,
       "priorityScore": 6
     },
     {
@@ -79,7 +65,7 @@
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -93,7 +79,7 @@
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
@@ -135,7 +121,7 @@
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.91,
+      "pixelResidual": 3.67,
       "priorityScore": 4
     },
     {
@@ -170,7 +156,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.55,
+      "pixelResidual": 1.54,
       "priorityScore": 2
     },
     {
@@ -179,6 +165,13 @@
       "failures": [],
       "pixelResidual": 2.32,
       "priorityScore": 2
+    },
+    {
+      "name": "repo-browse-empty-search",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.34,
+      "priorityScore": 1
     },
     {
       "name": "activity-pill-idle",

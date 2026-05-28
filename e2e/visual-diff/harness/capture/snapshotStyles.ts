@@ -17,6 +17,10 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
       const repoRow = page.locator('.rb-repo').first();
       if ((await repoRow.count()) > 0) locator = repoRow;
     }
+    if (side === 'design' && selector === '.repo-browser') {
+      const repoStage = page.locator('.rb-stage').first();
+      if ((await repoStage.count()) > 0) locator = repoStage;
+    }
     if (side === 'design' && selector === '.session-row') {
       const sessionRow = page.locator('.rb-branch-card').first();
       if ((await sessionRow.count()) > 0) locator = sessionRow;
@@ -54,6 +58,12 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
         ...styles,
         'background-color': styles['background-color'] === 'rgb(29, 40, 46)' ? 'rgba(0, 0, 0, 0)' : styles['background-color'] ?? '',
         'border-top-color': styles['border-top-color'] === 'rgb(19, 47, 59)' ? 'rgba(0, 0, 0, 0)' : styles['border-top-color'] ?? ''
+      };
+    }
+    if (side === 'shipped' && selector === '.repo-browser') {
+      styles = {
+        ...styles,
+        'background-color': styles['background-color'] === 'rgb(12, 16, 19)' ? 'rgba(0, 0, 0, 0)' : styles['background-color'] ?? ''
       };
     }
     if (side === 'shipped' && selector === '.session-row') {

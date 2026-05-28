@@ -1,0 +1,14 @@
+{
+  "name": "repo-browse-empty-search",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "styles",
+      "message": "missing style sample: repo browser empty state",
+      "expected": ".repo-browser",
+      "actual": ".repo-browser"
+    }
+  ],
+  "pixelResidual": 1.34,
+  "priorityScore": 6
+}
