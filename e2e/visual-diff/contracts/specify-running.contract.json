@@ -1,0 +1,26 @@
+// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+{
+  "name": "specify-running",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [],
+    "headings": [],
+    "controls": [],
+    "visualMarkers": [
+      {
+        "name": "spinner",
+        "selector": "[data-vd-role=\"spinner\"]",
+        "designSelector": ".spinner"
+      }
+    ]
+  },
+  "styleSamples": [],
+  "pixel": {
+    "maxDiffPercent": 20,
+    "warnDiffPercent": 20
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "main",
+          "children": [
+            {
+              "tag": "section",
+              "children": [
+                {
+                  "tag": "h1",
+                  "text": "hello-world-fixture",
+                  "children": []
+                },
+                {
+                  "tag": "input",
+                  "children": []
+                },
+                {
+                  "tag": "section",
+                  "children": [
+                    {
+                      "tag": "h2",
+                      "text": "hello-world-fixture sessions",
+                      "children": []
+                    },
+                    {
+                      "tag": "button",
+                      "text": "Start a new session",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "0.1.0",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "test-acp-adapter 0.0.0:test-model",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,919 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "text": "Spec-kit Concierge",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "a.kim",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "a.kim",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "collette-travel/pick repo",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "text": "collette-travel",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "/",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "pick repo",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "Claude Sonnet 4.5default",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Claude Sonnet 4.5",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "default",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "button",
+                      "children": [
+                        {
+                          "tag": "span",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "rect",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": [
+                            {
+                              "tag": "canvas",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "main",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "h1",
+                              "text": "Pick a repository",
+                              "children": []
+                            },
+                            {
+                              "tag": "p",
+                              "text": "Choose a Collette-travel repo to scope spec-kit to.",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "circle",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "input",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "circle",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "concierge-api4 sessions2h ago",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "concierge-api",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "4 sessions",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "2h ago",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "concierge-web2 sessionsyesterday",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "concierge-web",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "2 sessions",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "yesterday",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "concierge-mobile1 session3d ago",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "concierge-mobile",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "1 session",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "3d ago",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "booking-engine1 session1w ago",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "booking-engine",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "1 session",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "1w ago",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "div",
+                                  "text": "All repos",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "itinerary-servicenewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "itinerary-service",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "pricing-rulesnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "pricing-rules",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "guest-profile-svcnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "guest-profile-svc",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "supplier-syncnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "supplier-sync",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "loyalty-ledgernewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "loyalty-ledger",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "ops-dashboardnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "ops-dashboard",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "concierge-shared-uinewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "concierge-shared-ui",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "incident-botnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "incident-bot",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "voucher-redeemnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "voucher-redeem",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "data-warehouse-etlnewmain",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "data-warehouse-etl",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "new",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "main",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    }
+  ]
+}

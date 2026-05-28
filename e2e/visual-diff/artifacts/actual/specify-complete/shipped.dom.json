@@ -1,0 +1,474 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "header",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "Concierge",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "collette-travel/hello-world-fixture",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "text": "collette-travel/hello-world-fixture",
+                          "children": []
+                        },
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "spec/draft-mpptsqed",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "text": "spec/draft-mpptsqed",
+                          "children": []
+                        },
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "Ready · Atlassian Run 11",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "text": "Ready · Atlassian Run 11",
+                          "children": []
+                        },
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "default",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            },
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "text": "default",
+                          "children": []
+                        },
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "Settings",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "text": "Settings",
+                          "children": []
+                        },
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "nav",
+              "role": "tablist",
+              "children": [
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "specifycomplete",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "specify",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "complete",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "clarifypending",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "clarify",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "pending",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "plannot_available",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "plan",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "tasksnot_available",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "tasks",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "analyzenot_available",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "analyze",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "reviewnot_available",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "review",
+                      "children": []
+                    },
+                    {
+                      "tag": "strong",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "main",
+              "children": [
+                {
+                  "tag": "section",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "p",
+                              "text": "Step 1",
+                              "children": []
+                            },
+                            {
+                              "tag": "h2",
+                              "text": "Specify",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "div",
+                          "role": "group",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Preview",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Edit",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Pop out",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Review 0% read.",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "article",
+                              "children": [
+                                {
+                                  "tag": "h1",
+                                  "text": "Hello-world feature",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "p",
+                                  "text": "Prompt: Create or update spec.md for this Spec Kit feature request. Keep the generated specification concise and valid markdown.",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "p",
+                                  "text": "Build a hello-world feature",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "p",
+                                  "text": "This specification was generated by the Run 6 Specify adapter.",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "button",
+                          "text": "Continue",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "p",
+                      "text": "Scroll review gate is enabled.",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Specify complete⌄",
+              "children": [
+                {
+                  "tag": "canvas",
+                  "marker": "spinner",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "Specify complete",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "⌄",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "0.1.0",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "test-acp-adapter 0.0.0:test-model",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

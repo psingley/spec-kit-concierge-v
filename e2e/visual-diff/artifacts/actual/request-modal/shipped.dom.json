@@ -1,0 +1,31 @@
+{
+  "tag": "div",
+  "role": "dialog",
+  "children": [
+    {
+      "tag": "h2",
+      "text": "Request support",
+      "children": []
+    },
+    {
+      "tag": "section",
+      "children": [
+        {
+          "tag": "p",
+          "text": "Request capture is scheduled for Run 12.",
+          "children": []
+        },
+        {
+          "tag": "textarea",
+          "text": "Stub only for Run 6.5 visual verification.",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "text": "Close",
+      "children": []
+    }
+  ]
+}

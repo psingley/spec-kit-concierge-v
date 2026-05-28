@@ -1,0 +1,45 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "main",
+          "name": "",
+          "children": [
+            {
+              "role": "region",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "hello-world-fixture",
+                  "children": []
+                },
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "heading",
+                      "name": "hello-world-fixture sessions",
+                      "children": []
+                    },
+                    {
+                      "role": "button",
+                      "name": "Start a new session",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

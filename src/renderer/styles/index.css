@@ -77,6 +77,28 @@ button {
   color: inherit;
 }
 
+.btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
@@ -406,35 +428,164 @@ small {
 
 /* ============ Sign In ============ */
 
-.auth-list {
+.signin-stage {
+  height: 100%;
   display: grid;
-  gap: 10px;
-  margin-top: 18px;
+  place-items: center;
+  padding: 40px 24px;
+  overflow-y: auto;
 }
 
-.auth-row {
-  width: 100%;
-  min-height: 58px;
-  display: grid;
-  grid-template-columns: 30px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+.signin-card {
+  width: 480px;
+  max-width: 100%;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
+  padding: 32px 28px 22px;
+  text-align: center;
+  box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.6);
+}
+
+.signin-mark {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 22px;
+  display: grid;
+  place-items: center;
+}
+
+.signin-mark .dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgb(58 126 154 / 0.22), 0 0 30px rgb(58 126 154 / 0.5);
+  z-index: 2;
+}
+
+.signin-mark .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--accent-dim);
+  opacity: 0;
+  animation: signin-ring 3s ease-out infinite;
+}
+
+.signin-mark .ring:nth-child(2) { animation-delay: 1s; }
+.signin-mark .ring:nth-child(3) { animation-delay: 2s; }
+
+@keyframes signin-ring {
+  0% { transform: scale(0.4); opacity: 0; }
+  20% { opacity: 0.6; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.signin-h {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 500;
   color: var(--text);
+}
+
+.signin-sub {
+  margin: 0 auto 24px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  max-width: 360px;
+}
+
+.signin-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   text-align: left;
-  cursor: pointer;
 }
 
-.auth-row:hover {
-  background: var(--surface-2);
-  border-color: var(--line-strong);
+.signin-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
 }
 
-.auth-row strong {
-  color: var(--accent-text);
+.signin-row.is-on {
+  background: rgb(99 210 138 / 0.05);
+  border-color: rgb(99 210 138 / 0.3);
+}
+
+.signin-row.is-disabled {
+  opacity: 1;
+}
+
+.signin-row.is-disabled .signin-row-icon,
+.signin-row.is-disabled .signin-row-title,
+.signin-row.is-disabled .signin-row-sub {
+  color: var(--text-dim);
+}
+.signin-row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.signin-row.is-on .signin-row-icon {
+  color: var(--good);
+  border-color: rgb(99 210 138 / 0.35);
+  background: rgb(99 210 138 / 0.1);
+}
+
+.signin-row-main { flex: 1; min-width: 0; }
+.signin-row-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 1px;
+}
+
+.signin-row-sub {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.signin-row-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  background: var(--good-bg);
+  color: var(--good);
+  border: 1px solid rgb(99 210 138 / 0.35);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.signin-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.signin-foot {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--text-faint);
 }
 
 /* ============ Repo Browser ============ */

@@ -1,0 +1,29 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "main",
+          "name": "",
+          "children": [
+            {
+              "role": "region",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Pick a repository",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

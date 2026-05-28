@@ -1,0 +1,108 @@
+{
+  "tag": "nav",
+  "role": "tablist",
+  "children": [
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "specifypending",
+      "children": [
+        {
+          "tag": "span",
+          "text": "specify",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "pending",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "clarifynot_available",
+      "children": [
+        {
+          "tag": "span",
+          "text": "clarify",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "plannot_available",
+      "children": [
+        {
+          "tag": "span",
+          "text": "plan",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "tasksnot_available",
+      "children": [
+        {
+          "tag": "span",
+          "text": "tasks",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "analyzenot_available",
+      "children": [
+        {
+          "tag": "span",
+          "text": "analyze",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "reviewnot_available",
+      "children": [
+        {
+          "tag": "span",
+          "text": "review",
+          "children": []
+        },
+        {
+          "tag": "strong",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

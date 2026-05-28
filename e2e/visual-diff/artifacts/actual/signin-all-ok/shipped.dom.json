@@ -1,0 +1,79 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "main",
+          "children": [
+            {
+              "tag": "section",
+              "children": [
+                {
+                  "tag": "h1",
+                  "text": "Pick a repository",
+                  "children": []
+                },
+                {
+                  "tag": "input",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "collette-travel/hello-world-fixturemain - TypeScriptDeterministic Run 6 fixture",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "small",
+                          "text": "main - TypeScript",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "text": "Deterministic Run 6 fixture",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "0.1.0",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "test-acp-adapter 0.0.0:test-model",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

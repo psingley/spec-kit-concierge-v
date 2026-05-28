@@ -30,9 +30,9 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     };
     await expectNoSeriousA11yViolations();
 
-    await page.getByRole('button', { name: /GitHub CLI/i }).click();
-    await expect(page.getByRole('button', { name: /GitHub CLI.*Connected/i })).toBeVisible();
-    await page.getByRole('button', { name: /Copilot CLI/i }).click();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await expect(page.getByText(/Signed in as a.kim/i)).toBeVisible();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
 
     await expectNoSeriousA11yViolations();

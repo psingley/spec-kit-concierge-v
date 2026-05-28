@@ -1,0 +1,21 @@
+{
+  "tag": "button",
+  "text": "Copilot connected⌄",
+  "children": [
+    {
+      "tag": "canvas",
+      "marker": "spinner",
+      "children": []
+    },
+    {
+      "tag": "span",
+      "text": "Copilot connected",
+      "children": []
+    },
+    {
+      "tag": "span",
+      "text": "⌄",
+      "children": []
+    }
+  ]
+}

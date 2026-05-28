@@ -1,0 +1,26 @@
+// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+{
+  "name": "activity-pill-busy",
+  "designPath": "design/v3-fetch/project/activity-pill.jsx",
+  "primaryRegion": {
+    "designSelector": ".activity-pill",
+    "shippedSelector": ".activity-pill"
+  },
+  "required": {
+    "texts": [],
+    "headings": [],
+    "controls": [],
+    "visualMarkers": [
+      {
+        "name": "spinner",
+        "selector": "[data-vd-role=\"spinner\"]",
+        "designSelector": ".spinner"
+      }
+    ]
+  },
+  "styleSamples": [],
+  "pixel": {
+    "maxDiffPercent": 20,
+    "warnDiffPercent": 20
+  }
+}

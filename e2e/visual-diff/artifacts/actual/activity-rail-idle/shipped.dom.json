@@ -1,0 +1,36 @@
+{
+  "tag": "aside",
+  "children": [
+    {
+      "tag": "p",
+      "role": "status",
+      "text": "Idle - Copilot connected",
+      "children": []
+    },
+    {
+      "tag": "ol",
+      "children": [
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

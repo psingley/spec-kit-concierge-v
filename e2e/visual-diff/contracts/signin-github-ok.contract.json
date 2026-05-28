@@ -1,0 +1,73 @@
+// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+{
+  "name": "signin-github-ok",
+  "designPath": "design/v3-fetch/project/signin.jsx",
+  "primaryRegion": {
+    "designSelector": ".signin-card",
+    "shippedSelector": ".signin-card"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "GitHub CLI"
+      },
+      {
+        "value": "GitHub Copilot CLI"
+      },
+      {
+        "value": "Atlassian MCP"
+      },
+      {
+        "value": "Signed in as a.kim"
+      },
+      {
+        "value": "Drives the spec-kit workflow"
+      },
+      {
+        "value": "Required to send specs to JIRA"
+      },
+      {
+        "value": "Spec-driven feature work, with Copilot CLI in the loop. Sign in to load your organization."
+      },
+      {
+        "value": "Trouble signing in? Use the gear menu to report a bug."
+      }
+    ],
+    "headings": [
+      {
+        "level": 1,
+        "text": "Spec-kit Concierge"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Sign in",
+        "count": 2
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "signin-mark",
+        "selector": "[data-vd-role=\"signin-mark\"]",
+        "designSelector": ".signin-mark"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "primary sign-in action",
+      "designSelector": ".signin-row .btn.primary",
+      "shippedSelector": "[data-vd-role=\"signin-provider-action\"]",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "gap"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

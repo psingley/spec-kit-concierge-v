@@ -1,0 +1,36 @@
+{
+  "tag": "div",
+  "role": "dialog",
+  "children": [
+    {
+      "tag": "h2",
+      "text": "About Concierge",
+      "children": []
+    },
+    {
+      "tag": "section",
+      "children": [
+        {
+          "tag": "p",
+          "text": "hello-world-fixture on spec/draft-mpptsy5x",
+          "children": []
+        },
+        {
+          "tag": "p",
+          "text": "Version 0.1.0 · 654818a",
+          "children": []
+        },
+        {
+          "tag": "p",
+          "text": "License: Internal",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "text": "Close",
+      "children": []
+    }
+  ]
+}

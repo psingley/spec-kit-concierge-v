@@ -1,0 +1,21 @@
+{
+  "tag": "button",
+  "text": "Specify complete⌄",
+  "children": [
+    {
+      "tag": "canvas",
+      "marker": "spinner",
+      "children": []
+    },
+    {
+      "tag": "span",
+      "text": "Specify complete",
+      "children": []
+    },
+    {
+      "tag": "span",
+      "text": "⌄",
+      "children": []
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "role": "dialog",
+  "name": "",
+  "children": [
+    {
+      "role": "heading",
+      "name": "Customize",
+      "children": []
+    },
+    {
+      "role": "region",
+      "name": "",
+      "children": [
+        {
+          "role": "img",
+          "name": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "region",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "comfortable",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "compact",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "right",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "hidden",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "switch",
+      "name": "Require scroll to unlock",
+      "children": []
+    },
+    {
+      "role": "button",
+      "name": "Close",
+      "children": []
+    }
+  ]
+}

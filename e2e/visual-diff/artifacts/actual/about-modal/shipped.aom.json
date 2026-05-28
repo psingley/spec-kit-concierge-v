@@ -1,0 +1,21 @@
+{
+  "role": "dialog",
+  "name": "",
+  "children": [
+    {
+      "role": "heading",
+      "name": "About Concierge",
+      "children": []
+    },
+    {
+      "role": "region",
+      "name": "",
+      "children": []
+    },
+    {
+      "role": "button",
+      "name": "Close",
+      "children": []
+    }
+  ]
+}

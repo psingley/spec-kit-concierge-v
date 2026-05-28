@@ -1,0 +1,56 @@
+{
+  "tag": "aside",
+  "children": [
+    {
+      "tag": "p",
+      "role": "status",
+      "text": "Idle - Specify complete",
+      "children": []
+    },
+    {
+      "tag": "ol",
+      "children": [
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "li",
+          "children": [
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

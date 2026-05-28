@@ -56,5 +56,5 @@ export const PixelCSpinner = ({
     return () => cancelAnimationFrame(raf);
   }, [busy]);
 
-  return <canvas aria-hidden="true" ref={canvasRef} width={size} height={size} className="pixel-spinner" />;
+  return <canvas aria-hidden="true" data-vd-role="spinner" ref={canvasRef} width={size} height={size} className="pixel-spinner" />;
 };

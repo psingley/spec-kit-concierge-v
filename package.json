@@ -18,7 +18,8 @@
     "e2e": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && vite build --config vite.renderer.config.ts && playwright test",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "vd:capture": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && vite build --config vite.renderer.config.ts && sh -c 'vite-node e2e/visual-diff/harness/capture-design.ts \"$@\" && vite-node e2e/visual-diff/harness/capture-shipped.ts \"$@\"' --",
+    "vd:generate-contract": "vite-node e2e/visual-diff/harness/contract/generateContract.ts",
+    "vd:capture": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && vite build --config vite.renderer.config.ts && sh -c 'vite-node e2e/visual-diff/harness/capture/captureDesign.ts \"$@\" && vite-node e2e/visual-diff/harness/capture/captureShipped.ts \"$@\"' --",
     "vd:diff": "vite-node e2e/visual-diff/harness/diff.ts",
     "vd:report": "vite-node e2e/visual-diff/harness/report.ts",
     "vd:loop": "npm run vd:capture && npm run vd:diff && npm run vd:report"

@@ -50,17 +50,17 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('full-window signin', async () => {
-    await expect(page.getByRole('heading', { name: /Connect your tools/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Spec-kit Concierge/i })).toBeVisible();
     await screenshot('full-window-signin');
   });
 
   test('surface SignInScreen', async () => {
-    await screenshot('surface-signin-screen', page.locator('.hero-card'));
+    await screenshot('surface-signin-screen', page.locator('.signin-card'));
   });
 
   test('full-window repo-browse', async () => {
-    await page.getByRole('button', { name: /GitHub CLI/i }).click();
-    await page.getByRole('button', { name: /Copilot CLI/i }).click();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
     await screenshot('full-window-repo-browse');
   });

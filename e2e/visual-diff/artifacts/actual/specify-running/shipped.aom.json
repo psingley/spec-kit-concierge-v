@@ -1,0 +1,198 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "collette-travel/hello-world-fixture",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "spec/draft-mpptsp50",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "Ready · Atlassian Run 11",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "default",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "Settings",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "tablist",
+              "name": "",
+              "children": [
+                {
+                  "role": "tab",
+                  "name": "specifycomplete",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "clarifypending",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "plannot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "tasksnot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "analyzenot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "reviewnot_available",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "heading",
+                              "name": "Specify",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "role": "group",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Preview",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Edit",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Pop out",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "heading",
+                                  "name": "Hello-world feature",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "role": "button",
+                          "name": "Continue",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "button",
+              "name": "Specify complete⌄",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

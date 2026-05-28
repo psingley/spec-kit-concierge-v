@@ -1,0 +1,11 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "status",
+      "name": "Idle - Copilot connected",
+      "children": []
+    }
+  ]
+}

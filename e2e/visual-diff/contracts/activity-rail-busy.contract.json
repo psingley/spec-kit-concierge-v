@@ -1,0 +1,20 @@
+// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+{
+  "name": "activity-rail-busy",
+  "designPath": "design/v3-fetch/project/activity.jsx",
+  "primaryRegion": {
+    "designSelector": ".activity",
+    "shippedSelector": ".activity"
+  },
+  "required": {
+    "texts": [],
+    "headings": [],
+    "controls": [],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": {
+    "maxDiffPercent": 20,
+    "warnDiffPercent": 20
+  }
+}

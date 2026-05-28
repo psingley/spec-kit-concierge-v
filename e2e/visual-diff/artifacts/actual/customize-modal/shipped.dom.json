@@ -1,0 +1,87 @@
+{
+  "tag": "div",
+  "role": "dialog",
+  "children": [
+    {
+      "tag": "h2",
+      "text": "Customize",
+      "children": []
+    },
+    {
+      "tag": "section",
+      "children": [
+        {
+          "tag": "span",
+          "text": "Accent",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "role": "img",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "section",
+      "children": [
+        {
+          "tag": "span",
+          "text": "Density",
+          "children": []
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "button",
+              "text": "comfortable",
+              "children": []
+            },
+            {
+              "tag": "button",
+              "text": "compact",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "fieldset",
+      "children": [
+        {
+          "tag": "legend",
+          "text": "Activity side",
+          "children": []
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "button",
+              "text": "right",
+              "children": []
+            },
+            {
+              "tag": "button",
+              "text": "hidden",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "button",
+      "role": "switch",
+      "text": "Require scroll to unlock",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "text": "Close",
+      "children": []
+    }
+  ]
+}
