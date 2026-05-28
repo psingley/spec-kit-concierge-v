@@ -1,36 +1,145 @@
 {
   "tag": "div",
   "role": "dialog",
+  "marker": "modal-veil",
   "children": [
     {
-      "tag": "h2",
-      "text": "About Concierge",
-      "children": []
-    },
-    {
-      "tag": "section",
+      "tag": "div",
       "children": [
         {
-          "tag": "p",
-          "text": "hello-world-fixture on spec/draft-mppu5xwk",
+          "tag": "svg",
+          "children": [
+            {
+              "tag": "path",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "h2",
+          "text": "Spec-kit Concierge",
           "children": []
         },
         {
-          "tag": "p",
-          "text": "Version 0.1.0 · 6c0622e",
-          "children": []
-        },
-        {
-          "tag": "p",
-          "text": "License: Internal",
-          "children": []
+          "tag": "button",
+          "text": "Dismiss",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
-      "tag": "button",
-      "text": "Close",
-      "children": []
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "text": "An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow, tuned for the Collette-travel concierge team.",
+          "children": []
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Version",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "2.0.0 (2026.05.20)",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Org",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "collette-travel",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Repo",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "concierge-api",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Branch",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "—",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Copilot model",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "claude-sonnet-4-5",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "spec-kit",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "v0.9.4",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Concierge team",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "#concierge-triage",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "button",
+          "text": "Documentation",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "button",
+          "text": "Close",
+          "children": []
+        }
+      ]
     }
   ]
 }

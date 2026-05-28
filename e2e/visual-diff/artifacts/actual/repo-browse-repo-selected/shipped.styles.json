@@ -2,7 +2,11 @@
   {
     "name": "session row card",
     "selector": ".session-row",
-    "found": false,
-    "styles": {}
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.245 0.006 280)",
+      "border-radius": "6px",
+      "padding": "12px 14px"
+    }
   }
 ]

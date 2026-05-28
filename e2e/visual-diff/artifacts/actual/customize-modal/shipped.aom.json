@@ -3,40 +3,18 @@
   "name": "",
   "children": [
     {
-      "role": "heading",
-      "name": "Customize",
-      "children": []
-    },
-    {
-      "role": "region",
+      "role": "generic",
       "name": "",
       "children": [
         {
-          "role": "img",
+          "role": "heading",
+          "name": "Customize",
+          "children": []
+        },
+        {
+          "role": "button",
           "name": "",
           "children": []
-        }
-      ]
-    },
-    {
-      "role": "region",
-      "name": "",
-      "children": [
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "comfortable",
-              "children": []
-            },
-            {
-              "role": "button",
-              "name": "compact",
-              "children": []
-            }
-          ]
         }
       ]
     },
@@ -49,28 +27,169 @@
           "name": "",
           "children": [
             {
-              "role": "button",
-              "name": "right",
-              "children": []
-            },
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Compact",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Regular",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Comfy",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
             {
-              "role": "button",
-              "name": "hidden",
-              "children": []
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Left",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Right",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Off",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "switch",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
       ]
-    },
-    {
-      "role": "switch",
-      "name": "Require scroll to unlock",
-      "children": []
-    },
-    {
-      "role": "button",
-      "name": "Close",
-      "children": []
     }
   ]
 }

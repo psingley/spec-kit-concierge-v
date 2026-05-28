@@ -5,101 +5,167 @@
     {
       "tag": "button",
       "role": "tab",
-      "text": "specifypending",
+      "text": "Specify",
       "children": [
         {
           "tag": "span",
-          "text": "specify",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Specify",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "pending",
           "children": []
         }
       ]
     },
     {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
       "tag": "button",
       "role": "tab",
-      "text": "clarifynot_available",
+      "text": "Clarify",
       "children": [
         {
           "tag": "span",
-          "text": "clarify",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Clarify",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "not_available",
           "children": []
         }
       ]
     },
     {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
       "tag": "button",
       "role": "tab",
-      "text": "plannot_available",
+      "text": "Plan",
       "children": [
         {
           "tag": "span",
-          "text": "plan",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Plan",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "not_available",
           "children": []
         }
       ]
     },
     {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
       "tag": "button",
       "role": "tab",
-      "text": "tasksnot_available",
+      "text": "Tasks",
       "children": [
         {
           "tag": "span",
-          "text": "tasks",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Tasks",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "not_available",
           "children": []
         }
       ]
     },
     {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
       "tag": "button",
       "role": "tab",
-      "text": "analyzenot_available",
+      "text": "Analyze",
       "children": [
         {
           "tag": "span",
-          "text": "analyze",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Analyze",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "not_available",
           "children": []
         }
       ]
     },
     {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
       "tag": "button",
       "role": "tab",
-      "text": "reviewnot_available",
+      "text": "Review",
       "children": [
         {
           "tag": "span",
-          "text": "review",
+          "marker": "step-orb",
           "children": []
         },
         {
-          "tag": "strong",
+          "tag": "span",
+          "text": "Review",
+          "children": []
+        },
+        {
+          "tag": "span",
           "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "stepper-track",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "stepper-track-fill",
           "children": []
         }
       ]

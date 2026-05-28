@@ -7,26 +7,175 @@
       "name": "",
       "children": [
         {
-          "role": "main",
+          "role": "generic",
           "name": "",
           "children": [
             {
-              "role": "region",
+              "role": "generic",
               "name": "",
               "children": [
                 {
-                  "role": "heading",
-                  "name": "Pick a repository",
-                  "children": []
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/pick repo",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "main",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "role": "generic",
                   "name": "",
                   "children": [
                     {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
                       "role": "button",
-                      "name": "collette-travel/hello-world-fixturemain - TypeScriptDeterministic Run 6 fixture",
+                      "name": "",
                       "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "heading",
+                      "name": "Pick a repository",
+                      "children": []
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "concierge-api4 sessions2h ago",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "concierge-web2 sessionsyesterday",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "concierge-mobile1 session3d ago",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "booking-engine1 session1w ago",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "itinerary-servicenewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "pricing-rulesnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "guest-profile-svcnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "supplier-syncnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "loyalty-ledgernewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "ops-dashboardnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "concierge-shared-uinewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "incident-botnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "voucher-redeemnewmain",
+                          "children": []
+                        },
+                        {
+                          "role": "button",
+                          "name": "data-warehouse-etlnewmain",
+                          "children": []
+                        }
+                      ]
                     }
                   ]
                 }

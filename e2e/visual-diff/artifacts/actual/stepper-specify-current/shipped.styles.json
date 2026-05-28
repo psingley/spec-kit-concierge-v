@@ -4,10 +4,10 @@
     "selector": ".step-tab[aria-selected=\"true\"]",
     "found": true,
     "styles": {
-      "width": "206px",
-      "height": "36.5px",
-      "border-radius": "0px",
-      "background-color": "rgba(0, 0, 0, 0)"
+      "width": "14px",
+      "height": "14px",
+      "border-radius": "50%",
+      "background-color": "rgb(233, 197, 79)"
     }
   },
   {
@@ -16,9 +16,9 @@
     "found": true,
     "styles": {
       "font-size": "13px",
-      "font-weight": "400",
-      "padding": "0px 12px",
-      "color": "rgb(129, 145, 152)"
+      "font-weight": "500",
+      "padding": "12px 18px 16px",
+      "color": "rgb(237, 235, 231)"
     }
   }
 ]

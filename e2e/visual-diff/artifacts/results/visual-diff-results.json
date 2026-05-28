@@ -1,49 +1,17 @@
 {
-  "runId": "2026-05-28T22:49:11.251Z",
+  "runId": "2026-05-28T22:53:14.344Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 21,
-    "fail": 3,
+    "pass": 22,
+    "fail": 2,
     "warn": 0,
-    "worstScreen": "activity-rail-busy"
+    "worstScreen": "activity-pill-idle"
   },
   "screens": [
-    {
-      "name": "activity-rail-busy",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'spec.md'",
-          "expected": "spec.md",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'git checkout -b'",
-          "expected": "git checkout -b",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'spec/draft-rwgq'",
-          "expected": "spec/draft-rwgq",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '16 lines'",
-          "expected": "16 lines",
-          "actual": "missing"
-        }
-      ],
-      "pixelResidual": 6.56,
-      "priorityScore": 100
-    },
     {
       "name": "activity-pill-idle",
       "status": "FAIL",
@@ -77,6 +45,13 @@
       "priorityScore": 82
     },
     {
+      "name": "activity-rail-busy",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.74,
+      "priorityScore": 7
+    },
+    {
       "name": "signin-fresh",
       "status": "PASS",
       "failures": [],
@@ -87,7 +62,7 @@
       "name": "signin-github-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6,
+      "pixelResidual": 5.99,
       "priorityScore": 6
     },
     {
@@ -115,7 +90,7 @@
       "name": "activity-rail-idle",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.34,
+      "pixelResidual": 6.35,
       "priorityScore": 6
     },
     {
@@ -129,28 +104,28 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.93,
+      "pixelResidual": 4.92,
       "priorityScore": 5
     },
     {
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.07,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
@@ -171,7 +146,7 @@
       "name": "specify-complete",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.66,
+      "pixelResidual": 4.65,
       "priorityScore": 5
     },
     {

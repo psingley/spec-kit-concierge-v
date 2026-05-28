@@ -49,7 +49,7 @@
             },
             {
               "tag": "div",
-              "text": "Sending prompt to Copilot",
+              "text": "Drafting spec.md from prompt...",
               "children": []
             }
           ]
@@ -334,7 +334,47 @@
             },
             {
               "tag": "span",
-              "text": "Awaiting prompt.",
+              "text": "git checkout -b spec/draft-rwgq",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:14",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "copilot specify",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:15",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Drafting spec.md from prompt...",
               "children": []
             }
           ]
@@ -349,7 +389,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14 lines",
+              "text": "16 lines",
               "children": []
             },
             {

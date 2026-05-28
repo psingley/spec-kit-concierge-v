@@ -1,87 +1,271 @@
 {
   "tag": "div",
   "role": "dialog",
+  "marker": "modal-veil",
   "children": [
     {
-      "tag": "h2",
-      "text": "Customize",
-      "children": []
-    },
-    {
-      "tag": "section",
+      "tag": "div",
       "children": [
         {
-          "tag": "span",
-          "text": "Accent",
-          "children": []
-        },
-        {
-          "tag": "span",
-          "role": "img",
-          "children": []
-        }
-      ]
-    },
-    {
-      "tag": "section",
-      "children": [
-        {
-          "tag": "span",
-          "text": "Density",
-          "children": []
-        },
-        {
-          "tag": "div",
+          "tag": "svg",
           "children": [
             {
-              "tag": "button",
-              "text": "comfortable",
+              "tag": "circle",
               "children": []
             },
             {
-              "tag": "button",
-              "text": "compact",
+              "tag": "path",
               "children": []
+            }
+          ]
+        },
+        {
+          "tag": "h2",
+          "text": "Customize",
+          "children": []
+        },
+        {
+          "tag": "button",
+          "text": "Close",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
             }
           ]
         }
       ]
     },
     {
-      "tag": "fieldset",
+      "tag": "div",
       "children": [
         {
-          "tag": "legend",
-          "text": "Activity side",
-          "children": []
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Theme",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Accent",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Accent #3a7e9a",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Accent #c4302b",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Accent #c89b4a",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Accent #7a3a8a",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Accent #3b82f6",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Accent #ffffff",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Density",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Compact",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Regular",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Comfy",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "tag": "div",
           "children": [
             {
-              "tag": "button",
-              "text": "right",
+              "tag": "div",
+              "text": "Layout",
               "children": []
             },
             {
-              "tag": "button",
-              "text": "hidden",
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Activity stream",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Left",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Right",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Off",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Flow",
               "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Require scroll to unlock Clarify",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "role": "switch",
+                          "text": "Require scroll to unlock Clarify",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
       ]
-    },
-    {
-      "tag": "button",
-      "role": "switch",
-      "text": "Require scroll to unlock",
-      "children": []
-    },
-    {
-      "tag": "button",
-      "text": "Close",
-      "children": []
     }
   ]
 }

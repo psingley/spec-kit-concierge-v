@@ -2,7 +2,12 @@
   {
     "name": "repo card action",
     "selector": ".repo-card",
-    "found": false,
-    "styles": {}
+    "found": true,
+    "styles": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "6px",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "padding": "11px 12px"
+    }
   }
 ]

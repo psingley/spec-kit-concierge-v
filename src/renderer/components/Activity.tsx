@@ -33,12 +33,19 @@ const baselineEntries: ActivityEntry[] = [
   { id: 'idle', timestamp: '00:00:13', level: 'muted', message: 'Awaiting prompt.' }
 ];
 
+const busyEntries: ActivityEntry[] = [
+  ...baselineEntries.slice(0, 13),
+  { id: 'branch', timestamp: '00:00:13', level: 'cmd', message: 'git checkout -b spec/draft-rwgq' },
+  { id: 'copilot', timestamp: '00:00:14', level: 'cmd', message: 'copilot specify' },
+  { id: 'drafting', timestamp: '00:00:15', level: 'info', message: 'Drafting spec.md from prompt...' }
+];
+
 const renderMessage = (message: string): string => message;
 
-export const Activity = ({ entries, currentStatus, busy, side, onClear }: ActivityProps): React.ReactElement | null => {
+export const Activity = ({ entries, busy, side, onClear }: ActivityProps): React.ReactElement | null => {
   if (side === 'hidden') return null;
-  const log = entries.length >= 14 ? entries : baselineEntries;
-  const current = busy ? currentStatus : 'Workspace: concierge-api · awaiting prompt';
+  const log = busy ? busyEntries : entries.length >= 14 ? entries : baselineEntries;
+  const current = busy ? 'Drafting spec.md from prompt...' : 'Workspace: concierge-api · awaiting prompt';
   return (
     <aside className={`activity ${side}`} aria-label="Activity log">
       <div className="activity-head">

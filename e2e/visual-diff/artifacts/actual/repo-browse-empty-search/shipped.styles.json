@@ -6,7 +6,7 @@
     "styles": {
       "background-color": "rgb(12, 16, 19)",
       "border-radius": "0px",
-      "padding": "30px"
+      "padding": "32px 24px"
     }
   }
 ]

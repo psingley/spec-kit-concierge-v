@@ -5,9 +5,9 @@
     "found": true,
     "styles": {
       "background-color": "rgb(17, 23, 27)",
-      "border-radius": "14px",
-      "box-shadow": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px",
-      "padding": "18px"
+      "border-radius": "10px",
+      "box-shadow": "rgba(0, 0, 0, 0.68) 0px 18px 44px -18px, rgb(42, 55, 61) 0px 0px 0px 1px",
+      "padding": "0px"
     }
   }
 ]

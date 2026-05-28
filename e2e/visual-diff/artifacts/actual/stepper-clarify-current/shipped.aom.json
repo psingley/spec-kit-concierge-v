@@ -4,32 +4,32 @@
   "children": [
     {
       "role": "tab",
-      "name": "specifypending",
+      "name": "Specifypending",
       "children": []
     },
     {
       "role": "tab",
-      "name": "clarifynot_available",
+      "name": "Clarifynot_available",
       "children": []
     },
     {
       "role": "tab",
-      "name": "plannot_available",
+      "name": "Plannot_available",
       "children": []
     },
     {
       "role": "tab",
-      "name": "tasksnot_available",
+      "name": "Tasksnot_available",
       "children": []
     },
     {
       "role": "tab",
-      "name": "analyzenot_available",
+      "name": "Analyzenot_available",
       "children": []
     },
     {
       "role": "tab",
-      "name": "reviewnot_available",
+      "name": "Reviewnot_available",
       "children": []
     }
   ]

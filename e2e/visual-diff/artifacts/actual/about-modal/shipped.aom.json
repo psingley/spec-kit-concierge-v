@@ -3,19 +3,36 @@
   "name": "",
   "children": [
     {
-      "role": "heading",
-      "name": "About Concierge",
-      "children": []
-    },
-    {
-      "role": "region",
+      "role": "generic",
       "name": "",
-      "children": []
+      "children": [
+        {
+          "role": "heading",
+          "name": "Spec-kit Concierge",
+          "children": []
+        },
+        {
+          "role": "button",
+          "name": "",
+          "children": []
+        }
+      ]
     },
     {
-      "role": "button",
-      "name": "Close",
-      "children": []
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "button",
+          "name": "Documentation",
+          "children": []
+        },
+        {
+          "role": "button",
+          "name": "Close",
+          "children": []
+        }
+      ]
     }
   ]
 }
