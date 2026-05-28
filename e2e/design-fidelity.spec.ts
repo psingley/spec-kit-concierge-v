@@ -135,7 +135,9 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('surface Activity after completion', async () => {
-    await page.locator('.activity-pill').click();
+    if (!(await page.locator('.activity').isVisible())) {
+      await page.locator('.activity-pill').click();
+    }
     await screenshot('surface-activity-complete', page.locator('.activity'));
   });
 
