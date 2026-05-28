@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "name": "titlebar repo chip",
+    "selector": ".tb-chip.repo",
+    "found": false,
+    "styles": {}
+  },
+  {
+    "name": "titlebar gear icon button",
+    "selector": ".titlebar .icon-btn",
+    "found": true,
+    "styles": {
+      "width": "31px",
+      "height": "26px",
+      "border-radius": "6px",
+      "padding": "0px 8px"
+    }
+  }
+]

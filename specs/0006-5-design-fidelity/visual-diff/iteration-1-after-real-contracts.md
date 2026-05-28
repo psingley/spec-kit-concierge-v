@@ -1,8 +1,8 @@
-# Final Visual Diff Report
+# Visual Diff Iteration 1 After Real Contracts
 
 Run command: `npm run vd:loop`
 Result: 2/24 PASS, 22 FAIL, 0 WARN.
-Interpretation: the previous 24/24 report was invalid because most contracts were empty or marker-only; this replacement report is contract-backed and intentionally shows the current shipped gaps. The repaired contracts now assert visible text, controls, visual markers, style samples, and pixel residuals instead of passing empty screens. No shipped React/CSS fixes were made in this pass.
+Interpretation: this is an honest failure report. The repaired contracts now assert visible text, controls, visual markers, style samples, and pixel residuals instead of passing empty screens. No shipped React/CSS fixes were made in this pass.
 
 | Screen | Status | Residual | Failure count |
 | --- | --- | ---: | ---: |

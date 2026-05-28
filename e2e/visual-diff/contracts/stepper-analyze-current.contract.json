@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/app.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "stepper-analyze-current",
   "designPath": "design/v3-fetch/project/app.jsx",
@@ -7,14 +8,108 @@
     "shippedSelector": ".stepper"
   },
   "required": {
-    "texts": [],
+    "texts": [
+      {
+        "value": "Specify"
+      },
+      {
+        "value": "Clarify"
+      },
+      {
+        "value": "Plan"
+      },
+      {
+        "value": "Tasks"
+      },
+      {
+        "value": "Analyze"
+      },
+      {
+        "value": "Review"
+      }
+    ],
     "headings": [],
-    "controls": [],
-    "visualMarkers": []
+    "controls": [
+      {
+        "role": "button",
+        "name": "Specify",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Clarify",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Plan",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Tasks",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Analyze",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Review",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "stepper-track",
+        "selector": "[data-vd-role=\"stepper-track\"]",
+        "designSelector": ".stepper-track"
+      },
+      {
+        "name": "stepper-track-fill",
+        "selector": "[data-vd-role=\"stepper-track-fill\"]",
+        "designSelector": ".stepper-track-fill"
+      },
+      {
+        "name": "step-orb",
+        "selector": "[data-vd-role=\"step-orb\"]",
+        "designSelector": ".step-orb"
+      },
+      {
+        "name": "step-separator",
+        "selector": "[data-vd-role=\"step-separator\"]",
+        "designSelector": ".step-sep"
+      }
+    ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "stepper current orb",
+      "designSelector": ".step.is-current .step-orb",
+      "shippedSelector": ".step-tab[aria-selected=\"true\"]",
+      "properties": [
+        "width",
+        "height",
+        "border-radius",
+        "background-color"
+      ]
+    },
+    {
+      "name": "stepper tab label",
+      "designSelector": ".step",
+      "shippedSelector": ".step-tab",
+      "properties": [
+        "font-size",
+        "font-weight",
+        "padding",
+        "color"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

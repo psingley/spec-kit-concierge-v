@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/customize-modal.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "customize-modal",
   "designPath": "design/v3-fetch/project/customize-modal.jsx",
@@ -7,14 +8,121 @@
     "shippedSelector": ".modal"
   },
   "required": {
-    "texts": [],
-    "headings": [],
-    "controls": [],
-    "visualMarkers": []
+    "texts": [
+      {
+        "value": "Customize"
+      },
+      {
+        "value": "Theme"
+      },
+      {
+        "value": "Accent"
+      },
+      {
+        "value": "Density"
+      },
+      {
+        "value": "Compact"
+      },
+      {
+        "value": "Regular"
+      },
+      {
+        "value": "Comfy"
+      },
+      {
+        "value": "Layout"
+      },
+      {
+        "value": "Activity stream"
+      },
+      {
+        "value": "Left"
+      },
+      {
+        "value": "Right"
+      },
+      {
+        "value": "Off"
+      },
+      {
+        "value": "Flow"
+      },
+      {
+        "value": "Require scroll to unlock Clarify"
+      }
+    ],
+    "headings": [
+      {
+        "level": 2,
+        "text": "Customize"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Compact",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Regular",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Comfy",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Left",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Right",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Off",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "modal-veil",
+        "selector": "[data-vd-role=\"modal-veil\"]",
+        "designSelector": ".modal-backdrop"
+      }
+    ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "customize modal panel",
+      "designSelector": ".modal",
+      "shippedSelector": ".modal",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "box-shadow",
+        "padding"
+      ]
+    },
+    {
+      "name": "customize segmented control",
+      "designSelector": ".segmented button",
+      "shippedSelector": ".segmented button",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

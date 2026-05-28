@@ -1,20 +1,188 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/signin.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "signin-all-ok",
   "designPath": "design/v3-fetch/project/signin.jsx",
   "primaryRegion": {
-    "designSelector": ".signin-card",
-    "shippedSelector": ".signin-card"
+    "designSelector": "body",
+    "shippedSelector": "body"
   },
   "required": {
-    "texts": [],
-    "headings": [],
-    "controls": [],
-    "visualMarkers": []
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/pick repo"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "pick repo"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "Pick a repository"
+      },
+      {
+        "value": "Choose a Collette-travel repo to scope spec-kit to."
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "4 sessions"
+      },
+      {
+        "value": "2h ago"
+      },
+      {
+        "value": "concierge-web"
+      },
+      {
+        "value": "2 sessions"
+      },
+      {
+        "value": "yesterday"
+      },
+      {
+        "value": "concierge-mobile"
+      },
+      {
+        "value": "1 session"
+      },
+      {
+        "value": "3d ago"
+      },
+      {
+        "value": "booking-engine"
+      },
+      {
+        "value": "1w ago"
+      },
+      {
+        "value": "All repos"
+      },
+      {
+        "value": "itinerary-service"
+      },
+      {
+        "value": "new"
+      },
+      {
+        "value": "main"
+      },
+      {
+        "value": "pricing-rules"
+      },
+      {
+        "value": "guest-profile-svc"
+      },
+      {
+        "value": "supplier-sync"
+      },
+      {
+        "value": "loyalty-ledger"
+      },
+      {
+        "value": "ops-dashboard"
+      },
+      {
+        "value": "concierge-shared-ui"
+      },
+      {
+        "value": "incident-bot"
+      },
+      {
+        "value": "voucher-redeem"
+      },
+      {
+        "value": "data-warehouse-etl"
+      }
+    ],
+    "headings": [
+      {
+        "level": 1,
+        "text": "Pick a repository"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "a.kim",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "collette-travel/pick repo",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Claude Sonnet 4.5default",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "concierge-api4 sessions2h ago",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "concierge-web2 sessionsyesterday",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "concierge-mobile1 session3d ago",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "booking-engine1 session1w ago",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "itinerary-servicenewmain",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      }
+    ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "repo card action",
+      "designSelector": ".repo-card",
+      "shippedSelector": ".repo-card",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

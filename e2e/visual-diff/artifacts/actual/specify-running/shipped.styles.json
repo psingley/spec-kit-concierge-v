@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "spec loading panel",
+    "selector": ".spec-loading",
+    "found": false,
+    "styles": {}
+  }
+]

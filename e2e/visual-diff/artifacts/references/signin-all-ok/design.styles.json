@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "repo card action",
+    "selector": ".repo-card",
+    "found": false,
+    "styles": {}
+  }
+]

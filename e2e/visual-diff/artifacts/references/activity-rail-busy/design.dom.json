@@ -100,7 +100,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:12",
+              "text": "14:37:16",
               "children": []
             },
             {
@@ -125,7 +125,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:12",
+              "text": "14:37:16",
               "children": []
             },
             {
@@ -145,7 +145,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:16",
               "children": []
             },
             {
@@ -170,7 +170,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:16",
               "children": []
             },
             {
@@ -195,7 +195,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -220,7 +220,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -245,7 +245,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -270,7 +270,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -300,7 +300,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -325,7 +325,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -355,7 +355,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -380,7 +380,27 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Fetching collette-travel org repos…",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -398,7 +418,7 @@
                 },
                 {
                   "tag": "em",
-                  "text": "spec/draft-rwgq",
+                  "text": "spec/draft-4uc4",
                   "children": []
                 }
               ]
@@ -410,7 +430,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {
@@ -435,27 +455,7 @@
           "children": [
             {
               "tag": "span",
-              "text": "14:27:13",
-              "children": []
-            },
-            {
-              "tag": "span",
-              "text": "→",
-              "children": []
-            },
-            {
-              "tag": "span",
-              "text": "Fetching collette-travel org repos…",
-              "children": []
-            }
-          ]
-        },
-        {
-          "tag": "div",
-          "children": [
-            {
-              "tag": "span",
-              "text": "14:27:13",
+              "text": "14:37:17",
               "children": []
             },
             {

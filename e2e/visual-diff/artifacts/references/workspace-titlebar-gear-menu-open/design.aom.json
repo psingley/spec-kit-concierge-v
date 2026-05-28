@@ -11,92 +11,156 @@
           "name": "",
           "children": [
             {
-              "role": "button",
-              "name": "a.kim",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "collette-travel/concierge-api",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "main",
-              "children": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "Claude Sonnet 4.5default",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
+              "role": "generic",
               "name": "",
-              "children": []
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/concierge-api",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "main",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        },
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Customize",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Report a bug",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Export activity log14 lines",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "About",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
             },
             {
               "role": "generic",
               "name": "",
               "children": [
                 {
-                  "role": "button",
-                  "name": "Customize",
-                  "children": []
-                },
-                {
-                  "role": "button",
-                  "name": "Report a bug",
-                  "children": []
-                },
-                {
-                  "role": "button",
-                  "name": "Export activity log14 lines",
-                  "children": []
-                },
-                {
-                  "role": "button",
-                  "name": "About",
-                  "children": []
+                  "role": "main",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "generic",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "button",
+                                      "name": "Clear",
+                                      "children": []
+                                    },
+                                    {
+                                      "role": "button",
+                                      "name": "Begin specify",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             }
           ]
-        },
-        {
-          "role": "button",
-          "name": "",
-          "children": []
         }
       ]
     }

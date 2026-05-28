@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/activity-pill.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "activity-pill-busy",
   "designPath": "design/v3-fetch/project/activity-pill.jsx",
@@ -7,20 +8,52 @@
     "shippedSelector": ".activity-pill"
   },
   "required": {
-    "texts": [],
+    "texts": [
+      {
+        "value": "Build a hello-world feature"
+      }
+    ],
     "headings": [],
-    "controls": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Build a hello-world feature",
+        "count": 1
+      }
+    ],
     "visualMarkers": [
+      {
+        "name": "activity-terminal-icon",
+        "selector": "[data-vd-role=\"activity-terminal-icon\"]",
+        "designSelector": ".ap-term"
+      },
+      {
+        "name": "activity-pill-divider",
+        "selector": "[data-vd-role=\"activity-pill-divider\"]",
+        "designSelector": ".ap-divider"
+      },
       {
         "name": "spinner",
         "selector": "[data-vd-role=\"spinner\"]",
-        "designSelector": ".spinner"
+        "designSelector": ".ap-spinner"
       }
     ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "activity pill busy",
+      "designSelector": ".activity-pill.is-busy",
+      "shippedSelector": ".activity-pill",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

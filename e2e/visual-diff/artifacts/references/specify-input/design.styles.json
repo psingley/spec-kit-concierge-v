@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "name": "specify prompt input",
+    "selector": ".prompt-input",
+    "found": true,
+    "styles": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "border-top-color": "oklch(0.94 0.005 80)",
+      "padding": "16px 18px"
+    }
+  },
+  {
+    "name": "begin specify button",
+    "selector": ".spec-input-actions .btn.primary",
+    "found": false,
+    "styles": {}
+  }
+]

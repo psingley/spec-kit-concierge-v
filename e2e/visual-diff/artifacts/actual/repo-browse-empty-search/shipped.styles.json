@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "name": "repo browser empty state",
+    "selector": ".repo-browser",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(12, 16, 19)",
+      "border-radius": "0px",
+      "padding": "30px"
+    }
+  }
+]

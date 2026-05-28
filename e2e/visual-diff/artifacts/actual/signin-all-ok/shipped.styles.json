@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "name": "repo card action",
+    "selector": ".repo-card",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(23, 31, 36)",
+      "border-radius": "6px",
+      "border-top-color": "rgb(42, 55, 61)",
+      "padding": "10px 12px"
+    }
+  }
+]

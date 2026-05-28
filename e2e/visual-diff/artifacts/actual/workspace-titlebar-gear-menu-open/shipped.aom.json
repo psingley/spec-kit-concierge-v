@@ -7,71 +7,164 @@
       "name": "",
       "children": [
         {
-          "role": "button",
-          "name": "collette-travel/hello-world-fixture",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "spec/draft-mpptsefn",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "Ready · Atlassian Run 11",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "default",
-          "children": []
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "button",
-          "name": "Settings",
-          "children": []
-        },
-        {
-          "role": "menu",
+          "role": "generic",
           "name": "",
           "children": [
             {
-              "role": "menuitem",
-              "name": "Customize",
-              "children": []
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "collette-travel/hello-world-fixture",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "spec/draft-mppu5d2y",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "Ready · Atlassian Run 11",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "default",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "button",
+                      "name": "Settings",
+                      "children": []
+                    },
+                    {
+                      "role": "menu",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "menuitem",
+                          "name": "Customize",
+                          "children": []
+                        },
+                        {
+                          "role": "menuitem",
+                          "name": "About",
+                          "children": []
+                        },
+                        {
+                          "role": "menuitem",
+                          "name": "Request access",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "role": "menuitem",
-              "name": "About",
-              "children": []
+              "role": "tablist",
+              "name": "",
+              "children": [
+                {
+                  "role": "tab",
+                  "name": "specifypending",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "clarifynot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "plannot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "tasksnot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "analyzenot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "reviewnot_available",
+                  "children": []
+                }
+              ]
             },
             {
-              "role": "menuitem",
-              "name": "Request access",
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "heading",
+                              "name": "Specify",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "Begin Specify",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "button",
+              "name": "Copilot connected⌄",
               "children": []
             }
           ]

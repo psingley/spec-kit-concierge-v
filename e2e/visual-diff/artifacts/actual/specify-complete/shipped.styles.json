@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "markdown panel",
+    "selector": ".md-panel",
+    "found": false,
+    "styles": {}
+  }
+]

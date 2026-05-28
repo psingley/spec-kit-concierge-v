@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "activity busy status",
+    "selector": ".activity-status",
+    "found": false,
+    "styles": {}
+  }
+]

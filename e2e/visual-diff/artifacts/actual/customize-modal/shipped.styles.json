@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "name": "customize modal panel",
+    "selector": ".modal",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "14px",
+      "box-shadow": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px",
+      "padding": "18px"
+    }
+  },
+  {
+    "name": "customize segmented control",
+    "selector": ".segmented button",
+    "found": false,
+    "styles": {}
+  }
+]

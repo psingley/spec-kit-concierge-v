@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/steps.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "specify-complete",
   "designPath": "design/v3-fetch/project/steps.jsx",
@@ -7,20 +8,170 @@
     "shippedSelector": "body"
   },
   "required": {
-    "texts": [],
-    "headings": [],
-    "controls": [],
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/concierge-api"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "spec/draft-rr6q"
+      },
+      {
+        "value": "Preview"
+      },
+      {
+        "value": "Edit"
+      },
+      {
+        "value": "spec.md · 63 lines"
+      },
+      {
+        "value": "Self-serve flight-change for loyalty guests"
+      },
+      {
+        "value": "Problem"
+      },
+      {
+        "value": "Goals"
+      },
+      {
+        "value": "Non-goals"
+      },
+      {
+        "value": "User stories"
+      },
+      {
+        "value": "Acceptance criteria"
+      },
+      {
+        "value": "Dependencies"
+      },
+      {
+        "value": "Out of scope clarifications needed"
+      },
+      {
+        "value": "Open risks"
+      },
+      {
+        "value": "Notes"
+      },
+      {
+        "value": "Scroll to the end of the spec to unlock the Clarify step."
+      },
+      {
+        "value": "Jump to end"
+      },
+      {
+        "value": "Clarify"
+      }
+    ],
+    "headings": [
+      {
+        "level": 1,
+        "text": "Self-serve flight-change for loyalty guests"
+      },
+      {
+        "level": 2,
+        "text": "Problem"
+      },
+      {
+        "level": 2,
+        "text": "Goals"
+      },
+      {
+        "level": 2,
+        "text": "Non-goals"
+      },
+      {
+        "level": 2,
+        "text": "User stories"
+      },
+      {
+        "level": 2,
+        "text": "Acceptance criteria"
+      },
+      {
+        "level": 2,
+        "text": "Dependencies"
+      },
+      {
+        "level": 2,
+        "text": "Out of scope clarifications needed"
+      },
+      {
+        "level": 2,
+        "text": "Open risks"
+      },
+      {
+        "level": 2,
+        "text": "Notes"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Preview",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Edit",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Jump to end",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Clarify",
+        "count": 1
+      }
+    ],
     "visualMarkers": [
       {
-        "name": "spinner",
-        "selector": "[data-vd-role=\"spinner\"]",
-        "designSelector": ".spinner"
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
       }
     ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "markdown panel",
+      "designSelector": ".md-panel",
+      "shippedSelector": ".md-panel",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

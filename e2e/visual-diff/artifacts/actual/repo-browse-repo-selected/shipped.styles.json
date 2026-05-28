@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "session row card",
+    "selector": ".session-row",
+    "found": false,
+    "styles": {}
+  }
+]

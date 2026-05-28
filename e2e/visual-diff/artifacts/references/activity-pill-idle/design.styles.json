@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "name": "activity pill",
+    "selector": ".activity-pill",
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.2 0.005 280)",
+      "border-radius": "999px",
+      "border-top-color": "oklch(0.285 0.006 280)",
+      "padding": "0px"
+    }
+  }
+]

@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/request-modal.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "request-modal",
   "designPath": "design/v3-fetch/project/request-modal.jsx",
@@ -7,14 +8,134 @@
     "shippedSelector": ".modal"
   },
   "required": {
-    "texts": [],
-    "headings": [],
-    "controls": [],
-    "visualMarkers": []
+    "texts": [
+      {
+        "value": "Report a bug or request a feature"
+      },
+      {
+        "value": "Request type"
+      },
+      {
+        "value": "Feature"
+      },
+      {
+        "value": "Bug"
+      },
+      {
+        "value": "Title"
+      },
+      {
+        "value": "Details"
+      },
+      {
+        "value": "Severity"
+      },
+      {
+        "value": "Low"
+      },
+      {
+        "value": "Normal"
+      },
+      {
+        "value": "High"
+      },
+      {
+        "value": "Blocker"
+      },
+      {
+        "value": "Attach context (auto)"
+      },
+      {
+        "value": "#concierge-triage"
+      },
+      {
+        "value": "Cancel"
+      },
+      {
+        "value": "Send request"
+      }
+    ],
+    "headings": [
+      {
+        "level": 2,
+        "text": "Report a bug or request a feature"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Feature",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Bug",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Low",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Normal",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "High",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Blocker",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Cancel",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Send request",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "modal-veil",
+        "selector": "[data-vd-role=\"modal-veil\"]",
+        "designSelector": ".modal-backdrop"
+      }
+    ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "request modal panel",
+      "designSelector": ".modal",
+      "shippedSelector": ".modal",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "box-shadow",
+        "padding"
+      ]
+    },
+    {
+      "name": "request primary action",
+      "designSelector": ".modal .btn.primary",
+      "shippedSelector": ".modal .btn.primary",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

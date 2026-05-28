@@ -1,4 +1,5 @@
-// Reviewed initial Run 6 contract. Required entries are intentional parity gates; aggregate JSX extraction noise removed.
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/steps.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
 {
   "name": "specify-input",
   "designPath": "design/v3-fetch/project/steps.jsx",
@@ -7,20 +8,116 @@
     "shippedSelector": "body"
   },
   "required": {
-    "texts": [],
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/concierge-api"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "main"
+      },
+      {
+        "value": "Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook"
+      },
+      {
+        "value": "Clear"
+      },
+      {
+        "value": "Begin specify"
+      }
+    ],
     "headings": [],
-    "controls": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "a.kim",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "collette-travel/concierge-api",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "main",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Claude Sonnet 4.5default",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Clear",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Begin specify",
+        "count": 1
+      }
+    ],
     "visualMarkers": [
       {
-        "name": "spinner",
-        "selector": "[data-vd-role=\"spinner\"]",
-        "designSelector": ".spinner"
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      },
+      {
+        "name": "begin-sparkle",
+        "selector": "[data-vd-role=\"begin-sparkle\"]",
+        "designSelector": ".spec-input-actions svg"
       }
     ]
   },
-  "styleSamples": [],
+  "styleSamples": [
+    {
+      "name": "specify prompt input",
+      "designSelector": ".prompt-input",
+      "shippedSelector": ".prompt-input",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    },
+    {
+      "name": "begin specify button",
+      "designSelector": ".spec-input-actions .btn.primary",
+      "shippedSelector": ".spec-input-actions .btn.primary",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding",
+        "font-size"
+      ]
+    }
+  ],
   "pixel": {
-    "maxDiffPercent": 20,
-    "warnDiffPercent": 20
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
   }
 }

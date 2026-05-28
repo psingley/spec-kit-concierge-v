@@ -11,22 +11,6 @@
           "name": "",
           "children": [
             {
-              "role": "button",
-              "name": "a.kim",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "collette-travel/concierge-api",
-              "children": []
-            },
-            {
               "role": "generic",
               "name": "",
               "children": [
@@ -35,124 +19,204 @@
                   "name": "",
                   "children": [
                     {
-                      "role": "button",
-                      "name": "concierge-api42h ago",
-                      "children": []
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/concierge-api",
+                          "children": []
+                        },
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "button",
+                                  "name": "concierge-api42h ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-web2yesterday",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-mobile13d ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "booking-engine11w ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "itinerary-servicemain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "pricing-rulesmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "guest-profile-svcmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "supplier-syncmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "loyalty-ledgermain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "ops-dashboardmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-shared-uimain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "incident-botmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "voucher-redeemmain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "data-warehouse-etlmain",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "main",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
                     },
                     {
                       "role": "button",
-                      "name": "concierge-web2yesterday",
+                      "name": "",
                       "children": []
-                    },
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "main",
+                  "name": "",
+                  "children": [
                     {
-                      "role": "button",
-                      "name": "concierge-mobile13d ago",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "booking-engine11w ago",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "itinerary-servicemain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "pricing-rulesmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "guest-profile-svcmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "supplier-syncmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "loyalty-ledgermain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "ops-dashboardmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "concierge-shared-uimain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "incident-botmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "voucher-redeemmain",
-                      "children": []
-                    },
-                    {
-                      "role": "button",
-                      "name": "data-warehouse-etlmain",
-                      "children": []
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "generic",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "button",
+                                      "name": "Clear",
+                                      "children": []
+                                    },
+                                    {
+                                      "role": "button",
+                                      "name": "Begin specify",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
                     }
                   ]
                 }
               ]
             }
           ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "main",
-              "children": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "role": "generic",
-      "name": "",
-      "children": [
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "Claude Sonnet 4.5default",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "generic",
-          "name": "",
-          "children": [
-            {
-              "role": "button",
-              "name": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "role": "button",
-          "name": "",
-          "children": []
         }
       ]
     }

@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "name": "repo browser empty state",
+    "selector": ".repo-browser",
+    "found": false,
+    "styles": {}
+  }
+]
