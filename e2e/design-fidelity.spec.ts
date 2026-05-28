@@ -19,6 +19,15 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
     expect(results.violations.filter((violation) => violation.impact === 'serious' || violation.impact === 'critical')).toEqual([]);
   };
 
+  const ensureActivityVisible = async (): Promise<Locator> => {
+    const activity = page.locator('.activity');
+    if (!(await activity.isVisible())) {
+      await page.locator('.activity-pill').click();
+    }
+    await expect(activity).toBeVisible();
+    return activity;
+  };
+
   test.beforeAll(async () => {
     const fixture = await createRun6BoundaryFixture();
     repoName = fixture.repoName;
@@ -94,8 +103,7 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('surface Activity', async () => {
-    await page.locator('.activity-pill').click();
-    await screenshot('surface-activity', page.locator('.activity'));
+    await screenshot('surface-activity', await ensureActivityVisible());
   });
 
   test('surface CustomizeModal', async () => {
@@ -135,10 +143,7 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('surface Activity after completion', async () => {
-    if (!(await page.locator('.activity').isVisible())) {
-      await page.locator('.activity-pill').click();
-    }
-    await screenshot('surface-activity-complete', page.locator('.activity'));
+    await screenshot('surface-activity-complete', await ensureActivityVisible());
   });
 
   test('motion variant current-step pulse', async () => {

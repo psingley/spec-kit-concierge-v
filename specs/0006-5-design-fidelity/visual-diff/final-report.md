@@ -9,10 +9,11 @@ The visual-diff harness has been added, but capture cannot run in this sandboxed
 | Task | Status | Evidence |
 | --- | --- | --- |
 | Task 0 brittle e2e fix | APPLIED | `e2e/design-fidelity.spec.ts` now makes Activity visibility explicit before the completion screenshot. |
-| Main comparison | VERIFIED BLOCK | An archived `main` copy in `/private/tmp/spec-kit-concierge-v-main` has the same Electron launch failure. |
+| Main comparison | VERIFIED BLOCK | An archived `main` copy in `/private/tmp/spec-kit-concierge-v-main-check` has the same Electron launch failure. |
 | Task 1 harness | APPLIED | `e2e/visual-diff/harness/` contains manifest, design capture, shipped capture, diff, report, and shared paths. |
 | Dev deps | APPLIED | `pixelmatch`, `pngjs`, and `@types/pngjs` added as dev dependencies only. |
-| Static verification | GREEN | `npm run typecheck`, `npm run lint`, and `npm test` pass; unit test count is 777. |
+| Static verification | GREEN | `npm run typecheck`, `npm run lint`, and `npm test` pass; unit test count is 778. |
+| Single-screen capture filtering | APPLIED | `npm run vd:capture -- <screen>` forwards the screen filter to both design and shipped capture commands. |
 
 ## Capture Blocker
 
