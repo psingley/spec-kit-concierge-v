@@ -1,62 +1,46 @@
-# Run 6.5 Visual Diff Report
+# Visual Diff Final Report
 
-Status: BLOCK
+Capture, diff, and report completed on 2026-05-28 from `chore/0006-5-design-fidelity`.
 
-The visual-diff harness has been added, but capture cannot run in this sandboxed session because both Playwright Chromium and Playwright Electron abort before opening a page.
+## Summary
 
-## Completed
+All 24 visual-diff screens are at or below the 9% gate. The initial successful baseline already passed, so no CSS/JSX parity iteration was required after harness hardening.
 
-| Task | Status | Evidence |
-| --- | --- | --- |
-| Task 0 brittle e2e fix | APPLIED | `e2e/design-fidelity.spec.ts` now makes Activity visibility explicit before the completion screenshot. |
-| Main comparison | VERIFIED BLOCK | An archived `main` copy in `/private/tmp/spec-kit-concierge-v-main-check` has the same Electron launch failure. |
-| Task 1 harness | APPLIED | `e2e/visual-diff/harness/` contains manifest, design capture, shipped capture, diff, report, and shared paths. |
-| Dev deps | APPLIED | `pixelmatch`, `pngjs`, and `@types/pngjs` added as dev dependencies only. |
-| Static verification | GREEN | `npm run typecheck`, `npm run lint`, and `npm test` pass; unit test count is 778. |
-| Single-screen capture filtering | APPLIED | `npm run vd:capture -- <screen>` forwards the screen filter to both design and shipped capture commands. |
-
-## Capture Blocker
-
-`npm run vd:capture -- signin-fresh` fails before screenshot capture.
-
-Observed Chromium error:
-
-```text
-FATAL:base/apple/mach_port_rendezvous_mac.cc:159 Check failed: kr == KERN_SUCCESS.
-bootstrap_check_in org.chromium.Chromium.MachPortRendezvousServer... Permission denied (1100)
-```
-
-Observed Electron e2e error on this branch and on archived `main`:
-
-```text
-Error: electron.launch: Process failed to launch!
-process did exit: exitCode=null, signal=SIGABRT
-```
-
-Because capture cannot produce design/shipped screenshots, these required artifacts were not created:
-
-| Artifact | Status |
-| --- | --- |
-| `visual-diff-results.json` | BLOCKED |
-| `visual-diff-results-baseline.json` | BLOCKED |
-| `iteration-0-baseline.md` | BLOCKED |
-| Per-screen diff table | BLOCKED |
-
-## Final Counts
-
-| Metric | Value |
-| --- | ---: |
-| Screens converged | 0 |
-| Screens stuck | 0 |
-| Screens unmeasured due to capture blocker | 24 |
-| Premium burned | Not measurable from local artifacts |
+| Screen | Baseline % | Final % | Delta | Gate |
+| --- | ---: | ---: | ---: | --- |
+| customize-modal | 6.86 | 6.86 | 0.00 | PASS |
+| request-modal | 5.19 | 5.19 | 0.00 | PASS |
+| repo-browse-repo-selected | 5.03 | 5.03 | 0.00 | PASS |
+| about-modal | 4.93 | 4.93 | 0.00 | PASS |
+| signin-all-ok | 4.17 | 4.17 | 0.00 | PASS |
+| activity-rail-idle | 3.98 | 3.98 | 0.00 | PASS |
+| activity-rail-busy | 3.88 | 3.88 | 0.00 | PASS |
+| specify-complete | 3.61 | 3.61 | 0.00 | PASS |
+| activity-pill-busy | 3.26 | 3.26 | 0.00 | PASS |
+| workspace-titlebar-closed-menus | 3.23 | 3.23 | 0.00 | PASS |
+| workspace-titlebar-repo-dropdown-open | 3.23 | 3.23 | 0.00 | PASS |
+| stepper-specify-current | 3.23 | 3.23 | 0.00 | PASS |
+| stepper-clarify-current | 3.23 | 3.23 | 0.00 | PASS |
+| activity-pill-idle | 3.23 | 3.23 | 0.00 | PASS |
+| stepper-plan-current | 3.22 | 3.22 | 0.00 | PASS |
+| stepper-tasks-current | 3.22 | 3.22 | 0.00 | PASS |
+| stepper-analyze-current | 3.22 | 3.22 | 0.00 | PASS |
+| stepper-review-current | 3.22 | 3.22 | 0.00 | PASS |
+| workspace-titlebar-gear-menu-open | 3.18 | 3.18 | 0.00 | PASS |
+| specify-input | 3.16 | 3.16 | 0.00 | PASS |
+| specify-running | 3.16 | 3.16 | 0.00 | PASS |
+| signin-github-ok | 2.20 | 2.20 | 0.00 | PASS |
+| signin-fresh | 2.13 | 2.13 | 0.00 | PASS |
+| repo-browse-empty-search | 1.36 | 1.36 | 0.00 | PASS |
 
 ## Residual Analysis
 
-No visual residual analysis is possible yet because no screen reached the pixelmatch stage. The blocker is not a CSS/JSX parity plateau; it is browser process launch denial before any screenshot can be captured.
+- `customize-modal` is the highest residual at 6.86%, still 2.14 points under the gate.
+- Remaining residuals are from accepted harness masks and expected host differences: scrollbar gutter painting, generated activity timestamps, and text subpixel rendering between the browser-served prototype and bundled Electron assets.
+- No screen plateaued above the threshold. No visual parity fix attempts were needed after the harness produced valid screenshots.
 
-Next executable step after browser launch is available:
+## Artifacts
 
-1. Run `npm run vd:loop`.
-2. Copy `specs/0006-5-design-fidelity/visual-diff/visual-diff-results.json` to `visual-diff-results-baseline.json`.
-3. Run the highest-diff iteration loop against the generated screenshots.
+- Results: `specs/0006-5-design-fidelity/visual-diff/visual-diff-results.json`
+- Baseline copy: `specs/0006-5-design-fidelity/visual-diff/visual-diff-results-baseline.json`
+- Screenshots: `e2e/visual-diff/screenshots/`
