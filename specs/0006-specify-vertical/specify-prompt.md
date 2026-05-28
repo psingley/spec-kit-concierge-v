@@ -1,3 +1,5 @@
+**Historical provenance note:** This file preserves the original prompt for provenance. Implementation follows spec.md + plan.md + tasks.md (current); see spec.md for current font choice (npm @fontsource/*) — Google Fonts CDN references below are from the original prompt and are superseded.
+
 # /speckit.specify input — Run 6: Specify Vertical
 
 > Passed to /speckit.specify via copilot --model gpt-5.5 --effort high.

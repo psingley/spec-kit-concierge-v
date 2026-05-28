@@ -83,6 +83,7 @@ followed by the full canonical six-step flow per the constitution
    The user can: launch the app, sign into the three prerequisites,
    pick a repo, start a new session, type a specify prompt, click
    Begin, watch the Specify pipeline run, view the rendered spec.md.
+   > **SUPERSEDED 2026-05-27 (user decision in Run 6 grill Q2 → 'b'):** Run 6 gates workspace entry on GitHub + Copilot only; Atlassian remains visible as a sign-in row + titlebar status but is a visual stub until Run 11. See specs/0006-specify-vertical/spec.md FR-006 + FR-007 + the deviation note.
    This slice exercises everything from auth UI → renderer → IPC →
    ACP → Step Lifecycle → factory → Step Commit. **Depends on 3, 4,
    5. Highest-value slice — first proof of integration. Blocks 7
@@ -312,6 +313,7 @@ constants, and v1-only service choices move here).
    callback). Includes identity (`username`, `avatarUrl`),
    per-prerequisite status, and last error. All three prerequisites
    must be `ok` before the workspace surface is usable.
+   > **SUPERSEDED 2026-05-27 (user decision in Run 6 grill Q2 → 'b'):** Run 6 gates workspace entry on GitHub + Copilot only; Atlassian remains visible as a sign-in row + titlebar status but is a visual stub until Run 11. See specs/0006-specify-vertical/spec.md FR-006 + FR-007 + the deviation note.
 4. **`workspace`** — `{repo, branch}` only. The navigation pointer.
    Org name is a v1 constant (`"collette-travel"`), not a slice
    field.
@@ -403,6 +405,7 @@ with the error-code enum below.
 - `authBootstrap` — on app launch, queries auth status for all three
   prerequisites; once all three are `ok`, prefetches
   `reposApi.listOrgRepos`.
+  > **SUPERSEDED 2026-05-27 (user decision in Run 6 grill Q2 → 'b'):** Run 6 gates workspace entry on GitHub + Copilot only; Atlassian remains visible as a sign-in row + titlebar status but is a visual stub until Run 11. See specs/0006-specify-vertical/spec.md FR-006 + FR-007 + the deviation note.
 - `repoSwitchCleanup` — on `workspace.repo` change, invalidates
   branch + session data scoped to the prior repo.
 - `modelLogger` — on `copilotApi.setModel/fulfilled`, appends

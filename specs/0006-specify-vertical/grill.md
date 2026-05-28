@@ -17,6 +17,11 @@
 bundle fetched 2026-05-27 from the user's Claude Design URL). The
 canonical entry is `Spec-kit Concierge.html` which imports 12 .jsx
 files + styles.css (3309 lines) + Google Fonts (Geist + Geist Mono).
+**Supersession note:** this paragraph records the fetched design bundle.
+Current implementation guidance is the Run 6 spec/plan/tasks: fonts are
+npm `@fontsource/*` packages, stylesheet porting drops the known orphan
+CSS block unless later evidence proves it intentional, and GitHub +
+Copilot are the only workspace gate.
 
 **Constitutional state (locked, no relitigation):**
 - 8 slices per constitution VI (`ui`, `preferences`, `auth`,
@@ -70,6 +75,10 @@ Specify step end-to-end. Per the design bundle's import graph:
   rows (GitHub, Copilot, Atlassian). Per v3 design line 386, the
   workspace gate is `auth.gh === "ok" && auth.copilot === "ok" &&
   auth.atlassian === "ok"` — ALL THREE required.
+  - **SUPERSEDED for Run 6:** preserve the three visible rows, but only
+    GitHub + Copilot gate workspace entry. Atlassian remains a visible
+    optional visual stub; see Q2 correction, FR-006, and the spec
+    deviation note.
 - **Repo picker** (`repo-browse.jsx`) — `RepoBrowseScreen` + nested
   `BranchPickerView`. Recent/All filtering with search box.
 - **Specify step** (`steps.jsx`) — `SpecifyStep` (the only step
@@ -108,6 +117,11 @@ Specify step end-to-end. Per the design bundle's import graph:
   per-component CSS modules — see Q4).
 - **Fonts** — Geist + Geist Mono via Google Fonts CDN per design's
   HTML head.
+  - **SUPERSEDED for Run 6:** styles port to the single
+    `src/renderer/styles/index.css` file with the orphan declaration
+    block dropped unless proven intentional. Fonts are offline-capable
+    npm `@fontsource/geist-sans` and `@fontsource/geist-mono`, not
+    Google Fonts CDN.
 
 **OUT of scope for Run 6 (deferred to Runs 7-9):**
 
@@ -232,6 +246,7 @@ the third phase (spec.md viewer).
 - `auth:copilot:login` (mutation, shell-out to `gh copilot auth`)
 - `auth:atlassian:login` (mutation, wires the OAuth flow via the
   concierge-jira extension's existing pattern)
+  - CORRECTION: SUPERSEDED by Q2 user decision 2026-05-27 b: gh+copilot only gate the workspace; Atlassian is visual stub in Run 6, real OAuth deferred to Run 11. See FR-006 + spec.md deviation note.
 - `repos:list` (query, `gh repo list collette-travel --json
   name,defaultBranchRef,pushedAt,diskUsage,primaryLanguage`)
 - `branches:sessions` (query for a given repo, lists branches
@@ -549,6 +564,7 @@ role file estimate: ~60-75 Premium.
 
 - Q2 auth gate: **3 prerequisites required** (per v3 design + user
   explicit message).
+  - CORRECTION: SUPERSEDED by Q2 user decision 2026-05-27 b: gh+copilot only gate the workspace; Atlassian is visual stub in Run 6, real OAuth deferred to Run 11. See FR-006 + spec.md deviation note.
 - Q7 customize gear: user message: "throw a color picker in the gear
   menu for accent color or something awesome. if it's at all complex
   skip it." Decision: ship the CustomizeModal verbatim because it's
@@ -566,5 +582,5 @@ or Pocock-TDD consequence. No user input needed.
 v2 design before the v3 update arrived. Codex's findings about
 component inventory, smart/dumb split, and tracer bullet remain valid
 under v3. The v3 deltas — CustomizeModal, ActivityPill, PixelCSpinner,
-3-prerequisite auth — are additive and don't invalidate codex's prior
+3-prerequisite auth (NOTE: Run 6 softened this per Q2 user decision — only GH + Copilot gate workspace; Atlassian is visual stub in Run 6.) — are additive and don't invalidate codex's prior
 guidance.)

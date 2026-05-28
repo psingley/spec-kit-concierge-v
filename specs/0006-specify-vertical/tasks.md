@@ -345,6 +345,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/preload/index.test.ts`, `src/preload/index.ts`.
   - Dependencies: T062.
   - Acceptance: The failing tests prove the preload bridge exposes invoke methods for exactly `copilot:specify`, `auth:gh:login`, `auth:copilot:login`, `auth:atlassian:login`, `repos:list`, `branches:sessions`, `git:checkout`, `git:createDraft`, and `artifacts:read` without exposing raw `ipcRenderer` to the renderer.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T064 Implement preload invoke bridge methods (GREEN).
   - Paths: `src/preload/index.ts`.
@@ -589,6 +590,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/SpecifyStep.test.tsx`, `src/renderer/components/SpecifyStep.tsx`.
   - Dependencies: T110.
   - Acceptance: The failing tests cover empty prompt placeholder `"What do you want to build today?"`, whitespace Begin disabled, valid Begin enabled, running state, complete markdown preview/edit modes, scroll progress, scroll-gate preference, and popped-out editor modal.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T112 Port `SpecifyStep` (GREEN).
   - Paths: `src/renderer/components/SpecifyStep.tsx`.
@@ -599,6 +601,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/Activity.test.tsx`, `src/renderer/components/Activity.tsx`.
   - Dependencies: T112.
   - Acceptance: The failing tests cover capped entry rendering, current status, busy state, side placement, hidden/off display contract, and local scroll position.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T114 Port `Activity` (GREEN).
   - Paths: `src/renderer/components/Activity.tsx`.
@@ -609,6 +612,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/ActivityPill.test.tsx`, `src/renderer/components/ActivityPill.tsx`.
   - Dependencies: T114.
   - Acceptance: The failing tests prove the pill remains visible when activity rail is hidden, toggles visibility, always shows `PixelCSpinner` for busy/progress affordance, and maps log rate/current step to spinner speed/pixelation.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T116 Port `ActivityPill` (GREEN).
   - Paths: `src/renderer/components/ActivityPill.tsx`.
@@ -619,6 +623,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/CustomizeModal.test.tsx`, `src/renderer/components/AboutModal.test.tsx`, `src/renderer/components/RequestModal.test.tsx`.
   - Dependencies: T116.
   - Acceptance: The failing tests cover Customize accent/density/activity-side/require-scroll controls, About model/repo/branch display, RequestModal scaffold only, and no `concierge:report` IPC.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T118 Port Run 6 modal components (GREEN).
   - Paths: `src/renderer/components/CustomizeModal.tsx`, `src/renderer/components/AboutModal.tsx`, `src/renderer/components/RequestModal.tsx`.
@@ -629,6 +634,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/AppShell.test.tsx`, `src/renderer/components/AppShell.tsx`.
   - Dependencies: T118.
   - Acceptance: The failing tests render sign-in, repo browse, workspace shell, titlebar, stepper, Specify body, activity rail/pill, modals, and explicit Run 7-9 placeholders for Clarify/Plan/Tasks/Analyze/Review without implementing deferred bodies/viewers.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T120 Port `AppShell` and deferred placeholders (GREEN).
   - Paths: `src/renderer/components/AppShell.tsx`.
@@ -641,6 +647,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/SignInScreenContainer.test.tsx`, `src/renderer/components/SignInScreenContainer.tsx`.
   - Dependencies: T120.
   - Acceptance: The failing tests use typed store hooks/RTK Query hooks, dispatch login mutations, update auth state through public actions, and open the repo gate with GitHub + Copilot while Atlassian stays optional.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T122 Implement `SignInScreenContainer` (GREEN).
   - Paths: `src/renderer/components/SignInScreenContainer.tsx`.
@@ -651,6 +658,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/RepoBrowseScreenContainer.test.tsx`, `src/renderer/components/RepoBrowseScreenContainer.tsx`.
   - Dependencies: T122.
   - Acceptance: The failing tests wire `listRepos`, `listBranchSessions`, `checkoutBranch`, and `createDraftBranch`, with draft creation before workspace entry.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T124 Implement `RepoBrowseScreenContainer` (GREEN).
   - Paths: `src/renderer/components/RepoBrowseScreenContainer.tsx`.
@@ -661,6 +669,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/TitlebarContainer.test.tsx`, `src/renderer/components/TitlebarContainer.tsx`.
   - Dependencies: T124.
   - Acceptance: The failing tests wire auth, repo, branch, selected Copilot model, gear menu modal flags, Customize/About/Request affordances, and selected model persistence.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T126 Implement `TitlebarContainer` (GREEN).
   - Paths: `src/renderer/components/TitlebarContainer.tsx`.
@@ -671,6 +680,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/SpecifyStepContainer.test.tsx`, `src/renderer/components/SpecifyStepContainer.tsx`.
   - Dependencies: T126.
   - Acceptance: The failing tests wire prompt state, Begin disabled/enabled, selected model forwarding, `runSpecify`, progress/pass/fail observable state, artifact refresh, and Clarify pending after Specify pass.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T128 Implement `SpecifyStepContainer` (GREEN).
   - Paths: `src/renderer/components/SpecifyStepContainer.tsx`.
@@ -681,6 +691,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/ActivityRailContainer.test.tsx`, `src/renderer/components/ActivityPillContainer.test.tsx`.
   - Dependencies: T128.
   - Acceptance: The failing tests wire activity entries/current/busy/side, cap 256, hidden rail with visible pill, and log-rate-to-spinner props through selectors.
+  - Vertical discipline rider: Implementer MUST split this into sequential sub-tracer-bullets: one RED per behavior, one GREEN per RED, before moving to the next behavior.
 
 - [ ] T130 Implement activity containers (GREEN).
   - Paths: `src/renderer/components/ActivityRailContainer.tsx`, `src/renderer/components/ActivityPillContainer.tsx`.
@@ -691,6 +702,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/CustomizeModalContainer.test.tsx`, `src/renderer/components/CustomizeModalContainer.tsx`.
   - Dependencies: T130.
   - Acceptance: The failing tests wire accent, density, activity side, require-scroll preference changes, dirty persistence state, and modal close behavior.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T132 Implement `CustomizeModalContainer` (GREEN).
   - Paths: `src/renderer/components/CustomizeModalContainer.tsx`.
@@ -701,6 +713,7 @@ source_plan: specs/0006-specify-vertical/plan.md
   - Paths: `src/renderer/components/WorkspaceContainer.test.tsx`, `src/renderer/components/WorkspaceContainer.tsx`.
   - Dependencies: T132.
   - Acceptance: The failing tests compose titlebar, stepper, Specify container, later-step placeholders, activity rail/pill, modal containers, canonical step navigation, and restored later states without implementing later bodies.
+  - **VERTICAL DISCIPLINE:** implementer MUST split into sequential RED → GREEN sub-tracer-bullets per behavior listed above. Do not batch all RED tests before any GREEN passes.
 
 - [ ] T134 Implement `WorkspaceContainer` (GREEN).
   - Paths: `src/renderer/components/WorkspaceContainer.tsx`.
@@ -776,9 +789,37 @@ source_plan: specs/0006-specify-vertical/plan.md
     - Every main handler logging test mocks `createMainLogger`.
     - No real Atlassian OAuth/MCP, JIRA sync UI, ArtifactViewer, TaskViewer, later-step body, HTTP server, or packaging change was introduced.
 
+- [ ] T141a Verify Run 6 Copilot/project instruction conventions.
+  - Paths: `.github/copilot-instructions.md`, `specs/0006-specify-vertical/tasks.md`.
+  - Dependencies: T141.
+  - Acceptance: ALL grep-based assertions must pass against `.github/copilot-instructions.md`:
+    - `rg "Run 6 conventions" .github/copilot-instructions.md`
+    - `rg "component naming|Component file naming convention" .github/copilot-instructions.md`
+    - `rg "smart/dumb|Smart.*Dumb|props-only" .github/copilot-instructions.md`
+    - `rg "single stylesheet|styles/index\\.css" .github/copilot-instructions.md`
+    - `rg "canvas spinner|PixelCSpinner" .github/copilot-instructions.md`
+    - `rg "font.*dep|@fontsource/geist" .github/copilot-instructions.md`
+    - `rg "streaming channel|IPC.*naming|copilot:specify:event" .github/copilot-instructions.md`
+
+- [ ] T141b Manually verify the first-run Specify app journey.
+  - Paths: implement run notes, `specs/0006-specify-vertical/tasks.md`.
+  - Dependencies: T141a.
+  - Acceptance: Implementer MUST record evidence in the implement run's notes after launching the app with `npm run dev`, signing into mocked auth, picking a repo, typing a prompt, clicking Begin, seeing Specify pipeline progress including orb animation, activity log, and spinner, and seeing the rendered `spec.md` viewer. This is deliberate human-eye verification, NOT automated.
+
+- [ ] T141c Verify accessibility e2e coverage for Run 6 major screens.
+  - Paths: `src/renderer/**/*.tsx`, `e2e/**/*.spec.ts`, `package.json`.
+  - Dependencies: T141b.
+  - Acceptance: Semantic roles/names are correct: SignInScreen rows have button role; modals have `role='dialog'` + `aria-labelledby` pointing at the heading; the stepper has `role='tablist'` or equivalent; orb visuals have `aria-hidden=true` (decorative); custom widgets (segmented controls, toggles) have proper ARIA attrs (per design's `customize-modal.jsx` `role='switch'` + `aria-checked` pattern).
+  - Acceptance: Keyboard paths are complete: Tab order matches visual order; Escape closes modals; Enter triggers primary buttons; arrow keys work on segmented controls if implemented.
+  - Acceptance: Live regions exist for activity log + status changes using `aria-live='polite'`.
+  - Acceptance: Focus management is explicit: opening a modal focuses the first focusable element; closing returns focus to the trigger.
+  - Acceptance: Add `@axe-core/playwright` to the e2e test, run axe-core on each major screen (sign-in / repo browse / workspace + Specify), and expect zero serious/critical violations.
+  - Acceptance: After adding the accessibility devDependency and e2e scan, rerun `npm run typecheck` and `npm run e2e` so accessibility coverage is inside the final merge gate.
+  - Dependency note: `@axe-core/playwright` is a new devDependency — first new dep Run 6 introduces beyond fontsource; add to `package.json` devDependencies.
+
 ## Dependencies and execution order
 
 - Execute tasks in numeric order. Run 6 intentionally has no parallel implementation tasks because the plan requires vertical tracer bullets.
 - For each factory RED task, execute the six standard floor cases as six sequential sub-tracer-bullets before the seventh extra-key rejection case.
 - Do not start a later channel, endpoint, component, container, or listener until the current RED/GREEN pair is complete.
-- Final verification begins only after T138 is green; T139-T141 are the verification sequence and MUST all pass before merge.
+- Final verification begins only after T138 is green; T139-T141c are the verification sequence and MUST all pass before merge.
