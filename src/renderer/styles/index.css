@@ -1478,6 +1478,13 @@ textarea {
   flex: 1;
 }
 
+.modal-head .icon-btn:focus,
+.modal-head .icon-btn:focus-visible {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .modal-body {
   padding: 18px 20px;
   display: flex;
@@ -1485,8 +1492,71 @@ textarea {
   gap: 14px;
 }
 
+.modal-foot {
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  background: var(--bg);
+}
+
+.modal-foot-spacer {
+  flex: 1;
+}
+
+.modal-foot .btn {
+  font-weight: 400;
+}
+
+.modal-foot .btn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-dim);
+}
+
 .customize-modal {
   width: min(540px, 92vw);
+}
+
+.about-modal {
+  width: 480px;
+}
+
+.about-tagline {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 4px 12px;
+  font-size: 12px;
+}
+
+.kv .k {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.kv .v {
+  color: var(--text-dim);
+}
+
+.about-kv .k {
+  font-size: 11px;
+}
+
+.about-kv .v {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
 }
 
 .customize-body {
