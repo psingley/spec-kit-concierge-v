@@ -1,303 +1,25 @@
 {
-  "runId": "2026-05-28T22:44:42.631Z",
+  "runId": "2026-05-28T22:49:11.251Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
     "total": 24,
-    "pass": 20,
-    "fail": 4,
+    "pass": 21,
+    "fail": 3,
     "warn": 0,
-    "worstScreen": "activity-rail-idle"
+    "worstScreen": "activity-rail-busy"
   },
   "screens": [
-    {
-      "name": "activity-rail-idle",
-      "status": "FAIL",
-      "failures": [
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Activity'",
-          "expected": "Activity",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'idle'",
-          "expected": "idle",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Current'",
-          "expected": "Current",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '00:00:00'",
-          "expected": "00:00:00",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Concierge ready. Awaiting workspace.'",
-          "expected": "Concierge ready. Awaiting workspace.",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gh auth login'",
-          "expected": "gh auth login",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Opening browser for device code…'",
-          "expected": "Opening browser for device code…",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gh copilot auth'",
-          "expected": "gh copilot auth",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'atlassian mcp'",
-          "expected": "atlassian mcp",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel.atlassian.net'",
-          "expected": "collette-travel.atlassian.net",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gpt-5-codex'",
-          "expected": "gpt-5-codex",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'git checkout'",
-          "expected": "git checkout",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'cd'",
-          "expected": "cd",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'git pull'",
-          "expected": "git pull",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Fetching collette-travel org repos…'",
-          "expected": "Fetching collette-travel org repos…",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '14'",
-          "expected": "14",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'auto-scroll'",
-          "expected": "auto-scroll",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clear'",
-          "expected": "Clear",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clear' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-idle-dot' at [data-vd-role=\"activity-idle-dot\"]",
-          "expected": "[data-vd-role=\"activity-idle-dot\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'activity-pulse-dot' at [data-vd-role=\"activity-pulse-dot\"]",
-          "expected": "[data-vd-role=\"activity-pulse-dot\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity rail panel.background-color: expected 'oklch(0.165 0.003 280)', got 'rgba(8, 13, 16, 0.96)'",
-          "expected": "oklch(0.165 0.003 280)",
-          "actual": "rgba(8, 13, 16, 0.96)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity rail panel.border-radius: expected '0px', got '10px'",
-          "expected": "0px",
-          "actual": "10px"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity rail panel.border-top-color: expected 'oklch(0.94 0.005 80)', got 'rgb(60, 77, 85)'",
-          "expected": "oklch(0.94 0.005 80)",
-          "actual": "rgb(60, 77, 85)"
-        },
-        {
-          "layer": "styles",
-          "message": "style drift on activity rail panel.box-shadow: expected 'none', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
-          "expected": "none",
-          "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
-        }
-      ],
-      "pixelResidual": 5.54,
-      "priorityScore": 100
-    },
     {
       "name": "activity-rail-busy",
       "status": "FAIL",
       "failures": [
         {
           "layer": "elements",
-          "message": "missing text: expected 'Activity'",
-          "expected": "Activity",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'running'",
-          "expected": "running",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Current'",
-          "expected": "Current",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
           "message": "missing text: expected 'spec.md'",
           "expected": "spec.md",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected '00:00:00'",
-          "expected": "00:00:00",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Concierge ready. Awaiting workspace.'",
-          "expected": "Concierge ready. Awaiting workspace.",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gh auth login'",
-          "expected": "gh auth login",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Opening browser for device code…'",
-          "expected": "Opening browser for device code…",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gh copilot auth'",
-          "expected": "gh copilot auth",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'a.kim'",
-          "expected": "a.kim",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'atlassian mcp'",
-          "expected": "atlassian mcp",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'collette-travel.atlassian.net'",
-          "expected": "collette-travel.atlassian.net",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'gpt-5-codex'",
-          "expected": "gpt-5-codex",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'git checkout'",
-          "expected": "git checkout",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'main'",
-          "expected": "main",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'cd'",
-          "expected": "cd",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'git pull'",
-          "expected": "git pull",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'concierge-api'",
-          "expected": "concierge-api",
           "actual": "missing"
         },
         {
@@ -314,54 +36,12 @@
         },
         {
           "layer": "elements",
-          "message": "missing text: expected 'copilot'",
-          "expected": "copilot",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Fetching collette-travel org repos…'",
-          "expected": "Fetching collette-travel org repos…",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
           "message": "missing text: expected '16 lines'",
           "expected": "16 lines",
           "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'auto-scroll'",
-          "expected": "auto-scroll",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "missing text: expected 'Clear'",
-          "expected": "Clear",
-          "actual": "missing"
-        },
-        {
-          "layer": "elements",
-          "message": "wrong control count: expected button 'Clear' x1, got 0",
-          "expected": "1",
-          "actual": "0"
-        },
-        {
-          "layer": "elements",
-          "message": "missing visual marker: expected 'spinner' at [data-vd-role=\"spinner\"]",
-          "expected": "[data-vd-role=\"spinner\"]",
-          "actual": "missing"
-        },
-        {
-          "layer": "styles",
-          "message": "missing style sample: activity busy status",
-          "expected": ".activity-status",
-          "actual": ".activity-status"
         }
       ],
-      "pixelResidual": 5.87,
+      "pixelResidual": 6.56,
       "priorityScore": 100
     },
     {
@@ -432,6 +112,13 @@
       "priorityScore": 6
     },
     {
+      "name": "activity-rail-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.34,
+      "priorityScore": 6
+    },
+    {
       "name": "workspace-titlebar-closed-menus",
       "status": "PASS",
       "failures": [],
@@ -442,7 +129,7 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.92,
+      "pixelResidual": 4.93,
       "priorityScore": 5
     },
     {
@@ -456,14 +143,14 @@
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.09,
+      "pixelResidual": 5.07,
       "priorityScore": 5
     },
     {
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.07,
+      "pixelResidual": 5.1,
       "priorityScore": 5
     },
     {
@@ -477,21 +164,21 @@
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.1,
+      "pixelResidual": 5.08,
       "priorityScore": 5
     },
     {
       "name": "specify-complete",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.65,
+      "pixelResidual": 4.66,
       "priorityScore": 5
     },
     {
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.21,
+      "pixelResidual": 4.97,
       "priorityScore": 5
     },
     {

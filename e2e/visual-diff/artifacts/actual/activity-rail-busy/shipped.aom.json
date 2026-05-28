@@ -3,9 +3,15 @@
   "name": "",
   "children": [
     {
-      "role": "status",
-      "name": "Idle - Specify complete",
-      "children": []
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "button",
+          "name": "Clear",
+          "children": []
+        }
+      ]
     }
   ]
 }

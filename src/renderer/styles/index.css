@@ -1701,42 +1701,149 @@ textarea {
 .activity {
   position: fixed;
   top: calc(var(--titlebar-h) + 86px);
-  bottom: 68px;
+  bottom: 0;
   width: 320px;
   z-index: 20;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 10px;
-  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
   overflow: hidden;
-  background: rgb(8 13 16 / 0.96);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-3);
+  background: var(--bg-2);
+  border: 0;
+  border-left: 1px solid oklch(0.285 0.006 280);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .activity.right { right: 14px; }
 .activity.left { left: 14px; }
 
-.activity::before {
-  content: "ring buffer live";
-  color: var(--accent-text);
-  text-transform: uppercase;
+.activity-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-head .h {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-faint);
+  font-size: 10.5px;
   letter-spacing: 0.12em;
-  font-size: 10px;
+  text-transform: uppercase;
 }
 
-.activity ol {
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  list-style: none;
-}
-
-.activity li {
-  padding: 6px 0;
-  border-top: 1px solid rgb(255 255 255 / 0.05);
+.activity-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.activity-status.idle .dot,
+.activity-now .pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+
+.activity-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-now .label {
+  margin-bottom: 2px;
+  color: var(--text-faint);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.activity-now .now-text {
+  color: var(--text);
+  font-size: 12.5px;
+}
+
+.activity-now .now-text em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.activity-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 60px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+
+.log-line {
+  display: grid;
+  grid-template-columns: 56px 12px 1fr;
+  gap: 8px;
+  padding: 2px 14px;
+  color: var(--text-dim);
+  word-break: break-word;
+}
+
+.log-line .ts {
+  padding-top: 1px;
+  color: var(--text-faint);
+  font-size: 10.5px;
+}
+
+.log-line .glyph {
+  padding-top: 1px;
+  color: var(--text-faint);
+}
+
+.log-line.info .glyph { color: var(--info); }
+.log-line.ok .glyph { color: var(--good); }
+.log-line.warn .glyph { color: var(--accent); }
+.log-line.err .glyph,
+.log-line.error .glyph { color: var(--bad); }
+.log-line.cmd .glyph { color: var(--accent); }
+.log-line.cmd .msg { color: var(--text); }
+.log-line.muted { color: var(--text-faint); }
+
+.log-line .msg em {
+  color: var(--accent);
+  font-style: normal;
+}
+
+.activity-foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+}
+
+.activity-foot .seek {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
 
 .activity-pill {

@@ -4,10 +4,10 @@
     "selector": ".activity",
     "found": true,
     "styles": {
-      "background-color": "rgba(8, 13, 16, 0.96)",
-      "border-radius": "10px",
-      "border-top-color": "rgb(60, 77, 85)",
-      "box-shadow": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "0px",
+      "border-top-color": "rgb(244, 247, 248)",
+      "box-shadow": "none"
     }
   }
 ]

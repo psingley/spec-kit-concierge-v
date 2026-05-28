@@ -66,6 +66,9 @@ const activitySlice = createSlice({
         state.currentStatus = action.payload.status;
       }
     },
+    activityCleared: (state) => {
+      state.entries = [];
+    },
     markAcpEventSeen: (
       state,
       action: PayloadAction<{ timestamp: string; sessionId: string; step: StepName }>
@@ -82,6 +85,6 @@ const activitySlice = createSlice({
   extraReducers: () => {}
 });
 
-export const { recordActivity, activityBusyChanged, markAcpEventSeen, hangSuspectedRecorded } = activitySlice.actions;
+export const { recordActivity, activityBusyChanged, activityCleared, markAcpEventSeen, hangSuspectedRecorded } = activitySlice.actions;
 export const activityReducer = activitySlice.reducer;
 export default activityReducer;
