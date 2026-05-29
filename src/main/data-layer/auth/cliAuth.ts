@@ -126,6 +126,21 @@ export const loginGitHub = async (
     };
   }
 
+  // Check if already authenticated before attempting interactive login
+  try {
+    const { stdout } = await execFileAsync('gh', ['auth', 'status', '--active'], { shell: true });
+    const loginMatch = stdout.match(/Logged in to .+ account (\S+)/);
+    return {
+      status: 'ok',
+      provider: 'github',
+      identity: { login: loginMatch?.[1] ?? 'github-user' }
+    };
+  } catch {
+    // Not authenticated — attempt web-based device flow
+  }
+
+  await execFileAsync('gh', ['auth', 'login', '--web'], { shell: true });
+  return { status: 'ok', provider: 'github', identity: { login: 'github-user' } };
   const existing = await readGitHubAuthStatus(execFileAdapter);
   if (existing.authenticated) {
     return { status: 'ok', provider: 'github', identity: await readGitHubIdentity(existing.login, execFileAdapter) };
@@ -173,9 +188,7 @@ export const readCopilotAuthStatus = async (
 
 export const loginCopilot = async (
   githubConnected: boolean,
-  adapterPath = process.env.CONCIERGE_TEST_COPILOT_ADAPTER,
-  execFileAdapter: ExecFileAdapter = defaultExecFile,
-  platform = process.platform
+  adapterPath = process.env.CONCIERGE_TEST_COPILOT_ADAPTER
 ): Promise<LoginResult> => {
   if (!githubConnected) {
     throw new Error('GitHub login is required before Copilot login.');
@@ -186,6 +199,15 @@ export const loginCopilot = async (
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   }
 
+  // Check if already authenticated before attempting interactive login
+  try {
+    await execFileAsync('copilot', ['auth', 'status'], { shell: true });
+    return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
+  } catch {
+    // Not authenticated — attempt login
+  }
+
+  await execFileAsync('copilot', ['auth', 'login'], { shell: true });
   const githubStatus = await readGitHubAuthStatus(execFileAdapter);
   if (!githubStatus.authenticated) {
     throw new Error('GitHub login is required before Copilot login.');
