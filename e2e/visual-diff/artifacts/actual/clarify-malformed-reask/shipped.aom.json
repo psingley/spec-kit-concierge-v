@@ -1,0 +1,231 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/concierge-api",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "spec/draft-mpr1baqs",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "tablist",
+              "name": "",
+              "children": [
+                {
+                  "role": "tab",
+                  "name": "Specifycomplete",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Clarifypending",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Plannot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Tasksnot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Analyzenot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Reviewnot_available",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "heading",
+                              "name": "Clarify",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "role": "group",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Run",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Ask another",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "tablist",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "tab",
+                              "name": "1",
+                              "children": []
+                            },
+                            {
+                              "role": "tab",
+                              "name": "2",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "heading",
+                              "name": "choices-missing",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "status",
+                              "name": "Answer every visible question to finish.",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Finish",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "button",
+              "name": "Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook ",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
