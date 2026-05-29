@@ -12,33 +12,57 @@ vi.mock('node:fs/promises', () => ({
 describe('validateAnalyzeArtifacts', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('returns allow-empty commit candidate for valid analysis', async () => {
-    vi.mocked(readFile).mockResolvedValue('# Analysis' as never);
+  describe('no-diff pass', () => {
+    it('returns allow-empty commit candidate without requiring analyze.md', async () => {
+      const result = await validateAnalyzeArtifacts('/feature');
 
-    const result = await validateAnalyzeArtifacts('/feature');
-
-    expect(result.ok).toBe(true);
-    expect(result).toMatchObject({ commit: { step: 'analyze', files: ['analyze.md'], allowEmptyCommit: true } });
-    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(1);
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'analyze', files: [], allowEmptyCommit: true } });
+      expect(vi.mocked(readFile)).not.toHaveBeenCalled();
+    });
   });
 
-  it('rejects missing required analyze artifact', async () => {
-    vi.mocked(readFile).mockRejectedValue(new Error('missing'));
+  describe('allowed remediation targets', () => {
+    it('accepts spec, plan, and tasks remediation targets', async () => {
+      const result = await validateAnalyzeArtifacts('/feature', {
+        remediationFiles: ['spec.md', 'plan.md', 'tasks.md']
+      });
 
-    const result = await validateAnalyzeArtifacts('/feature');
-
-    expect(result.ok).toBe(false);
-    expect(result).toMatchObject({ escapeHatchReason: 'factory-rejected' });
-    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(1);
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({
+        commit: { step: 'analyze', files: ['spec.md', 'plan.md', 'tasks.md'], allowEmptyCommit: true }
+      });
+      expect(vi.mocked(readFile)).not.toHaveBeenCalled();
+    });
   });
 
-  it('rejects bad analysis edge case', async () => {
-    vi.mocked(readFile).mockResolvedValue('bad-analysis' as never);
+  describe('disallowed analyze artifact', () => {
+    it('rejects analyze.md as a remediation target', async () => {
+      const result = await validateAnalyzeArtifacts('/feature', { remediationFiles: ['analyze.md'] });
 
-    const result = await validateAnalyzeArtifacts('/feature');
+      expect(result.ok).toBe(false);
+      expect(result).toMatchObject({ escapeHatchReason: 'factory-rejected' });
+      expect(vi.mocked(readFile)).not.toHaveBeenCalled();
+    });
+  });
 
-    expect(result.ok).toBe(false);
-    expect(result).toMatchObject({ kind: 'escape-hatch' });
-    expect(vi.mocked(readFile)).toHaveBeenCalledWith(expect.stringContaining('analyze.md'), 'utf8');
+  describe('outside-feature target', () => {
+    it('rejects parent directory remediation targets', async () => {
+      const result = await validateAnalyzeArtifacts('/feature', { remediationFiles: ['../src/main/index.ts'] });
+
+      expect(result.ok).toBe(false);
+      expect(result).toMatchObject({ kind: 'escape-hatch' });
+      expect(vi.mocked(readFile)).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('source-code target', () => {
+    it('rejects unrelated source files', async () => {
+      const result = await validateAnalyzeArtifacts('/feature', { remediationFiles: ['src/main/index.ts'] });
+
+      expect(result.ok).toBe(false);
+      expect(result).toMatchObject({ kind: 'escape-hatch' });
+      expect(vi.mocked(readFile)).not.toHaveBeenCalled();
+    });
   });
 });

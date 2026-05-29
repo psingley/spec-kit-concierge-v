@@ -1,0 +1,55 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Analyze",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Run Analyze",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "role": "status",
+          "children": [
+            {
+              "tag": "div",
+              "children": []
+            },
+            {
+              "tag": "strong",
+              "text": "Analyze is running in the background.",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Navigate freely; the stepper and activity rail keep this step in-flight.",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

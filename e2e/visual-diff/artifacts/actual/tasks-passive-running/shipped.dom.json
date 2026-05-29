@@ -1,0 +1,55 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Tasks",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Run Tasks",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "role": "status",
+          "children": [
+            {
+              "tag": "div",
+              "children": []
+            },
+            {
+              "tag": "strong",
+              "text": "Tasks is running in the background.",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Navigate freely; the stepper and activity rail keep this step in-flight.",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

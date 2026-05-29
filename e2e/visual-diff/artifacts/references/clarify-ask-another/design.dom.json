@@ -98,7 +98,7 @@
                       "children": [
                         {
                           "tag": "button",
-                          "text": "spec/draft-9tqu",
+                          "text": "spec/draft-xbml",
                           "children": [
                             {
                               "tag": "svg",
@@ -123,7 +123,7 @@
                             },
                             {
                               "tag": "span",
-                              "text": "spec/draft-9tqu",
+                              "text": "spec/draft-xbml",
                               "children": []
                             },
                             {

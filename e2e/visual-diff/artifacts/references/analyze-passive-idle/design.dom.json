@@ -1,0 +1,45 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Analyze",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Run Analyze",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Analyze is ready when the prior step is complete.",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

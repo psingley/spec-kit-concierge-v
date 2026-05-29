@@ -5,6 +5,7 @@ export type StepName = (typeof STEP_NAMES)[number];
 export type StepArtifactManifestEntry = {
   requiredFiles: readonly string[];
   optionalFiles: readonly string[];
+  remediationFiles?: readonly string[];
   contextFileException?: true;
   allowEmptyCommit?: true;
 };
@@ -28,8 +29,9 @@ export const STEP_ARTIFACT_MANIFEST = {
     optionalFiles: []
   },
   analyze: {
-    requiredFiles: ['analyze.md'],
+    requiredFiles: [],
     optionalFiles: [],
+    remediationFiles: ['spec.md', 'plan.md', 'tasks.md'],
     allowEmptyCommit: true
   },
   review: {
@@ -46,7 +48,11 @@ export const expectedArtifactsForStep = (
   contextFilePath?: string
 ): string[] => {
   const manifest = STEP_ARTIFACT_MANIFEST[step];
-  const files: string[] = [...manifest.requiredFiles, ...manifest.optionalFiles];
+  const files: string[] = [
+    ...manifest.requiredFiles,
+    ...manifest.optionalFiles,
+    ...(step === 'analyze' ? STEP_ARTIFACT_MANIFEST.analyze.remediationFiles : [])
+  ];
 
   if (step === 'plan' && contextFilePath !== undefined) {
     files.push(contextFilePath);

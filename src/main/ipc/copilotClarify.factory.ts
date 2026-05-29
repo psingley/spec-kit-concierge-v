@@ -1,5 +1,5 @@
 import { invalid, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
-export { createStepStreamEvent, type StepStreamEvent } from './stepStreamEvent.factory';
+export { createStepStreamEvent, type ClarifySummary, type StepStreamEvent } from './stepStreamEvent.factory';
 
 type ErrorName = 'InvalidCopilotClarifyPayload';
 

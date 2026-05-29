@@ -1,0 +1,91 @@
+{
+  "tag": "div",
+  "role": "dialog",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Artifact",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "plan.md",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Close",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "article",
+          "children": [
+            {
+              "tag": "h1",
+              "text": "Plan Artifact",
+              "children": []
+            },
+            {
+              "tag": "table",
+              "children": [
+                {
+                  "tag": "thead",
+                  "children": [
+                    {
+                      "tag": "tr",
+                      "children": [
+                        {
+                          "tag": "th",
+                          "text": "File",
+                          "children": []
+                        },
+                        {
+                          "tag": "th",
+                          "text": "Status",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "tbody",
+                  "children": [
+                    {
+                      "tag": "tr",
+                      "children": [
+                        {
+                          "tag": "td",
+                          "text": "plan.md",
+                          "children": []
+                        },
+                        {
+                          "tag": "td",
+                          "text": "Validated",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

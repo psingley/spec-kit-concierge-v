@@ -1,0 +1,61 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Tasks",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Run Tasks",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Tasks completed",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "tasks.mdrequired artifact view",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "task-detail.mdrequired artifact view",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

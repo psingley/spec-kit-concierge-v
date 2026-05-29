@@ -522,18 +522,33 @@
                                           "children": [
                                             {
                                               "tag": "li",
-                                              "text": "Reduce desk volume for in-window changes by **60%** in Q3.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "60%",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "Maintain **<1.5s** rebook search latency at p95.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "<1.5s",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "Keep guest-facing failure rate **under 0.5%**.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "under 0.5%",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
@@ -573,9 +588,29 @@
                                           "children": []
                                         },
                                         {
-                                          "tag": "p",
-                                          "text": "1. As a Gold-tier guest, I can open my itinerary and tap \"Change flight\" to see eligible alternatives. 2. As a Platinum-tier guest, I can change a flight for my",
-                                          "children": []
+                                          "tag": "ol",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "As a Gold-tier guest, I can open my itinerary and tap \"Change flight\" to see eligible alternatives.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "and",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "As an ops agent, I can see in the dashboard which self-serve changes hit the manual-review queue and why.",
+                                              "children": []
+                                            }
+                                          ]
                                         },
                                         {
                                           "tag": "h2",
@@ -587,28 +622,53 @@
                                           "children": [
                                             {
                                               "tag": "li",
-                                              "text": "[ ] Eligibility check runs in <200ms p95 against rebook-rules service.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "input",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "[ ] Alternatives list is sorted by fare-difference, then departure delta.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "input",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "[ ] Confirmation receipt is delivered via guest-app push **and** email within 30s.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "input",
+                                                  "children": []
+                                                },
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "and",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "[ ] Failed transactions roll back the itinerary-service write atomically.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "input",
+                                                  "children": []
+                                                }
+                                              ]
                                             },
                                             {
                                               "tag": "li",
-                                              "text": "[ ] Audit event is written to loyalty-ledger for every successful change.",
-                                              "children": []
+                                              "children": [
+                                                {
+                                                  "tag": "input",
+                                                  "children": []
+                                                }
+                                              ]
                                             }
                                           ]
                                         },
@@ -618,9 +678,119 @@
                                           "children": []
                                         },
                                         {
-                                          "tag": "p",
-                                          "text": "| System | Owner | Contract | |---------------------|----------------|-----------------| | rebook-rules svc | @booking-team | gRPC v3 | | itinerary-service | @o",
-                                          "children": []
+                                          "tag": "table",
+                                          "children": [
+                                            {
+                                              "tag": "thead",
+                                              "children": [
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "System",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "Owner",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "Contract",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "tbody",
+                                              "children": [
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "rebook-rules svc",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@booking-team",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "gRPC v3",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "itinerary-service",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@ops-platform",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "REST v2 + SQS",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "loyalty-ledger",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@loyalty",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "append-only log",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "guest-app push",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@mobile",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "FCM topic",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
                                         },
                                         {
                                           "tag": "h2",
@@ -628,9 +798,14 @@
                                           "children": []
                                         },
                                         {
-                                          "tag": "p",
-                                          "text": "> The following ambiguities will be resolved in the next step.",
-                                          "children": []
+                                          "tag": "blockquote",
+                                          "children": [
+                                            {
+                                              "tag": "p",
+                                              "text": "The following ambiguities will be resolved in the next step.",
+                                              "children": []
+                                            }
+                                          ]
                                         },
                                         {
                                           "tag": "ul",
@@ -689,18 +864,32 @@
                                         },
                                         {
                                           "tag": "p",
-                                          "text": "This spec was drafted by Copilot CLI from the provided prompt and grounded against existing repo conventions found in `concierge-api` and `booking-engine`. See ",
+                                          "children": [
+                                            {
+                                              "tag": "code",
+                                              "text": "concierge-api",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "code",
+                                              "text": "booking-engine",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "hr",
                                           "children": []
                                         },
                                         {
                                           "tag": "p",
-                                          "text": "---",
-                                          "children": []
-                                        },
-                                        {
-                                          "tag": "p",
-                                          "text": "*End of spec — scroll-through complete unlocks the Clarify step.*",
-                                          "children": []
+                                          "children": [
+                                            {
+                                              "tag": "em",
+                                              "text": "End of spec — scroll-through complete unlocks the Clarify step.",
+                                              "children": []
+                                            }
+                                          ]
                                         }
                                       ]
                                     }

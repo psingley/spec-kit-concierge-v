@@ -11,19 +11,27 @@ import { AboutModal } from './AboutModal';
 import { CustomizeModalContainer } from './CustomizeModalContainer';
 import { RequestModal } from './RequestModal';
 import { ClarifyStepContainer } from './ClarifyStepContainer';
+import { PassiveStepContainer } from './PassiveStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper, stepOrder } from './Stepper';
 import { TitlebarContainer } from './TitlebarContainer';
-import { selectSessionSpecMarkdown } from '../slices/session.selectors';
+import { selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
 
 export const WorkspaceContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const viewedStep = useAppSelector(selectWorkspaceViewedStep);
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
+  const passiveSteps = useAppSelector(selectSessionPassiveSteps);
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
   const branch = useAppSelector(selectWorkspaceBranch);
   const states = stepOrder.reduce((acc, step) => {
-    acc[step] = step === 'specify' ? (specMarkdown.length > 0 ? 'complete' : 'pending') : step === 'clarify' && specMarkdown.length > 0 ? 'pending' : 'not_available';
+    acc[step] = step === 'specify'
+      ? (specMarkdown.length > 0 ? 'complete' : 'pending')
+      : step === 'clarify' && specMarkdown.length > 0
+        ? 'pending'
+        : step === 'plan' || step === 'tasks' || step === 'analyze'
+          ? (passiveSteps[step].commitSha !== null ? 'complete' : passiveSteps[step].running ? 'pending' : 'not_available')
+          : 'not_available';
     return acc;
   }, {} as Record<StepName, StepState>);
   return (
@@ -31,7 +39,7 @@ export const WorkspaceContainer = (): React.ReactElement => {
       <TitlebarContainer />
       <Stepper states={states} viewedStep={viewedStep} onSelectStep={(step) => dispatch(workspaceStepViewed(step))} />
       <main className="workspace-main">
-        {viewedStep === 'specify' ? <SpecifyStepContainer /> : viewedStep === 'clarify' ? <ClarifyStepContainer /> : <section className="placeholder">Run 8-9 placeholder for {viewedStep}. ArtifactViewer, TaskViewer, and JIRA sync are not implemented in Run 7.</section>}
+        {viewedStep === 'specify' ? <SpecifyStepContainer /> : viewedStep === 'clarify' ? <ClarifyStepContainer /> : viewedStep === 'plan' || viewedStep === 'tasks' || viewedStep === 'analyze' ? <PassiveStepContainer step={viewedStep} /> : <section className="placeholder">Review is not implemented in Run 8.</section>}
       </main>
       <ActivityRailContainer />
       <ActivityPillContainer />

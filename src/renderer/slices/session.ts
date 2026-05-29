@@ -37,6 +37,31 @@ export type ClarifyCompletionSummary = {
   answers: Array<{ questionId: string; selectedChoiceKey: string; shortAnswer: string }>;
 };
 
+export type PassiveStepName = 'plan' | 'tasks' | 'analyze';
+
+export type PassiveArtifactSummary = {
+  path: string;
+  kind: 'text' | 'markdown' | 'code' | 'image' | 'pdf';
+  required: boolean;
+  bytes?: number;
+};
+
+export type PassiveMilestoneSummary = {
+  id: string;
+  label: string;
+  status: 'pending' | 'running' | 'complete' | 'warning';
+};
+
+export type PassiveStepRecord = {
+  step: PassiveStepName;
+  sessionId: string | null;
+  running: boolean;
+  commitSha: string | null;
+  failureReason: string | null;
+  artifacts: PassiveArtifactSummary[];
+  milestones: PassiveMilestoneSummary[];
+};
+
 const clarifyQuestionsAdapter = createEntityAdapter<ClarifyQuestionRecord>();
 const clarifyAnswersAdapter = createEntityAdapter<ClarifyAnswerRecord>();
 const clarifyReasksAdapter = createEntityAdapter<ClarifyReaskRecord>();
@@ -63,7 +88,18 @@ export type SessionState = {
   clarifyReasks: EntityState<ClarifyReaskRecord, string>;
   clarifyCompletion: ClarifyCompletionSummary | null;
   clarifyFailureReason: string | null;
+  passiveSteps: Record<PassiveStepName, PassiveStepRecord>;
 };
+
+const emptyPassiveStep = (step: PassiveStepName): PassiveStepRecord => ({
+  step,
+  sessionId: null,
+  running: false,
+  commitSha: null,
+  failureReason: null,
+  artifacts: [],
+  milestones: []
+});
 
 export const sessionInitialState: SessionState = {
   activeSessionId: null,
@@ -86,7 +122,12 @@ export const sessionInitialState: SessionState = {
   clarifyAnswers: clarifyAnswersAdapter.getInitialState(),
   clarifyReasks: clarifyReasksAdapter.getInitialState(),
   clarifyCompletion: null,
-  clarifyFailureReason: null
+  clarifyFailureReason: null,
+  passiveSteps: {
+    plan: emptyPassiveStep('plan'),
+    tasks: emptyPassiveStep('tasks'),
+    analyze: emptyPassiveStep('analyze')
+  }
 };
 
 const sessionSlice = createSlice({
@@ -188,6 +229,38 @@ const sessionSlice = createSlice({
       state.clarifyAskAnotherRunning = false;
       state.clarifyCompleting = false;
       state.clarifyFailureReason = action.payload.reason;
+    },
+    passiveStepRunStarted: (state, action: PayloadAction<{ step: PassiveStepName; sessionId: string; modelId?: string | null }>) => {
+      const record = state.passiveSteps[action.payload.step];
+      record.sessionId = action.payload.sessionId;
+      record.running = true;
+      record.failureReason = null;
+      state.activeSessionId = action.payload.sessionId;
+      state.modelId = action.payload.modelId ?? state.modelId;
+    },
+    passiveStepRunProgressed: (state, action: PayloadAction<{ step: PassiveStepName }>) => {
+      state.passiveSteps[action.payload.step].running = true;
+    },
+    passiveStepRunSucceeded: (
+      state,
+      action: PayloadAction<{
+        step: PassiveStepName;
+        commitSha: string;
+        artifacts: PassiveArtifactSummary[];
+        milestones?: PassiveMilestoneSummary[];
+      }>
+    ) => {
+      const record = state.passiveSteps[action.payload.step];
+      record.running = false;
+      record.commitSha = action.payload.commitSha;
+      record.failureReason = null;
+      record.artifacts = action.payload.artifacts;
+      record.milestones = action.payload.milestones ?? [];
+    },
+    passiveStepRunFailed: (state, action: PayloadAction<{ step: PassiveStepName; reason: string }>) => {
+      const record = state.passiveSteps[action.payload.step];
+      record.running = false;
+      record.failureReason = action.payload.reason;
     }
   },
   extraReducers: () => {}
@@ -205,7 +278,11 @@ export const {
   clarifyAnswerChanged,
   clarifyActiveQuestionChanged,
   clarifyRunSucceeded,
-  clarifyRunFailed
+  clarifyRunFailed,
+  passiveStepRunStarted,
+  passiveStepRunProgressed,
+  passiveStepRunSucceeded,
+  passiveStepRunFailed
 } = sessionSlice.actions;
 export const sessionReducer = sessionSlice.reducer;
 export default sessionReducer;

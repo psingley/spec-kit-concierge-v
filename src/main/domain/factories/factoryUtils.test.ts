@@ -60,9 +60,10 @@ describe('factoryUtils', () => {
 
   it('creates commit candidates with step-specific edge cases', () => {
     const plan = commitCandidate('plan', ['plan.md', 'research.md'], { contextFilePath: 'CONTEXT.md' });
-    const analyze = commitCandidate('analyze', ['analyze.md']);
+    const analyze = commitCandidate('analyze', []);
 
     expect(plan.files).toEqual(['plan.md', 'research.md', 'CONTEXT.md']);
+    expect(analyze.files).toEqual([]);
     expect(analyze.allowEmptyCommit).toBe(true);
     expect(plan.message).toBe('Concierge plan step');
   });

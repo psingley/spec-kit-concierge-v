@@ -1,5 +1,5 @@
 import type { RootState } from '../store';
-import type { ClarifyQuestionRecord } from './session';
+import type { ClarifyQuestionRecord, PassiveStepName } from './session';
 
 export const selectSessionState = (state: RootState) => state.session;
 export const selectSessionActiveSessionId = (state: RootState) => state.session.activeSessionId;
@@ -27,6 +27,8 @@ export const selectSessionClarifyAskAnotherRunning = (state: RootState) => state
 export const selectSessionClarifyCompleting = (state: RootState) => state.session.clarifyCompleting;
 export const selectSessionClarifyCompletion = (state: RootState) => state.session.clarifyCompletion;
 export const selectSessionClarifyFailureReason = (state: RootState) => state.session.clarifyFailureReason;
+export const selectSessionPassiveStep = (step: PassiveStepName) => (state: RootState) => state.session.passiveSteps[step];
+export const selectSessionPassiveSteps = (state: RootState) => state.session.passiveSteps;
 export const selectSessionCanFinishClarify = (state: RootState): boolean => {
   const questions = selectSessionClarifyQuestions(state);
   const hasMalformed = questions.some((question) => question.malformed === true);

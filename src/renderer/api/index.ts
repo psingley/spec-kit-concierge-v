@@ -10,6 +10,7 @@ import './branches.endpoint';
 import './artifacts.endpoint';
 import './copilotSpecify.endpoint';
 import './copilotClarify.endpoint';
+import './copilotPassive.endpoint';
 import { api as rootApi, RUN2_TAG_TYPES } from './rootApi';
 import type { activityApi } from './activity.endpoint';
 import type { authApi } from './auth.endpoint';
@@ -23,6 +24,7 @@ import type { branchesApi } from './branches.endpoint';
 import type { artifactsApi } from './artifacts.endpoint';
 import type { copilotSpecifyApi } from './copilotSpecify.endpoint';
 import type { copilotClarifyApi } from './copilotClarify.endpoint';
+import type { copilotPassiveApi } from './copilotPassive.endpoint';
 import type { AppVersionProof } from './rootApi';
 
 type Run4Endpoints = typeof rootApi.endpoints &
@@ -37,7 +39,8 @@ type Run4Endpoints = typeof rootApi.endpoints &
   typeof branchesApi.endpoints &
   typeof artifactsApi.endpoints &
   typeof copilotSpecifyApi.endpoints &
-  typeof copilotClarifyApi.endpoints;
+  typeof copilotClarifyApi.endpoints &
+  typeof copilotPassiveApi.endpoints;
 
 export const api = rootApi as typeof rootApi & { endpoints: Run4Endpoints };
 export { RUN2_TAG_TYPES, type AppVersionProof };

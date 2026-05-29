@@ -1,0 +1,66 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Plan",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Run Plan",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Plan completed",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "plan.mdrequired artifact view",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "research.mdrequired artifact view",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "contracts/artifact-read.mdrequired artifact view",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

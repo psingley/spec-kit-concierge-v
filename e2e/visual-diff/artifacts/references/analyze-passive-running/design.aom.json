@@ -1,0 +1,39 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Analyze",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Run Analyze",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "status",
+          "name": "",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

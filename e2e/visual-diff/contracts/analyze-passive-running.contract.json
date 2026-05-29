@@ -1,0 +1,13 @@
+{
+  "name": "analyze-passive-running",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".passive-step", "shippedSelector": ".passive-step" },
+  "required": {
+    "texts": [{ "value": "Analyze" }, { "value": "Analyze is running in the background." }, { "value": "Navigate freely" }],
+    "headings": [{ "level": 2, "text": "Analyze" }],
+    "controls": [{ "role": "button", "name": "Run Analyze", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+}

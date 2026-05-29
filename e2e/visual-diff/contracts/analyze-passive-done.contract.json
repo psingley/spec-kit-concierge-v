@@ -1,0 +1,13 @@
+{
+  "name": "analyze-passive-done",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".passive-step", "shippedSelector": ".passive-step" },
+  "required": {
+    "texts": [{ "value": "Analyze" }, { "value": "Analyze completed" }, { "value": "spec.md" }, { "value": "plan.md" }, { "value": "tasks.md" }, { "value": "remediation target" }],
+    "headings": [{ "level": 2, "text": "Analyze" }, { "level": 3, "text": "Analyze completed" }],
+    "controls": [{ "role": "button", "name": "Run Analyze", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+}

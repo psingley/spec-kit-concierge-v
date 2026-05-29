@@ -1,0 +1,13 @@
+{
+  "name": "tasks-passive-idle",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".passive-step", "shippedSelector": ".passive-step" },
+  "required": {
+    "texts": [{ "value": "Tasks" }, { "value": "Tasks is ready when the prior step is complete." }, { "value": "Run Tasks" }],
+    "headings": [{ "level": 2, "text": "Tasks" }],
+    "controls": [{ "role": "button", "name": "Run Tasks", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "passive-artifact-modal",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".modal", "shippedSelector": ".modal" },
+  "required": {
+    "texts": [{ "value": "Artifact" }, { "value": "plan.md" }, { "value": "Plan Artifact" }, { "value": "Validated" }, { "value": "Close" }],
+    "headings": [{ "level": 2, "text": "plan.md" }, { "level": 1, "text": "Plan Artifact" }],
+    "controls": [{ "role": "button", "name": "Close", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+}

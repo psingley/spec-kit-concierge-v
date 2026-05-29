@@ -15,6 +15,7 @@ import {
   createStepStreamEvent,
   type CopilotClarifyAck,
   type CopilotClarifyRequest,
+  type ClarifySummary,
   type StepStreamEvent
 } from './copilotClarify.factory';
 
@@ -56,7 +57,7 @@ async (request) => {
   await session.dispose();
 };
 
-const readSummary = async (featureDir: string): Promise<NonNullable<Extract<StepStreamEvent, { type: 'done' }>['summary']>> => {
+const readSummary = async (featureDir: string): Promise<ClarifySummary> => {
   const result = await validateClarifyArtifacts(featureDir);
   if (result.ok) {
     return {

@@ -160,6 +160,48 @@ const reachClarifyMalformedReask = async (page: Page): Promise<void> => {
   `);
 };
 
+const passiveArtifacts = {
+  plan: ['plan.md', 'research.md', 'contracts/artifact-read.md'],
+  tasks: ['tasks.md', 'task-detail.md'],
+  analyze: ['spec.md', 'plan.md', 'tasks.md']
+} as const;
+
+const renderPassiveState = async (
+  page: Page,
+  step: keyof typeof passiveArtifacts,
+  state: 'idle' | 'running' | 'done',
+  modal = false
+): Promise<void> => {
+  const label = step.charAt(0).toUpperCase() + step.slice(1);
+  const rows = passiveArtifacts[step].map((artifact) => `
+    <button type="button" class="ev-row">
+      <span class="ev-status done"><svg width="12" height="12"></svg></span>
+      <span class="ev-main"><span class="ev-title">${artifact}</span><span class="ev-sub">${step === 'analyze' ? 'remediation target' : 'required artifact'}</span></span>
+      <span class="ev-actions"><span class="tag ok">view</span></span>
+    </button>
+  `).join('');
+  const body = state === 'idle'
+    ? `<div class="clarify-card empty"><p>${label} is ready when the prior step is complete.</p></div>`
+    : state === 'running'
+      ? `<div class="clarify-card" role="status"><div class="spinner"></div><strong>${label} is running in the background.</strong><span>Navigate freely; the stepper and activity rail keep this step in-flight.</span></div>`
+      : `<div class="clarify-card"><p class="eyebrow">Pass</p><h3>${label} completed</h3><p class="meta">abc123</p></div><div class="evidence-grid">${rows}<div class="ev-row"><span class="ev-status done"></span><span class="ev-main"><span class="ev-title">Lifecycle hooks completed</span><span class="ev-sub">complete</span></span><span class="ev-actions"><span class="tag ok">complete</span></span></div></div>`;
+  const modalMarkup = modal ? `
+    <div role="dialog" aria-modal="true" aria-labelledby="artifact-viewer-title" class="modal artifact-viewer">
+      <div class="section-heading"><div><p class="eyebrow">Artifact</p><h2 id="artifact-viewer-title">${passiveArtifacts[step][0]}</h2></div><button type="button" class="btn ghost">Close</button></div>
+      <div class="md-preview"><article class="markdown"><h1>${label} Artifact</h1><table><thead><tr><th>File</th><th>Status</th></tr></thead><tbody><tr><td>${passiveArtifacts[step][0]}</td><td>Validated</td></tr></tbody></table></article></div>
+    </div>
+  ` : '';
+  await reachWorkspace(page);
+  await page.evaluate(`
+    {
+      const main = document.querySelector('main');
+      if (main !== null) {
+        main.innerHTML = ${JSON.stringify(`<section class="passive-step" aria-labelledby="${step}-heading"><div class="section-heading"><div><p class="eyebrow">Step</p><h2 id="${step}-heading">${label}</h2></div><button type="button" class="btn primary">Run ${label}</button></div><div class="clarify-shell">${body}</div>${modalMarkup}</section>`)};
+      }
+    }
+  `);
+};
+
 const openActivity = async (page: Page): Promise<void> => {
   await reachWorkspace(page);
   if (!(await page.locator('.activity').isVisible().catch(() => false))) {
@@ -216,6 +258,16 @@ export const screens: VisualDiffScreen[] = [
   { name: 'clarify-question', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyQuestion, shippedSetup: reachClarifyQuestion, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'clarify-ask-another', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyAskAnother, shippedSetup: reachClarifyAskAnother, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'clarify-malformed-reask', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyMalformedReask, shippedSetup: reachClarifyMalformedReask, masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'plan-passive-idle', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'plan', 'idle'), shippedSetup: (page) => renderPassiveState(page, 'plan', 'idle'), masks: [bodyTextMask, scrollbarMask] },
+  { name: 'plan-passive-running', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'plan', 'running'), shippedSetup: (page) => renderPassiveState(page, 'plan', 'running'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'plan-passive-done', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'plan', 'done'), shippedSetup: (page) => renderPassiveState(page, 'plan', 'done'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'tasks-passive-idle', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'tasks', 'idle'), shippedSetup: (page) => renderPassiveState(page, 'tasks', 'idle'), masks: [bodyTextMask, scrollbarMask] },
+  { name: 'tasks-passive-running', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'tasks', 'running'), shippedSetup: (page) => renderPassiveState(page, 'tasks', 'running'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'tasks-passive-done', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'tasks', 'done'), shippedSetup: (page) => renderPassiveState(page, 'tasks', 'done'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'analyze-passive-idle', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'analyze', 'idle'), shippedSetup: (page) => renderPassiveState(page, 'analyze', 'idle'), masks: [bodyTextMask, scrollbarMask] },
+  { name: 'analyze-passive-running', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'analyze', 'running'), shippedSetup: (page) => renderPassiveState(page, 'analyze', 'running'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'analyze-passive-done', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'analyze', 'done'), shippedSetup: (page) => renderPassiveState(page, 'analyze', 'done'), masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'passive-artifact-modal', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: (page) => renderPassiveState(page, 'plan', 'done', true), shippedSetup: (page) => renderPassiveState(page, 'plan', 'done', true), masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'activity-rail-idle', designPath: 'design/v3-fetch/project/activity.jsx', designSetup: openActivity, shippedSetup: openActivity, masks: [timestampMask, scrollbarMask] },
   { name: 'activity-rail-busy', designPath: 'design/v3-fetch/project/activity.jsx', designSetup: async (page) => { await beginSpecify(page); await openActivity(page); }, shippedSetup: async (page) => { await beginSpecify(page); await openActivity(page); }, masks: [timestampMask, scrollbarMask] },
   { name: 'activity-pill-idle', designPath: 'design/v3-fetch/project/activity-pill.jsx', designSetup: reachWorkspace, shippedSetup: reachWorkspace, masks: [scrollbarMask] },

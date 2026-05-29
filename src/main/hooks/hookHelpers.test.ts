@@ -66,7 +66,7 @@ describe('hookHelpers', () => {
   it('runs after hook validator, commit writer, marker remove, and activity sink paths', async () => {
     const validateArtifacts = vi.fn().mockResolvedValue({
       ok: true,
-      commit: { step: 'analyze', status: 'pass', files: ['analyze.md'], message: 'Concierge analyze step' }
+      commit: { step: 'analyze', status: 'pass', files: [], message: 'Concierge analyze step', allowEmptyCommit: true }
     });
     const commitWithTrailer = vi.fn().mockResolvedValue({ commitSha: 'abc123' });
     const removeInFlightMarker = vi.fn().mockResolvedValue(undefined);

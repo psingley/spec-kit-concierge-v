@@ -1,0 +1,13 @@
+{
+  "name": "tasks-passive-done",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".passive-step", "shippedSelector": ".passive-step" },
+  "required": {
+    "texts": [{ "value": "Tasks" }, { "value": "Tasks completed" }, { "value": "tasks.md" }, { "value": "task-detail.md" }, { "value": "Lifecycle hooks completed" }],
+    "headings": [{ "level": 2, "text": "Tasks" }, { "level": 3, "text": "Tasks completed" }],
+    "controls": [{ "role": "button", "name": "Run Tasks", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+}
