@@ -2,7 +2,7 @@ import { api } from './rootApi';
 import { parsingError } from './endpointUtils';
 import { parseRendererCopilotClarifyAck, parseRendererStepStreamEvent, type RendererCopilotClarifyAck } from './copilotClarify.factory';
 import { activityBusyChanged, recordActivity } from '../slices/activity';
-import { stepCompleted, stepPending } from '../slices/steps';
+import { clarifyQuestionMalformed, stepCompleted, stepPending } from '../slices/steps';
 import {
   clarifyQuestionsReceived,
   clarifyRunFailed,
@@ -56,6 +56,16 @@ export const copilotClarifyApi = api.injectEndpoints({
             })) ?? [];
             if (questions.length > 0 || malformedQuestions.length > 0) {
               queryApi.dispatch(clarifyQuestionsReceived({ questions, malformedQuestions, replace: arg.operation === 'next' }));
+              for (const malformedQuestion of malformedQuestions) {
+                queryApi.dispatch(clarifyQuestionMalformed({
+                  questionId: malformedQuestion.id,
+                  malformationCategory: malformedQuestion.malformationCategory ?? 'unknown',
+                  rawOutput: malformedQuestion.rawOutput ?? '',
+                  timestamp: new Date().toISOString(),
+                  modelId: arg.modelId ?? 'unknown',
+                  sessionId: parsed.value.sessionId
+                }));
+              }
             }
             if (typeof parsed.value.commitSha === 'string') {
               queryApi.dispatch(clarifyRunSucceeded({
