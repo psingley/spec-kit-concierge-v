@@ -5,6 +5,7 @@ import { activityBusyChanged, recordActivity } from '../slices/activity';
 import { specifyCompletedInWorkspace } from '../slices/workspace';
 import { stepCompleted, stepPending } from '../slices/steps';
 import { specifyRunFailed, specifyRunProgressed, specifyRunStarted, specifyRunSucceeded } from '../slices/session';
+import { toastShown } from '../slices/ui';
 
 export type RunSpecifyArgs = {
   repositoryPath: string;
@@ -42,11 +43,16 @@ export const copilotSpecifyApi = api.injectEndpoints({
         const response = await baseQuery({ channel: 'copilot:specify', payload: { ...arg, subscriptionId, modelId: arg.modelId ?? undefined } });
         if (response.error !== undefined) {
           unsubscribe();
+          const msg = response.error.data?.message ?? 'Specify IPC call failed';
+          console.error('[copilot:specify]', msg, response.error);
+          queryApi.dispatch(toastShown({ level: 'error', message: `Specify failed: ${msg}` }));
           return { error: response.error };
         }
         const parsed = parseRendererCopilotSpecifyAck(response.data);
         if (!parsed.ok) {
           unsubscribe();
+          console.error('[copilot:specify] ack parse failed', parsed.error);
+          queryApi.dispatch(toastShown({ level: 'error', message: `Specify failed: ${parsed.error.message}` }));
           return { error: parsingError(parsed.error) };
         }
         queryApi.dispatch(specifyRunStarted({ sessionId: parsed.value.sessionId, modelId: arg.modelId }));
