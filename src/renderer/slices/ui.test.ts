@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createProductStore } from '../store';
-import { selectUiActiveView, selectUiSidebarOpen, selectUiState, selectUiTheme } from './ui.selectors';
+import { selectUiSidebarOpen, selectUiState, selectUiTheme } from './ui.selectors';
 import uiReducer from './ui';
 
 describe('ui slice', () => {
@@ -8,7 +8,6 @@ describe('ui slice', () => {
     expect(uiReducer(undefined, { type: 'test/init' })).toEqual({
       theme: 'system',
       sidebarOpen: true,
-      activeView: null,
       showActivity: false,
       showCustomize: false,
       showAbout: false,
@@ -23,6 +22,5 @@ describe('ui slice', () => {
     expect(selectUiState(state)).toBe(state.ui);
     expect(selectUiTheme(state)).toBe('system');
     expect(selectUiSidebarOpen(state)).toBe(true);
-    expect(selectUiActiveView(state)).toBeNull();
   });
 });

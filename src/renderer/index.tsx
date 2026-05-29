@@ -11,6 +11,10 @@ import type { RendererBoundCLICapabilities } from './api/capabilities.factory';
 import type { AppVersionProof } from './api';
 import { App } from './App';
 import { store } from './store';
+import { createAppRouter } from './router';
+
+const router = createAppRouter(store);
+store.wireRouter(router);
 
 const rootElement = document.getElementById('root');
 
@@ -56,7 +60,7 @@ const ProofBadges = (): React.ReactElement => {
 
 createRoot(rootElement).render(
   <Provider store={store}>
-    <App />
+    <App router={router} />
     <ProofBadges />
   </Provider>
 );

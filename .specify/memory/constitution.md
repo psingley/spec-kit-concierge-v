@@ -219,6 +219,42 @@ API keep renderer behavior auditable. The constitutional law is the
 ownership boundary; the exact inventory is roadmap material that
 evolves without amendment.
 
+#### VI-A. URL-Based Navigation State (Amendment)
+
+Navigation state—specifically, which screen is displayed and which
+step is active—is owned by the URL via React Router's
+`createMemoryRouter`. This is the sole permitted exception to
+"Redux Toolkit slices own all renderer-local state."
+
+Ownership rules:
+
+- **URL owns**: current route path (`/sign-in`, `/repos`,
+  `/workspace`) and query parameters (`?step=<StepName>`).
+- **Redux owns**: all domain state (auth status, workspace
+  selection, step availability, session data). Redux never reads
+  from the URL.
+- **Navigation listener** (listener middleware) is the unidirectional
+  bridge. It watches Redux state changes and calls
+  `router.navigate()` to synchronize the URL. It always uses
+  `replace: true` to prevent history stack growth.
+- **Route guards** (layout route components) enforce invariants
+  declaratively: `AuthGuard` redirects to `/sign-in` when the auth
+  gate is closed; `WorkspaceGuard` redirects to `/repos` when no
+  workspace is active.
+- **Components** may read URL state via React Router hooks
+  (`useSearchParams`, `useParams`) for presentation decisions
+  (e.g., which step panel to render). They dispatch Redux actions
+  to request navigation; they never call `router.navigate()`
+  directly.
+- **Back/forward** browser navigation is disabled in Electron
+  (`before-input-event` blocks Alt+Arrow). The memory router has
+  no address bar. Users navigate exclusively through UI controls
+  that dispatch Redux actions.
+
+Introducing additional URL-owned state (new query params, path
+segments, or hash fragments) requires a "Constitution impact" note
+in the pull request explaining why Redux ownership was insufficient.
+
 ### VII. Step Lifecycle and Recovery (NON-NEGOTIABLE)
 
 Every step's lifecycle is owned by the spec-kit `before_<step>` and

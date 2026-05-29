@@ -18,7 +18,7 @@ describe('product store assembly', () => {
       'activity',
       'copilot'
     ]);
-    expect(state.ui).toMatchObject({ theme: 'system', sidebarOpen: true, activeView: null, showActivity: false });
+    expect(state.ui).toMatchObject({ theme: 'system', sidebarOpen: true, showActivity: false });
     expect(state.preferences).toMatchObject({ hydratedFromDisk: false, theme: 'system', accent: '#8b5cf6', activitySide: 'right' });
     expect(state.auth).toMatchObject({ copilotLoggedIn: null, githubLoggedIn: null, github: 'unknown', copilot: 'locked', atlassian: 'out' });
     expect(state.workspace).toEqual({
@@ -31,8 +31,7 @@ describe('product store assembly', () => {
       selectedRepo: null,
       sessions: [],
       activeStep: 'specify',
-      maxReachedStep: 'specify',
-      viewedStep: 'specify'
+      maxReachedStep: 'specify'
     });
     expect(state.steps).toEqual({ ids: [], entities: {} });
     expect(state.session).toMatchObject({ activeSessionId: null, modelId: null, modeId: null, specifyPrompt: '', specMarkdown: '' });

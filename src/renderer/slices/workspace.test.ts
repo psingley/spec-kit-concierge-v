@@ -23,8 +23,7 @@ describe('workspace slice', () => {
       selectedRepo: null,
       sessions: [],
       activeStep: 'specify',
-      maxReachedStep: 'specify',
-      viewedStep: 'specify'
+      maxReachedStep: 'specify'
     });
   });
 

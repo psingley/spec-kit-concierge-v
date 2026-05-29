@@ -18,7 +18,6 @@ export type WorkspaceState = {
   sessions: BranchSession[];
   activeStep: StepName;
   maxReachedStep: StepName;
-  viewedStep: StepName;
 };
 
 export type RepositorySummary = {
@@ -48,8 +47,7 @@ export const workspaceInitialState: WorkspaceState = {
   selectedRepo: null,
   sessions: [],
   activeStep: 'specify',
-  maxReachedStep: 'specify',
-  viewedStep: 'specify'
+  maxReachedStep: 'specify'
 };
 
 const workspaceSlice = createSlice({
@@ -79,22 +77,20 @@ const workspaceSlice = createSlice({
       state.activeRepoPath = action.payload.repo.path;
       state.branch = action.payload.branch;
       state.activeStep = 'specify';
-      state.viewedStep = 'specify';
       state.maxReachedStep = action.payload.restoredStates?.clarify === 'pending' || action.payload.restoredStates?.specify === 'complete' ? 'clarify' : 'specify';
     },
     draftSessionCreated: (state, action: PayloadAction<{ branch: string }>) => {
       state.branch = action.payload.branch;
       state.activeStep = 'specify';
-      state.viewedStep = 'specify';
       state.maxReachedStep = 'specify';
     },
-    workspaceStepViewed: (state, action: PayloadAction<StepName>) => {
-      state.viewedStep = action.payload;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    workspaceStepViewed: (_state, _action: PayloadAction<StepName>) => {
+      // Step viewing is now tracked in URL via navigation listener, not Redux state
     },
     specifyCompletedInWorkspace: (state) => {
       state.activeStep = 'clarify';
       state.maxReachedStep = 'clarify';
-      state.viewedStep = 'specify';
     }
   },
   extraReducers: () => {}

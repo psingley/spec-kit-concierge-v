@@ -20,8 +20,8 @@
 
 **Purpose**: Install dependency and create directory structure
 
-- [ ] T001 Install react-router@7 via `npm install react-router@7` and verify package.json updated
-- [ ] T002 Create directory `src/renderer/components/guards/` for route guard components
+- [x] T001 Install react-router@7 via `npm install react-router@7` and verify package.json updated
+- [x] T002 Create directory `src/renderer/components/guards/` for route guard components
 
 ---
 
@@ -33,16 +33,16 @@
 
 ### Tests (RED first)
 
-- [ ] T003 Write failing test for router creation with 3 routes (sign-in, repos, workspace) in `src/renderer/router.test.ts`
-- [ ] T004 Write failing test for App rendering RouterProvider in `src/renderer/App.test.tsx`
-- [ ] T005 Write failing test for Electron back/forward key prevention in `src/main/index.test.ts`
+- [x] T003 Write failing test for router creation with 3 routes (sign-in, repos, workspace) in `src/renderer/router.test.ts`
+- [x] T004 Write failing test for App rendering RouterProvider in `src/renderer/App.test.tsx`
+- [x] T005 Write failing test for Electron back/forward key prevention in `src/main/backForwardBlocker.test.ts`
 
 ### Implementation (GREEN)
 
-- [ ] T006 Create router configuration with `createMemoryRouter` and route definitions in `src/renderer/router.ts`
-- [ ] T007 Refactor `src/renderer/App.tsx` to render `<RouterProvider router={router} />` replacing conditional rendering
-- [ ] T008 Update `src/renderer/index.tsx` to pass router into the component tree
-- [ ] T009 Add `before-input-event` handler to disable Alt+ArrowLeft/Alt+ArrowRight in `src/main/index.ts`
+- [x] T006 Create router configuration with `createMemoryRouter` and route definitions in `src/renderer/router.ts`
+- [x] T007 Refactor `src/renderer/App.tsx` to render `<RouterProvider router={router} />` replacing conditional rendering
+- [x] T008 Update `src/renderer/index.tsx` to pass router into the component tree
+- [x] T009 Add `before-input-event` handler to disable Alt+ArrowLeft/Alt+ArrowRight in `src/main/index.ts`
 
 **Checkpoint**: Router renders, all 3 routes defined, back/forward disabled. Tests pass GREEN.
 
@@ -56,26 +56,26 @@
 
 ### Tests for User Story 1 (RED first)
 
-- [ ] T010 [P] [US1] Write failing test: AuthGuard renders Outlet when authenticated in `src/renderer/components/guards/AuthGuard.test.tsx`
-- [ ] T011 [P] [US1] Write failing test: AuthGuard redirects to /sign-in when not authenticated in `src/renderer/components/guards/AuthGuard.test.tsx`
-- [ ] T012 [P] [US1] Write failing test: WorkspaceGuard renders Outlet when repo and branch are set in `src/renderer/components/guards/WorkspaceGuard.test.tsx`
-- [ ] T013 [P] [US1] Write failing test: WorkspaceGuard redirects to /repos when no workspace in `src/renderer/components/guards/WorkspaceGuard.test.tsx`
-- [ ] T014 [P] [US1] Write failing test: navigation listener navigates to /sign-in when auth gate closes in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T015 [P] [US1] Write failing test: navigation listener navigates to /repos when auth gate opens and no workspace in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T016 [P] [US1] Write failing test: navigation listener navigates to /workspace when workspaceEntered dispatched in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T017 [P] [US1] Write failing test: navigation listener navigates to /repos when repositoryBrowseReset dispatched in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T018 [US1] Write failing test: catch-all route redirects based on current state in `src/renderer/router.test.ts`
+- [x] T010 [P] [US1] Write failing test: AuthGuard renders Outlet when authenticated in `src/renderer/components/guards/AuthGuard.test.tsx`
+- [x] T011 [P] [US1] Write failing test: AuthGuard redirects to /sign-in when not authenticated in `src/renderer/components/guards/AuthGuard.test.tsx`
+- [x] T012 [P] [US1] Write failing test: WorkspaceGuard renders Outlet when repo and branch are set in `src/renderer/components/guards/WorkspaceGuard.test.tsx`
+- [x] T013 [P] [US1] Write failing test: WorkspaceGuard redirects to /repos when no workspace in `src/renderer/components/guards/WorkspaceGuard.test.tsx`
+- [x] T014 [P] [US1] Write failing test: navigation listener navigates to /sign-in when auth gate closes in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T015 [P] [US1] Write failing test: navigation listener navigates to /repos when auth gate opens and no workspace in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T016 [P] [US1] Write failing test: navigation listener navigates to /workspace when workspaceEntered dispatched in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T017 [P] [US1] Write failing test: navigation listener navigates to /repos when repositoryBrowseReset dispatched in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T018 [US1] Write failing test: catch-all route redirects based on current state in `src/renderer/router.test.ts`
 
 ### Implementation for User Story 1 (GREEN)
 
-- [ ] T019 [P] [US1] Implement AuthGuard component using useAppSelector and Navigate in `src/renderer/components/guards/AuthGuard.tsx`
-- [ ] T020 [P] [US1] Implement WorkspaceGuard component using useAppSelector and Navigate in `src/renderer/components/guards/WorkspaceGuard.tsx`
-- [ ] T021 [US1] Implement navigation listener with auth and workspace watchers in `src/renderer/listeners/navigation.listener.ts`
-- [ ] T022 [US1] Wire navigation listener into store assembly via `setupNavigationListener` in `src/renderer/store.ts`
-- [ ] T023 [US1] Update router.ts route definitions to nest routes under AuthGuard and WorkspaceGuard layout routes in `src/renderer/router.ts`
-- [ ] T024 [US1] Add catch-all `*` route that redirects based on current auth/workspace state in `src/renderer/router.ts`
-- [ ] T025 [US1] Remove `activeView` field and related reducer from ui slice in `src/renderer/slices/ui.ts`
-- [ ] T026 [US1] Remove `selectUiActiveView` selector if present in `src/renderer/slices/ui.selectors.ts`
+- [x] T019 [P] [US1] Implement AuthGuard component using useAppSelector and Navigate in `src/renderer/components/guards/AuthGuard.tsx`
+- [x] T020 [P] [US1] Implement WorkspaceGuard component using useAppSelector and Navigate in `src/renderer/components/guards/WorkspaceGuard.tsx`
+- [x] T021 [US1] Implement navigation listener with auth and workspace watchers in `src/renderer/listeners/navigation.listener.ts`
+- [x] T022 [US1] Wire navigation listener into store assembly via `setupNavigationListener` in `src/renderer/store.ts`
+- [x] T023 [US1] Update router.ts route definitions to nest routes under AuthGuard and WorkspaceGuard layout routes in `src/renderer/router.ts`
+- [x] T024 [US1] Add catch-all `*` route that redirects based on current auth/workspace state in `src/renderer/router.ts`
+- [x] T025 [US1] Remove `activeView` field and related reducer from ui slice in `src/renderer/slices/ui.ts`
+- [x] T026 [US1] Remove `selectUiActiveView` selector if present in `src/renderer/slices/ui.selectors.ts`
 
 **Checkpoint**: At this point, screens render via routes, guards protect them, navigation listener syncs Redux to URL. User Story 1 is fully functional and testable independently.
 
@@ -89,20 +89,20 @@
 
 ### Tests for User Story 2 (RED first)
 
-- [ ] T027 [P] [US2] Write failing test: navigation listener updates ?step= query param when step viewed action fires in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T028 [P] [US2] Write failing test: navigation listener sets ?step=clarify when specifyCompletedInWorkspace fires in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T029 [P] [US2] Write failing test: workspace route reads valid step param and applies it in `src/renderer/hooks/useStepFromUrl.test.ts`
-- [ ] T030 [P] [US2] Write failing test: workspace route falls back to activeStep when step param is invalid in `src/renderer/hooks/useStepFromUrl.test.ts`
-- [ ] T031 [US2] Write failing test: workspace route falls back to activeStep when step is not_available in `src/renderer/hooks/useStepFromUrl.test.ts`
+- [x] T027 [P] [US2] Write failing test: navigation listener updates ?step= query param when step viewed action fires in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T028 [P] [US2] Write failing test: navigation listener sets ?step=clarify when specifyCompletedInWorkspace fires in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T029 [P] [US2] Write failing test: workspace route reads valid step param and applies it in `src/renderer/hooks/useStepFromUrl.test.ts`
+- [x] T030 [P] [US2] Write failing test: workspace route falls back to activeStep when step param is invalid in `src/renderer/hooks/useStepFromUrl.test.ts`
+- [x] T031 [US2] Write failing test: workspace route falls back to activeStep when step is not_available in `src/renderer/hooks/useStepFromUrl.test.ts`
 
 ### Implementation for User Story 2 (GREEN)
 
-- [ ] T032 [US2] Add step query param sync to navigation listener (workspaceStepViewed, specifyCompletedInWorkspace, workspaceEntered) in `src/renderer/listeners/navigation.listener.ts`
-- [ ] T033 [US2] Create useStepFromUrl hook that reads ?step= and validates against step availability in `src/renderer/hooks/useStepFromUrl.ts`
-- [ ] T034 [US2] Remove `viewedStep` field from workspace slice in `src/renderer/slices/workspace.ts`
-- [ ] T035 [US2] Remove `selectWorkspaceViewedStep` selector in `src/renderer/slices/workspace.selectors.ts`
-- [ ] T036 [US2] Update WorkspaceContainer to use useStepFromUrl instead of Redux viewedStep selector in `src/renderer/components/WorkspaceContainer.tsx`
-- [ ] T037 [US2] Update Stepper component props to receive step from URL hook rather than Redux in `src/renderer/components/Stepper.tsx`
+- [x] T032 [US2] Add step query param sync to navigation listener (workspaceStepViewed, specifyCompletedInWorkspace, workspaceEntered) in `src/renderer/listeners/navigation.listener.ts`
+- [x] T033 [US2] Create useStepFromUrl hook that reads ?step= and validates against step availability in `src/renderer/hooks/useStepFromUrl.ts`
+- [x] T034 [US2] Remove `viewedStep` field from workspace slice in `src/renderer/slices/workspace.ts`
+- [x] T035 [US2] Remove `selectWorkspaceViewedStep` selector in `src/renderer/slices/workspace.selectors.ts`
+- [x] T036 [US2] Update WorkspaceContainer to use useStepFromUrl instead of Redux viewedStep selector in `src/renderer/components/WorkspaceContainer.tsx`
+- [x] T037 [US2] Update Stepper component props to receive step from URL hook rather than Redux in `src/renderer/components/Stepper.tsx`
 
 **Checkpoint**: At this point, step is reflected in URL, survives reload, validates against availability. User Stories 1 AND 2 are both independently functional.
 
@@ -116,9 +116,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T038 [US3] Add "URL-Based Navigation State" subsection under Section VI in `.specify/memory/constitution.md`
-- [ ] T039 [US3] Verify amendment does not contradict existing Section VI rules (no other state library ban, listener middleware as effect layer, selector composite read API)
-- [ ] T040 [US3] Update CLAUDE.md custom instructions if any Run conventions reference navigation state ownership
+- [x] T038 [US3] Add "URL-Based Navigation State" subsection under Section VI in `.specify/memory/constitution.md`
+- [x] T039 [US3] Verify amendment does not contradict existing Section VI rules (no other state library ban, listener middleware as effect layer, selector composite read API)
+- [x] T040 [US3] Update CLAUDE.md custom instructions if any Run conventions reference navigation state ownership
 
 **Checkpoint**: Constitution amended. All three user stories complete.
 
@@ -128,14 +128,14 @@
 
 **Purpose**: Fix regressions, update dependent tests, add e2e coverage
 
-- [ ] T041 [P] Update existing ui.test.ts to remove activeView-related test cases in `src/renderer/slices/ui.test.ts`
-- [ ] T042 [P] Update existing workspace.test.ts to remove viewedStep-related test cases in `src/renderer/slices/workspace.test.ts`
-- [ ] T043 Update any components importing removed selectors (selectWorkspaceViewedStep, selectUiActiveView) across `src/renderer/components/`
-- [ ] T044 [P] Write e2e routing test: full auth → repos → workspace → step navigation flow; verify reload preserves current route and step query param in `e2e/routing.spec.ts`
-- [ ] T045 [P] Write navigation listener test verifying external agent dispatch of `workspaceEntered` produces same route change as human UI interaction [Story 1] [FR-010] in `src/renderer/listeners/navigation.listener.test.ts`
-- [ ] T046 Run full test suite (`npm test`) and fix any regressions
-- [ ] T047 Run typecheck (`npm run typecheck`) and fix type errors from removed fields
-- [ ] T048 Run lint (`npm run lint`) and fix any violations
+- [x] T041 [P] Update existing ui.test.ts to remove activeView-related test cases in `src/renderer/slices/ui.test.ts`
+- [x] T042 [P] Update existing workspace.test.ts to remove viewedStep-related test cases in `src/renderer/slices/workspace.test.ts`
+- [x] T043 Update any components importing removed selectors (selectWorkspaceViewedStep, selectUiActiveView) across `src/renderer/components/`
+- [x] T044 [P] Write e2e routing test: full auth → repos → workspace → step navigation flow; verify reload preserves current route and step query param in `e2e/routing.spec.ts`
+- [x] T045 [P] Write navigation listener test verifying external agent dispatch of `workspaceEntered` produces same route change as human UI interaction [Story 1] [FR-010] in `src/renderer/listeners/navigation.listener.test.ts`
+- [x] T046 Run full test suite (`npm test`) and fix any regressions
+- [x] T047 Run typecheck (`npm run typecheck`) and fix type errors from removed fields
+- [x] T048 Run lint (`npm run lint`) and fix any violations
 
 ---
 

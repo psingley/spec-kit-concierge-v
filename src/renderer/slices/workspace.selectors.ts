@@ -11,4 +11,3 @@ export const selectWorkspaceSelectedRepo = (state: RootState) => state.workspace
 export const selectWorkspaceSessions = (state: RootState) => state.workspace.sessions;
 export const selectWorkspaceActiveStep = (state: RootState) => state.workspace.activeStep;
 export const selectWorkspaceMaxReachedStep = (state: RootState) => state.workspace.maxReachedStep;
-export const selectWorkspaceViewedStep = (state: RootState) => state.workspace.viewedStep;

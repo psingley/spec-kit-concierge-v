@@ -1,7 +1,12 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
+import { useStepFromUrl } from '../hooks/useStepFromUrl';
 import type { StepName, StepState } from '../slices/steps';
 import { workspaceStepViewed } from '../slices/workspace';
+import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
+import { selectUiShowAbout, selectUiShowRequest } from '../slices/ui.selectors';
+import { modalClosed } from '../slices/ui';
+import { ActivityPillContainer } from './ActivityPillContainer';
 import { selectWorkspaceViewedStep } from '../slices/workspace.selectors';
 import { selectUiShowActivity } from '../slices/ui.selectors';
 import { ActivityRailContainer } from './ActivityRailContainer';
@@ -17,7 +22,7 @@ import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 
 export const WorkspaceContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const viewedStep = useAppSelector(selectWorkspaceViewedStep);
+  const viewedStep = useStepFromUrl();
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
   const passiveSteps = useAppSelector(selectSessionPassiveSteps);
   const showActivity = useAppSelector(selectUiShowActivity);

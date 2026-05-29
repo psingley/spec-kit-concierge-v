@@ -3,7 +3,6 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 export type UiState = {
   theme: 'system' | 'light' | 'dark';
   sidebarOpen: boolean;
-  activeView: string | null;
   showActivity: boolean;
   showCustomize: boolean;
   showAbout: boolean;
@@ -14,7 +13,6 @@ export type UiState = {
 export const uiInitialState: UiState = {
   theme: 'system',
   sidebarOpen: true,
-  activeView: null,
   showActivity: false,
   showCustomize: false,
   showAbout: false,

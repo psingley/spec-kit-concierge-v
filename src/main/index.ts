@@ -23,6 +23,7 @@ import { registerWorkspaceIpc } from './ipc/workspace';
 import { registerMcpConfigIpc } from './ipc/mcpConfig';
 import { verifyAgentManifestDrift } from './hooks/driftVerifier';
 import { createMainLogger, type MainLogger } from './logging';
+import { createBackForwardBlocker } from './backForwardBlocker';
 
 const createWindow = (logger: MainLogger): BrowserWindow => {
   const mainWindow = new BrowserWindow({
@@ -39,6 +40,8 @@ const createWindow = (logger: MainLogger): BrowserWindow => {
   } else {
     void mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
+
+  mainWindow.webContents.on('before-input-event', createBackForwardBlocker());
 
   logger.info('main window created');
 

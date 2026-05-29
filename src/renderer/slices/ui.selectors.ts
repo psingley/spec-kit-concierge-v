@@ -3,7 +3,6 @@ import type { RootState } from '../store';
 export const selectUiState = (state: RootState) => state.ui;
 export const selectUiTheme = (state: RootState) => state.ui.theme;
 export const selectUiSidebarOpen = (state: RootState) => state.ui.sidebarOpen;
-export const selectUiActiveView = (state: RootState) => state.ui.activeView;
 export const selectUiShowActivity = (state: RootState) => state.ui.showActivity;
 export const selectUiShowCustomize = (state: RootState) => state.ui.showCustomize;
 export const selectUiShowAbout = (state: RootState) => state.ui.showAbout;
