@@ -2,6 +2,7 @@ import path from 'node:path';
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
+import { resolveLocalRepoPath } from '../data-layer/git/repoClone';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { MainLogger } from '../logging';
@@ -96,7 +97,9 @@ export const registerCopilotSpecifyIpc = ({
         terminalSent = true;
         sendEvent(streamEvent);
       };
-      const featureDir = request.value.repositoryPath;
+      // Resolve owner/repo to local absolute path
+      const repositoryPath = resolveLocalRepoPath(userDataPath, request.value.repositoryPath);
+      const featureDir = repositoryPath;
       const artifactPath = 'spec.md';
       try {
         sendEvent({
@@ -108,7 +111,7 @@ export const registerCopilotSpecifyIpc = ({
           timestamp: new Date().toISOString()
         });
         const before = await beforeSpecifyHook({
-          repositoryPath: request.value.repositoryPath,
+          repositoryPath,
           featureDir,
           sessionId,
           userDataPath,
@@ -125,9 +128,9 @@ export const registerCopilotSpecifyIpc = ({
           message: 'Sending prompt to Copilot',
           timestamp: new Date().toISOString()
         });
-        await agentAdapter({ ...request.value, sessionId, featureDir });
+        await agentAdapter({ ...request.value, repositoryPath, sessionId, featureDir });
         const after = await afterSpecifyHook({
-          repositoryPath: request.value.repositoryPath,
+          repositoryPath,
           featureDir,
           sessionId,
           userDataPath,

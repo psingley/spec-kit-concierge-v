@@ -4,6 +4,7 @@ import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { appendClarifyMalformation } from '../data-layer/clarifyMalformationLog';
+import { resolveLocalRepoPath } from '../data-layer/git/repoClone';
 import { validateClarifyArtifacts } from '../domain/factories';
 import { beforeClarifyHook } from '../hooks/beforeClarify.hook';
 import { afterClarifyHook } from '../hooks/afterClarify.hook';
@@ -125,17 +126,18 @@ export const registerCopilotClarifyIpc = ({
     };
     const run = async (): Promise<void> => {
       try {
-        const featureDir = request.value.repositoryPath;
+        const repositoryPath = resolveLocalRepoPath(userDataPath, request.value.repositoryPath);
+        const featureDir = repositoryPath;
         if (request.value.operation === 'next') {
-          const before = await beforeClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
+          const before = await beforeClarifyHook({ repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
           if (!before.ok) throw new Error(before.escapeHatchReason);
         }
         sendEvent({ type: 'progress', step: 'clarify', sessionId, level: 'info', message: 'Running Clarify', timestamp: new Date().toISOString() });
-        await agentAdapter({ ...request.value, sessionId, featureDir });
+        await agentAdapter({ ...request.value, repositoryPath, sessionId, featureDir });
         if (request.value.operation === 'commit') {
           await appendAnswers(featureDir, request.value.answers);
           const summary = await readSummary(featureDir);
-          const after = await afterClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
+          const after = await afterClarifyHook({ repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
           if (!after.ok || after.commit?.commitSha === undefined) throw new Error(after.ok ? 'missing commit sha' : after.escapeHatchReason);
           sendEvent({ type: 'done', step: 'clarify', sessionId, status: 'pass', artifactPath: 'spec.md', commitSha: after.commit.commitSha, summary: { ...summary, answers: request.value.answers.map((answer) => ({ questionId: answer.questionId, choiceKey: answer.selectedChoiceKey, note: answer.shortAnswer })) } });
         } else {
