@@ -21,7 +21,17 @@ describe('session slice', () => {
       artifactPath: null,
       commitSha: null,
       scrollProgress: 0,
-      failureReason: null
+      failureReason: null,
+      clarifySessionId: null,
+      clarifyRunning: false,
+      clarifyAskAnotherRunning: false,
+      clarifyCompleting: false,
+      clarifyActiveQuestionId: null,
+      clarifyQuestions: { ids: [], entities: {} },
+      clarifyAnswers: { ids: [], entities: {} },
+      clarifyReasks: { ids: [], entities: {} },
+      clarifyCompletion: null,
+      clarifyFailureReason: null
     });
   });
 
