@@ -103,13 +103,13 @@ As a Concierge maintainer, I need Run 7 to extend existing state, stream, lifecy
 ### Edge Cases
 
 - Specify is not complete or lacks a readable committed artifact when the user attempts to start Clarify.
-- Clarify returns no questions because no clarification is needed.
+- Clarify returns the exact trimmed sentinel `no questions needed`; the factory treats it as valid zero-question output, and completion may proceed with an empty questions/answers summary.
 - Clarify returns duplicate question ids, missing question text, fewer than two choices, missing choice keys or labels, parser-confusing line-start emphasis, inconsistent line endings, or extra unrecognized data.
 - Clarify returns a short-answer marker, omits a short-answer marker, or provides agent text that conflicts with the UI-supplied short-answer affordance.
 - Well-formed and malformed questions arrive in the same artifact.
 - A re-ask rewrite changes the malformed question id, duplicates another id, changes unrelated well-formed questions, or returns another malformed version.
 - The user answers unaffected questions, changes active question, opens other app navigation, or clicks Ask Another while one malformed card is in flight.
-- Ask Another returns a malformed question, no question, or a duplicate of an existing question.
+- Ask Another returns a malformed question, no additional question, or a duplicate of an existing question; the no-additional-question case preserves existing questions and answers and records observable activity without appending a new card.
 - The user attempts Finish while a re-ask or Ask Another request is still in flight.
 - Step Commit succeeds but artifact readback fails, or artifact readback succeeds but Step Commit fails.
 - The malformation audit log cannot be written or contains data that must be sanitized before persistence.
@@ -135,7 +135,7 @@ As a Concierge maintainer, I need Run 7 to extend existing state, stream, lifecy
 - **FR-013**: Clarify `done/pass` MUST include `artifactPath`, `commitSha`, and a parsed questions/answers summary.
 - **FR-014**: Clarify `done/fail` MUST include a user-actionable reason and MUST NOT mark Clarify complete.
 - **FR-015**: The renderer endpoint/API for Clarify MUST expose `clarify:next`, `clarify:answer`, `clarify:reaskMalformed`, `clarify:askAnother`, and `clarify:commit`, and MUST subscribe and unsubscribe through the generic preload step-stream subscription path rather than component-level event handling.
-- **FR-016**: Clarify renderer state MUST extend the existing session state with questions, answers, active question, Ask Another state, malformed-card state, and re-ask attempts; it MUST NOT add a ninth Redux slice.
+- **FR-016**: Clarify renderer state MUST extend the existing session state with `createEntityAdapter`-managed stable-id questions, answers, and re-ask records, plus active question, Ask Another state, malformed-card state, and completion status; it MUST NOT add a ninth Redux slice.
 - **FR-017**: Smart Clarify containers MAY coordinate product state and endpoints, but presentational Clarify components MUST receive data and callbacks as props.
 - **FR-018**: Clarify question validation MUST enforce strict Step Contract rules: trimmed non-empty question text, normalized and consistent line endings, at least two choices, each choice having key and label, no parser-confusing markdown emphasis at the start of a line, and no unrecognized extra data at the disk-entry boundary.
 - **FR-019**: The Clarify Step Contract factory MUST use the seven-case trust-boundary test floor: happy path, empty object named error, null named error, undefined named error, one hostile malformed case, one partial structurally-plausible case, and extra-key rejection.
@@ -149,15 +149,16 @@ As a Concierge maintainer, I need Run 7 to extend existing state, stream, lifecy
 - **FR-027**: Every Clarify malformation MUST be recorded in the activity stream and in a global audit stream at `userData/clarify-malformations.jsonl`.
 - **FR-028**: Each malformation audit record MUST include question id, malformation category, raw output or safe excerpt, timestamp, model id when known, session id, and step name, without recording secrets or unrelated personal data.
 - **FR-029**: Clarify completion MUST occur only after all current questions have selected choices, accepted answers are written in-place to the feature `spec.md` Clarifications section, the Clarify factory validates the artifact, the after-Clarify lifecycle succeeds, and a Step Commit SHA is returned.
-- **FR-030**: The Clarify pass Step Commit MUST use the established step lifecycle trailer semantics for `Concierge-Step: clarify:pass`.
-- **FR-031**: The Clarify fail path MUST preserve observable activity, avoid false completion, and route unrecoverable validation or hook failures through the Step Escape Hatch.
-- **FR-032**: The Clarify ACP transcript fixture at `specs/0007-clarify-vertical/fixtures/clarify-transcript.jsonl` MUST remain valid evidence for initialization, model selection, prompt streaming, and generated Clarify question chunks.
-- **FR-033**: Run 7 MUST add no runtime dependencies and MUST NOT implement Plan, Tasks, Analyze, Review, JIRA sync UI, or a ninth renderer state slice.
-- **FR-034**: Clarify UI MUST meet WCAG 2.1 AA expectations: keyboard operability, visible focus, accessible labels/instructions for every choice group and textarea, programmatic disabled/error messaging, live announcements for dynamic status and malformation events, and no color-only state communication.
-- **FR-035**: Clarify visual contracts MUST include exactly these three new body screens: `clarify-question`, `clarify-ask-another`, and `clarify-malformed-reask`.
-- **FR-036**: Run 7 verification MUST include the new Clarify visual contracts and non-regression of the existing 24 visual screens.
-- **FR-037**: Clarify progress and completion activity MUST be reflected in the existing activity stream without increasing the 256-entry activity history cap.
-- **FR-038**: Clarify MUST keep the step order canonical: specify, clarify, plan, tasks, analyze, review.
+- **FR-030**: A Clarify artifact containing exactly the trimmed sentinel `no questions needed` and no question blocks MUST be treated as valid zero-question output; completion MUST return pass proof with an empty questions/answers summary rather than routing through malformation recovery.
+- **FR-031**: The Clarify pass Step Commit MUST use the established step lifecycle trailer semantics for `Concierge-Step: clarify:pass`.
+- **FR-032**: The Clarify fail path MUST preserve observable activity, avoid false completion, and route unrecoverable validation or hook failures through the Step Escape Hatch.
+- **FR-033**: The Clarify ACP transcript fixture at `specs/0007-clarify-vertical/fixtures/clarify-transcript.jsonl` MUST remain valid evidence for initialization, model selection, prompt streaming, and generated Clarify question chunks.
+- **FR-034**: Run 7 MUST add no runtime dependencies and MUST NOT implement Plan, Tasks, Analyze, Review, JIRA sync UI, or a ninth renderer state slice.
+- **FR-035**: Clarify UI MUST meet WCAG 2.1 AA expectations: keyboard operability, visible focus, accessible labels/instructions for every choice group and textarea, programmatic disabled/error messaging, live announcements for dynamic status and malformation events, and no color-only state communication.
+- **FR-036**: Clarify visual contracts MUST include exactly these three new body screens: `clarify-question`, `clarify-ask-another`, and `clarify-malformed-reask`.
+- **FR-037**: Run 7 verification MUST include the new Clarify visual contracts and non-regression of the existing 24 visual screens.
+- **FR-038**: Clarify progress and completion activity MUST be reflected in the existing activity stream without increasing the 256-entry activity history cap.
+- **FR-039**: Clarify MUST keep the step order canonical: specify, clarify, plan, tasks, analyze, review.
 
 ### Key Entities *(include if feature involves data)*
 

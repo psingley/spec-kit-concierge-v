@@ -19,13 +19,22 @@ Request:
   answers?: Array<{ questionId: string; choiceKey: string; note?: string }>;
   reaskContext?: {
     malformedQuestionText: string;
-    position: number;
+    position: number; // one-based display position
     malformationCategory: string;
     wellFormedQuestions: Array<{ id: string; text: string }>;
   };
   modelId?: string;
 }
 ```
+
+Mode-specific required fields:
+
+- `next`: no additional required fields beyond the common request fields.
+- `askAnother`: `sessionId`.
+- `reaskMalformed`: `sessionId`, `questionId`, and `reaskContext`.
+- `commit`: `sessionId` and `answers` for the current visible well-formed questions.
+
+Zero-question Clarify output uses the exact trimmed sentinel `no questions needed`. In that case, `commit` accepts an empty `answers` array and the terminal `done/pass` summary carries empty `questions` and `answers` arrays.
 
 Ack:
 

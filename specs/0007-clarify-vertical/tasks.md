@@ -35,8 +35,8 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 **⚠️ CRITICAL**: No user story work starts until this phase is complete.
 
-- [ ] T003 Add failing `spec.md` artifact correction and seven-case `describe` floor coverage in `src/main/domain/factories/clarify.factory.test.ts` and `src/main/hooks/manifest.ts`
-- [ ] T004 Implement `spec.md` artifact correction, normalized question parsing, and seven-case Clarify factory hardening in `src/main/domain/factories/clarify.factory.ts` and `src/main/hooks/manifest.ts`
+- [ ] T003 Add failing `spec.md` artifact correction, exact `no questions needed` zero-question sentinel, one-based display position, and seven-case `describe` floor coverage in `src/main/domain/factories/clarify.factory.test.ts` and `src/main/hooks/manifest.ts`
+- [ ] T004 Implement `spec.md` artifact correction, normalized question parsing, exact `no questions needed` zero-question sentinel, one-based display position, and seven-case Clarify factory hardening in `src/main/domain/factories/clarify.factory.ts` and `src/main/hooks/manifest.ts`
 - [ ] T005 Add failing `copilot:clarify` request/ack/parser factory tests in `src/main/ipc/copilotClarify.factory.spec.ts` and `src/renderer/api/clarify.factory.test.ts`
 - [ ] T006 Implement the main-side and renderer-side Clarify trust-boundary factories in `src/main/ipc/copilotClarify.factory.ts` and `src/renderer/api/clarify.factory.ts`
 - [ ] T007 Add failing Clarify bridge exposure tests for preload reuse and root API export wiring in `src/preload/index.test.ts` and `src/renderer/api/index.test.ts`
@@ -55,8 +55,8 @@ source_plan: specs/0007-clarify-vertical/plan.md
 ### Tests for User Story 1
 
 - [ ] T009 [US1] Add the failing happy-path Clarify journey assertions to `e2e/clarify-vertical.spec.ts`
-- [ ] T010 [US1] Add failing Clarify session-state tests for questions, answers, active question, and finish gating in `src/renderer/slices/session.test.ts` and `src/renderer/slices/session.selectors.ts`
-- [ ] T011 [US1] Extend the `session` slice and selectors for Clarify question/answer state in `src/renderer/slices/session.ts` and `src/renderer/slices/session.selectors.ts`
+- [ ] T010 [US1] Add failing Clarify session-state tests for `createEntityAdapter`-managed questions, answers, re-ask records, active question, and finish gating in `src/renderer/slices/session.test.ts` and `src/renderer/slices/session.selectors.ts`
+- [ ] T011 [US1] Extend the `session` slice and selectors for `createEntityAdapter`-managed Clarify question, answer, and re-ask state in `src/renderer/slices/session.ts` and `src/renderer/slices/session.selectors.ts`
 - [ ] T012 [US1] Add failing renderer endpoint tests for `clarify:next` streaming start and local `clarify:answer` updates in `src/renderer/api/clarify.endpoint.test.ts`
 - [ ] T013 [US1] Implement `clarify:next` and `clarify:answer` behavior in `src/renderer/api/clarify.endpoint.ts`
 - [ ] T014 [US1] Add failing main IPC happy-path tests for `copilot:clarify` next-mode streaming in `src/main/ipc/copilotClarify.test.ts`
@@ -80,11 +80,11 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 ### Tests for User Story 2
 
-- [ ] T019 [US2] Add failing same-session Ask Another tests in `src/renderer/api/clarify.endpoint.test.ts`, `src/main/ipc/copilotClarify.test.ts`, and `src/renderer/components/ClarifyStep.test.tsx`
+- [ ] T019 [US2] Add failing same-session Ask Another tests in `src/renderer/api/clarify.endpoint.test.ts`, `src/main/ipc/copilotClarify.test.ts`, and `src/renderer/components/ClarifyStep.test.tsx`, including the no-additional-question no-op case that preserves existing answers and records activity
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Implement `clarify:askAnother` same-session behavior in `src/renderer/api/clarify.endpoint.ts`, `src/main/ipc/copilotClarify.ts`, `src/renderer/components/ClarifyStep.tsx`, and `src/renderer/slices/session.ts`
+- [ ] T020 [US2] Implement `clarify:askAnother` same-session behavior in `src/renderer/api/clarify.endpoint.ts`, `src/main/ipc/copilotClarify.ts`, `src/renderer/components/ClarifyStep.tsx`, and `src/renderer/slices/session.ts`, including no-additional-question activity without appending a card
 - [ ] T021 [US2] Make the Ask Another vertical pass in `e2e/clarify-vertical.spec.ts` and `e2e/support/boundaries.ts`
 
 **Checkpoint**: User Story 2 adds interactive question expansion without restarting Clarify.
@@ -99,15 +99,15 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 ### Tests for User Story 3
 
-- [ ] T022 [US3] Add failing malformed-question recovery tests in `src/main/ipc/copilotClarify.test.ts`, `src/renderer/api/clarify.endpoint.test.ts`, `src/renderer/components/ClarifyStep.test.tsx`, and `src/renderer/listeners/stepLifecycle.listener.test.ts`
-- [ ] T023 [P] [US3] Add failing malformation audit log writer tests in `src/main/data-layer/fs/clarifyMalformationLog.test.ts`
+- [ ] T022 [US3] Add failing malformed-question recovery tests in `src/main/ipc/copilotClarify.test.ts`, `src/renderer/api/clarify.endpoint.test.ts`, `src/renderer/components/ClarifyStep.test.tsx`, and `src/renderer/listeners/stepLifecycle.listener.test.ts`, including activity-stream malformation entries, secret/PII sanitization expectations, and canonical Step Escape Hatch effects on fourth failed validation
+- [ ] T023 [P] [US3] Add failing malformation audit log writer tests in `src/main/data-layer/fs/clarifyMalformationLog.test.ts`, including sanitized JSONL output, required audit fields, and observable write-failure logging
 
 ### Implementation for User Story 3
 
-- [ ] T024 [P] [US3] Implement the malformation audit writer in `src/main/data-layer/fs/clarifyMalformationLog.ts`
-- [ ] T025 [US3] Complete the listener body and fix fourth-failure exhaustion semantics in `src/renderer/listeners/stepLifecycle.listener.ts` and `src/renderer/listeners/stepLifecycle.listener.test.ts`
+- [ ] T024 [US3] Implement the malformation audit writer in `src/main/data-layer/fs/clarifyMalformationLog.ts` only after T023 proves the RED test fails, preserving sanitized JSONL output and observable write-failure behavior
+- [ ] T025 [US3] Complete the listener body and fix fourth-failure exhaustion semantics in `src/renderer/listeners/stepLifecycle.listener.ts` and `src/renderer/listeners/stepLifecycle.listener.test.ts`, asserting `clarify-rigor-exhausted` cancels the turn, reverts expected artifacts, and resets Clarify UI through the canonical Step Escape Hatch path
 - [ ] T026 [US3] Implement malformed-card parsing, same-session `clarify:reaskMalformed`, and safe partial rendering in `src/main/ipc/copilotClarify.ts`, `src/renderer/api/clarify.endpoint.ts`, `src/renderer/slices/session.ts`, `src/renderer/components/ClarifyStep.tsx`, and `src/renderer/components/ClarifyStepContainer.tsx`
-- [ ] T027 [US3] Make malformed-question recovery pass end-to-end in `e2e/clarify-vertical.spec.ts` and `e2e/support/boundaries.ts`
+- [ ] T027 [US3] Make malformed-question recovery and fourth-failure Step Escape Hatch behavior pass end-to-end in `e2e/clarify-vertical.spec.ts` and `e2e/support/boundaries.ts`
 
 **Checkpoint**: User Story 3 proves strict validation, visible partial recovery, retry bounds, and audit logging.
 
@@ -121,12 +121,12 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 ### Tests for User Story 4
 
-- [ ] T028 [US4] Add failing `clarify:commit` pass/fail tests for in-place `spec.md` persistence and Step Commit proof in `src/main/ipc/copilotClarify.test.ts` and `src/main/domain/factories/clarify.factory.test.ts`
+- [ ] T028 [US4] Add failing `clarify:commit` pass/fail tests for in-place `spec.md` persistence, exact `no questions needed` zero-question pass proof, and Step Commit proof in `src/main/ipc/copilotClarify.test.ts` and `src/main/domain/factories/clarify.factory.test.ts`
 - [ ] T029 [US4] Add failing renderer finish-flow tests for disable rules, completion proof rendering, and failure observability in `src/renderer/api/clarify.endpoint.test.ts`, `src/renderer/components/ClarifyStep.test.tsx`, and `src/renderer/slices/session.test.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T030 [US4] Implement `clarify:commit` writeback, validation, lifecycle completion, and terminal proof payloads in `src/main/ipc/copilotClarify.ts`, `src/main/domain/factories/clarify.factory.ts`, and `src/main/hooks/manifest.ts`
+- [ ] T030 [US4] Implement `clarify:commit` writeback, zero-question sentinel validation, lifecycle completion, and terminal proof payloads in `src/main/ipc/copilotClarify.ts`, `src/main/domain/factories/clarify.factory.ts`, and `src/main/hooks/manifest.ts`
 - [ ] T031 [US4] Implement finish gating and completion proof rendering in `src/renderer/api/clarify.endpoint.ts`, `src/renderer/components/ClarifyStep.tsx`, `src/renderer/components/ClarifyStepContainer.tsx`, and `src/renderer/slices/session.ts`
 - [ ] T032 [US4] Make the auditable Clarify completion path pass in `e2e/clarify-vertical.spec.ts` and `e2e/support/boundaries.ts`
 
@@ -142,7 +142,7 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 ### Tests for User Story 5
 
-- [ ] T033 [P] [US5] Add failing architecture guard tests for eight-slice state, no runtime dependency growth, and canonical step ordering in `src/renderer/store.test.ts`, `src/renderer/api/index.test.ts`, `src/renderer/components/RepoBrowseScreen.test.tsx`, and `package.json`
+- [ ] T033 [P] [US5] Add failing architecture guard tests for eight-slice state, the 256-entry activity cap, no runtime dependency growth, and canonical step ordering in `src/renderer/store.test.ts`, `src/renderer/api/index.test.ts`, `src/renderer/components/RepoBrowseScreen.test.tsx`, and `package.json`
 - [ ] T034 [P] [US5] Add failing visual-contract coverage for `clarify-question`, `clarify-ask-another`, and `clarify-malformed-reask` in `e2e/visual-diff/harness/screens.config.ts`, `e2e/design-fidelity.spec.ts`, and `src/renderer/components/ClarifyStep.test.tsx`
 
 ### Implementation for User Story 5
@@ -159,7 +159,7 @@ source_plan: specs/0007-clarify-vertical/plan.md
 **Purpose**: Run the prescribed verification loops after all story behavior is in place.
 
 - [ ] T037 [P] Run the focused Run 7 verification loop from `specs/0007-clarify-vertical/quickstart.md` against `src/main/domain/factories/clarify.factory.test.ts`, `src/renderer/listeners/stepLifecycle.listener.test.ts`, `src/main/ipc/copilotClarify.test.ts`, and `src/renderer/components/ClarifyStep.test.tsx`
-- [ ] T038 Run the full Run 7 validation commands from `specs/0007-clarify-vertical/quickstart.md` against `e2e/clarify-vertical.spec.ts` and `e2e/visual-diff/harness/screens.config.ts`
+- [ ] T038 Run the full Run 7 validation commands from `specs/0007-clarify-vertical/quickstart.md`, including `npm run test:coverage`, against `e2e/clarify-vertical.spec.ts` and `e2e/visual-diff/harness/screens.config.ts`
 
 ---
 
@@ -193,7 +193,7 @@ source_plan: specs/0007-clarify-vertical/plan.md
 
 ### Parallel Opportunities
 
-- T023 and T024 can proceed in parallel once T022 defines the malformed audit shape.
+- T023 can proceed in parallel with other US3 tests once T022 defines the malformed audit shape; T024 must wait until T023 proves the audit-writer test fails.
 - T033 and T034 can proceed in parallel after US4 lands because they touch separate guard surfaces.
 - T037 can be split across focused test commands for factories, listeners, IPC, and components.
 
@@ -202,7 +202,7 @@ source_plan: specs/0007-clarify-vertical/plan.md
 ## Parallel Example: User Story 3
 
 ```bash
-# After T022 defines the malformed recovery contract:
+# After T022 defines the malformed recovery contract, run T023 first and wait for RED before T024:
 Task: "T023 Add failing malformation audit log writer tests in src/main/data-layer/fs/clarifyMalformationLog.test.ts"
 Task: "T024 Implement the malformation audit writer in src/main/data-layer/fs/clarifyMalformationLog.ts"
 ```

@@ -3,7 +3,7 @@
 ## ClarifyQuestion
 
 - `id`: stable question id, unique within the Clarify session.
-- `position`: zero-based or one-based display position, stable through rewrite for unaffected questions.
+- `position`: one-based display position for prompts, audit records, and UI labels; internal arrays/selectors may still use zero-based indexes.
 - `text`: trimmed non-empty question text.
 - `choices`: at least two `ClarifyChoice` records.
 - `status`: `well_formed`, `malformed`, `rewriting`, or `resolved`.
@@ -26,17 +26,17 @@
 
 Lives under the existing `session` slice.
 
-- `questions`: ordered Clarify questions.
-- `answers`: record keyed by `questionId`.
+- `questions`: ordered Clarify questions managed with Redux Toolkit `createEntityAdapter` because question ids are stable.
+- `answers`: Clarify answers managed with Redux Toolkit `createEntityAdapter`, using `questionId` as the stable entity id.
 - `activeQuestionId`: selected question for display/navigation.
 - `askAnother`: idle/in-flight/error state.
-- `reask`: record keyed by malformed question id with attempt count and in-flight state.
+- `reask`: rewrite records managed with Redux Toolkit `createEntityAdapter`, using malformed `questionId` as the stable entity id and referencing the adapter-managed question collection.
 - `completion`: idle/in-flight/pass/fail state plus `artifactPath`, `commitSha`, and summary on pass.
 
 ## MalformedQuestionRecord
 
 - `questionId`: stable id assigned by the factory.
-- `position`: original position.
+- `position`: original one-based display position.
 - `malformationCategory`: strict category such as `empty-question-text`, `choices-missing`, `parser-breaking-emphasis`, `mixed-line-endings`, `duplicate-question-id`, or `extra-data`.
 - `rawOutput`: safe raw block or safe excerpt.
 - `attempts`: actual rewrite attempts already made.

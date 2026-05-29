@@ -30,7 +30,7 @@ The design reuses ADR-0010 for streaming mutations and ADR-0009 for listener-med
 - **ACP-Only Bound CLI**: PASS. `copilot:clarify` and Ask Another reuse the existing ACP supervisor/session path.
 - **Factory-First Data Transformation**: PASS. Clarify question parsing, stream events, IPC requests, API responses, and malformation records pass through factories.
 - **Scoped Functional Programming**: PASS. Pure parsing/validation stays in factories/selectors; effects stay in IPC handlers, data-layer modules, RTK Query, and listener middleware.
-- **State Management**: PASS. Clarify UI state extends `session`; no ninth slice, no thunks, no component-level stream subscriptions.
+- **State Management**: PASS. Clarify UI state extends `session`; stable-id Clarify question, answer, and re-ask collections use `createEntityAdapter`; no ninth slice, no thunks, no component-level stream subscriptions.
 - **UI Architecture**: PASS. `ClarifyStepContainer` owns data/API wiring; `ClarifyStep` is presentational.
 - **Step Contract Strictness**: PASS. Clarify factory remains the strictest boundary and returns partial malformed-question results before escape.
 - **Accessibility and Visual Fidelity**: PASS. Clarify states get explicit WCAG behaviors and visual-diff contracts.
@@ -138,7 +138,7 @@ No constitution violations are accepted. If implementation proposes a ninth slic
 - [x] Phase 0: Research complete
 - [x] Phase 1: Design complete
 - [x] Phase 2: Task planning approach complete
-- [ ] Phase 3: Tasks generated
+- [x] Phase 3: Tasks generated
 - [ ] Phase 4: Implementation
 - [ ] Phase 5: Verification
 
@@ -147,4 +147,4 @@ No constitution violations are accepted. If implementation proposes a ninth slic
 - [x] Initial Constitution Check: PASS
 - [x] Post-Design Constitution Check: PASS
 - [x] All NEEDS CLARIFICATION resolved
-- [ ] Tasks generated
+- [x] Tasks generated

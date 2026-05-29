@@ -40,7 +40,7 @@ Expected: the three Clarify contracts pass and the existing 24 screens remain pa
 ## Final Verification
 
 ```bash
-rm -rf .vite/build && npm run typecheck && npm run lint && npm test && npm run e2e
+rm -rf .vite/build && npm run typecheck && npm run lint && npm test && npm run test:coverage && npm run e2e
 ```
 
-Expected: all commands pass, test count stays flat or increases from the current 804, and Clarify completion emits `artifactPath`, `commitSha`, and parsed questions/answers summary.
+Expected: all commands pass, coverage stays at or above the current baseline, test count stays flat or increases from the current 804, and Clarify completion emits `artifactPath`, `commitSha`, and parsed questions/answers summary.
