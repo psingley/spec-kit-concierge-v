@@ -15,30 +15,30 @@ describe('copilot specify IPC factory', () => {
   it('rejects empty objects', () => {
     expect(createCopilotSpecifyRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent({})).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
   it('rejects null', () => {
     expect(createCopilotSpecifyRequest(null)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck(null)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent(null)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent(null)).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
   it('rejects undefined', () => {
     expect(createCopilotSpecifyRequest(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
   it('rejects hostile values', () => {
     expect(createCopilotSpecifyRequest({ ...request, prompt: ' ' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent({ ...progress, level: 'fatal' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent({ ...progress, level: 'fatal' })).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
   it('rejects partial fields', () => {
     expect(createCopilotSpecifyRequest({ subscriptionId: 'sub-1' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck({ subscriptionId: 'sub-1' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent({ type: 'progress', step: 'specify' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent({ type: 'progress', step: 'specify' })).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
   it('rejects extra keys', () => {
     expect(createCopilotSpecifyRequest({ ...request, injected: true })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck({ ...ack, injected: true })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
-    expect(createStepStreamEvent({ ...done, injected: true })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
+    expect(createStepStreamEvent({ ...done, injected: true })).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
   });
 });

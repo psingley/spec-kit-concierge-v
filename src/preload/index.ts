@@ -1,5 +1,25 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron';
 
+const subscribeStepStream = (
+  channel: string,
+  subscriptionId: string,
+  callback: (event: unknown) => void
+): (() => void) => {
+  const eventChannel = `${channel}:event`;
+  const listener = (_event: IpcRendererEvent, payload: unknown): void => {
+    if (typeof payload === 'object' && payload !== null && 'subscriptionId' in payload) {
+      const envelope = payload as { subscriptionId?: unknown; event?: unknown };
+      if (envelope.subscriptionId === subscriptionId) {
+        callback(envelope.event);
+      }
+    }
+  };
+  ipcRenderer.on(eventChannel, listener);
+  return () => {
+    ipcRenderer.off(eventChannel, listener);
+  };
+};
+
 contextBridge.exposeInMainWorld('concierge', {
   app: {
     getVersion: () => ipcRenderer.invoke('app:getVersion') as Promise<unknown>
@@ -47,19 +67,8 @@ contextBridge.exposeInMainWorld('concierge', {
   },
   copilot: {
     specify: (request: unknown) => ipcRenderer.invoke('copilot:specify', request) as Promise<unknown>,
-    subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void): (() => void) => {
-      const listener = (_event: IpcRendererEvent, payload: unknown): void => {
-        if (typeof payload === 'object' && payload !== null && 'subscriptionId' in payload) {
-          const envelope = payload as { subscriptionId?: unknown; event?: unknown };
-          if (envelope.subscriptionId === subscriptionId) {
-            callback(envelope.event);
-          }
-        }
-      };
-      ipcRenderer.on('copilot:specify:event', listener);
-      return () => {
-        ipcRenderer.off('copilot:specify:event', listener);
-      };
-    }
+    subscribeStepStream,
+    subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void): (() => void) =>
+      subscribeStepStream('copilot:specify', subscriptionId, callback)
   }
 });

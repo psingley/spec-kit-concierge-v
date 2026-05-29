@@ -88,4 +88,29 @@ describe('preload concierge bridge', () => {
 
     expect(invoke).toHaveBeenCalledWith(channel, payload);
   });
+
+  it('exposes a generic step stream subscription helper while keeping subscribeSpecify compatible', async () => {
+    await import('./index');
+    const bridge = exposeInMainWorld.mock.calls[0]?.[1] as {
+      copilot: {
+        subscribeStepStream: (channel: string, subscriptionId: string, callback: (event: unknown) => void) => () => void;
+        subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
+      };
+    };
+    const callback = vi.fn();
+
+    const unsubscribe = bridge.copilot.subscribeStepStream('copilot:clarify', 'sub-1', callback);
+    const listener = on.mock.calls[0]?.[1] as (_event: unknown, payload: unknown) => void;
+    listener({}, { subscriptionId: 'sub-other', event: { type: 'progress' } });
+    listener({}, { subscriptionId: 'sub-1', event: { type: 'progress', step: 'clarify' } });
+    unsubscribe();
+
+    expect(on).toHaveBeenCalledWith('copilot:clarify:event', expect.any(Function));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith({ type: 'progress', step: 'clarify' });
+    expect(off).toHaveBeenCalledWith('copilot:clarify:event', listener);
+
+    bridge.copilot.subscribeSpecify('sub-2', vi.fn());
+    expect(on).toHaveBeenCalledWith('copilot:specify:event', expect.any(Function));
+  });
 });
