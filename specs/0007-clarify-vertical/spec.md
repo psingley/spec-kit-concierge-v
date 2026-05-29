@@ -8,6 +8,16 @@
 
 **Input**: User description: "Create the product specification for Run 7 Clarify Vertical. After Specify completes, users should run Clarify, see generated clarification questions, answer choices with short-answer affordances, request another question, recover malformed questions through bounded re-ask, and finish with validated artifacts, Step Commit proof, and visual-diff coverage. Use branch `spec/0007-clarify-vertical`, base `c21bcc0086785a65d30848b897c11d4011f113c5`, grill decisions, constitution, ADR-0010, ADR-0009, and the Clarify ACP transcript fixture as locked inputs."
 
+## Clarifications
+
+### Session 2026-05-29
+
+- Q: Should Ask Another start a new ACP session or continue the active Clarify conversation? → A: Same ACP session.
+- Q: Which Clarify API operations are in Run 7 scope? → A: `clarify:next`, `clarify:answer`, `clarify:reaskMalformed`, `clarify:askAnother`, `clarify:commit`.
+- Q: Who supplies the short-answer affordance when agent output omits it? → A: Renderer supplies textarea.
+- Q: How many malformed-question rewrites happen before escape? → A: Three attempts; fourth fails.
+- Q: Where are accepted Clarify answers persisted? → A: `spec.md` in-place.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Answer Clarify questions after Specify (Priority: P1)
@@ -115,16 +125,16 @@ As a Concierge maintainer, I need Run 7 to extend existing state, stream, lifecy
 - **FR-003**: The Clarify body MUST use the v3 design language already adopted by the product and MUST NOT regress the shell, titlebar, stepper, activity, customization, modal, or Specify visual states from Run 6.
 - **FR-004**: Clarify MUST become available only from a session where Specify is complete according to the established step lifecycle state, and it MUST not imply Plan, Tasks, Analyze, Review, or JIRA sync body support.
 - **FR-005**: Clarify MUST show well-formed generated questions as answerable cards with a question label, question text, choice cards, a short-answer textarea, progress pips, previous/next navigation, Ask Another, and Finish.
-- **FR-006**: The persisted agent output for a Clarify question MUST require choices, while the rendered UI MUST always provide the short-answer textarea whether or not the persisted output mentions short answers.
+- **FR-006**: The persisted agent output for a Clarify question MUST require choices, while the rendered UI MUST always provide the renderer-supplied short-answer textarea whether or not the persisted output mentions short answers.
 - **FR-007**: Answers MUST be keyed by stable question ids and MUST survive navigation, Ask Another additions, and malformed-question rewrite cycles for unaffected questions.
 - **FR-008**: Finish MUST remain unavailable until every currently visible well-formed question has one selected choice, all malformed questions are resolved or escaped, and no Clarify request is in flight.
-- **FR-009**: Ask Another MUST reuse the same active Clarify conversation/session and MUST add at most one new question per user request.
+- **FR-009**: Ask Another MUST reuse the same active ACP session and Clarify conversation and MUST add at most one new question per user request.
 - **FR-010**: Ask Another MUST preserve all existing questions, selected choices, short-answer text, active question context, and activity history unless a validation failure requires the standard recovery path.
 - **FR-011**: Clarify stream transport MUST use capability `copilot:clarify` and transport event `copilot:clarify:event`.
 - **FR-012**: Clarify streaming MUST use the shared step stream event shape: zero or more progress events and exactly one terminal `done` event.
 - **FR-013**: Clarify `done/pass` MUST include `artifactPath`, `commitSha`, and a parsed questions/answers summary.
 - **FR-014**: Clarify `done/fail` MUST include a user-actionable reason and MUST NOT mark Clarify complete.
-- **FR-015**: The renderer endpoint for Clarify MUST subscribe and unsubscribe through the generic preload step-stream subscription path rather than component-level event handling.
+- **FR-015**: The renderer endpoint/API for Clarify MUST expose `clarify:next`, `clarify:answer`, `clarify:reaskMalformed`, `clarify:askAnother`, and `clarify:commit`, and MUST subscribe and unsubscribe through the generic preload step-stream subscription path rather than component-level event handling.
 - **FR-016**: Clarify renderer state MUST extend the existing session state with questions, answers, active question, Ask Another state, malformed-card state, and re-ask attempts; it MUST NOT add a ninth Redux slice.
 - **FR-017**: Smart Clarify containers MAY coordinate product state and endpoints, but presentational Clarify components MUST receive data and callbacks as props.
 - **FR-018**: Clarify question validation MUST enforce strict Step Contract rules: trimmed non-empty question text, normalized and consistent line endings, at least two choices, each choice having key and label, no parser-confusing markdown emphasis at the start of a line, and no unrecognized extra data at the disk-entry boundary.
@@ -133,12 +143,12 @@ As a Concierge maintainer, I need Run 7 to extend existing state, stream, lifecy
 - **FR-021**: Malformed questions MUST render as visibly malformed cards at the same time as well-formed cards and MUST never be silently hidden or rendered as unsafe raw markdown.
 - **FR-022**: Re-ask context MUST include the malformed question text, position, malformation category, and the ids/text of well-formed questions as read-only context.
 - **FR-023**: Re-ask MUST rewrite only the malformed question and MUST preserve well-formed question ids/text as read-only context.
-- **FR-024**: Re-ask retry semantics MUST allow three actual rewrite attempts for the same malformed question and MUST exhaust only on the fourth failed validation.
+- **FR-024**: Re-ask retry semantics MUST allow rewrite attempts 1, 2, and 3 for the same malformed question and MUST exhaust only on the fourth failed validation.
 - **FR-025**: Re-ask exhaustion MUST trigger the Step Escape Hatch with reason `clarify-rigor-exhausted`.
 - **FR-026**: While a malformed question re-ask is in flight, the user MUST be able to navigate and answer unaffected questions; Finish and only the in-flight malformed card MUST be disabled.
 - **FR-027**: Every Clarify malformation MUST be recorded in the activity stream and in a global audit stream at `userData/clarify-malformations.jsonl`.
 - **FR-028**: Each malformation audit record MUST include question id, malformation category, raw output or safe excerpt, timestamp, model id when known, session id, and step name, without recording secrets or unrelated personal data.
-- **FR-029**: Clarify completion MUST occur only after all current questions have selected choices, the Clarify factory validates the artifact, the after-Clarify lifecycle succeeds, and a Step Commit SHA is returned.
+- **FR-029**: Clarify completion MUST occur only after all current questions have selected choices, accepted answers are written in-place to the feature `spec.md` Clarifications section, the Clarify factory validates the artifact, the after-Clarify lifecycle succeeds, and a Step Commit SHA is returned.
 - **FR-030**: The Clarify pass Step Commit MUST use the established step lifecycle trailer semantics for `Concierge-Step: clarify:pass`.
 - **FR-031**: The Clarify fail path MUST preserve observable activity, avoid false completion, and route unrecoverable validation or hook failures through the Step Escape Hatch.
 - **FR-032**: The Clarify ACP transcript fixture at `specs/0007-clarify-vertical/fixtures/clarify-transcript.jsonl` MUST remain valid evidence for initialization, model selection, prompt streaming, and generated Clarify question chunks.
