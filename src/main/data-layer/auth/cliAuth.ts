@@ -199,12 +199,12 @@ export const loginCopilot = async (
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   }
 
-  // Check if already authenticated before attempting interactive login
+  // Copilot CLI shares GitHub's OAuth token; verify gh copilot works
   try {
-    await execFileAsync('copilot', ['auth', 'status'], { shell: true });
+    await execFileAsync('gh', ['copilot', '--help'], { shell: true });
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   } catch {
-    // Not authenticated — attempt login
+    // Fall back to copilot login (device flow, opens browser)
   }
 
   await execFileAsync('copilot', ['auth', 'login'], { shell: true });
@@ -223,5 +223,6 @@ export const loginCopilot = async (
   if (!authenticated.authenticated) {
     throw new Error('Copilot CLI login did not complete.');
   }
+  await execFileAsync('copilot', ['login'], { shell: true });
   return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
 };

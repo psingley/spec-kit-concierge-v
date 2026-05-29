@@ -26,12 +26,26 @@ export type RegisterAuthIpcOptions = {
   checkStatus?: (provider: AuthProvider) => Promise<boolean | null>;
   loginGitHubAdapter?: () => Promise<LoginResult>;
   loginCopilotAdapter?: (githubConnected: boolean) => Promise<LoginResult>;
-  fixAtlassianAdapter?: () => Promise<LoginResult>;
   setTimeoutFn?: typeof setTimeout;
   now?: () => number;
 };
 
 const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | null> => {
+  if (provider === 'copilot') {
+    // Copilot CLI has no status command; check for a valid gh token with copilot scope
+    try {
+      await execFileAsync('gh', ['copilot', '--help'], { shell: true });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  try {
+    await execFileAsync('gh', ['auth', 'status'], { shell: true });
+    return true;
+  } catch {
+    return false;
   if (provider === 'github') {
     return (await readGitHubAuthStatus()).authenticated;
   }
