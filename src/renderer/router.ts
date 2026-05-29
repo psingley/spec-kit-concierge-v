@@ -1,5 +1,5 @@
 import React from 'react';
-import { createMemoryRouter, Navigate } from 'react-router';
+import { createMemoryRouter, Navigate, Outlet } from 'react-router';
 import type { AppStore } from './store';
 import { selectAuthGateOpen } from './slices/auth.selectors';
 import { selectWorkspaceSelectedRepo, selectWorkspaceBranch } from './slices/workspace.selectors';
@@ -17,48 +17,57 @@ const deriveInitialEntry = (store: AppStore): string => {
   return '/workspace';
 };
 
+const RootLayout = (): React.ReactElement =>
+  React.createElement(
+    React.Fragment,
+    null,
+    React.createElement(TitlebarContainer),
+    React.createElement(Outlet)
+  );
+
 export const createAppRouter = (store: AppStore) => {
   const routes = [
     {
-      path: '/sign-in',
-      element: React.createElement(SignInScreenContainer)
-    },
-    {
-      path: '/repos',
-      element: React.createElement(
-        AuthGuard,
-        null,
-      ),
+      element: React.createElement(RootLayout),
       children: [
         {
-          index: true,
-          element: React.createElement(
-            'div',
-            { className: 'workspace' },
-            React.createElement(TitlebarContainer),
-            React.createElement(RepoBrowseScreenContainer)
-          )
-        }
-      ]
-    },
-    {
-      path: '/workspace',
-      element: React.createElement(AuthGuard),
-      children: [
+          path: '/sign-in',
+          element: React.createElement(SignInScreenContainer)
+        },
         {
-          element: React.createElement(WorkspaceGuard),
+          path: '/repos',
+          element: React.createElement(AuthGuard),
           children: [
             {
               index: true,
-              element: React.createElement(WorkspaceContainer)
+              element: React.createElement(
+                'div',
+                { className: 'workspace' },
+                React.createElement(RepoBrowseScreenContainer)
+              )
             }
           ]
+        },
+        {
+          path: '/workspace',
+          element: React.createElement(AuthGuard),
+          children: [
+            {
+              element: React.createElement(WorkspaceGuard),
+              children: [
+                {
+                  index: true,
+                  element: React.createElement(WorkspaceContainer)
+                }
+              ]
+            }
+          ]
+        },
+        {
+          path: '*',
+          element: React.createElement(CatchAllRedirect, { store })
         }
       ]
-    },
-    {
-      path: '*',
-      element: React.createElement(CatchAllRedirect, { store })
     }
   ];
 

@@ -7,17 +7,18 @@ describe('createAppRouter', () => {
     const store = createProductStore();
     const router = createAppRouter(store);
 
-    const paths = router.routes.map((r) => r.path);
-    expect(paths).toContain('/sign-in');
-    expect(paths).toContain('/repos');
-    expect(paths).toContain('/workspace');
+    // Routes are nested under the root layout
+    const childPaths = router.routes[0]?.children?.map((r) => r.path) ?? [];
+    expect(childPaths).toContain('/sign-in');
+    expect(childPaths).toContain('/repos');
+    expect(childPaths).toContain('/workspace');
   });
 
   it('includes a catch-all wildcard route', () => {
     const store = createProductStore();
     const router = createAppRouter(store);
 
-    const catchAll = router.routes.find((r) => r.path === '*');
+    const catchAll = router.routes[0]?.children?.find((r) => r.path === '*');
     expect(catchAll).toBeDefined();
   });
 
