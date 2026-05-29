@@ -26,6 +26,8 @@
 - Q12: Passive pipeline sharing -> B: Use a small shared passive-step registration helper for Plan, Tasks, and Analyze only; do not refactor Specify or Clarify.
 - Q13: Visual contract count -> B: Add exactly 10 new visual screens for Run 8 while preserving the existing 27 screens.
 - Q14: Markdown rendering performance -> A: Use plain markdown rendering initially with a size guard; defer virtualization.
+- Q: What text size threshold defines an oversized artifact? → A: 512 KiB
+- Q: What observability evidence must passive steps emit? → A: IPC, ACP, lifecycle, errors, transcripts
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -173,7 +175,7 @@ As a Concierge maintainer, I need Run 8 to extend the existing passive-step arch
 - **FR-023**: Artifact content MUST be fetched only after the user explicitly opens that artifact evidence.
 - **FR-024**: The artifact viewer MUST render markdown tables, task lists, fenced code classes, links, blockquotes, nested lists, headings, inline code, and plain text safely.
 - **FR-025**: Markdown rendering MUST strip hostile raw HTML, scripts, and unsafe event-handler content and MUST NOT support raw HTML rendering in Run 8.
-- **FR-026**: Markdown rendering MUST include a size guard that prevents very large artifacts from degrading the passive-step screen.
+- **FR-026**: Markdown rendering MUST treat text, markdown, and code artifacts over 512 KiB as oversized metadata-only evidence instead of inline-renderable content.
 - **FR-027**: Oversized, binary, image, and PDF artifacts MUST show safe metadata and available actions rather than unsafe inline rendering.
 - **FR-028**: The user-facing artifact read capability name for Run 8 MUST remain the shipped plural `artifacts:read`.
 - **FR-029**: A visible soft hang notification MUST appear when an in-flight passive step has ACP stream silence for at least 20 minutes.
@@ -190,6 +192,7 @@ As a Concierge maintainer, I need Run 8 to extend the existing passive-step arch
 - **FR-040**: Run 8 MUST add exactly 10 new visual screens covering Plan, Tasks, Analyze, evidence/artifact viewing, task details, and hang notification states.
 - **FR-041**: Run 8 MUST preserve the existing 27 visual screens without regression.
 - **FR-042**: Passive-step activity MUST respect the existing 256-entry activity history cap.
+- **FR-043**: Passive-step observability MUST capture IPC handler outcomes, ACP turn events, lifecycle transitions, errors, and local transcript references for Plan, Tasks, and Analyze.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -217,6 +220,8 @@ As a Concierge maintainer, I need Run 8 to extend the existing passive-step arch
 - **SC-008**: The visual-diff suite contains exactly 10 new Run 8 screens and the inherited 27 screens remain non-regressed.
 - **SC-009**: 0 new renderer slices are added for Run 8 passive-step state.
 - **SC-010**: 100% of passive-step lifecycle pass states occur only after strict artifact/remediation validation succeeds.
+- **SC-011**: 100% of text, markdown, and code artifacts over 512 KiB open as metadata-only evidence without inline content rendering.
+- **SC-012**: 100% of Plan, Tasks, and Analyze attempts emit observability records for IPC outcome, ACP turn activity, lifecycle transition, error path when present, and transcript reference when captured.
 
 ## Assumptions
 
