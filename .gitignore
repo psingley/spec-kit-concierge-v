@@ -66,3 +66,8 @@ design/project/Spec-kit Concierge (standalone).html
 # Run 5 lesson: TS-emitted .js files alongside .ts sources are forbidden.
 # tsconfig has noEmit:true; this is belt-and-suspenders for any tsc misconfiguration.
 /*.js
+
+# Visual-diff harness local-only artifacts
+e2e/visual-diff/artifacts/dev-cache/
+e2e/visual-diff/artifacts/dev-session.json
+e2e/screenshots/
