@@ -52,6 +52,16 @@ app.whenReady().then(async () => {
   const logger = createMainLogger();
   logger.info('app ready');
 
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    const { default: installExtension, REACT_DEVELOPER_TOOLS } = await import('electron-devtools-installer');
+    try {
+      await installExtension(REACT_DEVELOPER_TOOLS);
+      logger.info('React DevTools installed');
+    } catch (error) {
+      logger.warn('Failed to install React DevTools', { error });
+    }
+  }
+
   await loadAgentManifest(logger);
   await verifyAgentManifestDrift({
     agentsDirectory: path.join(process.cwd(), '.github', 'agents'),
