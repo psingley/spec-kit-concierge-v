@@ -1,0 +1,13 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "T043",
+  "title": "Run focused Run 8 verification loop",
+  "jiraKey": "SKC-155",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-155",
+  "parent": "SKC-106",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

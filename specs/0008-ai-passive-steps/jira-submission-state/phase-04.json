@@ -1,0 +1,13 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "PHASE-04",
+  "title": "Tasks",
+  "jiraKey": "SKC-102",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-102",
+  "parent": "SKC-98",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

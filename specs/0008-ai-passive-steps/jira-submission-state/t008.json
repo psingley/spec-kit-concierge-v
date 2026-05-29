@@ -1,0 +1,13 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "T008",
+  "title": "Add preload and renderer trust-boundary tests",
+  "jiraKey": "SKC-120",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-120",
+  "parent": "SKC-106",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

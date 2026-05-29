@@ -1,0 +1,11 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "EPIC",
+  "jiraKey": "SKC-98",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-98",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

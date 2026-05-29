@@ -1,0 +1,552 @@
+{
+  "schema": "concierge.jira.v1",
+  "feature": "0008-ai-passive-steps",
+  "epic": {
+    "taskId": "EPIC",
+    "jiraKey": "SKC-98",
+    "jiraUrl": "https://collette.atlassian.net/browse/SKC-98",
+    "createdAt": "2026-05-29T18:05:00Z",
+    "verifiedAt": "2026-05-29T18:05:00Z"
+  },
+  "phaseTickets": [
+    {
+      "taskId": "PHASE-01",
+      "title": "Spec",
+      "jiraKey": "SKC-99",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-99",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-02",
+      "title": "Clarify",
+      "jiraKey": "SKC-100",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-100",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-03",
+      "title": "Plan",
+      "jiraKey": "SKC-101",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-101",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-04",
+      "title": "Tasks",
+      "jiraKey": "SKC-102",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-102",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-05",
+      "title": "Analyze",
+      "jiraKey": "SKC-103",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-103",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-06",
+      "title": "Pre-implement codex patches",
+      "jiraKey": "SKC-104",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-104",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-07",
+      "title": "Spec-validate hash recompute",
+      "jiraKey": "SKC-105",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-105",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-08",
+      "title": "Implement",
+      "jiraKey": "SKC-106",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-106",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-09",
+      "title": "Post-implement review/fix/verify",
+      "jiraKey": "SKC-107",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-107",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-10",
+      "title": "Visual-fidelity verification",
+      "jiraKey": "SKC-108",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-108",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-11",
+      "title": "Final four-command verify",
+      "jiraKey": "SKC-109",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-109",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-12",
+      "title": "Jira submission",
+      "jiraKey": "SKC-110",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-110",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-13",
+      "title": "PR and merge",
+      "jiraKey": "SKC-111",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-111",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "PHASE-14",
+      "title": "Role file closeout and project memory",
+      "jiraKey": "SKC-112",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-112",
+      "parent": "SKC-98",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    }
+  ],
+  "tickets": [
+    {
+      "taskId": "T001",
+      "title": "Create passive vertical journey scaffold",
+      "jiraKey": "SKC-113",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-113",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T002",
+      "title": "Add locked markdown dependencies",
+      "jiraKey": "SKC-114",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-114",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T003",
+      "title": "Extend passive transcript and artifact fixtures",
+      "jiraKey": "SKC-115",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-115",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T004",
+      "title": "Add Analyze drift-migration tests",
+      "jiraKey": "SKC-116",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-116",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T005",
+      "title": "Implement Analyze manifest and factory drift rewrite",
+      "jiraKey": "SKC-117",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-117",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T006",
+      "title": "Add registerPassiveStepIpc contract tests",
+      "jiraKey": "SKC-118",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-118",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T007",
+      "title": "Implement registerPassiveStepIpc for passive steps",
+      "jiraKey": "SKC-119",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-119",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T008",
+      "title": "Add preload and renderer trust-boundary tests",
+      "jiraKey": "SKC-120",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-120",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T009",
+      "title": "Implement passive preload and renderer endpoints",
+      "jiraKey": "SKC-121",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-121",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T010",
+      "title": "Add passive Plan journey assertions",
+      "jiraKey": "SKC-122",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-122",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T011",
+      "title": "Add Plan contract and IPC tests",
+      "jiraKey": "SKC-123",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-123",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T012",
+      "title": "Add passive Plan renderer tests",
+      "jiraKey": "SKC-124",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-124",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T013",
+      "title": "Implement Plan passive contract validation",
+      "jiraKey": "SKC-125",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-125",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T014",
+      "title": "Implement passive Plan state and selectors",
+      "jiraKey": "SKC-126",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-126",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T015",
+      "title": "Implement Plan UI components and routing",
+      "jiraKey": "SKC-127",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-127",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T016",
+      "title": "Make passive Plan MVP pass e2e",
+      "jiraKey": "SKC-128",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-128",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T017",
+      "title": "Add Tasks passive journey tests",
+      "jiraKey": "SKC-129",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-129",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T018",
+      "title": "Add tasks.md parsing and task-detail tests",
+      "jiraKey": "SKC-130",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-130",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T019",
+      "title": "Add Tasks renderer and TaskViewer tests",
+      "jiraKey": "SKC-131",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-131",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T020",
+      "title": "Implement tasks.md validation and tasks:detail parsing",
+      "jiraKey": "SKC-132",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-132",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T021",
+      "title": "Implement Tasks passive orchestration",
+      "jiraKey": "SKC-133",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-133",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T022",
+      "title": "Implement Tasks rows and task-detail dialog",
+      "jiraKey": "SKC-134",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-134",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T023",
+      "title": "Make passive Tasks flow pass e2e",
+      "jiraKey": "SKC-135",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-135",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T024",
+      "title": "Add Analyze contract and summary tests",
+      "jiraKey": "SKC-136",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-136",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T025",
+      "title": "Add Analyze renderer tests",
+      "jiraKey": "SKC-137",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-137",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T026",
+      "title": "Implement Analyze passive orchestration",
+      "jiraKey": "SKC-138",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-138",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T027",
+      "title": "Implement Analyze rows and recovery rendering",
+      "jiraKey": "SKC-139",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-139",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T028",
+      "title": "Make passive Analyze flow pass e2e",
+      "jiraKey": "SKC-140",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-140",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T029",
+      "title": "Add artifacts:read lazy evidence tests",
+      "jiraKey": "SKC-141",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-141",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T030",
+      "title": "Add Markdown and ArtifactViewer tests",
+      "jiraKey": "SKC-142",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-142",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T031",
+      "title": "Implement lazy artifacts:read evidence responses",
+      "jiraKey": "SKC-143",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-143",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T032",
+      "title": "Implement sanitized markdown and ArtifactViewer wiring",
+      "jiraKey": "SKC-144",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-144",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T033",
+      "title": "Make evidence-on-demand flow pass e2e",
+      "jiraKey": "SKC-145",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-145",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T034",
+      "title": "Add passive hang detection tests",
+      "jiraKey": "SKC-146",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-146",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T035",
+      "title": "Add Cancel/Restart guidance tests",
+      "jiraKey": "SKC-147",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-147",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T036",
+      "title": "Implement listener-owned hang detection",
+      "jiraKey": "SKC-148",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-148",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T037",
+      "title": "Implement visible hang notification rendering",
+      "jiraKey": "SKC-149",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-149",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T038",
+      "title": "Make soft hang-notification flow pass e2e",
+      "jiraKey": "SKC-150",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-150",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T039",
+      "title": "Add architecture guard tests",
+      "jiraKey": "SKC-151",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-151",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T040",
+      "title": "Add Run 8 visual-diff coverage",
+      "jiraKey": "SKC-152",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-152",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T041",
+      "title": "Implement locked architecture guards",
+      "jiraKey": "SKC-153",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-153",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T042",
+      "title": "Implement Run 8 visual contracts",
+      "jiraKey": "SKC-154",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-154",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T043",
+      "title": "Run focused Run 8 verification loop",
+      "jiraKey": "SKC-155",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-155",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    },
+    {
+      "taskId": "T044",
+      "title": "Run full Run 8 validation commands",
+      "jiraKey": "SKC-156",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-156",
+      "parent": "SKC-106",
+      "createdAt": "2026-05-29T18:05:00Z",
+      "verifiedAt": "2026-05-29T18:05:00Z"
+    }
+  ],
+  "counts": {
+    "epics": 1,
+    "phaseStories": 14,
+    "taskTickets": 44,
+    "total": 59
+  },
+  "submission": {
+    "method": "direct-atlassian-mcp",
+    "cloudId": "20a57dd3-0f9f-41ca-94d0-0def6f4ff476",
+    "projectKey": "SKC",
+    "verifiedBy": [
+      "project = SKC AND labels = run-8 ORDER BY key ASC",
+      "key = SKC-156"
+    ]
+  }
+}
