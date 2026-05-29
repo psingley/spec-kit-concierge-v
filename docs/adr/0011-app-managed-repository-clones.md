@@ -14,7 +14,7 @@ The Concierge App clones repositories into `{userData}/repos/{owner}/{name}` (e.
 
 - **Shallow clone (`--depth=1`)** on first session against a repo. Subsequent sessions skip the clone and do `git fetch origin` + `git checkout {defaultBranch}`.
 - **Clone triggered lazily** — only on "Start New Session", not at repo selection or app startup.
-- **HTTPS with per-repo `credential.helper = !gh auth git-credential`** — set at clone time in the local repo config. No reliance on global git credentials.
+- **Clone and push via `gh` CLI** — `gh repo clone {owner}/{repo} -- --depth=1` for cloning, `gh` credential handling for pushes. No manual credential helper configuration needed since `gh` is already authenticated at sign-in time.
 - **Auto-push** — the draft branch is pushed immediately after creation; Step Commits are pushed after each commit. The app owns these branches and there are no conflict risks.
 - **Path resolution at the IPC boundary** — the renderer works with GitHub identifiers (`owner/repo`); the main-process IPC handler resolves to the local absolute path (`{userData}/repos/{owner}/{repo}`) before invoking git.
 

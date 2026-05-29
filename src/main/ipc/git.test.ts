@@ -20,6 +20,7 @@ describe('registerGitIpc', () => {
     registerGitIpc({
       ipcMain: { handle: vi.fn((channel, handler) => handlers.set(channel, handler)) },
       logger,
+      userDataPath: '/tmp/user-data',
       readGit: vi.fn(async () => ({ branch: 'main', ahead: 1, behind: 0, dirty: true, uncommittedPaths: ['x.ts'] }))
     });
 
@@ -42,6 +43,7 @@ describe('registerGitIpc', () => {
     registerGitIpc({
       ipcMain: { handle: vi.fn((channel, handler) => handlers.set(channel, handler)) },
       logger,
+      userDataPath: '/tmp/user-data',
       readGit: vi.fn(async () => {
         throw error;
       })

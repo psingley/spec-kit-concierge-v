@@ -1,5 +1,7 @@
 import type { IpcMain } from 'electron';
+import { app } from 'electron';
 import { listBranchSessions } from '../data-layer/git/branchSessions';
+import { resolveLocalRepoPath } from '../data-layer/git/repoClone';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import { createBranchSessionsRequest, createBranchSessionsResponse, type BranchSessionsResponse } from './branches.factory';
@@ -9,6 +11,7 @@ export const BRANCH_SESSIONS_CHANNEL = 'branches:sessions';
 export type RegisterBranchesIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'error'>;
+  userDataPath?: string;
   listSessions?: typeof listBranchSessions;
   now?: () => number;
 };
@@ -16,6 +19,7 @@ export type RegisterBranchesIpcOptions = {
 export const registerBranchesIpc = ({
   ipcMain,
   logger,
+  userDataPath = app.getPath('userData'),
   listSessions = listBranchSessions,
   now = () => performance.now()
 }: RegisterBranchesIpcOptions): void => {
@@ -25,7 +29,15 @@ export const registerBranchesIpc = ({
     try {
       const request = createBranchSessionsRequest(assertOnePayload(BRANCH_SESSIONS_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const response = createBranchSessionsResponse({ sessions: await listSessions(request.value.repositoryPath) });
+
+      // Resolve owner/repo → local path (skip if already absolute)
+      const repoPath = request.value.repositoryPath.includes('/')
+        && !request.value.repositoryPath.includes('\\')
+        && !request.value.repositoryPath.startsWith('/')
+        ? resolveLocalRepoPath(userDataPath, request.value.repositoryPath)
+        : request.value.repositoryPath;
+
+      const response = createBranchSessionsResponse({ sessions: await listSessions(repoPath) });
       if (!response.ok) throw toError(response.error.message);
       logger.info({ channel: BRANCH_SESSIONS_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
