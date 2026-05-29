@@ -1,0 +1,13 @@
+[
+  {
+    "name": "activity pill busy",
+    "selector": ".activity-pill",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(21, 22, 24)",
+      "border-radius": "999px",
+      "border-top-color": "rgb(19, 47, 59)",
+      "padding": "0px"
+    }
+  }
+]

@@ -26,7 +26,7 @@ function RepoChip({ repo, onPick }) {
   return (
     <div className="tb-chip-wrap" ref={ref}>
       <button
-        className={"tb-chip " + (open ? "is-open" : "")}
+        className={"tb-chip repo " + (open ? "is-open" : "")}
         onClick={() => setOpen(v => !v)}
       >
         <span className="tb-chip-prefix mono">collette-travel</span>

@@ -1,0 +1,98 @@
+{
+  "role": "dialog",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "heading",
+          "name": "Report a bug or request a feature",
+          "children": []
+        },
+        {
+          "role": "button",
+          "name": "",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "group",
+              "name": "",
+              "children": [
+                {
+                  "role": "button",
+                  "name": "Feature",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "Bug",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "group",
+              "name": "",
+              "children": [
+                {
+                  "role": "button",
+                  "name": "Low",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "Normal",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "High",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "Blocker",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "button",
+          "name": "Cancel",
+          "children": []
+        },
+        {
+          "role": "button",
+          "name": "Send request",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

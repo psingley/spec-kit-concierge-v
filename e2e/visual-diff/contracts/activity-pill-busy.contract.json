@@ -1,0 +1,59 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/activity-pill.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "activity-pill-busy",
+  "designPath": "design/v3-fetch/project/activity-pill.jsx",
+  "primaryRegion": {
+    "designSelector": ".activity-pill",
+    "shippedSelector": ".activity-pill"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Build a hello-world feature"
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Build a hello-world feature",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "activity-terminal-icon",
+        "selector": "[data-vd-role=\"activity-terminal-icon\"]",
+        "designSelector": ".ap-term"
+      },
+      {
+        "name": "activity-pill-divider",
+        "selector": "[data-vd-role=\"activity-pill-divider\"]",
+        "designSelector": ".ap-divider"
+      },
+      {
+        "name": "spinner",
+        "selector": "[data-vd-role=\"spinner\"]",
+        "designSelector": ".ap-spinner"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "activity pill busy",
+      "designSelector": ".activity-pill.is-busy",
+      "shippedSelector": ".activity-pill",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

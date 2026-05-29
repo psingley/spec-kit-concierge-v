@@ -1,0 +1,636 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "header",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "marker": "brand-orb",
+                      "children": [
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "text": "Spec-kit Concierge",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "a.kim",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "marker": "auth-identity-dot",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "a.kim",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "collette-travel/pick repo",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "text": "collette-travel",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "/",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "pick repo",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "main",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "main",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "Claude Sonnet 4.5default",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Claude Sonnet 4.5",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "default",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "Settings",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "button",
+                      "text": "Activity",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "rect",
+                              "children": []
+                            },
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "main",
+              "children": [
+                {
+                  "tag": "section",
+                  "children": [
+                    {
+                      "tag": "button",
+                      "text": "← All repos",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "svg",
+                          "children": [
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "circle",
+                              "children": []
+                            },
+                            {
+                              "tag": "path",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "h1",
+                      "text": "concierge-api",
+                      "children": []
+                    },
+                    {
+                      "tag": "p",
+                      "text": "Resume a prior session or start fresh from main.",
+                      "children": []
+                    },
+                    {
+                      "tag": "section",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "text": "4 prior sessions",
+                          "children": []
+                        },
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "spec/0042-self-serve-flight-changePlan2h ago",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "children": [
+                                    {
+                                      "tag": "span",
+                                      "text": "spec/0042-self-serve-flight-change",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "children": [
+                                        {
+                                          "tag": "span",
+                                          "text": "Plan",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "span",
+                                          "children": [
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "2h ago",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "spec/0039-loyalty-tier-refund-rulesReview3d ago",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "children": [
+                                    {
+                                      "tag": "span",
+                                      "text": "spec/0039-loyalty-tier-refund-rules",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "children": [
+                                        {
+                                          "tag": "span",
+                                          "text": "Review",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "span",
+                                          "children": [
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "3d ago",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "spec/0037-companion-pnr-mergeTasks1w ago",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "children": [
+                                    {
+                                      "tag": "span",
+                                      "text": "spec/0037-companion-pnr-merge",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "children": [
+                                        {
+                                          "tag": "span",
+                                          "text": "Tasks",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "span",
+                                          "children": [
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "1w ago",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "spec/0033-rate-card-renewalsClarify2w ago",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "children": [
+                                    {
+                                      "tag": "span",
+                                      "text": "spec/0033-rate-card-renewals",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "children": [
+                                        {
+                                          "tag": "span",
+                                          "text": "Clarify",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "span",
+                                          "children": [
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "span",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "2w ago",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "button",
+                          "text": "Start a new sessionfrom main",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Start a new session",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "from main",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "0.1.0",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "test-acp-adapter 0.0.0:test-model",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "primary sign-in action",
+    "selector": ".signin-row .btn.primary",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(58, 126, 154)",
+      "border-radius": "6px",
+      "gap": "8px"
+    }
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "name": "customize modal panel",
+    "selector": ".modal",
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.165 0.003 280)",
+      "border-radius": "10px",
+      "box-shadow": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
+      "padding": "0px"
+    }
+  },
+  {
+    "name": "customize segmented control",
+    "selector": ".segmented button",
+    "found": true,
+    "styles": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "4px",
+      "padding": "5px 12px"
+    }
+  }
+]

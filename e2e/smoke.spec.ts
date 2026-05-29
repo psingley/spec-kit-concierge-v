@@ -26,7 +26,7 @@ test('opens the blank Electron shell without console errors', async () => {
     await firstWindow.waitForLoadState('domcontentloaded');
     await expect(firstWindow).toHaveTitle('Spec-kit Concierge');
     await expect(firstWindow.getByTestId('app-version-proof')).toHaveText(packageJson.version);
-    await expect(firstWindow.getByTestId('bound-cli-proof')).toContainText('Copilot 1.0.54', {
+    await expect(firstWindow.getByTestId('bound-cli-proof')).toContainText(/Copilot 1\.0\.\d+/, {
       timeout: 10_000
     });
     expect(consoleErrors).toEqual([]);

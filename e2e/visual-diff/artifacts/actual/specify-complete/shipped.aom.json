@@ -1,0 +1,266 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/concierge-api",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "spec/draft-rr6q",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "tablist",
+              "name": "",
+              "children": [
+                {
+                  "role": "tab",
+                  "name": "Specifycomplete",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Clarifypending",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Plannot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Tasksnot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Analyzenot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Reviewnot_available",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "button",
+                                  "name": "Preview",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "Edit",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "generic",
+                                  "name": "",
+                                  "children": [
+                                    {
+                                      "role": "generic",
+                                      "name": "",
+                                      "children": [
+                                        {
+                                          "role": "heading",
+                                          "name": "Self-serve flight-change for loyalty guests",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Problem",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Goals",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Non-goals",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "User stories",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Acceptance criteria",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Dependencies",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Out of scope clarifications needed",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Open risks",
+                                          "children": []
+                                        },
+                                        {
+                                          "role": "heading",
+                                          "name": "Notes",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Jump to end",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Clarify",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "button",
+              "name": "Add a self-serve flight-change flow so loyalty-tier guests can rebook within ±48h of departure without calling the concierge desk. Must respect existing rebook ",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

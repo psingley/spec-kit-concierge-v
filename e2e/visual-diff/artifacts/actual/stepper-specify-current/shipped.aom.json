@@ -1,0 +1,36 @@
+{
+  "role": "tablist",
+  "name": "",
+  "children": [
+    {
+      "role": "tab",
+      "name": "Specifypending",
+      "children": []
+    },
+    {
+      "role": "tab",
+      "name": "Clarifynot_available",
+      "children": []
+    },
+    {
+      "role": "tab",
+      "name": "Plannot_available",
+      "children": []
+    },
+    {
+      "role": "tab",
+      "name": "Tasksnot_available",
+      "children": []
+    },
+    {
+      "role": "tab",
+      "name": "Analyzenot_available",
+      "children": []
+    },
+    {
+      "role": "tab",
+      "name": "Reviewnot_available",
+      "children": []
+    }
+  ]
+}

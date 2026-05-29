@@ -1,0 +1,276 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/concierge-api",
+                          "children": []
+                        },
+                        {
+                          "role": "dialog",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "button",
+                                  "name": "concierge-api42h ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-web2yesterday",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-mobile13d ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "booking-engine1w ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "itinerary-servicemain",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "pricing-rules",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "guest-profile-svc",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "supplier-sync",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "loyalty-ledger",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "ops-dashboard",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "concierge-shared-ui",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "incident-bot",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "voucher-redeem",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "data-warehouse-etl",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "main",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "tablist",
+              "name": "",
+              "children": [
+                {
+                  "role": "tab",
+                  "name": "Specifypending",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Clarifynot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Plannot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Tasksnot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Analyzenot_available",
+                  "children": []
+                },
+                {
+                  "role": "tab",
+                  "name": "Reviewnot_available",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "role": "main",
+              "name": "",
+              "children": [
+                {
+                  "role": "region",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "heading",
+                              "name": "Specify",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "button",
+                                  "name": "Clear",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "Begin specify",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "button",
+              "name": "Idle",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

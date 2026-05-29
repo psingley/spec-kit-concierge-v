@@ -1,0 +1,152 @@
+{
+  "name": "stepper-specify-current",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Specify'",
+      "expected": "Specify",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Clarify'",
+      "expected": "Clarify",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Plan'",
+      "expected": "Plan",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Tasks'",
+      "expected": "Tasks",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Analyze'",
+      "expected": "Analyze",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Review'",
+      "expected": "Review",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Specify' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Clarify' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Plan' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Tasks' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Analyze' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Review' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'stepper-track' at [data-vd-role=\"stepper-track\"]",
+      "expected": "[data-vd-role=\"stepper-track\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'stepper-track-fill' at [data-vd-role=\"stepper-track-fill\"]",
+      "expected": "[data-vd-role=\"stepper-track-fill\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'step-orb' at [data-vd-role=\"step-orb\"]",
+      "expected": "[data-vd-role=\"step-orb\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'step-separator' at [data-vd-role=\"step-separator\"]",
+      "expected": "[data-vd-role=\"step-separator\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper current orb.width: expected '14px', got '206px'",
+      "expected": "14px",
+      "actual": "206px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper current orb.height: expected '14px', got '36.5px'",
+      "expected": "14px",
+      "actual": "36.5px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper current orb.border-radius: expected '50%', got '0px'",
+      "expected": "50%",
+      "actual": "0px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper current orb.background-color: expected 'oklch(0.82 0.18 90)', got 'rgba(0, 0, 0, 0)'",
+      "expected": "oklch(0.82 0.18 90)",
+      "actual": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper tab label.font-weight: expected '500', got '400'",
+      "expected": "500",
+      "actual": "400"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper tab label.padding: expected '12px 18px 16px', got '0px 12px'",
+      "expected": "12px 18px 16px",
+      "actual": "0px 12px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on stepper tab label.color: expected 'oklch(0.94 0.005 80)', got 'rgb(129, 145, 152)'",
+      "expected": "oklch(0.94 0.005 80)",
+      "actual": "rgb(129, 145, 152)"
+    },
+    {
+      "layer": "pixels",
+      "message": "cropped pixel residual 10.89% exceeds 7%",
+      "expected": "7%",
+      "actual": "10.89%"
+    }
+  ],
+  "pixelResidual": 10.89,
+  "priorityScore": 100
+}

@@ -1,0 +1,101 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/steps.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "specify-running",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/concierge-api"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "spec/draft-rpg3"
+      },
+      {
+        "value": "Specifying…"
+      },
+      {
+        "value": "spec.md"
+      },
+      {
+        "value": "Watch progress in the activity stream."
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "a.kim",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "collette-travel/concierge-api",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "spec/draft-rpg3",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Claude Sonnet 4.5default",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      },
+      {
+        "name": "spinner",
+        "selector": "[data-vd-role=\"spinner\"]",
+        "designSelector": ".spinner"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "spec loading panel",
+      "designSelector": ".spec-loading",
+      "shippedSelector": ".spec-loading",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "tag": "div",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "h1",
+      "text": "Spec-kit Concierge",
+      "children": []
+    },
+    {
+      "tag": "p",
+      "text": "Spec-driven feature work, with Copilot CLI in the loop. Sign in to load your organization.",
+      "children": []
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "GitHub CLI",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Signed in as a.kim",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "GitHub Copilot CLI",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Drives the spec-kit workflow",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Sign in",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "Atlassian MCP",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Required to send specs to JIRA",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Sign in",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "text": "Trouble signing in? Use the gear menu to report a bug.",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

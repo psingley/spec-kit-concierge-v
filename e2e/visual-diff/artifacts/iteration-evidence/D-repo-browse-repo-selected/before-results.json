@@ -1,0 +1,140 @@
+{
+  "name": "repo-browse-repo-selected",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'collette-travel/pick repo'",
+      "expected": "collette-travel/pick repo",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'pick repo'",
+      "expected": "pick repo",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '← All repos'",
+      "expected": "← All repos",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Resume a prior session or start fresh from main.'",
+      "expected": "Resume a prior session or start fresh from main.",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '4 prior sessions'",
+      "expected": "4 prior sessions",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec/0042-self-serve-flight-change'",
+      "expected": "spec/0042-self-serve-flight-change",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Plan'",
+      "expected": "Plan",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '2h ago'",
+      "expected": "2h ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec/0039-loyalty-tier-refund-rules'",
+      "expected": "spec/0039-loyalty-tier-refund-rules",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Review'",
+      "expected": "Review",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '3d ago'",
+      "expected": "3d ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec/0037-companion-pnr-merge'",
+      "expected": "spec/0037-companion-pnr-merge",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Tasks'",
+      "expected": "Tasks",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '1w ago'",
+      "expected": "1w ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec/0033-rate-card-renewals'",
+      "expected": "spec/0033-rate-card-renewals",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Clarify'",
+      "expected": "Clarify",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '2w ago'",
+      "expected": "2w ago",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'from main'",
+      "expected": "from main",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button '← All repos' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'spec/0042-self-serve-flight-changePlan2h ago' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Start a new sessionfrom main' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: session row card",
+      "expected": ".session-row",
+      "actual": ".session-row"
+    }
+  ],
+  "pixelResidual": 4.76,
+  "priorityScore": 100
+}

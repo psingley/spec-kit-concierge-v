@@ -4,6 +4,7 @@ import { selectAuthGateOpen } from './slices/auth.selectors';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from './slices/workspace.selectors';
 import { RepoBrowseScreenContainer } from './components/RepoBrowseScreenContainer';
 import { SignInScreenContainer } from './components/SignInScreenContainer';
+import { TitlebarContainer } from './components/TitlebarContainer';
 import { WorkspaceContainer } from './components/WorkspaceContainer';
 
 export const App = (): React.ReactElement => {
@@ -14,7 +15,12 @@ export const App = (): React.ReactElement => {
     return <SignInScreenContainer />;
   }
   if (repo === null || branch === null) {
-    return <RepoBrowseScreenContainer />;
+    return (
+      <div className="workspace">
+        <TitlebarContainer />
+        <RepoBrowseScreenContainer />
+      </div>
+    );
   }
   return <WorkspaceContainer />;
 };

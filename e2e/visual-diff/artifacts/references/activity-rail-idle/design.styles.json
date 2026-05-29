@@ -1,0 +1,13 @@
+[
+  {
+    "name": "activity rail panel",
+    "selector": ".activity",
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.165 0.003 280)",
+      "border-radius": "0px",
+      "border-top-color": "oklch(0.94 0.005 80)",
+      "box-shadow": "none"
+    }
+  }
+]

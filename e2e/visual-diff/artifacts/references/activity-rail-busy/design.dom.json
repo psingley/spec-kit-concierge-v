@@ -1,0 +1,521 @@
+{
+  "tag": "aside",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "rect",
+                  "children": []
+                },
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "span",
+              "text": "Activity",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "running",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": []
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Current",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "span",
+                  "text": "spec.md",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:00",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "•",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Concierge ready. Awaiting workspace.",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "gh auth login",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Opening browser for device code…",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "gh copilot auth",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "em",
+                  "text": "a.kim",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "atlassian mcp",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "em",
+                  "text": "collette-travel.atlassian.net",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "em",
+                  "text": "gpt-5-codex",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "git checkout",
+                  "children": []
+                },
+                {
+                  "tag": "em",
+                  "text": "main",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "em",
+                  "text": "main",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "cd",
+                  "children": []
+                },
+                {
+                  "tag": "strong",
+                  "text": "git pull",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "em",
+                  "text": "concierge-api",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Fetching collette-travel org repos…",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "git checkout -b",
+                  "children": []
+                },
+                {
+                  "tag": "em",
+                  "text": "spec/draft-qieb",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "$",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "copilot",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "19:06:05",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": [
+                {
+                  "tag": "strong",
+                  "text": "14",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "16 lines",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "·",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "auto-scroll",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Clear",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

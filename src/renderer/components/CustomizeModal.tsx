@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { Ico } from './Icons';
 
 export type CustomizeModalProps = {
   open: boolean;
@@ -16,24 +17,88 @@ export const CustomizeModal = ({ open, accent, density, activitySide, requireScr
     if (open) closeRef.current?.focus();
   }, [open]);
   if (!open) return null;
+  const accentPairs = [
+    ['#3a7e9a', '#132f3b'],
+    ['#c4302b', '#3a1010'],
+    ['#c89b4a', '#3a2710'],
+    ['#7a3a8a', '#2a1430'],
+    ['#3b82f6', '#1e3a8a'],
+    ['#ffffff', '#3a3a3a']
+  ];
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="customize-title" className="modal">
-      <h2 id="customize-title">Customize</h2>
-      <label>Accent <input aria-label="Accent" value={accent} onChange={(event) => onChange({ accent: event.target.value })} /></label>
-      <label>Density
-        <select aria-label="Density" value={density} onChange={(event) => onChange({ density: event.target.value as 'compact' | 'comfortable' })}>
-          <option value="comfortable">Comfortable</option>
-          <option value="compact">Compact</option>
-        </select>
-      </label>
-      <fieldset>
-        <legend>Activity side</legend>
-        {(['left', 'right', 'hidden'] as const).map((side) => (
-          <button key={side} type="button" aria-pressed={activitySide === side} onClick={() => onChange({ activitySide: side })}>{side}</button>
-        ))}
-      </fieldset>
-      <button type="button" role="switch" aria-checked={requireScroll} onClick={() => onChange({ requireScroll: !requireScroll })}>Require scroll to unlock</button>
-      <button ref={closeRef} type="button" onClick={onClose}>Close</button>
+    <div className="modal-veil" data-vd-role="modal-veil" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="customize-title" className="modal customize-modal" data-vd-role="modal-veil" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-head">
+          <Ico.Gear size={13} />
+          <h2 id="customize-title">Customize</h2>
+          <button ref={closeRef} type="button" className="icon-btn" aria-label="Close" onClick={onClose}><Ico.X size={13} /></button>
+        </div>
+        <div className="modal-body customize-body">
+          <div className="cz-section">
+            <div className="cz-section-h">Theme</div>
+            <div className="cz-section-body">
+              <div className="cz-row">
+                <div className="cz-row-label">Accent</div>
+                <div className="cz-row-control">
+                  <div className="cz-swatches">
+                    {accentPairs.map(([primary, dim]) => (
+                      <button
+                        key={primary}
+                        type="button"
+                        className={`cz-swatch ${accent === primary ? 'is-active' : ''}`}
+                        style={{ background: primary }}
+                        aria-label={`Accent ${primary}`}
+                        aria-pressed={accent === primary}
+                        onClick={() => onChange({ accent: primary })}
+                      >
+                        <span className="cz-swatch-dim" style={{ background: dim }} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="cz-row">
+                <div className="cz-row-label">Density</div>
+                <div className="cz-row-control">
+                  <div className="cz-segmented segmented">
+                    <button type="button" className={`cz-seg ${density === 'compact' ? 'is-active' : ''}`} onClick={() => onChange({ density: 'compact' })}>Compact</button>
+                    <button type="button" className={`cz-seg ${density === 'comfortable' ? 'is-active' : ''}`} onClick={() => onChange({ density: 'comfortable' })}>Regular</button>
+                    <button type="button" className="cz-seg" onClick={() => onChange({ density: 'comfortable' })}>Comfy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="cz-section">
+            <div className="cz-section-h">Layout</div>
+            <div className="cz-section-body">
+              <div className="cz-row">
+                <div className="cz-row-label">Activity stream</div>
+                <div className="cz-row-control">
+                  <div className="cz-segmented segmented">
+                    <button type="button" className={`cz-seg ${activitySide === 'left' ? 'is-active' : ''}`} onClick={() => onChange({ activitySide: 'left' })}>Left</button>
+                    <button type="button" className={`cz-seg ${activitySide === 'right' ? 'is-active' : ''}`} onClick={() => onChange({ activitySide: 'right' })}>Right</button>
+                    <button type="button" className={`cz-seg ${activitySide === 'hidden' ? 'is-active' : ''}`} onClick={() => onChange({ activitySide: 'hidden' })}>Off</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="cz-section">
+            <div className="cz-section-h">Flow</div>
+            <div className="cz-section-body">
+              <div className="cz-row is-inline">
+                <div className="cz-row-label">Require scroll to unlock Clarify</div>
+                <div className="cz-row-control">
+                  <button type="button" className={`cz-toggle ${requireScroll ? 'is-on' : ''}`} role="switch" aria-checked={requireScroll} aria-label="Require scroll to unlock Clarify" onClick={() => onChange({ requireScroll: !requireScroll })}>
+                    <span className="cz-toggle-thumb" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,154 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/topbar.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "workspace-titlebar-repo-dropdown-open",
+  "designPath": "design/v3-fetch/project/topbar.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/concierge-api"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "main"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "4"
+      },
+      {
+        "value": "2h ago"
+      },
+      {
+        "value": "concierge-web"
+      },
+      {
+        "value": "2"
+      },
+      {
+        "value": "yesterday"
+      },
+      {
+        "value": "concierge-mobile"
+      },
+      {
+        "value": "1"
+      },
+      {
+        "value": "3d ago"
+      },
+      {
+        "value": "booking-engine"
+      },
+      {
+        "value": "1w ago"
+      },
+      {
+        "value": "All repos"
+      },
+      {
+        "value": "itinerary-service"
+      },
+      {
+        "value": "pricing-rules"
+      },
+      {
+        "value": "guest-profile-svc"
+      },
+      {
+        "value": "supplier-sync"
+      },
+      {
+        "value": "loyalty-ledger"
+      },
+      {
+        "value": "ops-dashboard"
+      },
+      {
+        "value": "concierge-shared-ui"
+      },
+      {
+        "value": "incident-bot"
+      },
+      {
+        "value": "voucher-redeem"
+      },
+      {
+        "value": "data-warehouse-etl"
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "a.kim",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "concierge-api42h ago",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "itinerary-servicemain",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Claude Sonnet 4.5default",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "repo dropdown menu",
+      "designSelector": ".tb-menu",
+      "shippedSelector": ".tb-menu",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "box-shadow",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

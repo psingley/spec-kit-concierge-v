@@ -1,0 +1,17 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "button",
+          "name": "Clear",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

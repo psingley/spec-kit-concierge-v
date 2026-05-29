@@ -1,0 +1,184 @@
+{
+  "runId": "2026-05-28T23:06:53.255Z",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "summary": {
+    "total": 24,
+    "pass": 24,
+    "fail": 0,
+    "warn": 0,
+    "worstScreen": "activity-rail-idle"
+  },
+  "screens": [
+    {
+      "name": "activity-rail-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.55,
+      "priorityScore": 7
+    },
+    {
+      "name": "activity-rail-busy",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.88,
+      "priorityScore": 7
+    },
+    {
+      "name": "signin-fresh",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.27,
+      "priorityScore": 6
+    },
+    {
+      "name": "signin-github-ok",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6,
+      "priorityScore": 6
+    },
+    {
+      "name": "repo-browse-repo-selected",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.6,
+      "priorityScore": 6
+    },
+    {
+      "name": "workspace-titlebar-closed-menus",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.99,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-specify-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.92,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-clarify-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-plan-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-tasks-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.09,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-analyze-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "stepper-review-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.08,
+      "priorityScore": 5
+    },
+    {
+      "name": "specify-complete",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.65,
+      "priorityScore": 5
+    },
+    {
+      "name": "about-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.44,
+      "priorityScore": 5
+    },
+    {
+      "name": "specify-input",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.99,
+      "priorityScore": 4
+    },
+    {
+      "name": "activity-pill-busy",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.67,
+      "priorityScore": 4
+    },
+    {
+      "name": "request-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.49,
+      "priorityScore": 4
+    },
+    {
+      "name": "workspace-titlebar-repo-dropdown-open",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.46,
+      "priorityScore": 3
+    },
+    {
+      "name": "workspace-titlebar-gear-menu-open",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.24,
+      "priorityScore": 3
+    },
+    {
+      "name": "customize-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.06,
+      "priorityScore": 3
+    },
+    {
+      "name": "signin-all-ok",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.54,
+      "priorityScore": 2
+    },
+    {
+      "name": "specify-running",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 2.32,
+      "priorityScore": 2
+    },
+    {
+      "name": "repo-browse-empty-search",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.34,
+      "priorityScore": 1
+    },
+    {
+      "name": "activity-pill-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 0.12,
+      "priorityScore": 0
+    }
+  ]
+}

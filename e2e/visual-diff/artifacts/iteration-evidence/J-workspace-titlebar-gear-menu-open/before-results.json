@@ -1,0 +1,80 @@
+{
+  "name": "workspace-titlebar-gear-menu-open",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Report a bug'",
+      "expected": "Report a bug",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Export activity log'",
+      "expected": "Export activity log",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '14 lines'",
+      "expected": "14 lines",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Customize' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Report a bug' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Export activity log14 lines' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'About' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'gear-menu-icons' at [data-vd-role=\"gear-menu-icons\"]",
+      "expected": "[data-vd-role=\"gear-menu-icons\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: gear menu panel",
+      "expected": ".gear-menu",
+      "actual": ".gear-menu"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on gear menu row.height: expected '32px', got '35.5px'",
+      "expected": "32px",
+      "actual": "35.5px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on gear menu row.gap: expected '10px', got '8px'",
+      "expected": "10px",
+      "actual": "8px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on gear menu row.padding: expected '9px 12px', got '8px 10px'",
+      "expected": "9px 12px",
+      "actual": "8px 10px"
+    }
+  ],
+  "pixelResidual": 2.97,
+  "priorityScore": 100
+}

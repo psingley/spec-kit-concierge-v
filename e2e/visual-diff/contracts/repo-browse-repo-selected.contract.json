@@ -1,0 +1,138 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/repo-browse.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "repo-browse-repo-selected",
+  "designPath": "design/v3-fetch/project/repo-browse.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/pick repo"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "pick repo"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "← All repos"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Resume a prior session or start fresh from main."
+      },
+      {
+        "value": "4 prior sessions"
+      },
+      {
+        "value": "spec/0042-self-serve-flight-change"
+      },
+      {
+        "value": "Plan"
+      },
+      {
+        "value": "2h ago"
+      },
+      {
+        "value": "spec/0039-loyalty-tier-refund-rules"
+      },
+      {
+        "value": "Review"
+      },
+      {
+        "value": "3d ago"
+      },
+      {
+        "value": "spec/0037-companion-pnr-merge"
+      },
+      {
+        "value": "Tasks"
+      },
+      {
+        "value": "1w ago"
+      },
+      {
+        "value": "spec/0033-rate-card-renewals"
+      },
+      {
+        "value": "Clarify"
+      },
+      {
+        "value": "2w ago"
+      },
+      {
+        "value": "Start a new session"
+      },
+      {
+        "value": "from main"
+      }
+    ],
+    "headings": [
+      {
+        "level": 1,
+        "text": "concierge-api"
+      }
+    ],
+    "controls": [
+      {
+        "role": "button",
+        "name": "← All repos",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "spec/0042-self-serve-flight-changePlan2h ago",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Start a new sessionfrom main",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "session row card",
+      "designSelector": ".session-row",
+      "shippedSelector": ".session-row",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

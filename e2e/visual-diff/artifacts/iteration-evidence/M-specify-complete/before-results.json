@@ -1,0 +1,158 @@
+{
+  "name": "specify-complete",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec.md · 63 lines'",
+      "expected": "spec.md · 63 lines",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Self-serve flight-change for loyalty guests'",
+      "expected": "Self-serve flight-change for loyalty guests",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Problem'",
+      "expected": "Problem",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Goals'",
+      "expected": "Goals",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Non-goals'",
+      "expected": "Non-goals",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'User stories'",
+      "expected": "User stories",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Acceptance criteria'",
+      "expected": "Acceptance criteria",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Dependencies'",
+      "expected": "Dependencies",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Out of scope clarifications needed'",
+      "expected": "Out of scope clarifications needed",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Open risks'",
+      "expected": "Open risks",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Notes'",
+      "expected": "Notes",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Scroll to the end of the spec to unlock the Clarify step.'",
+      "expected": "Scroll to the end of the spec to unlock the Clarify step.",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Jump to end'",
+      "expected": "Jump to end",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 1: expected 'Self-serve flight-change for loyalty guests', got 'Specify'",
+      "expected": "Self-serve flight-change for loyalty guests",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Problem', got 'Specify'",
+      "expected": "Problem",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Goals', got 'Specify'",
+      "expected": "Goals",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Non-goals', got 'Specify'",
+      "expected": "Non-goals",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'User stories', got 'Specify'",
+      "expected": "User stories",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Acceptance criteria', got 'Specify'",
+      "expected": "Acceptance criteria",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Dependencies', got 'Specify'",
+      "expected": "Dependencies",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Out of scope clarifications needed', got 'Specify'",
+      "expected": "Out of scope clarifications needed",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Open risks', got 'Specify'",
+      "expected": "Open risks",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Notes', got 'Specify'",
+      "expected": "Notes",
+      "actual": "Specify"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Jump to end' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: markdown panel",
+      "expected": ".md-panel",
+      "actual": ".md-panel"
+    }
+  ],
+  "pixelResidual": 3.54,
+  "priorityScore": 100
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "markdown panel",
+    "selector": ".md-panel",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(23, 31, 36)",
+      "border-radius": "10px",
+      "border-top-color": "oklch(0.285 0.006 280)",
+      "padding": "0px"
+    }
+  }
+]

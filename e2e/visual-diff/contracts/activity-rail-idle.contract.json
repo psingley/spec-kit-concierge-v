@@ -1,0 +1,114 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/activity.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "activity-rail-idle",
+  "designPath": "design/v3-fetch/project/activity.jsx",
+  "primaryRegion": {
+    "designSelector": ".activity",
+    "shippedSelector": ".activity"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Activity"
+      },
+      {
+        "value": "idle"
+      },
+      {
+        "value": "Current"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "00:00:00"
+      },
+      {
+        "value": "Concierge ready. Awaiting workspace."
+      },
+      {
+        "value": "gh auth login"
+      },
+      {
+        "value": "Opening browser for device code…"
+      },
+      {
+        "value": "gh copilot auth"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "atlassian mcp"
+      },
+      {
+        "value": "collette-travel.atlassian.net"
+      },
+      {
+        "value": "gpt-5-codex"
+      },
+      {
+        "value": "git checkout"
+      },
+      {
+        "value": "main"
+      },
+      {
+        "value": "cd"
+      },
+      {
+        "value": "git pull"
+      },
+      {
+        "value": "Fetching collette-travel org repos…"
+      },
+      {
+        "value": "14"
+      },
+      {
+        "value": "auto-scroll"
+      },
+      {
+        "value": "Clear"
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Clear",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "activity-idle-dot",
+        "selector": "[data-vd-role=\"activity-idle-dot\"]",
+        "designSelector": ".activity-status .dot"
+      },
+      {
+        "name": "activity-pulse-dot",
+        "selector": "[data-vd-role=\"activity-pulse-dot\"]",
+        "designSelector": ".pulse-dot"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "activity rail panel",
+      "designSelector": ".activity",
+      "shippedSelector": ".activity",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "box-shadow"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

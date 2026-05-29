@@ -1,0 +1,23 @@
+{
+  "runId": "2026-05-28T22:47:19.754Z",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "summary": {
+    "total": 1,
+    "pass": 1,
+    "fail": 0,
+    "warn": 0,
+    "worstScreen": "activity-rail-idle"
+  },
+  "screens": [
+    {
+      "name": "activity-rail-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.28,
+      "priorityScore": 6
+    }
+  ]
+}

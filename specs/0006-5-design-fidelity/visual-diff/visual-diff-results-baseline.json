@@ -1,0 +1,466 @@
+[
+  {
+    "screen": "signin-fresh",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/signin-fresh.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/signin-fresh.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/signin-fresh.png",
+    "diffPercent": 2.13,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:32.229Z"
+  },
+  {
+    "screen": "signin-github-ok",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/signin-github-ok.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/signin-github-ok.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/signin-github-ok.png",
+    "diffPercent": 2.2,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:32.609Z"
+  },
+  {
+    "screen": "signin-all-ok",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/signin-all-ok.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/signin-all-ok.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/signin-all-ok.png",
+    "diffPercent": 4.17,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:32.931Z"
+  },
+  {
+    "screen": "repo-browse-empty-search",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/repo-browse-empty-search.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/repo-browse-empty-search.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/repo-browse-empty-search.png",
+    "diffPercent": 1.36,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:33.188Z"
+  },
+  {
+    "screen": "repo-browse-repo-selected",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/repo-browse-repo-selected.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/repo-browse-repo-selected.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/repo-browse-repo-selected.png",
+    "diffPercent": 5.03,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:33.601Z"
+  },
+  {
+    "screen": "workspace-titlebar-closed-menus",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/workspace-titlebar-closed-menus.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/workspace-titlebar-closed-menus.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/workspace-titlebar-closed-menus.png",
+    "diffPercent": 3.23,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:33.982Z"
+  },
+  {
+    "screen": "workspace-titlebar-repo-dropdown-open",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/workspace-titlebar-repo-dropdown-open.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/workspace-titlebar-repo-dropdown-open.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/workspace-titlebar-repo-dropdown-open.png",
+    "diffPercent": 3.23,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:34.318Z"
+  },
+  {
+    "screen": "workspace-titlebar-gear-menu-open",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/workspace-titlebar-gear-menu-open.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/workspace-titlebar-gear-menu-open.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/workspace-titlebar-gear-menu-open.png",
+    "diffPercent": 3.18,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:34.579Z"
+  },
+  {
+    "screen": "stepper-specify-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-specify-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-specify-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-specify-current.png",
+    "diffPercent": 3.23,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:34.940Z"
+  },
+  {
+    "screen": "stepper-clarify-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-clarify-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-clarify-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-clarify-current.png",
+    "diffPercent": 3.23,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:35.273Z"
+  },
+  {
+    "screen": "stepper-plan-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-plan-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-plan-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-plan-current.png",
+    "diffPercent": 3.22,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:35.606Z"
+  },
+  {
+    "screen": "stepper-tasks-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-tasks-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-tasks-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-tasks-current.png",
+    "diffPercent": 3.22,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:35.973Z"
+  },
+  {
+    "screen": "stepper-analyze-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-analyze-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-analyze-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-analyze-current.png",
+    "diffPercent": 3.22,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:36.325Z"
+  },
+  {
+    "screen": "stepper-review-current",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/stepper-review-current.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/stepper-review-current.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/stepper-review-current.png",
+    "diffPercent": 3.22,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:36.614Z"
+  },
+  {
+    "screen": "specify-input",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/specify-input.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/specify-input.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/specify-input.png",
+    "diffPercent": 3.16,
+    "masked": [
+      {
+        "x": 236,
+        "y": 432,
+        "width": 650,
+        "height": 92,
+        "reason": "Body text font subpixel rendering differs between bundled prototype fonts and Electron assets."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:36.922Z"
+  },
+  {
+    "screen": "specify-running",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/specify-running.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/specify-running.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/specify-running.png",
+    "diffPercent": 3.16,
+    "masked": [
+      {
+        "x": 236,
+        "y": 432,
+        "width": 650,
+        "height": 92,
+        "reason": "Body text font subpixel rendering differs between bundled prototype fonts and Electron assets."
+      },
+      {
+        "x": 1010,
+        "y": 140,
+        "width": 64,
+        "height": 430,
+        "reason": "Activity timestamps are generated at capture time and are intentionally dynamic."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:37.241Z"
+  },
+  {
+    "screen": "specify-complete",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/specify-complete.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/specify-complete.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/specify-complete.png",
+    "diffPercent": 3.61,
+    "masked": [
+      {
+        "x": 236,
+        "y": 432,
+        "width": 650,
+        "height": 92,
+        "reason": "Body text font subpixel rendering differs between bundled prototype fonts and Electron assets."
+      },
+      {
+        "x": 1010,
+        "y": 140,
+        "width": 64,
+        "height": 430,
+        "reason": "Activity timestamps are generated at capture time and are intentionally dynamic."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:37.574Z"
+  },
+  {
+    "screen": "activity-rail-idle",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/activity-rail-idle.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/activity-rail-idle.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/activity-rail-idle.png",
+    "diffPercent": 3.98,
+    "masked": [
+      {
+        "x": 1010,
+        "y": 140,
+        "width": 64,
+        "height": 430,
+        "reason": "Activity timestamps are generated at capture time and are intentionally dynamic."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:37.873Z"
+  },
+  {
+    "screen": "activity-rail-busy",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/activity-rail-busy.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/activity-rail-busy.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/activity-rail-busy.png",
+    "diffPercent": 3.88,
+    "masked": [
+      {
+        "x": 1010,
+        "y": 140,
+        "width": 64,
+        "height": 430,
+        "reason": "Activity timestamps are generated at capture time and are intentionally dynamic."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:38.197Z"
+  },
+  {
+    "screen": "activity-pill-idle",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/activity-pill-idle.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/activity-pill-idle.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/activity-pill-idle.png",
+    "diffPercent": 3.23,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:38.553Z"
+  },
+  {
+    "screen": "activity-pill-busy",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/activity-pill-busy.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/activity-pill-busy.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/activity-pill-busy.png",
+    "diffPercent": 3.26,
+    "masked": [
+      {
+        "x": 1010,
+        "y": 140,
+        "width": 64,
+        "height": 430,
+        "reason": "Activity timestamps are generated at capture time and are intentionally dynamic."
+      },
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:38.914Z"
+  },
+  {
+    "screen": "customize-modal",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/customize-modal.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/customize-modal.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/customize-modal.png",
+    "diffPercent": 6.86,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:39.250Z"
+  },
+  {
+    "screen": "about-modal",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/about-modal.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/about-modal.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/about-modal.png",
+    "diffPercent": 4.93,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:39.645Z"
+  },
+  {
+    "screen": "request-modal",
+    "designPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/design/request-modal.png",
+    "shippedPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/shipped/request-modal.png",
+    "diffPath": "/Users/psingley/spec-kit-concierge-v/e2e/visual-diff/screenshots/diff/request-modal.png",
+    "diffPercent": 5.19,
+    "masked": [
+      {
+        "x": 1268,
+        "y": 0,
+        "width": 12,
+        "height": 720,
+        "reason": "Scrollbar gutter painting differs by Chromium host and is not product UI fidelity."
+      }
+    ],
+    "timestamp": "2026-05-28T17:45:40.048Z"
+  }
+]

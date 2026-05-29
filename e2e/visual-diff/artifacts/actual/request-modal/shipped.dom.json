@@ -1,0 +1,260 @@
+{
+  "tag": "div",
+  "role": "dialog",
+  "marker": "modal-veil",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "svg",
+          "children": [
+            {
+              "tag": "path",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "h2",
+          "text": "Report a bug or request a feature",
+          "children": []
+        },
+        {
+          "tag": "button",
+          "text": "Dismiss",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Request type",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "role": "group",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "Feature",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "text": "Bug",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "rect",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "label",
+          "children": [
+            {
+              "tag": "span",
+              "text": "Title",
+              "children": []
+            },
+            {
+              "tag": "input",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "label",
+          "children": [
+            {
+              "tag": "span",
+              "text": "Details",
+              "children": []
+            },
+            {
+              "tag": "textarea",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Severity",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "role": "group",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "Low",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "Normal",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "High",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "Blocker",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Attach context (auto)",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "rect",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "children": [
+            {
+              "tag": "span",
+              "text": "#concierge-triage",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Cancel",
+          "children": []
+        },
+        {
+          "tag": "button",
+          "text": "Send request",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

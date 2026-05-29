@@ -1,0 +1,12 @@
+[
+  {
+    "name": "activity busy status",
+    "selector": ".activity-status",
+    "found": true,
+    "styles": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "padding": "0px"
+    }
+  }
+]

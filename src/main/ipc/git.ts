@@ -97,7 +97,9 @@ export const registerGitIpc = ({
     try {
       const request = createGitCreateDraftRequest(assertOnePayload(GIT_CREATE_DRAFT_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const response = createGitCreateDraftResponse(await createDraft(request.value.repositoryPath));
+      const fixedDraftNow = Number.parseInt(process.env.CONCIERGE_TEST_DRAFT_NOW ?? '', 10);
+      const draftNow = Number.isFinite(fixedDraftNow) ? () => fixedDraftNow : undefined;
+      const response = createGitCreateDraftResponse(await createDraft(request.value.repositoryPath, draftNow));
       if (!response.ok) throw toError(response.error.message);
       logger.info({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;

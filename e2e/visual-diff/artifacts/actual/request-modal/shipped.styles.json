@@ -1,0 +1,23 @@
+[
+  {
+    "name": "request modal panel",
+    "selector": ".modal",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "10px",
+      "box-shadow": "rgba(0, 0, 0, 0.68) 0px 18px 44px -18px, rgb(42, 55, 61) 0px 0px 0px 1px",
+      "padding": "0px"
+    }
+  },
+  {
+    "name": "request primary action",
+    "selector": ".modal .btn.primary",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(23, 31, 36)",
+      "border-radius": "6px",
+      "padding": "0px 14px"
+    }
+  }
+]

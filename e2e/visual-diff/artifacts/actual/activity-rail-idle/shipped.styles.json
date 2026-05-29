@@ -1,0 +1,13 @@
+[
+  {
+    "name": "activity rail panel",
+    "selector": ".activity",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "0px",
+      "border-top-color": "rgb(244, 247, 248)",
+      "box-shadow": "none"
+    }
+  }
+]

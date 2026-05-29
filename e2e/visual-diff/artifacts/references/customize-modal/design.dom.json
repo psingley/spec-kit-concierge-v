@@ -1,0 +1,261 @@
+{
+  "tag": "div",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "svg",
+          "children": [
+            {
+              "tag": "circle",
+              "children": []
+            },
+            {
+              "tag": "path",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "h3",
+          "text": "Customize",
+          "children": []
+        },
+        {
+          "tag": "button",
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Theme",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Accent",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "children": [
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Density",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Compact",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Regular",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Comfy",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Layout",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Activity stream",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Left",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Right",
+                              "children": []
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Off",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Flow",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Require scroll to unlock Clarify",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "role": "switch",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

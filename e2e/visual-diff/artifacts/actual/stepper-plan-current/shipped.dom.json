@@ -1,0 +1,174 @@
+{
+  "tag": "nav",
+  "role": "tablist",
+  "children": [
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Specify",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Specify",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "pending",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Clarify",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Clarify",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Plan",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Plan",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Tasks",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Tasks",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Analyze",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Analyze",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "step-separator",
+      "children": []
+    },
+    {
+      "tag": "button",
+      "role": "tab",
+      "text": "Review",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "step-orb",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "Review",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "text": "not_available",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "marker": "stepper-track",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "stepper-track-fill",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

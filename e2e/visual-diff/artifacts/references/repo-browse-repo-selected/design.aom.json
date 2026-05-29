@@ -1,0 +1,150 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "a.kim",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "collette-travel/pick repo",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "role": "generic",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "Claude Sonnet 4.5default",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "button",
+                          "name": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "role": "button",
+                      "name": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "main",
+                  "name": "",
+                  "children": [
+                    {
+                      "role": "generic",
+                      "name": "",
+                      "children": [
+                        {
+                          "role": "generic",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "← All repos",
+                              "children": []
+                            },
+                            {
+                              "role": "heading",
+                              "name": "concierge-api",
+                              "children": []
+                            },
+                            {
+                              "role": "generic",
+                              "name": "",
+                              "children": [
+                                {
+                                  "role": "button",
+                                  "name": "spec/0042-self-serve-flight-changePlan2h ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "spec/0039-loyalty-tier-refund-rulesReview3d ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "spec/0037-companion-pnr-mergeTasks1w ago",
+                                  "children": []
+                                },
+                                {
+                                  "role": "button",
+                                  "name": "spec/0033-rate-card-renewalsClarify2w ago",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "role": "button",
+                              "name": "Start a new sessionfrom main",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

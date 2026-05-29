@@ -1,0 +1,12 @@
+[
+  {
+    "name": "spec loading panel",
+    "selector": ".spec-loading",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(23, 31, 36)",
+      "border-radius": "10px",
+      "padding": "40px 24px"
+    }
+  }
+]

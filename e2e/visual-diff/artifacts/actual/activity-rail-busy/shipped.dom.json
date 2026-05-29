@@ -1,0 +1,415 @@
+{
+  "tag": "aside",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "Activity",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "marker": "spinner",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "running",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "marker": "spinner",
+          "children": []
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "text": "Current",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "text": "Drafting spec.md from prompt...",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:00",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Concierge ready. Awaiting workspace.",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:01",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "gh auth login",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:02",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Opening browser for device code…",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:03",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "gh copilot auth",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:04",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "a.kim",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:05",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "atlassian mcp",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:06",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "collette-travel.atlassian.net",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:07",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "gpt-5-codex",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:08",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "git checkout main",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:09",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "cd ~/work/concierge-api && git pull",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:10",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Fetching collette-travel org repos…",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:11",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "✓",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Workspace mounted: concierge-api",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:12",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Current workspace: concierge-api",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:13",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "git checkout -b spec/draft-rwgq",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:14",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "copilot specify",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "00:00:15",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "→",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "Drafting spec.md from prompt...",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "span",
+              "text": "16 lines",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "·",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "text": "auto-scroll",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Clear",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

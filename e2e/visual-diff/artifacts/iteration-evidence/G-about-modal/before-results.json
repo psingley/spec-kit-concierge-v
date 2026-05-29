@@ -1,0 +1,122 @@
+{
+  "name": "about-modal",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Spec-kit Concierge'",
+      "expected": "Spec-kit Concierge",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow, tuned for the Collette-travel concierge team.'",
+      "expected": "An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow, tuned for the Collette-travel concierge team.",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '2.0.0 (2026.05.20)'",
+      "expected": "2.0.0 (2026.05.20)",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Org'",
+      "expected": "Org",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'collette-travel'",
+      "expected": "collette-travel",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Repo'",
+      "expected": "Repo",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Branch'",
+      "expected": "Branch",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '—'",
+      "expected": "—",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Copilot model'",
+      "expected": "Copilot model",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'claude-sonnet-4-5'",
+      "expected": "claude-sonnet-4-5",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'spec-kit'",
+      "expected": "spec-kit",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'v0.9.4'",
+      "expected": "v0.9.4",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Concierge team'",
+      "expected": "Concierge team",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected '#concierge-triage'",
+      "expected": "#concierge-triage",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Documentation'",
+      "expected": "Documentation",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong heading level 2: expected 'Spec-kit Concierge', got 'About Concierge'",
+      "expected": "Spec-kit Concierge",
+      "actual": "About Concierge"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Documentation' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
+      "expected": "[data-vd-role=\"modal-veil\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "pixels",
+      "message": "cropped pixel residual 10.22% exceeds 7%",
+      "expected": "7%",
+      "actual": "10.22%"
+    }
+  ],
+  "pixelResidual": 10.22,
+  "priorityScore": 100
+}

@@ -1,0 +1,36 @@
+{
+  "tag": "button",
+  "children": [
+    {
+      "tag": "span",
+      "children": [
+        {
+          "tag": "svg",
+          "children": [
+            {
+              "tag": "rect",
+              "children": []
+            },
+            {
+              "tag": "path",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "span",
+      "children": []
+    },
+    {
+      "tag": "span",
+      "children": [
+        {
+          "tag": "canvas",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

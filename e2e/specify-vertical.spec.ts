@@ -2,7 +2,7 @@ import { expect, test, _electron as electron } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createRun6BoundaryFixture, gitLogLastMessage } from './support/boundaries';
+import { createRun6BoundaryFixture, gitCurrentBranch, gitLogLastMessage } from './support/boundaries';
 
 test('fresh user completes Specify with OS-boundary adapters and a real Step Commit trailer', async () => {
   const fixture = await createRun6BoundaryFixture();
@@ -30,10 +30,10 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     };
     await expectNoSeriousA11yViolations();
 
-    await page.getByRole('button', { name: /GitHub CLI/i }).click();
-    await expect(page.getByRole('button', { name: /GitHub CLI.*Connected/i })).toBeVisible();
-    await page.getByRole('button', { name: /Copilot CLI/i }).click();
-    await expect(page.getByRole('heading', { name: /Choose a repository/i })).toBeVisible();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await expect(page.getByText(/Signed in as a.kim/i)).toBeVisible();
+    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
 
     await expectNoSeriousA11yViolations();
     await page.getByRole('button', { name: new RegExp(fixture.repoName) }).click();
@@ -58,7 +58,7 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
         {
           repoPath: fixture.repoPath,
           repoName: fixture.repoName,
-          branchAfterSpecify: await page.getByText(/spec\/draft-[a-z0-9]+/).first().textContent(),
+          branchAfterSpecify: await gitCurrentBranch(fixture.repoPath),
           screenshotPath: 'e2e/artifacts/run6-manual-trace/rendered-spec-md.png',
           tracePath: 'e2e/artifacts/run6-manual-trace/trace.zip',
           gitLogOutput: log

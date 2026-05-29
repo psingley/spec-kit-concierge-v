@@ -1,0 +1,118 @@
+// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/topbar.jsx and the rendered design HTML snapshot.
+// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+{
+  "name": "workspace-titlebar-gear-menu-open",
+  "designPath": "design/v3-fetch/project/topbar.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "a.kim"
+      },
+      {
+        "value": "collette-travel/concierge-api"
+      },
+      {
+        "value": "collette-travel"
+      },
+      {
+        "value": "/"
+      },
+      {
+        "value": "concierge-api"
+      },
+      {
+        "value": "Claude Sonnet 4.5"
+      },
+      {
+        "value": "default"
+      },
+      {
+        "value": "main"
+      },
+      {
+        "value": "Customize"
+      },
+      {
+        "value": "Report a bug"
+      },
+      {
+        "value": "Export activity log"
+      },
+      {
+        "value": "14 lines"
+      },
+      {
+        "value": "About"
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Customize",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Report a bug",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "Export activity log14 lines",
+        "count": 1
+      },
+      {
+        "role": "button",
+        "name": "About",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "brand-orb",
+        "selector": "[data-vd-role=\"brand-orb\"]",
+        "designSelector": ".titlebar-dots"
+      },
+      {
+        "name": "gear-menu-icons",
+        "selector": "[data-vd-role=\"gear-menu-icons\"]",
+        "designSelector": ".gear-item svg"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "gear menu panel",
+      "designSelector": ".gear-menu",
+      "shippedSelector": ".gear-menu",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "box-shadow",
+        "padding"
+      ]
+    },
+    {
+      "name": "gear menu row",
+      "designSelector": ".gear-item",
+      "shippedSelector": ".gear-item",
+      "properties": [
+        "height",
+        "gap",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 7,
+    "warnDiffPercent": 7
+  }
+}

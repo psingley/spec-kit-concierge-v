@@ -1,0 +1,158 @@
+{
+  "name": "customize-modal",
+  "status": "FAIL",
+  "failures": [
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Theme'",
+      "expected": "Theme",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Compact'",
+      "expected": "Compact",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Regular'",
+      "expected": "Regular",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Comfy'",
+      "expected": "Comfy",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Layout'",
+      "expected": "Layout",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Activity stream'",
+      "expected": "Activity stream",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Left'",
+      "expected": "Left",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Right'",
+      "expected": "Right",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Off'",
+      "expected": "Off",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Flow'",
+      "expected": "Flow",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing text: expected 'Require scroll to unlock Clarify'",
+      "expected": "Require scroll to unlock Clarify",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "missing heading level 2: expected 'Customize'",
+      "expected": "Customize",
+      "actual": "missing"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Compact' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Regular' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Comfy' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Left' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Right' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "wrong control count: expected button 'Off' x1, got 0",
+      "expected": "1",
+      "actual": "0"
+    },
+    {
+      "layer": "elements",
+      "message": "missing visual marker: expected 'modal-veil' at [data-vd-role=\"modal-veil\"]",
+      "expected": "[data-vd-role=\"modal-veil\"]",
+      "actual": "missing"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on customize modal panel.background-color: expected 'oklch(0.165 0.003 280)', got 'oklch(0.245 0.006 280)'",
+      "expected": "oklch(0.165 0.003 280)",
+      "actual": "oklch(0.245 0.006 280)"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on customize modal panel.border-radius: expected '10px', got '14px'",
+      "expected": "10px",
+      "actual": "14px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on customize modal panel.box-shadow: expected 'oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px', got 'rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px'",
+      "expected": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
+      "actual": "rgba(0, 0, 0, 0.78) 0px 30px 80px -24px, rgb(60, 77, 85) 0px 0px 0px 1px"
+    },
+    {
+      "layer": "styles",
+      "message": "style drift on customize modal panel.padding: expected '0px', got '18px'",
+      "expected": "0px",
+      "actual": "18px"
+    },
+    {
+      "layer": "styles",
+      "message": "missing style sample: customize segmented control",
+      "expected": ".segmented button",
+      "actual": ".segmented button"
+    },
+    {
+      "layer": "pixels",
+      "message": "cropped pixel residual 16.51% exceeds 7%",
+      "expected": "7%",
+      "actual": "16.51%"
+    }
+  ],
+  "pixelResidual": 16.51,
+  "priorityScore": 100
+}

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "repo dropdown menu",
+    "selector": ".tb-menu",
+    "found": true,
+    "styles": {
+      "background-color": "oklch(0.165 0.003 280)",
+      "border-radius": "10px",
+      "box-shadow": "oklch(0 0 0 / 0.7) 0px 24px 48px -16px, oklch(0.285 0.006 280) 0px 0px 0px 1px",
+      "padding": "0px"
+    }
+  }
+]
