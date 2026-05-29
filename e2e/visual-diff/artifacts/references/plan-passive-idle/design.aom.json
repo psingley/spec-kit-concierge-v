@@ -1,0 +1,28 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Plan",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Run Plan",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

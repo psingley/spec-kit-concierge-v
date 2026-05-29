@@ -22,7 +22,10 @@ export type IpcQueryArgs = {
     | 'branches:sessions'
     | 'artifacts:read'
     | 'copilot:specify'
-    | 'copilot:clarify';
+    | 'copilot:clarify'
+    | 'copilot:plan'
+    | 'copilot:tasks'
+    | 'copilot:analyze';
   payload?: unknown;
 };
 
@@ -99,6 +102,12 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.copilot!.specify(args.payload) };
       case 'copilot:clarify':
         return { data: await window.concierge.copilot!.clarify!(args.payload) };
+      case 'copilot:plan':
+        return { data: await window.concierge.copilot!.plan!(args.payload) };
+      case 'copilot:tasks':
+        return { data: await window.concierge.copilot!.tasks!(args.payload) };
+      case 'copilot:analyze':
+        return { data: await window.concierge.copilot!.analyze!(args.payload) };
     }
   } catch (error) {
     return {

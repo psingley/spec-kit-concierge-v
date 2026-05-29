@@ -29,4 +29,14 @@ describe('hook manifest', () => {
     expect(artifacts).toContain('plan.md');
     expect(artifacts).toContain('CONTEXT.md');
   });
+
+  it('declares analyze as bounded remediation with no required analyze artifact', () => {
+    const artifacts = expectedArtifactsForStep('analyze');
+
+    expect(STEP_ARTIFACT_MANIFEST.analyze.requiredFiles).toEqual([]);
+    expect(STEP_ARTIFACT_MANIFEST.analyze.remediationFiles).toEqual(['spec.md', 'plan.md', 'tasks.md']);
+    expect(STEP_ARTIFACT_MANIFEST.analyze.allowEmptyCommit).toBe(true);
+    expect(artifacts).toEqual(['spec.md', 'plan.md', 'tasks.md']);
+    expect(artifacts).not.toContain('analyze.md');
+  });
 });

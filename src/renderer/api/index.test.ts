@@ -26,7 +26,8 @@ describe('renderer API slice', () => {
       'listBranchSessions',
       'readArtifact',
       'runSpecify',
-      'runClarify'
+      'runClarify',
+      'runPassiveStep'
     ]);
   });
 

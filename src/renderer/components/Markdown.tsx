@@ -1,36 +1,28 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 
 export type MarkdownProps = {
   text: string;
 };
 
-const escapeText = (text: string): string =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const MAX_RENDER_BYTES = 512 * 1024;
 
 export const Markdown = ({ text }: MarkdownProps): React.ReactElement => {
-  const normalized = text.replace(/^(#{1,6} .+)\n(?!\n)/gm, '$1\n\n');
-  const blocks = normalized.split(/\n{2,}/).filter((block) => block.trim().length > 0);
+  if (new Blob([text]).size > MAX_RENDER_BYTES) {
+    return (
+      <article className="markdown" data-testid="spec-markdown">
+        <p role="status">This artifact is too large for inline preview. Open it in the external editor.</p>
+      </article>
+    );
+  }
+
   return (
     <article className="markdown" data-testid="spec-markdown">
-      {blocks.map((block, index) => {
-        if (block.startsWith('# ')) {
-          return <h1 key={index}>{block.slice(2)}</h1>;
-        }
-        if (block.startsWith('## ')) {
-          return <h2 key={index}>{block.slice(3)}</h2>;
-        }
-        if (block.startsWith('```')) {
-          return <pre key={index}><code>{block.replace(/^```[a-z]*\n?|```$/g, '')}</code></pre>;
-        }
-        if (block.split(/\n/).every((line) => /^[-*] /.test(line))) {
-          return (
-            <ul key={index}>
-              {block.split(/\n/).map((line) => <li key={line}>{line.slice(2)}</li>)}
-            </ul>
-          );
-        }
-        return <p key={index} dangerouslySetInnerHTML={{ __html: escapeText(block) }} />;
-      })}
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+        {text}
+      </ReactMarkdown>
     </article>
   );
 };

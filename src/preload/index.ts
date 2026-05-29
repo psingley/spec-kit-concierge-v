@@ -68,6 +68,9 @@ contextBridge.exposeInMainWorld('concierge', {
   copilot: {
     specify: (request: unknown) => ipcRenderer.invoke('copilot:specify', request) as Promise<unknown>,
     clarify: (request: unknown) => ipcRenderer.invoke('copilot:clarify', request) as Promise<unknown>,
+    plan: (request: unknown) => ipcRenderer.invoke('copilot:plan', request) as Promise<unknown>,
+    tasks: (request: unknown) => ipcRenderer.invoke('copilot:tasks', request) as Promise<unknown>,
+    analyze: (request: unknown) => ipcRenderer.invoke('copilot:analyze', request) as Promise<unknown>,
     subscribeStepStream,
     subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void): (() => void) =>
       subscribeStepStream('copilot:specify', subscriptionId, callback)

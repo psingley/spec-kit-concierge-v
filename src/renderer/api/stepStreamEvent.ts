@@ -8,6 +8,12 @@ export type ClarifySummary = {
   answers: Array<{ questionId: string; choiceKey: string; note?: string }>;
 };
 
+export type PassiveStepSummary = {
+  artifacts: Array<{ path: string; kind: 'text' | 'markdown' | 'code' | 'image' | 'pdf'; required: boolean; bytes?: number }>;
+  counts: { required: number; optional: number; present: number };
+  milestones?: Array<{ id: string; label: string; status: 'pending' | 'running' | 'complete' | 'warning' }>;
+};
+
 export type StepStreamEvent =
   | {
       type: 'progress';
@@ -26,7 +32,7 @@ export type StepStreamEvent =
       artifactPath?: string;
       commitSha?: string;
       reason?: string;
-      summary?: ClarifySummary;
+      summary?: ClarifySummary | PassiveStepSummary;
     };
 
 type ErrorName = 'InvalidStepStreamEvent';
@@ -36,6 +42,8 @@ const levels = ['info', 'ok', 'warn', 'error'];
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStepName = (value: unknown): value is StepName => stepNames.includes(String(value));
 const isLevel = (value: unknown): value is 'info' | 'ok' | 'warn' | 'error' => levels.includes(String(value));
+const artifactKinds = ['text', 'markdown', 'code', 'image', 'pdf'] as const;
+const milestoneStatuses = ['pending', 'running', 'complete', 'warning'] as const;
 
 const parseSummary = (value: unknown): ClarifySummary | undefined => {
   if (!isRecord(value) || !Array.isArray(value.questions) || !Array.isArray(value.answers)) {
@@ -69,6 +77,38 @@ const parseSummary = (value: unknown): ClarifySummary | undefined => {
   return { questions, malformedQuestions, answers };
 };
 
+const parsePassiveSummary = (value: unknown): PassiveStepSummary | undefined => {
+  if (!isRecord(value) || !Array.isArray(value.artifacts) || !isRecord(value.counts)) {
+    return undefined;
+  }
+  const required = value.counts.required;
+  const optional = value.counts.optional;
+  const present = value.counts.present;
+  if (typeof required !== 'number' || typeof optional !== 'number' || typeof present !== 'number') {
+    return undefined;
+  }
+  const artifacts = value.artifacts.flatMap((artifact): PassiveStepSummary['artifacts'] => {
+    if (!isRecord(artifact) || typeof artifact.path !== 'string' || typeof artifact.required !== 'boolean' || !artifactKinds.includes(artifact.kind as PassiveStepSummary['artifacts'][number]['kind'])) {
+      return [];
+    }
+    return [{ path: artifact.path, kind: artifact.kind as PassiveStepSummary['artifacts'][number]['kind'], required: artifact.required, bytes: typeof artifact.bytes === 'number' ? artifact.bytes : undefined }];
+  });
+  if (artifacts.length !== value.artifacts.length) {
+    return undefined;
+  }
+  const milestones = Array.isArray(value.milestones)
+    ? value.milestones.flatMap((milestone): NonNullable<PassiveStepSummary['milestones']> =>
+      isRecord(milestone) && typeof milestone.id === 'string' && typeof milestone.label === 'string' && milestoneStatuses.includes(milestone.status as NonNullable<PassiveStepSummary['milestones']>[number]['status'])
+        ? [{ id: milestone.id, label: milestone.label, status: milestone.status as NonNullable<PassiveStepSummary['milestones']>[number]['status'] }]
+        : []
+    )
+    : undefined;
+  if (Array.isArray(value.milestones) && milestones?.length !== value.milestones.length) {
+    return undefined;
+  }
+  return { artifacts, counts: { required, optional, present }, milestones };
+};
+
 export const parseRendererStepStreamEvent = (
   value: unknown
 ): RendererFactoryResult<StepStreamEvent, RendererBoundaryErrorName<ErrorName>> => {
@@ -96,7 +136,7 @@ export const parseRendererStepStreamEvent = (
     if (!isStepName(root.value.step) || (root.value.status !== 'pass' && root.value.status !== 'fail')) {
       return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'invalid done event', path: '$' } };
     }
-    return { ok: true, value: { type: 'done', step: root.value.step, sessionId: sessionId.value, status: root.value.status, specMarkdown: typeof root.value.specMarkdown === 'string' ? root.value.specMarkdown : undefined, artifactPath: typeof root.value.artifactPath === 'string' ? root.value.artifactPath : undefined, commitSha: typeof root.value.commitSha === 'string' ? root.value.commitSha : undefined, reason: typeof root.value.reason === 'string' ? root.value.reason : undefined, summary: parseSummary(root.value.summary) } };
+    return { ok: true, value: { type: 'done', step: root.value.step, sessionId: sessionId.value, status: root.value.status, specMarkdown: typeof root.value.specMarkdown === 'string' ? root.value.specMarkdown : undefined, artifactPath: typeof root.value.artifactPath === 'string' ? root.value.artifactPath : undefined, commitSha: typeof root.value.commitSha === 'string' ? root.value.commitSha : undefined, reason: typeof root.value.reason === 'string' ? root.value.reason : undefined, summary: parseSummary(root.value.summary) ?? parsePassiveSummary(root.value.summary) } };
   }
   return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'unknown event type', path: '$.type' } };
 };

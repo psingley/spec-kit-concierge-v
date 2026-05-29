@@ -31,7 +31,12 @@ describe('session slice', () => {
       clarifyAnswers: { ids: [], entities: {} },
       clarifyReasks: { ids: [], entities: {} },
       clarifyCompletion: null,
-      clarifyFailureReason: null
+      clarifyFailureReason: null,
+      passiveSteps: {
+        plan: { step: 'plan', sessionId: null, running: false, commitSha: null, failureReason: null, artifacts: [], milestones: [] },
+        tasks: { step: 'tasks', sessionId: null, running: false, commitSha: null, failureReason: null, artifacts: [], milestones: [] },
+        analyze: { step: 'analyze', sessionId: null, running: false, commitSha: null, failureReason: null, artifacts: [], milestones: [] }
+      }
     });
   });
 

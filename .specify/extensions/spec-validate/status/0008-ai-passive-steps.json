@@ -1,0 +1,11 @@
+{
+  "feature": "0008-ai-passive-steps",
+  "spec_hash": "sha256:a2856712163fb1db06ed9afcd20420aa6d7549dd853b9ee36d7e88fb9d8b518d",
+  "tasks_hash": null,
+  "spec_self_validation": "passed",
+  "tasks_self_validation": "not-run",
+  "spec_validated_at": "2026-05-29T17:19:27Z",
+  "tasks_validated_at": null,
+  "spec_critical_count": 0,
+  "spec_missed_items": []
+}

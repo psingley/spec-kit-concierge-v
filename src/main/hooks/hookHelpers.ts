@@ -1,5 +1,5 @@
 import { createMainLogger } from '../logging';
-import { commitWithTrailer as defaultCommitWithTrailer } from '../data-layer/git/gitCommand';
+import { commitWithTrailer as defaultCommitWithTrailer, runGit } from '../data-layer/git/gitCommand';
 import {
   validateAnalyzeArtifacts,
   validateClarifyArtifacts,
@@ -12,6 +12,7 @@ import { writeInFlightMarker as defaultWriteInFlightMarker, removeInFlightMarker
 import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, type StepName } from './manifest';
 import { checkStepPrerequisites } from './prerequisiteGate';
 import { lifecycleEvent, type StepHookContext, type StepHookResult } from './types';
+import path from 'node:path';
 
 const validators = {
   specify: validateSpecifyArtifacts,
@@ -76,7 +77,19 @@ export const runAfterHook = async (
 
   try {
     const validate = context.validateArtifacts ?? validators[step];
-    const result = await validate(context.featureDir, context);
+    const validationContext = step === 'analyze' && context.validateArtifacts === undefined
+      ? {
+        ...context,
+        remediationFiles: await runGit(context.repositoryPath, [
+          'diff',
+          '--name-only',
+          'HEAD',
+          '--',
+          path.relative(context.repositoryPath, context.featureDir) || '.'
+        ]).then((output) => output.split(/\r?\n/).filter(Boolean))
+      }
+      : context;
+    const result = await validate(context.featureDir, validationContext);
     if (!result.ok) {
       const reason = result.kind === 'malformed-questions' ? 'clarify-malformed' : result.escapeHatchReason;
       logger.error(

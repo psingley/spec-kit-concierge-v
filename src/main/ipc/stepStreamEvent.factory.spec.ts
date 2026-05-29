@@ -30,6 +30,26 @@ describe('shared step stream event IPC factory', () => {
     expect(createStepStreamEvent(event)).toEqual({ ok: true, value: event });
   });
 
+  it('accepts passive step done payloads with compact artifact manifest summary', () => {
+    const event = {
+      type: 'done',
+      step: 'plan',
+      sessionId: 'plan-1',
+      status: 'pass',
+      commitSha: 'abc123',
+      summary: {
+        artifacts: [
+          { path: 'plan.md', kind: 'markdown', required: true, bytes: 2048 },
+          { path: 'contracts/api.md', kind: 'markdown', required: false }
+        ],
+        counts: { required: 2, optional: 1, present: 2 },
+        milestones: [{ id: 'plan-research', label: 'Research captured', status: 'complete' }]
+      }
+    };
+
+    expect(createStepStreamEvent(event)).toEqual({ ok: true, value: event });
+  });
+
   it('rejects unknown steps', () => {
     expect(createStepStreamEvent({ type: 'progress', step: 'final', sessionId: 's1', level: 'info', message: 'Working', timestamp })).toMatchObject({
       ok: false,

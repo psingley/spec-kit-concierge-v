@@ -1,0 +1,13 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "T020",
+  "title": "Implement tasks.md validation and tasks:detail parsing",
+  "jiraKey": "SKC-132",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-132",
+  "parent": "SKC-106",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

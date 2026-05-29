@@ -1,0 +1,13 @@
+{
+  "schema": "concierge.jira.state.v1",
+  "feature": "0008-ai-passive-steps",
+  "taskId": "T013",
+  "title": "Implement Plan passive contract validation",
+  "jiraKey": "SKC-125",
+  "jiraUrl": "https://collette.atlassian.net/browse/SKC-125",
+  "parent": "SKC-106",
+  "createdAt": "2026-05-29T18:05:00Z",
+  "verifiedAt": "2026-05-29T18:05:00Z",
+  "method": "direct-atlassian-mcp",
+  "verified": true
+}

@@ -1,0 +1,66 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Analyze",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Run Analyze",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Analyze completed",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "spec.mdremediation target view",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "plan.mdremediation target view",
+              "children": []
+            },
+            {
+              "role": "button",
+              "name": "tasks.mdremediation target view",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

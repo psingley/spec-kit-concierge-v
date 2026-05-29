@@ -1,0 +1,45 @@
+{
+  "role": "dialog",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "plan.md",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "button",
+          "name": "Close",
+          "children": []
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Plan Artifact",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Plan",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "button",
+          "text": "Run Plan",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Pass",
+              "children": []
+            },
+            {
+              "tag": "h3",
+              "text": "Plan completed",
+              "children": []
+            },
+            {
+              "tag": "p",
+              "text": "abc123",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "button",
+              "text": "plan.mdrequired artifact view",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "plan.md",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "required artifact",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "view",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "research.mdrequired artifact view",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "research.md",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "required artifact",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "view",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "contracts/artifact-read.mdrequired artifact view",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "contracts/artifact-read.md",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "required artifact",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "view",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "Lifecycle hooks completed",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "complete",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "complete",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

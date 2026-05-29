@@ -24,6 +24,7 @@ export type StepContractResult =
 export type StepContractContext = {
   modelId?: string;
   contextFilePath?: string;
+  remediationFiles?: readonly string[];
   now?: () => Date;
   logger?: Pick<MainLogger, 'warn'>;
 };

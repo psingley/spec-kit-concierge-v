@@ -9,6 +9,7 @@ import {
   clarifyRunStarted,
   clarifyRunSucceeded
 } from '../slices/session';
+import type { ClarifySummary } from './stepStreamEvent';
 
 export type ClarifyOperation = 'next' | 'askAnother' | 'reaskMalformed' | 'commit';
 
@@ -20,6 +21,12 @@ export type RunClarifyArgs = {
   questionId?: string;
   answers?: Array<{ questionId: string; selectedChoiceKey: string; shortAnswer: string }>;
 };
+
+const hasClarifySummary = (summary: unknown): summary is ClarifySummary =>
+  typeof summary === 'object' &&
+  summary !== null &&
+  Array.isArray((summary as { questions?: unknown }).questions) &&
+  Array.isArray((summary as { answers?: unknown }).answers);
 
 export const copilotClarifyApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -38,7 +45,7 @@ export const copilotClarifyApi = api.injectEndpoints({
             return;
           }
           if (parsed.value.status === 'pass') {
-            const summary = parsed.value.summary;
+            const summary = hasClarifySummary(parsed.value.summary) ? parsed.value.summary : undefined;
             const questions = summary?.questions.map((question, index) => ({
               id: question.id,
               position: question.position ?? index + 1,
