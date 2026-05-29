@@ -1,0 +1,12 @@
+{
+  "feature": "0007-clarify-vertical",
+  "spec_hash": "sha256:5492bffabbb645c3b5eafeaa205461ede3b9f9e489d710434f8f20ebb41abfce",
+  "tasks_hash": null,
+  "spec_self_validation": "passed",
+  "tasks_self_validation": "not-run",
+  "approval_status": "approved",
+  "spec_validated_at": "2026-05-29T14:08:15Z",
+  "tasks_validated_at": null,
+  "spec_critical_count": 0,
+  "spec_missed_items": []
+}
