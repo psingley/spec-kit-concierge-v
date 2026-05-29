@@ -35,7 +35,7 @@ const renderWithRouter = (store: ReturnType<typeof createTestStore>, initialEntr
 describe('AuthGuard', () => {
   it('renders Outlet (children) when authenticated', () => {
     const store = createTestStore({
-      auth: { copilotLoggedIn: true, githubLoggedIn: true, github: 'ok', copilot: 'ok', atlassian: 'out', identity: null, lastError: null }
+      auth: { copilotLoggedIn: true, githubLoggedIn: true, github: 'ok', copilot: 'ok', atlassian: 'ok', identity: null, lastError: null }
     });
     renderWithRouter(store);
 

@@ -229,6 +229,14 @@ about what was interrupted and what's on disk. The step agent decides
 how to complete from there. Only applies when there are
 expected-but-uncommitted artifacts for the current step.
 
+### Auth Gate
+
+The precondition that must be satisfied before the Concierge App
+allows navigation past the sign-in screen. All three providers —
+GitHub CLI, Copilot CLI, and Atlassian — must be authenticated
+(`'ok'`). If any provider's session expires mid-workflow, the user is
+returned to the sign-in screen.
+
 ### Pure Layer vs Effect Layer
 
 Pure layers contain no I/O, no mutation, no Electron or Node API

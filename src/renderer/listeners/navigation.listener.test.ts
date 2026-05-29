@@ -4,7 +4,7 @@ import { createMemoryRouter } from 'react-router';
 import { setupNavigationListener, navigationTopic } from './navigation.listener';
 import { authReducer } from '../slices/auth';
 import { workspaceReducer, workspaceEntered, repositoryBrowseReset, workspaceStepViewed, specifyCompletedInWorkspace } from '../slices/workspace';
-import { authLoginFailed, githubLoginSucceeded, copilotLoginSucceeded } from '../slices/auth';
+import { authLoginFailed, githubLoginSucceeded, copilotLoginSucceeded, atlassianLoginSucceeded } from '../slices/auth';
 import type { AppStartListening } from './types';
 
 const createTestRouter = (initialEntry = '/sign-in') =>
@@ -34,7 +34,7 @@ describe('navigation listener', () => {
 
   it('navigates to /sign-in when auth gate closes', async () => {
     const { store, startListening } = createTestStore({
-      auth: { copilotLoggedIn: true, githubLoggedIn: true, github: 'ok', copilot: 'ok', atlassian: 'out', identity: { login: 'user' }, lastError: null },
+      auth: { copilotLoggedIn: true, githubLoggedIn: true, github: 'ok', copilot: 'ok', atlassian: 'ok', identity: { login: 'user' }, lastError: null },
       workspace: { activeRepoPath: null, agents: null, branch: null, ahead: 0, behind: 0, dirty: false, selectedRepo: null, sessions: [], activeStep: 'specify', maxReachedStep: 'specify' }
     });
     const router = createTestRouter('/repos');
@@ -56,6 +56,7 @@ describe('navigation listener', () => {
 
     store.dispatch(githubLoginSucceeded({ identity: { login: 'user' } }));
     store.dispatch(copilotLoginSucceeded());
+    store.dispatch(atlassianLoginSucceeded());
     await new Promise((r) => setTimeout(r, 50));
 
     expect(router.state.location.pathname).toBe('/repos');
