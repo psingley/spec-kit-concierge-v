@@ -36,6 +36,7 @@ Q: This requirement example is outside the Clarifications section
 
       expect(result.ok).toBe(true);
       expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
+      expect(result).toMatchObject({ questions: [expect.objectContaining({ id: 'q1', position: 1 }), expect.objectContaining({ id: 'q2', position: 2 })] });
       expect(vi.mocked(readFile)).toHaveBeenCalledWith('/feature/spec.md', 'utf8');
     });
   });

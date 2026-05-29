@@ -115,5 +115,5 @@ export const validateClarifyArtifacts = async (
     return { ok: false, kind: 'malformed-questions', wellFormedQuestions, malformedQuestions, rawText };
   }
 
-  return { ok: true, commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context) };
+  return { ok: true, commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context), questions: wellFormedQuestions };
 };

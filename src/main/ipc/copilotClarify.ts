@@ -59,7 +59,15 @@ async (request) => {
 const readSummary = async (featureDir: string): Promise<NonNullable<Extract<StepStreamEvent, { type: 'done' }>['summary']>> => {
   const result = await validateClarifyArtifacts(featureDir);
   if (result.ok) {
-    return { questions: [], answers: [] };
+    return {
+      questions: (result.questions ?? []).map((question) => ({
+        id: question.id,
+        position: question.position,
+        text: question.text,
+        choices: question.choices
+      })),
+      answers: []
+    };
   }
   if (result.kind === 'malformed-questions') {
     return {
@@ -125,9 +133,10 @@ export const registerCopilotClarifyIpc = ({
         await agentAdapter({ ...request.value, sessionId, featureDir });
         if (request.value.operation === 'commit') {
           await appendAnswers(featureDir, request.value.answers);
+          const summary = await readSummary(featureDir);
           const after = await afterClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
           if (!after.ok || after.commit?.commitSha === undefined) throw new Error(after.ok ? 'missing commit sha' : after.escapeHatchReason);
-          sendEvent({ type: 'done', step: 'clarify', sessionId, status: 'pass', artifactPath: 'spec.md', commitSha: after.commit.commitSha, summary: { questions: [], answers: request.value.answers.map((answer) => ({ questionId: answer.questionId, choiceKey: answer.selectedChoiceKey, note: answer.shortAnswer })) } });
+          sendEvent({ type: 'done', step: 'clarify', sessionId, status: 'pass', artifactPath: 'spec.md', commitSha: after.commit.commitSha, summary: { ...summary, answers: request.value.answers.map((answer) => ({ questionId: answer.questionId, choiceKey: answer.selectedChoiceKey, note: answer.shortAnswer })) } });
         } else {
           const summary = await readSummary(featureDir);
           for (const malformed of summary.malformedQuestions ?? []) {
