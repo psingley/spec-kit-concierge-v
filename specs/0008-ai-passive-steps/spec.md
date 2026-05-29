@@ -169,7 +169,7 @@ As a Concierge maintainer, I need Run 8 to extend the existing passive-step arch
 - **FR-017**: Analyze MUST allow a valid no-diff pass with an empty Step Commit so lifecycle trailer history remains unbroken.
 - **FR-018**: Analyze MUST reject attempted remediation outside the allowed target set and MUST NOT mark Analyze complete after such rejection.
 - **FR-019**: The active feature directory MUST be resolved from `.specify/feature.json` when present, even on detached HEAD or when branch naming differs from the feature directory.
-- **FR-020**: Status rows MUST support a typed union of artifact rows and milestone rows so each passive step can show evidence appropriate to its artifact and remediation model.
+- **FR-020**: Status rows MUST support the ADR-0011 typed union of artifact, milestone, task, remediation, and hang rows so each passive step can show evidence appropriate to its artifact, task-detail, remediation, and long-running guidance model.
 - **FR-021**: Evidence affordances MUST remain disabled or clearly unavailable until the referenced artifact or milestone has passed lifecycle validation.
 - **FR-022**: Artifact evidence MUST use a kind discriminator covering text, markdown, code, image, and PDF metadata.
 - **FR-023**: Artifact content MUST be fetched only after the user explicitly opens that artifact evidence.
@@ -199,7 +199,7 @@ As a Concierge maintainer, I need Run 8 to extend the existing passive-step arch
 - **Passive Step**: One of Plan, Tasks, or Analyze, with step identity, availability, current status, progress milestones, terminal outcome, and Step Commit proof.
 - **Step Stream Event**: A progress or terminal event surfaced during passive execution, including text/thought/tool progress and exactly one terminal `done` result.
 - **Artifact Manifest Summary**: A compact pass payload listing validated required artifacts, discovered optional artifacts, remediation targets, artifact kind metadata, and commit identity without full file bodies.
-- **Status Row**: A typed row representing either an artifact evidence item or a milestone/progress item, including label, state, evidence availability, and optional viewer action.
+- **Status Row**: A typed row representing an artifact evidence item, milestone/progress item, parsed task item, Analyze remediation item, or hang-guidance item, including label, state, evidence availability, and optional viewer action.
 - **Artifact Evidence**: A validated path or metadata record that can be opened on demand through the artifact viewer.
 - **Task Detail**: A parsed task record from `tasks.md` with id, title, phase/area, dependencies, files, acceptance notes, and estimate when present.
 - **Analyze Remediation Summary**: A bounded summary of changed or verified files among `spec.md`, `plan.md`, and `tasks.md`, including the no-diff pass case.

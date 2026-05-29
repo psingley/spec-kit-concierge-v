@@ -152,7 +152,7 @@ Research is complete in `research.md`, using `spec.md`, `grill.md`, `fixtures/tr
 
 Resolved decisions:
 - Reuse ADR-0010 `StepStreamEvent` for passive steps with compact terminal manifests.
-- Add `StatusStep` typed artifact/milestone/remediation row union as a rendering model only.
+- Add the ADR-0011 `StatusStep` typed artifact/milestone/task/remediation/hang row union as a rendering model only.
 - Add `registerPassiveStepIpc` for Plan/Tasks/Analyze only.
 - Keep `artifacts:read`, lazy artifact read on click, and 512 KiB metadata-only guard.
 - Add only `react-markdown`, `rehype-sanitize`, and `remark-gfm`.
@@ -176,9 +176,9 @@ Design outputs:
 
 Run 8 implementation must use vertical tracer bullets, not horizontal batches. Each bullet starts with one failing public-interface test, then the minimum implementation to pass, then refactor only while green.
 
-1. Passive Plan tracer: product/e2e path starts Plan after Clarify, streams progress, validates required Plan artifacts, summarizes optional artifacts and Copilot context exception, emits one terminal pass with `commitSha`.
-2. Passive Tasks tracer: starts Tasks after Plan, streams progress, validates `tasks.md`, exposes parsed task id/title, then grows task detail fields one case at a time.
-3. Passive Analyze tracer: starts Analyze after Tasks, validates no-diff empty pass without `analyze.md`, then grows allowed remediation and disallowed-target rejection.
+1. Passive Plan tracer: product/e2e path starts Plan after Clarify, streams progress, validates required Plan artifacts, summarizes optional artifacts and Copilot context exception, emits one terminal pass with `commitSha`, then expands `plan.factory` seven-case coverage one RED/GREEN case at a time.
+2. Passive Tasks tracer: starts Tasks after Plan, streams progress, validates `tasks.md`, exposes parsed task id/title, then grows task detail fields and `tasks.factory` seven-case coverage one RED/GREEN case at a time.
+3. Passive Analyze tracer: starts Analyze after Tasks, validates no-diff empty pass without `analyze.md`, then grows allowed remediation, disallowed-target rejection, and `analyze.factory` seven-case coverage one RED/GREEN case at a time.
 4. Artifact viewer tracer: clicking an evidence pill invokes `artifacts:read` lazily, renders markdown safely, then grows oversized/binary/image/PDF metadata cases.
 5. Markdown renderer tracer: hostile raw HTML is stripped while GFM tables, task lists, fenced code classes, links, blockquotes, nested lists, headings, inline code, and plain text remain readable.
 6. Hang notification tracer: fake-timer 20-minute ACP silence emits one visible soft notification with Cancel/Restart guidance and leaves the step in progress.

@@ -40,8 +40,8 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 
 - [ ] T004 Add failing Analyze drift-migration tests removing `analyze.md` and allowing only `spec.md`, `plan.md`, and `tasks.md` plus empty Step Commit in `src/main/domain/factories/analyze.factory.test.ts` and `src/main/hooks/manifest.test.ts`
 - [ ] T005 Implement the Analyze manifest and factory drift rewrite in `src/main/hooks/manifest.ts`, `src/main/domain/factories/analyze.factory.ts`, and `src/main/data-layer/agents/manifest.ts`
-- [ ] T006 Add failing `registerPassiveStepIpc` contract tests for terminal-event-once, error propagation, abort/cancel behavior, and observability in `src/main/ipc/passiveStepIpc.test.ts`, `src/main/ipc/copilotPlan.test.ts`, `src/main/ipc/copilotTasks.test.ts`, and `src/main/ipc/copilotAnalyze.test.ts`
-- [ ] T007 Implement `registerPassiveStepIpc` for Plan, Tasks, and Analyze only in `src/main/ipc/passiveStepIpc.ts`, `src/main/ipc/copilotPlan.ts`, `src/main/ipc/copilotTasks.ts`, `src/main/ipc/copilotAnalyze.ts`, and `src/main/index.ts`
+- [ ] T006 Add failing `registerPassiveStepIpc` contract tests for terminal-event-once, `.specify/feature.json` pin resolution over branch fallback, error propagation, abort/cancel behavior, and observability in `src/main/ipc/passiveStepIpc.test.ts`, `src/main/ipc/copilotPlan.test.ts`, `src/main/ipc/copilotTasks.test.ts`, and `src/main/ipc/copilotAnalyze.test.ts`
+- [ ] T007 Implement `registerPassiveStepIpc` with disk-read active feature pin resolution for Plan, Tasks, and Analyze only in `src/main/ipc/passiveStepIpc.ts`, `src/main/ipc/copilotPlan.ts`, `src/main/ipc/copilotTasks.ts`, `src/main/ipc/copilotAnalyze.ts`, and `src/main/index.ts`
 - [ ] T008 Add failing preload and renderer trust-boundary tests for `copilot:plan`, `copilot:tasks`, `copilot:analyze`, plural `artifacts:read`, `tasks:detail`, and lazy fetch entry points in `src/preload/index.test.ts`, `src/renderer/api/copilotPassive.endpoint.test.ts`, `src/renderer/api/artifacts.endpoint.test.ts`, and `src/renderer/api/tasksDetail.endpoint.test.ts`
 - [ ] T009 Implement preload exposure and renderer endpoint wiring for `copilot:plan`, `copilot:tasks`, `copilot:analyze`, plural `artifacts:read`, and `tasks:detail` in `src/preload/index.ts`, `src/renderer/api/copilotPassive.endpoint.ts`, `src/renderer/api/artifacts.endpoint.ts`, and `src/renderer/api/tasksDetail.endpoint.ts`
 
@@ -58,7 +58,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 ### Tests for User Story 1
 
 - [ ] T010 [US1] Add failing passive Plan journey assertions in `e2e/passive-steps-vertical.spec.ts`
-- [ ] T011 [US1] Add failing Plan contract and IPC tests for required artifacts, optional artifact summary, context-file exception, and missing usage metadata in `src/main/domain/factories/plan.factory.test.ts` and `src/main/ipc/copilotPlan.test.ts`
+- [ ] T011 [US1] Add failing Plan contract and IPC tests for the seven-case factory floor, required artifacts, optional artifact summary, context-file exception, and missing usage metadata in `src/main/domain/factories/plan.factory.test.ts` and `src/main/ipc/copilotPlan.test.ts`
 - [ ] T012 [US1] Add failing renderer tests for passive attempt state, ADR-0011 row rendering, and background-navigation persistence in `src/renderer/slices/session.test.ts`, `src/renderer/slices/session.selectors.ts`, `src/renderer/components/PlanStep.test.tsx`, `src/renderer/components/PlanStepContainer.test.tsx`, and `src/renderer/components/StatusStep.test.tsx`
 
 ### Implementation for User Story 1
@@ -81,7 +81,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 ### Tests for User Story 2
 
 - [ ] T017 [US2] Add failing Tasks passive journey and duplicate-terminal assertions in `e2e/passive-steps-vertical.spec.ts` and `src/main/ipc/copilotTasks.test.ts`
-- [ ] T018 [US2] Add failing `tasks.md` parsing and task-detail contract tests for id, title, phase/area, dependencies, files, acceptance notes, estimate, and malformed dependency rejection in `src/main/domain/factories/tasks.factory.test.ts` and `src/main/ipc/tasksDetail.test.ts`
+- [ ] T018 [US2] Add failing `tasks.md` seven-case factory floor, parsing, feature-pin task-detail resolution, and task-detail contract tests for id, title, phase/area, dependencies, files, acceptance notes, estimate, and malformed dependency rejection in `src/main/domain/factories/tasks.factory.test.ts` and `src/main/ipc/tasksDetail.test.ts`
 - [ ] T019 [US2] Add failing renderer tests for task rows, lazy `tasks:detail` fetch, and accessible task-detail dialog in `src/renderer/api/tasksDetail.endpoint.test.ts`, `src/renderer/components/TasksStep.test.tsx`, `src/renderer/components/TasksStepContainer.test.tsx`, and `src/renderer/components/TaskViewer.test.tsx`
 
 ### Implementation for User Story 2
@@ -103,7 +103,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 
 ### Tests for User Story 3
 
-- [ ] T024 [US3] Add failing Analyze no-diff, allowed-target, disallowed-target, and compact terminal-summary tests in `src/main/ipc/copilotAnalyze.test.ts`, `src/main/domain/factories/analyze.factory.test.ts`, and `src/main/hooks/manifest.test.ts`
+- [ ] T024 [US3] Add failing Analyze seven-case factory floor, no-diff, allowed-target, disallowed-target, and compact terminal-summary tests in `src/main/ipc/copilotAnalyze.test.ts`, `src/main/domain/factories/analyze.factory.test.ts`, and `src/main/hooks/manifest.test.ts`
 - [ ] T025 [US3] Add failing renderer tests for Analyze remediation rows, no-diff pass proof, and failure recovery in `src/renderer/components/AnalyzeStep.test.tsx`, `src/renderer/components/AnalyzeStepContainer.test.tsx`, `src/renderer/components/StatusStep.test.tsx`, and `src/renderer/listeners/stepLifecycle.listener.test.ts`
 
 ### Implementation for User Story 3
@@ -124,7 +124,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 
 ### Tests for User Story 4
 
-- [ ] T029 [US4] Add failing plural `artifacts:read` tests for validated-path checks, lazy fetch, 512 KiB metadata-only guard, and image/PDF/binary metadata responses in `src/main/ipc/artifacts.test.ts` and `src/renderer/api/artifacts.endpoint.test.ts`
+- [ ] T029 [US4] Add failing plural `artifacts:read` tests for validated-path checks, feature-pin artifact resolution, lazy fetch, 512 KiB metadata-only guard, and image/PDF/binary metadata responses in `src/main/ipc/artifacts.test.ts` and `src/renderer/api/artifacts.endpoint.test.ts`
 - [ ] T030 [US4] Add failing markdown renderer and artifact-viewer tests for `react-markdown`, `rehype-sanitize`, `remark-gfm`, hostile HTML stripping, and accessible focus restore in `src/renderer/components/Markdown.test.tsx` and `src/renderer/components/ArtifactViewer.test.tsx`
 
 ### Implementation for User Story 4
@@ -145,7 +145,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 
 ### Tests for User Story 5
 
-- [ ] T034 [US5] Add failing fake-timer hang-detection tests for 20-minute silence, dedupe, and resumed-stream reset in `src/renderer/listeners/transcriptCapture.listener.test.ts`, `src/renderer/slices/session.test.ts`, and `src/renderer/listeners/stepLifecycle.listener.test.ts`
+- [ ] T034 [US5] Add failing fake-timer hang-detection tests for 20-minute silence, dedupe, resumed-stream reset, and preservation of the 256-entry activity cap in `src/renderer/listeners/transcriptCapture.listener.test.ts`, `src/renderer/slices/session.test.ts`, `src/renderer/slices/activity.test.ts`, and `src/renderer/listeners/stepLifecycle.listener.test.ts`
 - [ ] T035 [US5] Add failing passive Cancel/Restart guidance and no-auto-fail assertions in `e2e/passive-steps-vertical.spec.ts`, `src/main/ipc/passiveStepIpc.test.ts`, and `src/renderer/components/StatusStep.test.tsx`
 
 ### Implementation for User Story 5
@@ -228,7 +228,7 @@ source_plan: specs/0008-ai-passive-steps/plan.md
 ## Parallel Example: User Story 1
 
 ```bash
-# After Foundational phase completes, these RED tasks can run in parallel:
+# After Foundational phase completes, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T011 Add failing Plan contract and IPC tests in src/main/domain/factories/plan.factory.test.ts and src/main/ipc/copilotPlan.test.ts"
 Task: "T012 Add failing renderer tests in src/renderer/slices/session.test.ts, src/renderer/components/PlanStep.test.tsx, and src/renderer/components/StatusStep.test.tsx"
 ```
@@ -236,7 +236,7 @@ Task: "T012 Add failing renderer tests in src/renderer/slices/session.test.ts, s
 ## Parallel Example: User Story 2
 
 ```bash
-# After T017 establishes the passive Tasks journey, split parsing and UI RED coverage:
+# After T017 establishes the passive Tasks journey, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T018 Add failing tasks.md parsing and task-detail contract tests in src/main/domain/factories/tasks.factory.test.ts and src/main/ipc/tasksDetail.test.ts"
 Task: "T019 Add failing renderer tests for lazy tasks:detail fetch and TaskViewer in src/renderer/api/tasksDetail.endpoint.test.ts and src/renderer/components/TaskViewer.test.tsx"
 ```
@@ -244,7 +244,7 @@ Task: "T019 Add failing renderer tests for lazy tasks:detail fetch and TaskViewe
 ## Parallel Example: User Story 3
 
 ```bash
-# After User Story 2 is green, main-side and renderer-side RED coverage can proceed together:
+# After User Story 2 is green, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T024 Add failing Analyze no-diff and remediation contract tests in src/main/ipc/copilotAnalyze.test.ts and src/main/domain/factories/analyze.factory.test.ts"
 Task: "T025 Add failing renderer tests for AnalyzeStep, AnalyzeStepContainer, and stepLifecycle.listener in src/renderer/components/AnalyzeStep.test.tsx and src/renderer/listeners/stepLifecycle.listener.test.ts"
 ```
@@ -252,7 +252,7 @@ Task: "T025 Add failing renderer tests for AnalyzeStep, AnalyzeStepContainer, an
 ## Parallel Example: User Story 4
 
 ```bash
-# After Analyze is in place, contract and viewer RED coverage can run in parallel:
+# After Analyze is in place, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T029 Add failing plural artifacts:read tests in src/main/ipc/artifacts.test.ts and src/renderer/api/artifacts.endpoint.test.ts"
 Task: "T030 Add failing Markdown and ArtifactViewer tests in src/renderer/components/Markdown.test.tsx and src/renderer/components/ArtifactViewer.test.tsx"
 ```
@@ -260,7 +260,7 @@ Task: "T030 Add failing Markdown and ArtifactViewer tests in src/renderer/compon
 ## Parallel Example: User Story 5
 
 ```bash
-# After passive attempts are implemented, hang-detection and guidance RED coverage can run together:
+# After passive attempts are implemented, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T034 Add failing fake-timer hang-detection tests in src/renderer/listeners/transcriptCapture.listener.test.ts and src/renderer/listeners/stepLifecycle.listener.test.ts"
 Task: "T035 Add failing passive Cancel/Restart guidance assertions in e2e/passive-steps-vertical.spec.ts and src/renderer/components/StatusStep.test.tsx"
 ```
@@ -268,7 +268,7 @@ Task: "T035 Add failing passive Cancel/Restart guidance assertions in e2e/passiv
 ## Parallel Example: User Story 6
 
 ```bash
-# After User Story 5, architecture and visual RED work can split by surface:
+# After User Story 5, pick one RED task, make its paired GREEN implementation pass, then move to the next:
 Task: "T039 Add failing architecture guard tests in src/renderer/store.test.ts, src/renderer/slices/session.test.ts, src/main/ipc/passiveStepIpc.test.ts, and package.json"
 Task: "T040 Add failing visual-diff coverage in e2e/visual-diff/harness/screens.config.ts, e2e/design-fidelity.spec.ts, and e2e/visual-diff/contracts/*.json"
 ```
