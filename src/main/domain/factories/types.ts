@@ -35,13 +35,14 @@ export type ClarifyChoice = {
 
 export type ClarifyQuestion = {
   id: string;
+  position: number;
   text: string;
   choices: ClarifyChoice[];
-  allowShortAnswer: boolean;
 };
 
 export type MalformedClarifyQuestion = {
   id: string;
+  position: number;
   malformationCategory: string;
   rawOutput: string;
 };
