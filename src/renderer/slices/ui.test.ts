@@ -12,7 +12,8 @@ describe('ui slice', () => {
       showCustomize: false,
       showAbout: false,
       showRequest: false,
-      openMenu: null
+      openMenu: null,
+      toasts: []
     });
   });
 

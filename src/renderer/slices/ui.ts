@@ -1,5 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+export type ToastEntry = {
+  id: string;
+  level: 'error' | 'warn' | 'info';
+  message: string;
+};
+
 export type UiState = {
   theme: 'system' | 'light' | 'dark';
   sidebarOpen: boolean;
@@ -8,6 +14,7 @@ export type UiState = {
   showAbout: boolean;
   showRequest: boolean;
   openMenu: string | null;
+  toasts: ToastEntry[];
 };
 
 export const uiInitialState: UiState = {
@@ -17,7 +24,8 @@ export const uiInitialState: UiState = {
   showCustomize: false,
   showAbout: false,
   showRequest: false,
-  openMenu: null
+  openMenu: null,
+  toasts: []
 };
 
 const uiSlice = createSlice({
@@ -38,12 +46,19 @@ const uiSlice = createSlice({
     },
     menuOpened: (state, action: PayloadAction<string | null>) => {
       state.openMenu = action.payload;
+    },
+    toastShown: (state, action: PayloadAction<Omit<ToastEntry, 'id'>>) => {
+      const id = `toast-${Date.now()}-${state.toasts.length}`;
+      state.toasts.push({ id, ...action.payload });
+    },
+    toastDismissed: (state, action: PayloadAction<string>) => {
+      state.toasts = state.toasts.filter((t) => t.id !== action.payload);
     }
   },
   extraReducers: () => {}
 });
 
-export const { activityVisibilityToggled, activityVisibilitySet, modalOpened, modalClosed, menuOpened } =
+export const { activityVisibilityToggled, activityVisibilitySet, modalOpened, modalClosed, menuOpened, toastShown, toastDismissed } =
   uiSlice.actions;
 export const uiReducer = uiSlice.reducer;
 export default uiReducer;

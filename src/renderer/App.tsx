@@ -9,6 +9,7 @@ import { SignInScreenContainer } from './components/SignInScreenContainer';
 import { TitlebarContainer } from './components/TitlebarContainer';
 import { WorkspaceContainer } from './components/WorkspaceContainer';
 import { ModalHost } from './components/ModalHost';
+import { Toasts } from './components/Toasts';
 
 type AppProps = {
   router: ReturnType<typeof createMemoryRouter>;
@@ -35,4 +36,10 @@ export const App = (): React.ReactElement => {
     );
   }
   return <WorkspaceContainer />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toasts />
+    </>
+  );
 };
