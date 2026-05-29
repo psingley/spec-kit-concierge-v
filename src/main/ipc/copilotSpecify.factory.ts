@@ -1,26 +1,7 @@
 import { invalid, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
+export { createStepStreamEvent, type StepStreamEvent } from './stepStreamEvent.factory';
 
 type ErrorName = 'InvalidCopilotSpecifyPayload';
-
-export type StepStreamEvent =
-  | {
-      type: 'progress';
-      step: 'specify';
-      sessionId: string;
-      level: 'info' | 'ok' | 'warn' | 'error';
-      message: string;
-      timestamp: string;
-    }
-  | {
-      type: 'done';
-      step: 'specify';
-      sessionId: string;
-      status: 'pass' | 'fail';
-      specMarkdown?: string;
-      artifactPath?: string;
-      commitSha?: string;
-      reason?: string;
-    };
 
 export type CopilotSpecifyRequest = {
   subscriptionId: string;
@@ -82,58 +63,4 @@ export const createCopilotSpecifyAck = (value: unknown): FactoryResult<CopilotSp
     return invalid('InvalidCopilotSpecifyPayload', 'ack must be accepted specify', '$');
   }
   return { ok: true, value: { subscriptionId: subscriptionId.value, sessionId: sessionId.value, step: 'specify', accepted: true } };
-};
-
-export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamEvent, ErrorName> => {
-  const root = requireRecord(value, 'InvalidCopilotSpecifyPayload', '$');
-  if (!root.ok) return root;
-  if (root.value.type === 'progress') {
-    const keys = requireExactKeys(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp'], 'InvalidCopilotSpecifyPayload', '$');
-    if (!keys.ok) return keys;
-    const sessionId = requireString(root.value.sessionId, 'InvalidCopilotSpecifyPayload', '$.sessionId');
-    const message = requireString(root.value.message, 'InvalidCopilotSpecifyPayload', '$.message');
-    const timestamp = requireString(root.value.timestamp, 'InvalidCopilotSpecifyPayload', '$.timestamp');
-    if (!sessionId.ok) return sessionId;
-    if (!message.ok) return message;
-    if (!timestamp.ok) return timestamp;
-    if (root.value.step !== 'specify' || !['info', 'ok', 'warn', 'error'].includes(String(root.value.level))) {
-      return invalid('InvalidCopilotSpecifyPayload', 'progress event must target specify with a valid level', '$');
-    }
-    return {
-      ok: true,
-      value: {
-        type: 'progress',
-        step: 'specify',
-        sessionId: sessionId.value,
-        level: root.value.level as 'info' | 'ok' | 'warn' | 'error',
-        message: message.value,
-        timestamp: timestamp.value
-      }
-    };
-  }
-  if (root.value.type === 'done') {
-    const allowed = ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'reason'];
-    if (!Object.keys(root.value).every((key) => allowed.includes(key))) {
-      return invalid('InvalidCopilotSpecifyPayload', 'done event contains an unexpected key', '$');
-    }
-    const sessionId = requireString(root.value.sessionId, 'InvalidCopilotSpecifyPayload', '$.sessionId');
-    if (!sessionId.ok) return sessionId;
-    if (root.value.step !== 'specify' || (root.value.status !== 'pass' && root.value.status !== 'fail')) {
-      return invalid('InvalidCopilotSpecifyPayload', 'done event must target specify with pass/fail', '$');
-    }
-    return {
-      ok: true,
-      value: {
-        type: 'done',
-        step: 'specify',
-        sessionId: sessionId.value,
-        status: root.value.status,
-        specMarkdown: typeof root.value.specMarkdown === 'string' ? root.value.specMarkdown : undefined,
-        artifactPath: typeof root.value.artifactPath === 'string' ? root.value.artifactPath : undefined,
-        commitSha: typeof root.value.commitSha === 'string' ? root.value.commitSha : undefined,
-        reason: typeof root.value.reason === 'string' ? root.value.reason : undefined
-      }
-    };
-  }
-  return invalid('InvalidCopilotSpecifyPayload', 'event type must be progress or done', '$.type');
 };

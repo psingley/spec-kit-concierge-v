@@ -1,29 +1,22 @@
 {
-  "runId": "2026-05-28T23:06:53.255Z",
+  "runId": "2026-05-29T14:46:16.935Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
-    "total": 24,
-    "pass": 24,
+    "total": 27,
+    "pass": 27,
     "fail": 0,
     "warn": 0,
-    "worstScreen": "activity-rail-idle"
+    "worstScreen": "activity-rail-busy"
   },
   "screens": [
-    {
-      "name": "activity-rail-idle",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 6.55,
-      "priorityScore": 7
-    },
     {
       "name": "activity-rail-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.88,
+      "pixelResidual": 6.73,
       "priorityScore": 7
     },
     {
@@ -48,10 +41,17 @@
       "priorityScore": 6
     },
     {
+      "name": "activity-rail-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.43,
+      "priorityScore": 6
+    },
+    {
       "name": "workspace-titlebar-closed-menus",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.99,
+      "pixelResidual": 5,
       "priorityScore": 5
     },
     {
@@ -72,7 +72,7 @@
       "name": "stepper-plan-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.09,
       "priorityScore": 5
     },
     {
@@ -93,7 +93,7 @@
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.08,
+      "pixelResidual": 5.07,
       "priorityScore": 5
     },
     {
@@ -118,10 +118,31 @@
       "priorityScore": 4
     },
     {
+      "name": "clarify-question",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.25,
+      "priorityScore": 4
+    },
+    {
+      "name": "clarify-ask-another",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 4.06,
+      "priorityScore": 4
+    },
+    {
+      "name": "clarify-malformed-reask",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.91,
+      "priorityScore": 4
+    },
+    {
       "name": "activity-pill-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.67,
+      "pixelResidual": 3.91,
       "priorityScore": 4
     },
     {
@@ -156,7 +177,7 @@
       "name": "signin-all-ok",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.54,
+      "pixelResidual": 1.55,
       "priorityScore": 2
     },
     {

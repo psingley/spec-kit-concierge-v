@@ -1,0 +1,278 @@
+{
+  "schema": "concierge.jira.v1",
+  "epic": {
+    "taskId": "EPIC",
+    "jiraKey": "SKC-51",
+    "jiraUrl": "https://collette.atlassian.net/browse/SKC-51",
+    "createdAt": "2026-05-29T15:04:01Z",
+    "verifiedAt": "2026-05-29T15:04:42Z"
+  },
+  "tickets": [
+    {
+      "taskId": "T001",
+      "jiraKey": "SKC-61",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-61",
+      "createdAt": "2026-05-29T15:32:01+0000",
+      "verifiedAt": "2026-05-29T15:32:35+0000"
+    },
+    {
+      "taskId": "T002",
+      "jiraKey": "SKC-60",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-60",
+      "createdAt": "2026-05-29T11:24:52.680972-04:00",
+      "verifiedAt": "2026-05-29T11:25:50.202852-04:00"
+    },
+    {
+      "taskId": "T003",
+      "jiraKey": "SKC-62",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-62",
+      "createdAt": "2026-05-29T15:38:49Z",
+      "verifiedAt": "2026-05-29T15:38:49Z"
+    },
+    {
+      "taskId": "T004",
+      "jiraKey": "SKC-63",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-63",
+      "createdAt": "2026-05-29T15:42:56.853Z",
+      "verifiedAt": "2026-05-29T15:42:56.853Z"
+    },
+    {
+      "taskId": "T005",
+      "jiraKey": "SKC-64",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-64",
+      "createdAt": "2026-05-29T15:43:46.504Z",
+      "verifiedAt": "2026-05-29T15:43:46.505Z"
+    },
+    {
+      "taskId": "T006",
+      "jiraKey": "SKC-65",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-65",
+      "createdAt": "2026-05-29T15:43:46.507Z",
+      "verifiedAt": "2026-05-29T15:43:46.507Z"
+    },
+    {
+      "taskId": "T007",
+      "jiraKey": "SKC-66",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-66",
+      "createdAt": "2026-05-29T15:43:46.507Z",
+      "verifiedAt": "2026-05-29T15:43:46.507Z"
+    },
+    {
+      "taskId": "T008",
+      "jiraKey": "SKC-67",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-67",
+      "createdAt": "2026-05-29T15:43:46.507Z",
+      "verifiedAt": "2026-05-29T15:43:46.507Z"
+    },
+    {
+      "taskId": "T009",
+      "jiraKey": "SKC-68",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-68",
+      "createdAt": "2026-05-29T15:44:48.306Z",
+      "verifiedAt": "2026-05-29T15:44:48.307Z"
+    },
+    {
+      "taskId": "T010",
+      "jiraKey": "SKC-69",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-69",
+      "createdAt": "2026-05-29T15:44:48.309Z",
+      "verifiedAt": "2026-05-29T15:44:48.309Z"
+    },
+    {
+      "taskId": "T011",
+      "jiraKey": "SKC-70",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-70",
+      "createdAt": "2026-05-29T15:44:48.309Z",
+      "verifiedAt": "2026-05-29T15:44:48.309Z"
+    },
+    {
+      "taskId": "T012",
+      "jiraKey": "SKC-71",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-71",
+      "createdAt": "2026-05-29T15:44:48.310Z",
+      "verifiedAt": "2026-05-29T15:44:48.310Z"
+    },
+    {
+      "taskId": "T013",
+      "jiraKey": "SKC-72",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-72",
+      "createdAt": "2026-05-29T15:44:48.310Z",
+      "verifiedAt": "2026-05-29T15:44:48.310Z"
+    },
+    {
+      "taskId": "T014",
+      "jiraKey": "SKC-73",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-73",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T015",
+      "jiraKey": "SKC-74",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-74",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T016",
+      "jiraKey": "SKC-75",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-75",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T017",
+      "jiraKey": "SKC-76",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-76",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T018",
+      "jiraKey": "SKC-77",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-77",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T019",
+      "jiraKey": "SKC-78",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-78",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T020",
+      "jiraKey": "SKC-79",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-79",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T021",
+      "jiraKey": "SKC-80",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-80",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T022",
+      "jiraKey": "SKC-81",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-81",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T023",
+      "jiraKey": "SKC-82",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-82",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T024",
+      "jiraKey": "SKC-83",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-83",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T025",
+      "jiraKey": "SKC-84",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-84",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T026",
+      "jiraKey": "SKC-85",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-85",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T027",
+      "jiraKey": "SKC-86",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-86",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T028",
+      "jiraKey": "SKC-87",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-87",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T029",
+      "jiraKey": "SKC-88",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-88",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T030",
+      "jiraKey": "SKC-89",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-89",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T031",
+      "jiraKey": "SKC-90",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-90",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T032",
+      "jiraKey": "SKC-91",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-91",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T033",
+      "jiraKey": "SKC-92",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-92",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T034",
+      "jiraKey": "SKC-93",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-93",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T035",
+      "jiraKey": "SKC-94",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-94",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T036",
+      "jiraKey": "SKC-95",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-95",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T037",
+      "jiraKey": "SKC-96",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-96",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    },
+    {
+      "taskId": "T038",
+      "jiraKey": "SKC-97",
+      "jiraUrl": "https://collette.atlassian.net/browse/SKC-97",
+      "createdAt": "2026-05-29T15:51:55.397Z",
+      "verifiedAt": "2026-05-29T15:51:55.397Z"
+    }
+  ]
+}

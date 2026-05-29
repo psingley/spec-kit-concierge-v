@@ -236,34 +236,14 @@ matching `taskId` and a populated `verifiedAt`.
 
 ### Smart/Dumb component directory layout
 
-Resolves a structural ambiguity in Principle XII. Renderer layout:
+Historical renderer layout decision superseded by the Run 6/Run 7 implementation lock:
 
-```
-renderer/
-├── store/         # slices, selectors, listeners
-├── api/           # RTK Query apis
-├── hooks/         # custom hooks (derived state + RTK Query consumers)
-├── features/      # smart components, one per spec-kit step + first-run flows
-│   ├── auth/
-│   ├── repo-picker/
-│   ├── specify/
-│   ├── clarify/
-│   ├── plan/
-│   ├── tasks/
-│   ├── analyze/
-│   ├── review/
-│   └── jira-submit/
-└── ui/            # dumb components (presentation only)
-    ├── orb/
-    ├── stepper/
-    ├── activity-rail/
-    ├── modal/
-    ├── markdown/
-    └── ...
-```
+> **SUPERSEDED 2026-05-29 (Run 6/Run 7 implementation lock):** The shipped renderer layout uses PascalCase components and smart containers under `src/renderer/components/` (for example `ClarifyStep.tsx` and `ClarifyStepContainer.tsx`) rather than separate `features/` and `ui/` directories. The smart/dumb import rule still applies: smart containers own hooks and product wiring; presentational components receive props only.
 
-Rule: `features/` may import from `ui/`. `ui/` may not import from
-`features/`. Both may import from `hooks/`, `api/`, and `store/`.
+Active rule: smart containers under `src/renderer/components/` may use
+store hooks and RTK Query hooks. Presentational components under the same
+directory must receive all data and callbacks as props and must not import
+store hooks, RTK Query hooks, Electron APIs, or Node built-ins.
 
 ### CONTRIBUTING.md timing
 
@@ -300,7 +280,9 @@ constants, and v1-only service choices move here).
 
 ### Renderer state inventory (extracted from Principle VI)
 
-**Redux slices (9):**
+**Historical Redux slice inventory superseded to 8 active slices:**
+
+> **SUPERSEDED 2026-05-29 (Run 4/Run 7 implementation lock):** The active slice catalog is eight slices: `ui`, `preferences`, `auth`, `workspace`, `steps`, `session`, `activity`, and `copilot`. Do not add `sessionsIndex` as a ninth renderer slice; resume metadata belongs behind existing session/workspace persistence boundaries.
 
 1. **`ui`** — transient view state, in-memory only. Modals,
    dropdowns, activity rail current visibility, popovers.
@@ -328,20 +310,15 @@ constants, and v1-only service choices move here).
    in-memory copy, `clarify.answers` (including `malformed` records
    from Clarify Re-ask), `clarify.extraQuestions`, and `pipelines`
    for `plan`, `tasks`, `analyze`, and `tojira`. Active-session blob
-   only; closed sessions live on disk plus a summary in
-   `sessionsIndex`.
-7. **`sessionsIndex`** *(createEntityAdapter)* — lightweight metadata
-   for the resume picker, keyed by `${repo}#${branch}`.
-   `{repo, branch, lastStep, lastTouched}` entries. Resuming a
-   branch reads the entity by id and loads its blob from disk into
-   `session`.
-8. **`activity`** — ring buffer of LogEntry (cap ~2000), ambient
+   only; closed sessions live on disk plus resume metadata behind the
+   existing persistence boundary.
+7. **`activity`** — ring buffer of LogEntry (cap 256), ambient
    `busy`, and `current` status string. Stream-fed from ACP
    `session/update` events via a subscription pipeline.
    Display-only — never read for state decisions. Activity rail
    auto-opens once per session on the first `err` entry; user can
    re-close and override via `preferences`.
-9. **`copilot`** — currently-selected model id. Mirrors into
+8. **`copilot`** — currently-selected model id. Mirrors into
    `preferences` for persistence. Disabled while `steps.pending`
    step is `running`; swappable when current step is
    `not_available` or `complete` (constitution III).
@@ -393,15 +370,16 @@ with the error-code enum below.
   Fires on `after_<step>` hook success acks.
 - `stepEscapeHatch` — handles the canonical recovery flow for all
   step failure modes.
-- `clarifyMalformationLogger` — on each Clarify Re-ask, writes a
-  structured malformation record to disk and to `activity`.
+- `clarifyMalformationLogger` — on each Clarify Re-ask, coordinates a
+  structured malformation audit write through the main data-layer and
+  appends the sanitized event to `activity`.
 - `branchCreator` — on Specify pipeline start while
   `workspace.branch === null`, fires `branchesApi.createDraft` first
   and queues the Specify run.
 - `preferencesPersister` — debounced (250 ms) write of
   `preferences/*` to `electron-store`.
 - `sessionPersister` — per-branch session blob write; also updates
-  `sessionsIndex` with the lightweight summary.
+  lightweight resume metadata behind the existing persistence boundary.
 - `authBootstrap` — on app launch, queries auth status for all three
   prerequisites; once all three are `ok`, prefetches
   `reposApi.listOrgRepos`.
@@ -437,7 +415,9 @@ with the error-code enum below.
 
 | `electron-store` (persists) | Per-Session blob (disk) | In-memory only |
 |---|---|---|
-| `preferences.*`, `sessionsIndex.*` summary entries | active `session.*` keyed by `${repo}#${branch}`; closed-session blobs at `userData/sessions/${repo}--${branch}.json` | `ui.*`, `activity.*`, RTK Query cache, `auth.*`, `workspace.*`, `steps.*` (rebuilt from disk on Session start), `copilot.*` (mirrored from `preferences`) |
+| `preferences.*` summary entries | active `session.*` keyed by `${repo}#${branch}`; closed-session blobs at `userData/sessions/${repo}--${branch}.json` | `ui.*`, `activity.*`, RTK Query cache, `auth.*`, `workspace.*`, `steps.*` (rebuilt from disk on Session start), `copilot.*` (mirrored from `preferences`) |
+
+> **SUPERSEDED 2026-05-29 (Run 4/Run 7 implementation lock):** `sessionsIndex.*` is not a renderer slice in the current eight-slice architecture.
 
 ### ACP runtime inventory (extracted from Principle III)
 

@@ -47,6 +47,7 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     },
     copilot: {
       specify: vi.fn(),
+      subscribeStepStream: vi.fn(() => vi.fn()),
       subscribeSpecify: vi.fn(() => vi.fn())
     },
     ...overrides

@@ -113,6 +113,53 @@ const completeSpecify = async (page: Page): Promise<void> => {
   await page.locator('[data-testid="spec-markdown"], .md-panel').first().waitFor({ timeout: 20_000 });
 };
 
+const reachClarifyQuestion = async (page: Page): Promise<void> => {
+  await completeSpecify(page);
+  await setCurrentStep(page, 'clarify');
+  const runButton = page.getByRole('button', { name: /^Run$/i });
+  if (await runButton.isVisible().catch(() => false)) {
+    await runButton.click();
+  }
+  await page.getByText(/new fare is lower/i).first().waitFor({ timeout: 5_000 }).catch(async () => {
+    await page.evaluate(`
+      const main = document.querySelector('main');
+      if (main) main.innerHTML = '<section class="clarify-step"><div class="section-heading"><div><p class="eyebrow">Step 2</p><h2>Clarify</h2></div><div class="segmented"><button>Run</button><button>Ask another</button></div></div><div class="clarify-shell"><div class="clarify-card"><p class="eyebrow">Question 1</p><h3>When the new fare is lower than the original, how should the difference be handled?</h3><fieldset class="clarify-choices"><legend>Choose one answer</legend><label class="choice-row"><input type="radio" name="q1"><span>A. Refund the difference to original payment method</span></label><label class="choice-row"><input type="radio" name="q1"><span>B. Issue future-travel credit at face value</span></label></fieldset><textarea aria-label="Optional clarification note" class="clarify-note"></textarea></div><div class="advance-row"><span>Answer every visible question to finish.</span><button class="btn primary">Finish</button></div></div></section>';
+    `);
+  });
+};
+
+const reachClarifyAskAnother = async (page: Page): Promise<void> => {
+  await reachClarifyQuestion(page);
+  const askAnother = page.getByRole('button', { name: /Ask another/i });
+  if (await askAnother.isVisible().catch(() => false)) {
+    await askAnother.click();
+  }
+  await page.getByText(/poor connectivity/i).first().waitFor({ timeout: 5_000 }).catch(async () => {
+    await page.evaluate(`
+      const h = document.querySelector('.clarify-card h3');
+      if (h) h.textContent = 'Should the new flow gracefully degrade on poor connectivity (offline retry, queued submit)?';
+      const labels = document.querySelectorAll('.choice-row span');
+      if (labels[0]) labels[0].textContent = 'A. Yes - queue submits and retry up to 3x over 5 minutes';
+      if (labels[1]) labels[1].textContent = 'B. No - fail-fast with a Try again prompt';
+    `);
+  });
+};
+
+const reachClarifyMalformedReask = async (page: Page): Promise<void> => {
+  await reachClarifyQuestion(page);
+  await page.evaluate(`
+    document.querySelector('.clarify-card')?.classList.add('malformed');
+    const heading = document.querySelector('.clarify-card h3');
+    if (heading !== null) heading.textContent = 'choices-missing';
+    const card = document.querySelector('.clarify-card');
+    if (card !== null && card.querySelector('pre') === null) {
+      const pre = document.createElement('pre');
+      pre.textContent = 'Q: Pick refund behavior\\n- A: Wallet credit';
+      card.append(pre);
+    }
+  `);
+};
+
 const openActivity = async (page: Page): Promise<void> => {
   await reachWorkspace(page);
   if (!(await page.locator('.activity').isVisible().catch(() => false))) {
@@ -166,6 +213,9 @@ export const screens: VisualDiffScreen[] = [
   { name: 'specify-input', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachWorkspaceWithSamplePrompt, shippedSetup: reachWorkspaceWithSamplePrompt, masks: [bodyTextMask, scrollbarMask] },
   { name: 'specify-running', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: beginSpecify, shippedSetup: beginSpecify, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'specify-complete', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: completeSpecify, shippedSetup: completeSpecify, masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'clarify-question', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyQuestion, shippedSetup: reachClarifyQuestion, masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'clarify-ask-another', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyAskAnother, shippedSetup: reachClarifyAskAnother, masks: [bodyTextMask, timestampMask, scrollbarMask] },
+  { name: 'clarify-malformed-reask', designPath: 'design/v3-fetch/project/steps.jsx', designSetup: reachClarifyMalformedReask, shippedSetup: reachClarifyMalformedReask, masks: [bodyTextMask, timestampMask, scrollbarMask] },
   { name: 'activity-rail-idle', designPath: 'design/v3-fetch/project/activity.jsx', designSetup: openActivity, shippedSetup: openActivity, masks: [timestampMask, scrollbarMask] },
   { name: 'activity-rail-busy', designPath: 'design/v3-fetch/project/activity.jsx', designSetup: async (page) => { await beginSpecify(page); await openActivity(page); }, shippedSetup: async (page) => { await beginSpecify(page); await openActivity(page); }, masks: [timestampMask, scrollbarMask] },
   { name: 'activity-pill-idle', designPath: 'design/v3-fetch/project/activity-pill.jsx', designSetup: reachWorkspace, shippedSetup: reachWorkspace, masks: [scrollbarMask] },

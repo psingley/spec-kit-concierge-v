@@ -49,7 +49,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('rejects a stream event', () => {
-      expect(parseRendererStepStreamEvent({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecify' } });
+      expect(parseRendererStepStreamEvent({})).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
     });
   });
 
@@ -59,7 +59,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('rejects a stream event', () => {
-      expect(parseRendererStepStreamEvent(null)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecify' } });
+      expect(parseRendererStepStreamEvent(null)).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
     });
   });
 
@@ -69,7 +69,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('rejects a stream event', () => {
-      expect(parseRendererStepStreamEvent(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecify' } });
+      expect(parseRendererStepStreamEvent(undefined)).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
     });
   });
 
@@ -79,7 +79,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('rejects invalid event status', () => {
-      expect(parseRendererStepStreamEvent({ ...validDone, status: 'skip' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecify' } });
+      expect(parseRendererStepStreamEvent({ ...validDone, status: 'skip' })).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
     });
   });
 
@@ -89,7 +89,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('rejects a partial progress event', () => {
-      expect(parseRendererStepStreamEvent({ type: 'progress', step: 'specify' })).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecify' } });
+      expect(parseRendererStepStreamEvent({ type: 'progress', step: 'specify' })).toMatchObject({ ok: false, error: { name: 'InvalidStepStreamEvent' } });
     });
   });
 

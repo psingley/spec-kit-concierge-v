@@ -10,6 +10,7 @@ import { ActivityRailContainer } from './ActivityRailContainer';
 import { AboutModal } from './AboutModal';
 import { CustomizeModalContainer } from './CustomizeModalContainer';
 import { RequestModal } from './RequestModal';
+import { ClarifyStepContainer } from './ClarifyStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper, stepOrder } from './Stepper';
 import { TitlebarContainer } from './TitlebarContainer';
@@ -30,7 +31,7 @@ export const WorkspaceContainer = (): React.ReactElement => {
       <TitlebarContainer />
       <Stepper states={states} viewedStep={viewedStep} onSelectStep={(step) => dispatch(workspaceStepViewed(step))} />
       <main className="workspace-main">
-        {viewedStep === 'specify' ? <SpecifyStepContainer /> : <section className="placeholder">Run 7-9 placeholder for {viewedStep}. ArtifactViewer, TaskViewer, and JIRA sync are not implemented in Run 6.</section>}
+        {viewedStep === 'specify' ? <SpecifyStepContainer /> : viewedStep === 'clarify' ? <ClarifyStepContainer /> : <section className="placeholder">Run 8-9 placeholder for {viewedStep}. ArtifactViewer, TaskViewer, and JIRA sync are not implemented in Run 7.</section>}
       </main>
       <ActivityRailContainer />
       <ActivityPillContainer />

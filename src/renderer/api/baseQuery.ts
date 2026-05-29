@@ -21,7 +21,8 @@ export type IpcQueryArgs = {
     | 'repos:list'
     | 'branches:sessions'
     | 'artifacts:read'
-    | 'copilot:specify';
+    | 'copilot:specify'
+    | 'copilot:clarify';
   payload?: unknown;
 };
 
@@ -96,6 +97,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.artifacts!.read(args.payload) };
       case 'copilot:specify':
         return { data: await window.concierge.copilot!.specify(args.payload) };
+      case 'copilot:clarify':
+        return { data: await window.concierge.copilot!.clarify!(args.payload) };
     }
   } catch (error) {
     return {

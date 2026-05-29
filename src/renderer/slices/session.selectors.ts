@@ -1,4 +1,5 @@
 import type { RootState } from '../store';
+import type { ClarifyQuestionRecord } from './session';
 
 export const selectSessionState = (state: RootState) => state.session;
 export const selectSessionActiveSessionId = (state: RootState) => state.session.activeSessionId;
@@ -14,3 +15,23 @@ export const selectSessionScrollProgress = (state: RootState) => state.session.s
 export const selectSessionFailureReason = (state: RootState) => state.session.failureReason;
 export const selectSessionCanBeginSpecify = (state: RootState) =>
   state.session.specifyPrompt.trim().length > 0 && !state.session.specifyRunning;
+export const selectSessionClarifyQuestions = (state: RootState): ClarifyQuestionRecord[] =>
+  state.session.clarifyQuestions.ids
+    .map((id) => state.session.clarifyQuestions.entities[id])
+    .filter((question): question is ClarifyQuestionRecord => question !== undefined)
+    .sort((a, b) => a.position - b.position);
+export const selectSessionClarifyAnswers = (state: RootState) => state.session.clarifyAnswers.entities;
+export const selectSessionClarifyActiveQuestionId = (state: RootState) => state.session.clarifyActiveQuestionId;
+export const selectSessionClarifyRunning = (state: RootState) => state.session.clarifyRunning;
+export const selectSessionClarifyAskAnotherRunning = (state: RootState) => state.session.clarifyAskAnotherRunning;
+export const selectSessionClarifyCompleting = (state: RootState) => state.session.clarifyCompleting;
+export const selectSessionClarifyCompletion = (state: RootState) => state.session.clarifyCompletion;
+export const selectSessionClarifyFailureReason = (state: RootState) => state.session.clarifyFailureReason;
+export const selectSessionCanFinishClarify = (state: RootState): boolean => {
+  const questions = selectSessionClarifyQuestions(state);
+  const hasMalformed = questions.some((question) => question.malformed === true);
+  const allAnswered = questions
+    .filter((question) => question.malformed !== true)
+    .every((question) => (state.session.clarifyAnswers.entities[question.id]?.selectedChoiceKey ?? '').length > 0);
+  return questions.length > 0 && allAnswered && !hasMalformed && !state.session.clarifyRunning && !state.session.clarifyAskAnotherRunning && !state.session.clarifyCompleting;
+};

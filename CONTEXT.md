@@ -125,14 +125,12 @@ never silently auto-retries.
 ### Clarify Re-ask
 
 A per-question variant of the Step Escape Hatch, specific to malformed
-Clarify questions. The user (or an external agent driving the UI)
-clicks "re-ask" on a malformed question card; the Concierge App logs a
-structured malformation record (`{questionId, malformationCategory,
-rawOutput, timestamp, modelId}`), sends a repair prompt to the Bound
-CLI requesting that the question be re-emitted in the correct format,
-and replaces the malformed question in place when the new one arrives.
-The UI shows the malformed state visibly (red border, malformation
-annotation) rather than rendering broken UI.
+Clarify questions. When a malformed question is detected, the Concierge
+App keeps that question visibly present, records a structured
+malformation, asks the Bound CLI to rewrite only that question, and
+replaces the malformed question in place when a valid rewrite arrives.
+If the bounded re-ask path is exhausted, Clarify falls back to the Step
+Escape Hatch.
 
 ### Step Agent Failure Modes (Clarify-specific)
 
@@ -145,10 +143,11 @@ Clarify Step Contract and the Clarify Re-ask flow:
   present
 - Multiple-choice answer block missing, malformed, or merged into the
   question
-- Short-answer affordance absent
+- Rendered short-answer affordance absent from the UI
 - Markdown emphasis (`*foo*`) at start of line confusing parsers
 
-The clarify factory MUST detect and refuse these.
+The clarify flow MUST detect and refuse or repair these before
+completion.
 
 ### Bound CLI
 

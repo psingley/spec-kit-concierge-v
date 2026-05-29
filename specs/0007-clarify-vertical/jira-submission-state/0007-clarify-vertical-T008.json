@@ -1,0 +1,18 @@
+{
+  "idempotency_id": "0007-clarify-vertical-T008",
+  "status": "verified",
+  "issue_key": "SKC-67",
+  "issue_url": "https://collette.atlassian.net/browse/SKC-67",
+  "payload_hash": "ba0231ddea468e4c4a22135c71976ca470fb7cc72c53fe2c6090c8777311f9b9",
+  "idempotency_label": "SKC-idem-ba0231ddea46",
+  "attempts": 1,
+  "started_at": "2026-05-29T15:43:46.507Z",
+  "completed_at": "2026-05-29T15:43:46.507Z",
+  "agent_model": "direct-mcp",
+  "agent_effort": "manual",
+  "copilot_session_id": null,
+  "cost_multiplier": 0,
+  "orphan_jql": "project = SKC AND labels = \"SKC-idem-ba0231ddea46\" ORDER BY created DESC",
+  "orphan_match": null,
+  "error": null
+}

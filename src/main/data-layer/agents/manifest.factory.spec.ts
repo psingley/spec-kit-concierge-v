@@ -21,8 +21,8 @@ describe('createAgentManifest', () => {
       launchArgs: ['--allow-all-tools'],
       acpModeFlag: '--acp',
       verifiedAgainst: {
-        version: '1.0.54',
-        verifiedAt: '2026-05-27'
+        version: '1.0.55',
+        verifiedAt: '2026-05-29'
       },
       capabilities: ['text', 'tools'],
       modelSelectionStrategy: 'unstable_setSessionModel|restart',

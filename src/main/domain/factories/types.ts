@@ -11,7 +11,7 @@ export type ConciergeStepCommit = {
 };
 
 export type StepContractResult =
-  | { ok: true; commit: ConciergeStepCommit }
+  | { ok: true; commit: ConciergeStepCommit; questions?: ClarifyQuestion[] }
   | { ok: false; kind?: 'escape-hatch'; escapeHatchReason: StepEscapeHatchReason }
   | {
       ok: false;
@@ -35,13 +35,14 @@ export type ClarifyChoice = {
 
 export type ClarifyQuestion = {
   id: string;
+  position: number;
   text: string;
   choices: ClarifyChoice[];
-  allowShortAnswer: boolean;
 };
 
 export type MalformedClarifyQuestion = {
   id: string;
+  position: number;
   malformationCategory: string;
   rawOutput: string;
 };

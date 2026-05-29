@@ -15,7 +15,7 @@ export const STEP_ARTIFACT_MANIFEST = {
     optionalFiles: ['checklists/requirements.md']
   },
   clarify: {
-    requiredFiles: ['clarifications.md'],
+    requiredFiles: ['spec.md'],
     optionalFiles: []
   },
   plan: {

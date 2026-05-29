@@ -1,0 +1,945 @@
+{
+  "tag": "body",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "text": "Spec-kit Concierge",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "a.kim",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "a.kim",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "collette-travel/concierge-api",
+                          "children": [
+                            {
+                              "tag": "span",
+                              "text": "collette-travel",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "/",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "concierge-api",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "spec/draft-a57b",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "spec/draft-a57b",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "text": "Claude Sonnet 4.5default",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "span",
+                              "text": "Claude Sonnet 4.5",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "text": "default",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "button",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "circle",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "button",
+                      "children": [
+                        {
+                          "tag": "span",
+                          "children": [
+                            {
+                              "tag": "svg",
+                              "children": [
+                                {
+                                  "tag": "rect",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "path",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "tag": "span",
+                          "children": []
+                        },
+                        {
+                          "tag": "span",
+                          "children": [
+                            {
+                              "tag": "canvas",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "main",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": [
+                                    {
+                                      "tag": "button",
+                                      "text": "Preview",
+                                      "children": [
+                                        {
+                                          "tag": "svg",
+                                          "children": [
+                                            {
+                                              "tag": "path",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "circle",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "button",
+                                      "text": "Edit",
+                                      "children": [
+                                        {
+                                          "tag": "svg",
+                                          "children": [
+                                            {
+                                              "tag": "path",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "tag": "div",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "spec.md · 63 lines",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "button",
+                                      "children": [
+                                        {
+                                          "tag": "svg",
+                                          "children": [
+                                            {
+                                              "tag": "path",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "div",
+                                  "children": [
+                                    {
+                                      "tag": "div",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "div",
+                                  "children": [
+                                    {
+                                      "tag": "div",
+                                      "children": [
+                                        {
+                                          "tag": "div",
+                                          "children": [
+                                            {
+                                              "tag": "br",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "br",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "br",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h1",
+                                          "text": "Self-serve flight-change for loyalty guests",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Problem",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "p",
+                                          "text": "Loyalty-tier guests currently must call the concierge desk to change a flight inside the ±48h departure window. This bottlenecks the desk during weather events ",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Goals",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ul",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "60%",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "<1.5s",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "under 0.5%",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "No regression to existing supplier-side rebook contracts.",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Non-goals",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ul",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "New-bookings flow (out of scope).",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Multi-leg itineraries with >2 connecting flights.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Loyalty-tier upgrades from inside the change flow.",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "User stories",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ol",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "As a Gold-tier guest, I can open my itinerary and tap \"Change flight\" to see eligible alternatives.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "and",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "As an ops agent, I can see in the dashboard which self-serve changes hit the manual-review queue and why.",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Acceptance criteria",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ul",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "<span style=\"color:var(--text-faint)\">☐</span> Eligibility check runs in <200ms p95 against rebook-rules service.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "<span style=\"color:var(--text-faint)\">☐</span> Alternatives list is sorted by fare-difference, then departure delta.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "children": [
+                                                {
+                                                  "tag": "strong",
+                                                  "text": "and",
+                                                  "children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "<span style=\"color:var(--text-faint)\">☐</span> Failed transactions roll back the itinerary-service write atomically.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "<span style=\"color:var(--text-faint)\">☐</span> Audit event is written to loyalty-ledger for every successful change.",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Dependencies",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "table",
+                                          "children": [
+                                            {
+                                              "tag": "thead",
+                                              "children": [
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "System",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "Owner",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "th",
+                                                      "text": "Contract",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "tag": "tbody",
+                                              "children": [
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "rebook-rules svc",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@booking-team",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "gRPC v3",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "itinerary-service",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@ops-platform",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "REST v2 + SQS",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "loyalty-ledger",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@loyalty",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "append-only log",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "tag": "tr",
+                                                  "children": [
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "guest-app push",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "@mobile",
+                                                      "children": []
+                                                    },
+                                                    {
+                                                      "tag": "td",
+                                                      "text": "FCM topic",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Out of scope clarifications needed",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "blockquote",
+                                          "text": "The following ambiguities will be resolved in the next step.",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ul",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "Refund handling when new fare is lower",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Eligibility for award-ticket bookings",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Behavior when companion-traveler bookings span tiers",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Whether change quotas reset on cancel-and-rebook",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Offline / poor-connection retry policy",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Open risks",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "ul",
+                                          "children": [
+                                            {
+                                              "tag": "li",
+                                              "text": "Supplier API throttling during weather events could push us over the latency budget. We may need to pre-warm caches.",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "li",
+                                              "text": "Loyalty-ledger throughput has not been load-tested above 80 events/sec; in-window change spikes could exceed that.",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "h2",
+                                          "text": "Notes",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "p",
+                                          "children": [
+                                            {
+                                              "tag": "code",
+                                              "text": "concierge-api",
+                                              "children": []
+                                            },
+                                            {
+                                              "tag": "code",
+                                              "text": "booking-engine",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "tag": "hr",
+                                          "children": []
+                                        },
+                                        {
+                                          "tag": "p",
+                                          "children": [
+                                            {
+                                              "tag": "em",
+                                              "text": "End of spec — scroll-through complete unlocks the Clarify step.",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "div",
+                                  "children": [
+                                    {
+                                      "tag": "span",
+                                      "text": "0",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "span",
+                                      "text": "Scroll to the end of the spec to unlock the Clarify step.",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "Jump to end",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "Clarify",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    },
+    {
+      "tag": "script",
+      "children": []
+    }
+  ]
+}

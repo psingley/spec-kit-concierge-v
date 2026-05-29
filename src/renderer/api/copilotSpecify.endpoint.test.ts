@@ -11,6 +11,7 @@ describe('copilot specify endpoint', () => {
       app: { getVersion: vi.fn() },
       acp: { probeBoundCLI: vi.fn() },
       copilot: {
+        subscribeStepStream: vi.fn(),
         subscribeSpecify: vi.fn((_subscriptionId, callback) => {
           listener = callback;
           return vi.fn();

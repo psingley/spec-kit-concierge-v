@@ -1,0 +1,29 @@
+{
+  "name": "clarify-malformed-reask",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      { "value": "Clarify" },
+      { "value": "choices-missing" },
+      { "value": "Q: Pick refund behavior" },
+      { "value": "Wallet credit" },
+      { "value": "Finish" }
+    ],
+    "headings": [
+      { "level": 2, "text": "Clarify" },
+      { "level": 3, "text": "choices-missing" }
+    ],
+    "controls": [
+      { "role": "button", "name": "Run", "count": 1 },
+      { "role": "button", "name": "Ask another", "count": 1 },
+      { "role": "button", "name": "Finish", "count": 1 }
+    ],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 65, "warnDiffPercent": 40 }
+}
