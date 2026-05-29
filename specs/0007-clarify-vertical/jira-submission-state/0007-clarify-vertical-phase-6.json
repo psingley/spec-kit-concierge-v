@@ -1,0 +1,18 @@
+{
+  "idempotency_id": "0007-clarify-vertical-phase-6",
+  "status": "verified",
+  "issue_key": "SKC-53",
+  "issue_url": "https://collette.atlassian.net/browse/SKC-53",
+  "payload_hash": "07331eee7fae6dc2c98411bf9bfeec7335cf5fe51a260746634fbc9c32508aa8",
+  "idempotency_label": "SKC-idem-07331eee7fae",
+  "attempts": 1,
+  "started_at": "2026-05-29T11:09:06.727631-04:00",
+  "completed_at": "2026-05-29T11:10:06.800614-04:00",
+  "agent_model": "gpt-5-mini",
+  "agent_effort": "low",
+  "copilot_session_id": null,
+  "cost_multiplier": 0,
+  "orphan_jql": null,
+  "orphan_match": null,
+  "error": null
+}
