@@ -53,12 +53,12 @@ app.whenReady().then(async () => {
   logger.info('app ready');
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    const { default: installExtension, REACT_DEVELOPER_TOOLS } = await import('electron-devtools-installer');
+    const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = await import('electron-devtools-installer');
     try {
-      await installExtension(REACT_DEVELOPER_TOOLS);
-      logger.info('React DevTools installed');
+      await installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]);
+      logger.info('React DevTools and Redux DevTools installed');
     } catch (error) {
-      logger.warn('Failed to install React DevTools', { error });
+      logger.warn('Failed to install DevTools extensions', { error });
     }
   }
 
