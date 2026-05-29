@@ -209,11 +209,14 @@ Concierge App never speaks to Atlassian directly.
 
 ### Workspace
 
-The local checkout of a `collette-travel` organization repository the
-Concierge App operates on. One Session is bound to one Workspace; the
-Concierge App refuses to write outside the Workspace path. Org name is
-hard-coded as a constant in v1 (single-org). External git mutations on
-spec branches by other actors are out of scope.
+The local shallow clone of a `collette-travel` organization repository
+the Concierge App operates on, stored at
+`{userData}/repos/{owner}/{name}`. One Session is bound to one
+Workspace; the Concierge App refuses to write outside the Workspace
+path. The app owns the clone — it is not shared with the user's normal
+development workflow. Org name is hard-coded as a constant in v1
+(single-org). External git mutations on spec branches by other actors
+are out of scope.
 
 ### Workspace Dirty Resume
 
