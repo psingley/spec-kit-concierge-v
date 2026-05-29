@@ -52,6 +52,7 @@ type ConciergePreloadBridge = {
   };
   copilot?: {
     specify: (request: unknown) => Promise<unknown>;
+    clarify?: (request: unknown) => Promise<unknown>;
     subscribeStepStream: (channel: string, subscriptionId: string, callback: (event: unknown) => void) => () => void;
     subscribeSpecify: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
   };

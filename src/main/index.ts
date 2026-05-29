@@ -8,6 +8,7 @@ import { registerArtifactsIpc } from './ipc/artifacts';
 import { registerAuthIpc } from './ipc/auth';
 import { registerBranchesIpc } from './ipc/branches';
 import { registerCopilotSpecifyIpc } from './ipc/copilotSpecify';
+import { registerCopilotClarifyIpc } from './ipc/copilotClarify';
 import { registerGitIpc } from './ipc/git';
 import { registerPreferencesIpc } from './ipc/preferences';
 import { registerReposIpc } from './ipc/repos';
@@ -55,6 +56,7 @@ app.whenReady().then(async () => {
   registerBranchesIpc({ ipcMain, logger });
   registerArtifactsIpc({ ipcMain, logger });
   registerCopilotSpecifyIpc({ ipcMain, logger });
+  registerCopilotClarifyIpc({ ipcMain, logger });
   registerStepsIpc({ ipcMain, logger });
   registerPreferencesIpc({ ipcMain, logger });
   registerAuthIpc({ ipcMain, logger });

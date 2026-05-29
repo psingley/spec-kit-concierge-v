@@ -3,7 +3,8 @@ import { requireExactKeys, requireRecord, requireString, type RendererBoundaryEr
 export type StepName = 'specify' | 'clarify' | 'plan' | 'tasks' | 'analyze' | 'review';
 
 export type ClarifySummary = {
-  questions: Array<{ id: string; text: string; choices: Array<{ key: string; label: string }> }>;
+  questions: Array<{ id: string; position?: number; text: string; choices: Array<{ key: string; label: string }> }>;
+  malformedQuestions?: Array<{ id: string; position: number; malformationCategory: string; rawOutput: string }>;
   answers: Array<{ questionId: string; choiceKey: string; note?: string }>;
 };
 
@@ -40,25 +41,32 @@ const parseSummary = (value: unknown): ClarifySummary | undefined => {
   if (!isRecord(value) || !Array.isArray(value.questions) || !Array.isArray(value.answers)) {
     return undefined;
   }
-  return {
-    questions: value.questions.flatMap((question): ClarifySummary['questions'] => {
+  const questions = value.questions.flatMap((question): ClarifySummary['questions'] => {
       if (!isRecord(question) || typeof question.id !== 'string' || typeof question.text !== 'string' || !Array.isArray(question.choices)) {
         return [];
       }
       return [{
         id: question.id,
+        position: typeof question.position === 'number' ? question.position : undefined,
         text: question.text,
         choices: question.choices.flatMap((choice): Array<{ key: string; label: string }> =>
           isRecord(choice) && typeof choice.key === 'string' && typeof choice.label === 'string' ? [{ key: choice.key, label: choice.label }] : []
         )
       }];
-    }),
-    answers: value.answers.flatMap((answer): ClarifySummary['answers'] =>
+    });
+  const malformedQuestions = Array.isArray(value.malformedQuestions)
+    ? value.malformedQuestions.flatMap((question): NonNullable<ClarifySummary['malformedQuestions']> =>
+      isRecord(question) && typeof question.id === 'string' && typeof question.position === 'number' && typeof question.malformationCategory === 'string' && typeof question.rawOutput === 'string'
+        ? [{ id: question.id, position: question.position, malformationCategory: question.malformationCategory, rawOutput: question.rawOutput }]
+        : []
+    )
+    : undefined;
+  const answers = value.answers.flatMap((answer): ClarifySummary['answers'] =>
       isRecord(answer) && typeof answer.questionId === 'string' && typeof answer.choiceKey === 'string'
         ? [{ questionId: answer.questionId, choiceKey: answer.choiceKey, note: typeof answer.note === 'string' ? answer.note : undefined }]
         : []
-    )
-  };
+    );
+  return { questions, malformedQuestions, answers };
 };
 
 export const parseRendererStepStreamEvent = (

@@ -85,7 +85,7 @@ export const setupStepLifecycleListener = (startListening: AppStartListening): v
       const nextAttempt = (clarifyAttempts.get(key) ?? 0) + 1;
       clarifyAttempts.set(key, nextAttempt);
 
-      if (nextAttempt >= 3) {
+      if (nextAttempt > 3) {
         listenerApi.dispatch(stepReset({ step: 'clarify', reason: 'clarify-rigor-exhausted' }));
         listenerApi.dispatch(
           recordActivity({

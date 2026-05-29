@@ -3,7 +3,8 @@ import { invalid, requireExactKeys, requireRecord, requireString, type FactoryRe
 export type StepName = 'specify' | 'clarify' | 'plan' | 'tasks' | 'analyze' | 'review';
 
 export type ClarifySummary = {
-  questions: Array<{ id: string; text: string; choices: Array<{ key: string; label: string }> }>;
+  questions: Array<{ id: string; position?: number; text: string; choices: Array<{ key: string; label: string }> }>;
+  malformedQuestions?: Array<{ id: string; position: number; malformationCategory: string; rawOutput: string }>;
   answers: Array<{ questionId: string; choiceKey: string; note?: string }>;
 };
 
@@ -51,15 +52,23 @@ const parseSummary = (value: unknown): ClarifySummary | undefined => {
       }
       return [{ key: choice.key, label: choice.label }];
     });
-    return [{ id: question.id, text: question.text, choices }];
+    return [{ id: question.id, position: typeof question.position === 'number' ? question.position : undefined, text: question.text, choices }];
   });
+  const malformedQuestions = Array.isArray(value.malformedQuestions)
+    ? value.malformedQuestions.flatMap((question): NonNullable<ClarifySummary['malformedQuestions']> => {
+      if (!isRecord(question) || typeof question.id !== 'string' || typeof question.position !== 'number' || typeof question.malformationCategory !== 'string' || typeof question.rawOutput !== 'string') {
+        return [];
+      }
+      return [{ id: question.id, position: question.position, malformationCategory: question.malformationCategory, rawOutput: question.rawOutput }];
+    })
+    : undefined;
   const answers = value.answers.flatMap((answer): ClarifySummary['answers'] => {
     if (!isRecord(answer) || typeof answer.questionId !== 'string' || typeof answer.choiceKey !== 'string') {
       return [];
     }
     return [{ questionId: answer.questionId, choiceKey: answer.choiceKey, note: typeof answer.note === 'string' ? answer.note : undefined }];
   });
-  return { questions, answers };
+  return { questions, malformedQuestions, answers };
 };
 
 export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamEvent, ErrorName> => {
