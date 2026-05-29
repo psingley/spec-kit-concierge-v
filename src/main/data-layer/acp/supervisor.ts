@@ -320,6 +320,37 @@ class TestAcpAdapterSession implements BoundCLISession {
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
     await mkdir(this.#cwd, { recursive: true });
+    if (text.includes('/speckit.clarify') || text.includes('Ask exactly one additional clarification question') || text.includes('Rewrite only malformed Clarify question')) {
+      const clarifyMarkdown = text.includes('Ask exactly one additional clarification question')
+        ? `## Clarifications
+
+Q: Should the new flow gracefully degrade on poor connectivity (offline retry, queued submit)?
+- A: Yes - queue submits and retry up to 3x over 5 minutes
+- B: No - fail-fast with a Try again prompt
+`
+        : text.includes('Rewrite only malformed Clarify question')
+          ? `## Clarifications
+
+Q: Which policy owns award-ticket eligibility?
+- A: loyalty-ledger
+- B: rebook-rules
+`
+          : `## Clarifications
+
+Q: When the new fare is lower than the original, how should the difference be handled?
+- A: Refund the difference to original payment method
+- B: Issue future-travel credit at face value
+- C: Hold credit at the original fare; no refund
+
+Q: For companion travelers on a Platinum-tier booking, should the change apply to everyone on the PNR or only the booking owner?
+- A: Always change all travelers on the PNR
+- B: Default to all, with explicit opt-out per leg
+- C: Owner only, prompt to add companions separately
+`;
+      await writeFile(path.join(this.#cwd, 'spec.md'), clarifyMarkdown, 'utf8');
+      return { stopReason: 'complete', updates: [] };
+    }
+
     const specMarkdown = text.includes('flight-change flow') || text.includes('loyalty-tier guests')
       ? `# Self-serve flight-change for loyalty guests
 

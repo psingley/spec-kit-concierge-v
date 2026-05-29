@@ -1,0 +1,30 @@
+{
+  "name": "clarify-ask-another",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": {
+    "designSelector": "body",
+    "shippedSelector": "body"
+  },
+  "required": {
+    "texts": [
+      { "value": "Clarify" },
+      { "value": "Ask another" },
+      { "value": "Should the new flow gracefully degrade on poor connectivity (offline retry, queued submit)?" },
+      { "value": "Yes - queue submits and retry up to 3x over 5 minutes" },
+      { "value": "No - fail-fast with a Try again prompt" },
+      { "value": "Finish" }
+    ],
+    "headings": [
+      { "level": 2, "text": "Clarify" },
+      { "level": 3, "text": "Should the new flow gracefully degrade on poor connectivity (offline retry, queued submit)?" }
+    ],
+    "controls": [
+      { "role": "button", "name": "Run", "count": 1 },
+      { "role": "button", "name": "Ask another", "count": 1 },
+      { "role": "button", "name": "Finish", "count": 1 }
+    ],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 65, "warnDiffPercent": 40 }
+}
