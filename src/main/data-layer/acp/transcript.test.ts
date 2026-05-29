@@ -49,7 +49,7 @@ describe('ACP transcript writer', () => {
       ]
     });
 
-    expect(transcriptPath).toBe(path.join(userDataPath, 'transcripts', sessionId, 'step-1-2026-05-27T12:00:00.000Z.jsonl'));
+    expect(transcriptPath).toBe(path.join(userDataPath, 'transcripts', sessionId, 'step-1-2026-05-27T12-00-00.000Z.jsonl'));
     const contents = await readFile(transcriptPath, 'utf8');
     expect(contents).toContain('"direction":"client->agent"');
     expect(contents).toContain('/Users/<user>/spec-kit-concierge-v');
