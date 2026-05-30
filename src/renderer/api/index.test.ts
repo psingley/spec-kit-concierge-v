@@ -25,6 +25,7 @@ describe('renderer API slice', () => {
       'listRepos',
       'listBranchSessions',
       'readArtifact',
+      'getTasksDetail',
       'runSpecify',
       'runClarify',
       'runPassiveStep'

@@ -65,6 +65,9 @@ contextBridge.exposeInMainWorld('concierge', {
   artifacts: {
     read: (request: unknown) => ipcRenderer.invoke('artifacts:read', request) as Promise<unknown>
   },
+  tasksDetail: {
+    read: (request: unknown) => ipcRenderer.invoke('tasks:detail', request) as Promise<unknown>
+  },
   copilot: {
     specify: (request: unknown) => ipcRenderer.invoke('copilot:specify', request) as Promise<unknown>,
     clarify: (request: unknown) => ipcRenderer.invoke('copilot:clarify', request) as Promise<unknown>,

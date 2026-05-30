@@ -50,6 +50,9 @@ type ConciergePreloadBridge = {
   artifacts?: {
     read: (request: unknown) => Promise<unknown>;
   };
+  tasksDetail?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
   copilot?: {
     specify: (request: unknown) => Promise<unknown>;
     clarify?: (request: unknown) => Promise<unknown>;

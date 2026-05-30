@@ -87,7 +87,8 @@ describe('ipcBaseQuery', () => {
     ['auth:status', 'auth', 'status'],
     ['session:listAcp', 'session', 'listAcp'],
     ['session:createAcp', 'session', 'createAcp'],
-    ['activity:read', 'activity', 'read']
+    ['activity:read', 'activity', 'read'],
+    ['tasks:detail', 'tasksDetail', 'read']
   ] as const)('routes %s through the preload bridge', async (channel, group, method) => {
     const bridgeMethod = vi.fn(async () => ({ ok: channel }));
     window.concierge = {
