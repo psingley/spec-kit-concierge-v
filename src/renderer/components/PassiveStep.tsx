@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ParsedTask } from '../api/tasksDetail.factory';
 import type { PassiveStepName, PassiveStepRecord } from '../slices/session';
 import { Ico } from './Icons';
 import { ArtifactViewer } from './ArtifactViewer';
@@ -11,6 +12,7 @@ export type PassiveStepProps = {
   artifactText: string;
   artifactLoading: boolean;
   artifactError?: string;
+  artifactTasks?: ParsedTask[];
   onRun: () => void;
   onArtifactOpen: (path: string) => void;
   onArtifactClose: () => void;
@@ -26,6 +28,7 @@ export const PassiveStep = ({
   artifactText,
   artifactLoading,
   artifactError,
+  artifactTasks,
   onRun,
   onArtifactOpen,
   onArtifactClose
@@ -70,7 +73,7 @@ export const PassiveStep = ({
           </div>
         ) : null}
       </div>
-      <ArtifactViewer path={artifactPath} text={artifactText} loading={artifactLoading} error={artifactError} onClose={onArtifactClose} />
+      <ArtifactViewer path={artifactPath} text={artifactText} loading={artifactLoading} error={artifactError} tasks={artifactTasks} onClose={onArtifactClose} />
     </section>
   );
 };

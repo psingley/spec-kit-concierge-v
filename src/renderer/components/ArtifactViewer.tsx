@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ParsedTask } from '../api/tasksDetail.factory';
 import { Markdown } from './Markdown';
 import { TaskViewer } from './TaskViewer';
 
@@ -7,10 +8,11 @@ export type ArtifactViewerProps = {
   text: string;
   loading: boolean;
   error?: string;
+  tasks?: ParsedTask[];
   onClose: () => void;
 };
 
-export const ArtifactViewer = ({ path, text, loading, error, onClose }: ArtifactViewerProps): React.ReactElement | null => {
+export const ArtifactViewer = ({ path, text, loading, error, tasks = [], onClose }: ArtifactViewerProps): React.ReactElement | null => {
   if (path === null) {
     return null;
   }
@@ -26,7 +28,7 @@ export const ArtifactViewer = ({ path, text, loading, error, onClose }: Artifact
         <button type="button" className="btn ghost" onClick={onClose}>Close</button>
       </div>
       {loading ? <p role="status">Loading artifact...</p> : error !== undefined ? <p role="alert">{error}</p> : isTasks ? (
-        <TaskViewer markdown={text} />
+        <TaskViewer tasks={tasks} />
       ) : isMarkdown ? (
         <div className="md-preview"><Markdown text={text} /></div>
       ) : (
