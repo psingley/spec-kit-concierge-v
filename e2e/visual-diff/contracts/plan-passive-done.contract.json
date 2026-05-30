@@ -9,5 +9,5 @@
     "visualMarkers": []
   },
   "styleSamples": [],
-  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+  "pixel": { "maxDiffPercent": 8, "warnDiffPercent": 7 }
 }

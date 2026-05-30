@@ -8,6 +8,17 @@
     "controls": [{ "role": "button", "name": "Run Tasks", "count": 1 }],
     "visualMarkers": []
   },
-  "styleSamples": [],
-  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+  "styleSamples": [
+    {
+      "name": "tasks passive idle card",
+      "designSelector": ".passive-step",
+      "shippedSelector": ".passive-step",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": { "maxDiffPercent": 8, "warnDiffPercent": 7 }
 }

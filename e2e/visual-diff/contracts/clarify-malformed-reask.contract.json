@@ -25,5 +25,5 @@
     "visualMarkers": []
   },
   "styleSamples": [],
-  "pixel": { "maxDiffPercent": 65, "warnDiffPercent": 40 }
+  "pixel": { "maxDiffPercent": 7, "warnDiffPercent": 7 }
 }
