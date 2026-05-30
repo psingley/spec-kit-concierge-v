@@ -1,0 +1,151 @@
+{
+  "role": "region",
+  "name": "",
+  "children": [
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "heading",
+              "name": "Review",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "region",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Evidence",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "button",
+                  "name": "▣spec.mdspecify · required · abc1234",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "▣contracts/review-evidence-ipc.mdplan · optional · def5678",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "▣tasks.mdtasks · required · fed9876",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Clarifications",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Analyze",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "role": "region",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Tasks",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "Open",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "role": "dialog",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "generic",
+              "name": "",
+              "children": [
+                {
+                  "role": "heading",
+                  "name": "Task details",
+                  "children": []
+                },
+                {
+                  "role": "button",
+                  "name": "x",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

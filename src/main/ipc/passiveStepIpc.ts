@@ -1,5 +1,8 @@
 import type { IpcMain } from 'electron';
-import { expectedArtifactsForStep, type StepName } from '../hooks/manifest';
+import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, type StepName } from '../hooks/manifest';
+import { captureAnalyzeReport } from '../domain/evidence/analyzeReport';
+import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
+import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
@@ -21,9 +24,19 @@ export type PassiveStepAck = {
   accepted: true;
 };
 
+export type PassiveStepAgentResult = {
+  updates?: readonly BoundCLIPromptUpdate[];
+};
+
 export type PassiveStepAgentAdapter = (
-  request: PassiveStepRequest & { step: PassiveStepName; sessionId: string; featureDir: string; signal: AbortSignal }
-) => Promise<void>;
+  request: PassiveStepRequest & {
+    step: PassiveStepName;
+    sessionId: string;
+    featureDir: string;
+    signal: AbortSignal;
+    onUpdate?: (update: BoundCLIPromptUpdate) => void;
+  }
+) => Promise<PassiveStepAgentResult | void>;
 
 export type RegisterPassiveStepIpcOptions = {
   step: PassiveStepName;
@@ -69,12 +82,27 @@ const kindForArtifact = (artifactPath: string): PassiveStepSummary['artifacts'][
   return 'text';
 };
 
-const summaryForStep = (step: PassiveStepName): PassiveStepSummary => {
-  const artifacts = expectedArtifactsForStep(step).map((artifactPath) => ({
+const requiredArtifactsForStep = (step: PassiveStepName): string[] => {
+  if (step === 'plan') {
+    return [...STEP_ARTIFACT_MANIFEST.plan.requiredFiles];
+  }
+  return expectedArtifactsForStep(step);
+};
+
+const summaryForStep = async (step: PassiveStepName, featureDir: string): Promise<PassiveStepSummary> => {
+  const requiredArtifacts = requiredArtifactsForStep(step).map((artifactPath) => ({
     path: artifactPath,
     kind: kindForArtifact(artifactPath),
     required: step !== 'analyze'
   }));
+  const optionalArtifacts = step === 'plan'
+    ? (await discoverOptionalArtifacts(featureDir, 'plan')).map((artifactPath) => ({
+      path: artifactPath,
+      kind: kindForArtifact(artifactPath),
+      required: false
+    }))
+    : [];
+  const artifacts = [...requiredArtifacts, ...optionalArtifacts];
   return {
     artifacts,
     counts: {
@@ -153,12 +181,38 @@ export const registerPassiveStepIpc = ({
           throw new Error(before.escapeHatchReason);
         }
         sendEvent({ type: 'progress', step, sessionId, level: 'info', message: `Running ${step}`, timestamp: new Date().toISOString() });
-        await agentAdapter({ ...request, step, sessionId, featureDir, signal: controller.signal });
+        const agentResult = await agentAdapter({
+          ...request,
+          step,
+          sessionId,
+          featureDir,
+          signal: controller.signal,
+          onUpdate: (update) => {
+            sendEvent({
+              type: 'progress',
+              step,
+              sessionId,
+              level: 'info',
+              message: `Streaming ${step} output`,
+              timestamp: new Date().toISOString(),
+              raw: update
+            });
+          }
+        });
         const after = await afterHook(hookContext);
         if (!after.ok || after.commit?.commitSha === undefined) {
           throw new Error(after.ok ? 'missing commit sha' : after.escapeHatchReason);
         }
-        terminal({ type: 'done', step, sessionId, status: 'pass', commitSha: after.commit.commitSha, summary: summaryForStep(step) });
+        if (step === 'analyze') {
+          await captureAnalyzeReport({
+            userDataPath,
+            featureDir,
+            sessionId,
+            analyzeCommitSha: after.commit.commitSha,
+            updates: agentResult?.updates ?? []
+          });
+        }
+        terminal({ type: 'done', step, sessionId, status: 'pass', commitSha: after.commit.commitSha, summary: await summaryForStep(step, featureDir) });
         logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       } catch (error) {
         terminal({ type: 'done', step, sessionId, status: 'fail', reason: error instanceof Error ? error.message : String(error) });

@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { STEP_ARTIFACT_MANIFEST, type StepName } from '../../hooks/manifest';
 import type { ConciergeStepCommit, StepContractContext, StepContractResult } from './types';
@@ -57,6 +57,37 @@ export const validateRequiredMarkdown = async (
   }
 
   return undefined;
+};
+
+export const discoverOptionalArtifacts = async (
+  featureDir: string,
+  step: StepName
+): Promise<string[]> => {
+  const discovered: string[] = [];
+
+  for (const artifact of STEP_ARTIFACT_MANIFEST[step].optionalFiles) {
+    if (artifact.endsWith('/')) {
+      try {
+        const entries = await readdir(path.join(featureDir, artifact), { withFileTypes: true });
+        discovered.push(
+          ...entries
+            .filter((entry) => entry.isFile())
+            .map((entry) => `${artifact}${entry.name}`)
+            .sort()
+        );
+      } catch {
+        // Optional directories are evidence discovery only; missing directories never gate completion.
+      }
+      continue;
+    }
+
+    const contents = await readRequiredArtifact(featureDir, artifact);
+    if (contents !== undefined) {
+      discovered.push(artifact);
+    }
+  }
+
+  return discovered;
 };
 
 export const commitCandidate = (

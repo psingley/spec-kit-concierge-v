@@ -22,6 +22,7 @@ export type StepStreamEvent =
       level: 'info' | 'ok' | 'warn' | 'error';
       message: string;
       timestamp: string;
+      raw?: unknown;
     }
   | {
       type: 'done';
@@ -115,7 +116,7 @@ export const parseRendererStepStreamEvent = (
   const root = requireRecord(value, 'InvalidStepStreamEvent', '$');
   if (!root.ok) return root;
   if (root.value.type === 'progress') {
-    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp']);
+    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw']);
     if (!keys.ok) return keys;
     const sessionId = requireString(root.value.sessionId, 'InvalidStepStreamEvent', '$.sessionId');
     const message = requireString(root.value.message, 'InvalidStepStreamEvent', '$.message');
@@ -126,7 +127,7 @@ export const parseRendererStepStreamEvent = (
     if (!isStepName(root.value.step) || !isLevel(root.value.level)) {
       return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'invalid progress event', path: '$' } };
     }
-    return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value } };
+    return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value, raw: root.value.raw } };
   }
   if (root.value.type === 'done') {
     const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'reason', 'summary']);

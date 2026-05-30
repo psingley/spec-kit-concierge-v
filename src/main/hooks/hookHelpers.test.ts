@@ -95,15 +95,29 @@ describe('hookHelpers', () => {
     const error = new Error('commit failed');
     const validateArtifacts = vi.fn().mockResolvedValue({
       ok: true,
-      commit: { step: 'review', status: 'pass', files: [], message: 'Concierge review step' }
+      commit: { step: 'tasks', status: 'pass', files: ['tasks.md'], message: 'Concierge tasks step' }
     });
     const commitWithTrailer = vi.fn().mockRejectedValue(error);
 
-    const result = await runAfterHook('review', { ...baseContext(), validateArtifacts, commitWithTrailer });
+    const result = await runAfterHook('tasks', { ...baseContext(), validateArtifacts, commitWithTrailer });
 
-    expect(result).toMatchObject({ ok: false, phase: 'after', step: 'review', escapeHatchReason: 'hook-failed' });
+    expect(result).toMatchObject({ ok: false, phase: 'after', step: 'tasks', escapeHatchReason: 'hook-failed' });
     expect((result as { error?: unknown }).error).toBe(error);
     expect(commitWithTrailer).toHaveBeenCalledTimes(1);
+  });
+
+  it('treats review as a non-committing terminal hook', async () => {
+    const validateArtifacts = vi.fn();
+    const commitWithTrailer = vi.fn();
+    const activitySink = vi.fn();
+
+    const result = await runAfterHook('review', { ...baseContext(), validateArtifacts, commitWithTrailer, activitySink });
+
+    expect(result).toMatchObject({ ok: true, phase: 'after', step: 'review', lifecycleAction: 'complete' });
+    expect(result).not.toHaveProperty('commit');
+    expect(validateArtifacts).not.toHaveBeenCalled();
+    expect(commitWithTrailer).not.toHaveBeenCalled();
+    expect(activitySink).toHaveBeenCalledWith(expect.objectContaining({ event: 'step-complete', step: 'review' }));
   });
 
   it('exposes manifest entries for hook callers', () => {

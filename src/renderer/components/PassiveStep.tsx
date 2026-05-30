@@ -13,7 +13,10 @@ export type PassiveStepProps = {
   artifactLoading: boolean;
   artifactError?: string;
   artifactTasks?: ParsedTask[];
+  viewOnly?: boolean;
+  resumeLabel?: string;
   onRun: () => void;
+  onResume?: () => void;
   onArtifactOpen: (path: string) => void;
   onArtifactClose: () => void;
 };
@@ -29,7 +32,10 @@ export const PassiveStep = ({
   artifactLoading,
   artifactError,
   artifactTasks,
+  viewOnly = false,
+  resumeLabel,
   onRun,
+  onResume,
   onArtifactOpen,
   onArtifactClose
 }: PassiveStepProps): React.ReactElement => {
@@ -44,11 +50,19 @@ export const PassiveStep = ({
           <p className="eyebrow">Step {stepNumber[step]}</p>
           <h2 id={`${step}-heading`}>{stepLabel[step]}</h2>
         </div>
-        <button type="button" className="btn primary" onClick={onRun} disabled={record.running}>
+        <button type="button" className="btn primary" onClick={onRun} disabled={record.running || viewOnly}>
           {record.running ? <><span className="spinner tiny" />Running</> : <><Ico.Sparkles size={13} />Run {stepLabel[step]}</>}
         </button>
       </div>
       <div className="clarify-shell">
+        {viewOnly ? (
+          <div className="inline-warning view-only-banner" role="status">
+            <span>This step is committed, view only.</span>
+            {onResume !== undefined && resumeLabel !== undefined ? (
+              <button type="button" className="btn ghost" onClick={onResume}>Resume {resumeLabel}</button>
+            ) : null}
+          </div>
+        ) : null}
         {record.running ? (
           <div className="clarify-card" role="status" aria-live="polite">
             <div className="spinner" data-vd-role="spinner" />
@@ -69,7 +83,7 @@ export const PassiveStep = ({
         {rows.length > 0 ? <StatusStep step={step} rows={rows} onArtifactOpen={onArtifactOpen} /> : null}
         {record.failureReason !== null ? (
           <div className="inline-warning" role="alert">
-            {record.failureReason.includes('hang') ? 'The agent appears hung. Cancel in the terminal or restart the step from here after the process stops.' : record.failureReason}
+            {record.failureReason.includes('hang') ? 'No recent output - the step may be stuck.' : record.failureReason}
           </div>
         ) : null}
       </div>

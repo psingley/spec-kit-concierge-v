@@ -26,6 +26,8 @@ describe('renderer API slice', () => {
       'listBranchSessions',
       'readArtifact',
       'getTasksDetail',
+      'getReviewEvidence',
+      'readReviewEvidenceBody',
       'runSpecify',
       'runClarify',
       'runPassiveStep'

@@ -1,0 +1,13 @@
+{
+  "name": "review-idle",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".review-step", "shippedSelector": ".review-step" },
+  "required": {
+    "texts": [{ "value": "Review" }, { "value": "No Analyze proof is available yet." }, { "value": "Evidence" }],
+    "headings": [{ "level": 2, "text": "Review" }],
+    "controls": [],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 5, "warnDiffPercent": 4 }
+}

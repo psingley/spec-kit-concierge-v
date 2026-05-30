@@ -9,7 +9,7 @@
           "children": [
             {
               "tag": "p",
-              "text": "Step",
+              "text": "Step 4",
               "children": []
             },
             {
@@ -22,7 +22,17 @@
         {
           "tag": "button",
           "text": "Run Tasks",
-          "children": []
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },

@@ -254,6 +254,30 @@ describe('BoundCLISupervisor', () => {
     expect(session.state).toBe('ready');
   });
 
+  it('delivers session/update notifications while the prompt is still running', async () => {
+    const child = createFakeChild((message, fakeChild) => {
+      if (message.method === 'session/prompt') {
+        fakeChild.stdout.write(
+          lineDelimited({
+            jsonrpc: '2.0',
+            method: 'session/update',
+            params: { sessionId: 'session-1', update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'x' } } }
+          })
+        );
+        return new Promise(() => undefined);
+      }
+      return message.method === 'initialize' ? verifiedCopilotInitialize : sessionNewResult;
+    });
+    const { session } = await startSession(child);
+    const updates: unknown[] = [];
+
+    void session.prompt('session-1', 'slow', (update) => updates.push(update));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(updates).toHaveLength(1);
+    expect(updates[0]).toMatchObject({ update: { sessionUpdate: 'agent_message_chunk' } });
+  });
+
   it('uses configOptions[id=model] for model selection', async () => {
     const { child, session } = await startSession();
 

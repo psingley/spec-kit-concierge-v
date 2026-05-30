@@ -14,6 +14,10 @@ import { store } from './store';
 
 const rootElement = document.getElementById('root');
 
+if (import.meta.env.DEV) {
+  window.__CONCIERGE_VISUAL_STORE__ = store;
+}
+
 if (rootElement === null) {
   throw new Error('Renderer root element was not found.');
 }

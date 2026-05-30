@@ -79,6 +79,7 @@ class LiveBoundCLISession implements BoundCLISession {
   #expectedClose = false;
   #stderrTail = '';
   #updates: BoundCLIPromptUpdate[] = [];
+  #promptUpdateListener: ((update: BoundCLIPromptUpdate) => void) | undefined;
 
   constructor(
     capabilities: BoundCLICapabilities,
@@ -118,7 +119,9 @@ class LiveBoundCLISession implements BoundCLISession {
     const record = toRecord(params);
     const sessionId = typeof record.sessionId === 'string' ? record.sessionId : (this.#sessionId ?? '');
     const rawUpdate = toRecord(record.update);
-    this.#updates.push({ sessionId, update: rawUpdate });
+    const update = { sessionId, update: rawUpdate };
+    this.#updates.push(update);
+    this.#promptUpdateListener?.(update);
   };
 
   onSessionEnded(listener: (info: unknown) => void): () => void {
@@ -164,11 +167,14 @@ class LiveBoundCLISession implements BoundCLISession {
     this.#sessionId = sessionId;
     this.#state = 'prompting';
     const start = this.#updates.length;
-    const result = toRecord(await this.protocol.prompt({ sessionId, text }));
-    const updates = this.#updates.slice(start);
-    for (const update of updates) {
-      onUpdate?.(update);
+    this.#promptUpdateListener = onUpdate;
+    let result: Record<string, unknown>;
+    try {
+      result = toRecord(await this.protocol.prompt({ sessionId, text }));
+    } finally {
+      this.#promptUpdateListener = undefined;
     }
+    const updates = this.#updates.slice(start);
     this.#state = 'ready';
     await this.writeTranscript(sessionId, 'prompt');
 

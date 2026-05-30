@@ -1,0 +1,145 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step 6",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Review",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "span",
+          "text": "Inspection",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Evidence",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "0 artifacts",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "p",
+              "text": "No Analyze proof is available yet.",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Clarifications",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "small",
+                  "text": "2026-05-30",
+                  "children": []
+                },
+                {
+                  "tag": "strong",
+                  "text": "Evidence source?",
+                  "children": []
+                },
+                {
+                  "tag": "p",
+                  "text": "Disk only.",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Analyze",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "captured",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "p",
+              "text": "Analyze ran, no issues found.",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Tasks",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "Open",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

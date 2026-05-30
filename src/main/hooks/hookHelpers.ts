@@ -71,6 +71,12 @@ export const runAfterHook = async (
   step: StepName,
   context: StepHookContext
 ): Promise<StepHookResult> => {
+  if (step === 'review') {
+    const complete = lifecycleEvent('step-complete', step, context);
+    await context.activitySink?.(complete);
+    return { ok: true, phase: 'after', step, lifecycleAction: 'complete', event: complete };
+  }
+
   const logger = createMainLogger({ userDataPath: context.userDataPath, now: context.now });
   const startedAt = Date.now();
   logger.info(lifecycleEvent('step-after-hook-start', step, context), 'step after hook start');

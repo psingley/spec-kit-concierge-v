@@ -29,6 +29,17 @@
       "name": "",
       "children": [
         {
+          "role": "status",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Resume Review",
+              "children": []
+            }
+          ]
+        },
+        {
           "role": "generic",
           "name": "",
           "children": [
@@ -45,12 +56,12 @@
           "children": [
             {
               "role": "button",
-              "name": "tasks.mdrequired artifact view",
+              "name": "tasks.mdrequired artifactview",
               "children": []
             },
             {
               "role": "button",
-              "name": "task-detail.mdrequired artifact view",
+              "name": "task-detail.mdrequired artifactview",
               "children": []
             }
           ]

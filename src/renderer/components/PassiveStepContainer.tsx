@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { artifactsApi } from '../api/artifacts.endpoint';
 import { copilotPassiveApi } from '../api/copilotPassive.endpoint';
 import { tasksDetailApi } from '../api/tasksDetail.endpoint';
-import { useAppSelector } from '../hooks/store';
+import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.selectors';
 import type { PassiveStepName } from '../slices/session';
 import { selectSessionPassiveStep } from '../slices/session.selectors';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { PassiveStep } from './PassiveStep';
+import { workspaceStepViewed } from '../slices/workspace';
 
 export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
+  const dispatch = useAppDispatch();
   const branch = useAppSelector(selectWorkspaceBranch);
   const modelId = useAppSelector(selectPreferencesSelectedCopilotModel);
   const record = useAppSelector(selectSessionPassiveStep(step));
@@ -29,6 +31,9 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
       artifactLoading={isTasksArtifact ? tasksDetail.isFetching : artifact.isFetching}
       artifactError={(isTasksArtifact ? tasksDetail.error : artifact.error) !== undefined ? 'Unable to read artifact.' : undefined}
       artifactTasks={tasksDetail.data?.tasks ?? []}
+      viewOnly={record.commitSha !== null}
+      resumeLabel="Review"
+      onResume={() => dispatch(workspaceStepViewed('review'))}
       onRun={() => {
         if (repo !== null && branch !== null) {
           void runPassiveStep({ step, repositoryPath: repo.path, branch, modelId });

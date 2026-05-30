@@ -53,6 +53,9 @@ type ConciergePreloadBridge = {
   tasksDetail?: {
     read: (request: unknown) => Promise<unknown>;
   };
+  reviewEvidence?: {
+    read: (request: unknown) => Promise<unknown>;
+  };
   copilot?: {
     specify: (request: unknown) => Promise<unknown>;
     clarify?: (request: unknown) => Promise<unknown>;
@@ -66,4 +69,7 @@ type ConciergePreloadBridge = {
 
 interface Window {
   concierge: ConciergePreloadBridge;
+  __CONCIERGE_VISUAL_STORE__?: {
+    dispatch: (action: { type: string; payload?: unknown }) => unknown;
+  };
 }

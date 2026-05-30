@@ -9,7 +9,7 @@
           "children": [
             {
               "tag": "p",
-              "text": "Step",
+              "text": "Step 5",
               "children": []
             },
             {
@@ -22,13 +22,39 @@
         {
           "tag": "button",
           "text": "Run Analyze",
-          "children": []
+          "children": [
+            {
+              "tag": "svg",
+              "children": [
+                {
+                  "tag": "path",
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     {
       "tag": "div",
       "children": [
+        {
+          "tag": "div",
+          "role": "status",
+          "children": [
+            {
+              "tag": "span",
+              "text": "This step is committed, view only.",
+              "children": []
+            },
+            {
+              "tag": "button",
+              "text": "Resume Review",
+              "children": []
+            }
+          ]
+        },
         {
           "tag": "div",
           "children": [
@@ -54,14 +80,23 @@
           "children": [
             {
               "tag": "button",
-              "text": "spec.mdremediation target view",
+              "text": "spec.mdremediation targetview",
               "children": [
                 {
                   "tag": "span",
                   "children": [
                     {
                       "tag": "svg",
-                      "children": []
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
                     }
                   ]
                 },
@@ -94,14 +129,23 @@
             },
             {
               "tag": "button",
-              "text": "plan.mdremediation target view",
+              "text": "plan.mdremediation targetview",
               "children": [
                 {
                   "tag": "span",
                   "children": [
                     {
                       "tag": "svg",
-                      "children": []
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
                     }
                   ]
                 },
@@ -134,14 +178,23 @@
             },
             {
               "tag": "button",
-              "text": "tasks.mdremediation target view",
+              "text": "tasks.mdremediation targetview",
               "children": [
                 {
                   "tag": "span",
                   "children": [
                     {
                       "tag": "svg",
-                      "children": []
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
                     }
                   ]
                 },
@@ -177,7 +230,17 @@
               "children": [
                 {
                   "tag": "span",
-                  "children": []
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
                 },
                 {
                   "tag": "span",
@@ -185,6 +248,50 @@
                     {
                       "tag": "span",
                       "text": "Lifecycle hooks completed",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "complete",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "complete",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "Artifact manifest validated",
                       "children": []
                     },
                     {

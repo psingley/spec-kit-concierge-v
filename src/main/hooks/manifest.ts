@@ -21,7 +21,7 @@ export const STEP_ARTIFACT_MANIFEST = {
   },
   plan: {
     requiredFiles: ['plan.md', 'research.md'],
-    optionalFiles: [],
+    optionalFiles: ['data-model.md', 'quickstart.md', 'contracts/'],
     contextFileException: true
   },
   tasks: {

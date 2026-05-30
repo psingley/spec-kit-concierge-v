@@ -5,7 +5,7 @@
   "required": {
     "texts": [{ "value": "Analyze" }, { "value": "Analyze is running in the background." }, { "value": "the stepper and activity rail keep this step in-flight" }],
     "headings": [{ "level": 2, "text": "Analyze" }],
-    "controls": [{ "role": "button", "name": "Run Analyze", "count": 1 }],
+    "controls": [{ "role": "button", "name": "Running", "count": 1 }],
     "visualMarkers": [
       {
         "name": "spinner",

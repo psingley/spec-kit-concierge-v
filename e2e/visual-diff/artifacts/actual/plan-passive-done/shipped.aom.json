@@ -29,6 +29,17 @@
       "name": "",
       "children": [
         {
+          "role": "status",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Resume Review",
+              "children": []
+            }
+          ]
+        },
+        {
           "role": "generic",
           "name": "",
           "children": [
@@ -45,17 +56,17 @@
           "children": [
             {
               "role": "button",
-              "name": "plan.mdrequired artifact view",
+              "name": "plan.mdrequired artifactview",
               "children": []
             },
             {
               "role": "button",
-              "name": "research.mdrequired artifact view",
+              "name": "research.mdrequired artifactview",
               "children": []
             },
             {
               "role": "button",
-              "name": "contracts/artifact-read.mdrequired artifact view",
+              "name": "contracts/artifact-read.mdmarkdown artifactview",
               "children": []
             }
           ]

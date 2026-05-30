@@ -1,35 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { afterReviewHook } from './afterReview.hook';
-import { runAfterHook } from './hookHelpers';
-
-vi.mock('./hookHelpers', () => ({ runAfterHook: vi.fn() }));
 
 const context = { repositoryPath: '/repo', featureDir: '/feature', sessionId: 's1', userDataPath: '/tmp/user' };
 
 describe('afterReviewHook', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('delegates to runAfterHook with review', async () => {
-    vi.mocked(runAfterHook).mockResolvedValue({ ok: true, phase: 'after', step: 'review' });
+  it('completes review without producing a Step Commit', async () => {
     const result = await afterReviewHook(context);
-    expect(runAfterHook).toHaveBeenCalledWith('review', context);
-    expect(runAfterHook).toHaveBeenCalledTimes(1);
-    expect(result).toMatchObject({ ok: true, step: 'review' });
+
+    expect(result).toMatchObject({ ok: true, phase: 'after', step: 'review', lifecycleAction: 'complete' });
+    expect(result).not.toHaveProperty('commit');
   });
 
-  it('returns delegated failures unchanged', async () => {
-    vi.mocked(runAfterHook).mockResolvedValue({ ok: false, phase: 'after', step: 'review', escapeHatchReason: 'git-commit-failed' });
-    const result = await afterReviewHook(context);
-    expect(result).toMatchObject({ ok: false, escapeHatchReason: 'git-commit-failed' });
-    expect(runAfterHook).toHaveBeenCalledWith('review', context);
-    expect(runAfterHook).toHaveReturnedTimes(1);
-  });
+  it('does not call the injected validator or commit writer', async () => {
+    const validateArtifacts = vi.fn();
+    const commitWithTrailer = vi.fn();
 
-  it('passes the original context reference', async () => {
-    vi.mocked(runAfterHook).mockResolvedValue({ ok: true, phase: 'after', step: 'review' });
-    await afterReviewHook(context);
-    expect(vi.mocked(runAfterHook).mock.calls[0]?.[1]).toBe(context);
-    expect(vi.mocked(runAfterHook).mock.calls[0]?.[0]).toBe('review');
-    expect(context.userDataPath).toBe('/tmp/user');
+    const result = await afterReviewHook({ ...context, validateArtifacts, commitWithTrailer });
+
+    expect(result.ok).toBe(true);
+    expect(validateArtifacts).not.toHaveBeenCalled();
+    expect(commitWithTrailer).not.toHaveBeenCalled();
   });
 });

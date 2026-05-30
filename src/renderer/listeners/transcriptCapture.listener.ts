@@ -13,7 +13,7 @@ export const transcriptCaptureTopic: ListenerTopicDescriptor = {
 };
 
 export const HANG_CHECK_INTERVAL_MS = 30000;
-export const HANG_SUSPECTED_THRESHOLD_MS = 1200000;
+export const HANG_SUSPECTED_THRESHOLD_MS = 2400000;
 
 type TimerListenerApi = {
   getState: () => { activity: ActivityState };
@@ -69,7 +69,7 @@ export const setupTranscriptCaptureListener = (startListening: AppStartListening
       recordActivity({
         timestamp: new Date().toISOString(),
         level: 'warn',
-        message: 'ACP stream silence threshold reached',
+        message: 'No recent output - the step may be stuck',
         event: 'hang-suspected',
         step: state.activity.lastAcpStep ?? 'specify',
         sessionId: state.activity.lastAcpSessionId ?? 'unknown',

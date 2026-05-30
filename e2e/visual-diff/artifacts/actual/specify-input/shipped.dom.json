@@ -200,6 +200,110 @@
                               ]
                             }
                           ]
+                        },
+                        {
+                          "tag": "div",
+                          "role": "dialog",
+                          "children": [
+                            {
+                              "tag": "button",
+                              "text": "Customize",
+                              "marker": "gear-menu-icons",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "circle",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "Customize",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Report a bug",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "rect",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "Report a bug",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "Export activity log14 lines",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "Export activity log",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "14 lines",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "tag": "button",
+                              "text": "About",
+                              "children": [
+                                {
+                                  "tag": "svg",
+                                  "children": [
+                                    {
+                                      "tag": "circle",
+                                      "children": []
+                                    },
+                                    {
+                                      "tag": "path",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "tag": "span",
+                                  "text": "About",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     },

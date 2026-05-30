@@ -42,6 +42,7 @@ describe('preload concierge bridge', () => {
       'branches',
       'artifacts',
       'tasksDetail',
+      'reviewEvidence',
       'copilot'
     ]);
     expect(Object.keys(bridge.app as Record<string, unknown>)).toEqual(['getVersion']);
@@ -80,6 +81,7 @@ describe('preload concierge bridge', () => {
     ['branches', 'sessions', 'branches:sessions'],
     ['artifacts', 'read', 'artifacts:read'],
     ['tasksDetail', 'read', 'tasks:detail'],
+    ['reviewEvidence', 'read', 'review:evidence'],
     ['copilot', 'specify', 'copilot:specify']
   ])('routes %s.%s to %s through ipcRenderer.invoke', async (group, method, channel) => {
     await import('./index');

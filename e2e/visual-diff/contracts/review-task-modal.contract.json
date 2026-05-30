@@ -1,0 +1,13 @@
+{
+  "name": "review-task-modal",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".review-step", "shippedSelector": ".review-step" },
+  "required": {
+    "texts": [{ "value": "Review" }, { "value": "Task details" }, { "value": "T001" }, { "value": "Build review:evidence aggregator" }],
+    "headings": [{ "level": 2, "text": "Review" }, { "level": 3, "text": "Task details" }],
+    "controls": [{ "role": "button", "name": "x", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 5, "warnDiffPercent": 4 }
+}

@@ -1,5 +1,8 @@
 import type { IpcMain } from 'electron';
 import { describe, expect, it, vi } from 'vitest';
+import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import { registerPassiveStepIpc } from './passiveStepIpc';
 
 const payload = {
@@ -57,6 +60,40 @@ describe('registerPassiveStepIpc', () => {
     expect(terminalEvents).toHaveLength(1);
   });
 
+  it('discovers present optional plan artifacts for the pass summary without requiring missing optionals', async () => {
+    const harness = createHarness();
+    const featureDir = await mkdtemp(path.join(os.tmpdir(), 'concierge-plan-summary-'));
+    await mkdir(path.join(featureDir, 'contracts'));
+    await writeFile(path.join(featureDir, 'data-model.md'), '# Data model');
+    await writeFile(path.join(featureDir, 'contracts', 'clarify-api.md'), '# Contract');
+
+    registerPassiveStepIpc({
+      step: 'plan',
+      channel: 'copilot:plan',
+      eventChannel: 'copilot:plan:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'abc123' } }),
+      agentAdapter: vi.fn().mockResolvedValue(undefined)
+    });
+
+    await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, { ...payload, repositoryPath: featureDir });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:plan:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'plan', status: 'pass' })
+    })));
+    const done = harness.sender.send.mock.calls.find((call) => call[1].event.type === 'done')?.[1].event;
+    expect(done.summary.artifacts).toEqual([
+      expect.objectContaining({ path: 'plan.md', required: true }),
+      expect.objectContaining({ path: 'research.md', required: true }),
+      expect.objectContaining({ path: 'data-model.md', required: false }),
+      expect.objectContaining({ path: 'contracts/clarify-api.md', required: false })
+    ]);
+    expect(done.summary.counts).toMatchObject({ required: 2, optional: 2, present: 4 });
+  });
+
   it('propagates errors as one terminal fail event and skips duplicate terminal sends', async () => {
     const harness = createHarness();
 
@@ -106,5 +143,66 @@ describe('registerPassiveStepIpc', () => {
       event: expect.objectContaining({ type: 'done', step: 'analyze', status: 'fail', reason: 'aborted' })
     })));
     expect(agentAdapter).not.toHaveBeenCalled();
+  });
+
+  it('captures analyze terminal report evidence after the analyze commit exists', async () => {
+    const harness = createHarness();
+    const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-analyze-evidence-'));
+    const featureDir = await mkdtemp(path.join(os.tmpdir(), '0009-review-evidence-'));
+
+    registerPassiveStepIpc({
+      step: 'analyze',
+      channel: 'copilot:analyze',
+      eventChannel: 'copilot:analyze:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath,
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'analyze-sha' } }),
+      agentAdapter: vi.fn().mockResolvedValue({
+        updates: [
+          { sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: '# Analyze\nNo issues found.' } } }
+        ]
+      })
+    });
+
+    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, { ...payload, repositoryPath: featureDir });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:analyze:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'analyze', status: 'pass', commitSha: 'analyze-sha' })
+    })));
+    const featureKey = path.basename(featureDir);
+    await expect(readFile(path.join(userDataPath, 'evidence', featureKey, 'analyze-report-index.json'), 'utf8'))
+      .resolves.toContain('"analyzeCommitSha": "analyze-sha"');
+  });
+
+  it('forwards fine-grained ACP updates as progress events so stream silence resets live', async () => {
+    const harness = createHarness();
+
+    registerPassiveStepIpc({
+      step: 'analyze',
+      channel: 'copilot:analyze',
+      eventChannel: 'copilot:analyze:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'analyze-sha' } }),
+      agentAdapter: vi.fn(async (request) => {
+        request.onUpdate?.({ sessionId: 's1', update: { sessionUpdate: 'tool_call_update', toolCallId: 't1' } });
+        return { updates: [] };
+      })
+    });
+
+    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, payload);
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:analyze:event', expect.objectContaining({
+      event: expect.objectContaining({
+        type: 'progress',
+        step: 'analyze',
+        message: 'Streaming analyze output',
+        raw: { sessionId: 's1', update: { sessionUpdate: 'tool_call_update', toolCallId: 't1' } }
+      })
+    })));
   });
 });

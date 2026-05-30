@@ -9,7 +9,7 @@
           "children": [
             {
               "tag": "p",
-              "text": "Step",
+              "text": "Step 5",
               "children": []
             },
             {
@@ -21,7 +21,7 @@
         },
         {
           "tag": "button",
-          "text": "Run Analyze",
+          "text": "Running",
           "children": []
         }
       ]
@@ -35,6 +35,7 @@
           "children": [
             {
               "tag": "div",
+              "marker": "spinner",
               "children": []
             },
             {

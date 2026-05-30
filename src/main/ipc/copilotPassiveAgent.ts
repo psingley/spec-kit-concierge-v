@@ -34,7 +34,8 @@ async (request) => {
     if (request.signal.aborted) {
       throw new Error('aborted');
     }
-    await session.prompt(created.sessionId, promptForStep(request.step));
+    const result = await session.prompt(created.sessionId, promptForStep(request.step), request.onUpdate);
+    return { updates: result.updates };
   } finally {
     await session.dispose();
   }

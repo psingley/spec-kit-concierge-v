@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Plan: `specs/0008-ai-passive-steps/plan.md`
+Plan: `specs/0009-review-evidence/plan.md`
 
 Run 1 plan: `specs/0001-foundation-shell/plan.md`
 Run 2 plan: `specs/0002-main-data-layer/plan.md`
@@ -82,4 +82,5 @@ Run 6 conventions:
 - Preferences persistence listener reuses the existing Run 4 `preferences:write` channel; do not add a new persistence channel.
 - Trust-boundary factories for Run 6 use the seven-case floor: the six standard cases plus extra-key rejection. Handler logging tests must mock `createMainLogger`.
 - Run 6 first implementation test is `e2e/specify-vertical.spec.ts`; continue vertical tracer bullets one RED test then one minimal GREEN implementation.
+Run 9 plan: `specs/0009-review-evidence/plan.md`
 <!-- SPECKIT END -->

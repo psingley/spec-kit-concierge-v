@@ -1,0 +1,274 @@
+{
+  "tag": "section",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "p",
+              "text": "Step 6",
+              "children": []
+            },
+            {
+              "tag": "h2",
+              "text": "Review",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "span",
+          "text": "Inspection",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Evidence",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "3 artifacts",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "▣spec.mdspecify · required · abc1234",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "▣",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "text": "spec.md",
+                          "children": []
+                        },
+                        {
+                          "tag": "small",
+                          "text": "specify · required · abc1234",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "text": "▣contracts/review-evidence-ipc.mdplan · optional · def5678",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "▣",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "text": "contracts/review-evidence-ipc.md",
+                          "children": []
+                        },
+                        {
+                          "tag": "small",
+                          "text": "plan · optional · def5678",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "text": "▣tasks.mdtasks · required · fed9876",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "▣",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": [
+                        {
+                          "tag": "strong",
+                          "text": "tasks.md",
+                          "children": []
+                        },
+                        {
+                          "tag": "small",
+                          "text": "tasks · required · fed9876",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Clarifications",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "2",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "small",
+                  "text": "2026-05-30",
+                  "children": []
+                },
+                {
+                  "tag": "strong",
+                  "text": "Evidence source?",
+                  "children": []
+                },
+                {
+                  "tag": "p",
+                  "text": "Disk only.",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Analyze",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "text": "captured",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "p",
+              "text": "Analyze ran, no issues found.",
+              "children": []
+            }
+          ]
+        },
+        {
+          "tag": "section",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Tasks",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "Open",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "role": "dialog",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "h3",
+                  "text": "Task details",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "text": "Close task details",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "strong",
+                      "text": "T001",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Build review:evidence aggregator",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "src/main/domain/reviewEvidence.ts",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
