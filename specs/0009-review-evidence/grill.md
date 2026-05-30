@@ -39,7 +39,7 @@ Delta: Review needs an aggregation surface that joins trailer history to actual 
 
 Exists: Run 7 completion stores an in-memory `ClarifyCompletionSummary` with `artifactPath`, `commitSha`, questions, and answers (src/renderer/slices/session.ts:33-38, 220-226). The spec contract says accepted answers are persisted in-place under the feature `spec.md` Clarifications section (specs/0007-clarify-vertical/spec.md:151, 192), and the existing spec format uses a `## Clarifications` / `### Session <date>` section with Q/A bullets (specs/0007-clarify-vertical/spec.md:11-20).
 
-Delta: Review should prefer parsing committed `spec.md` for restart-proof summary, with session completion as live enrich-only fallback before a reload. This is a real choice because session data is richer but non-authoritative.
+Delta: Review should parse committed `spec.md` for restart-proof summary. The final user-locked decision forbids session completion as Review evidence or enrichment.
 
 ### 4. Task List With Per-Task Expand Modal
 
@@ -137,7 +137,7 @@ Delta: specify which real component behavior Run 9 will harden. Either enhance s
    - A. First pending step in canonical order. Benefit: deterministic. Cost: may choose wrong step if multiple pending due invariant gap.
    - B. In-flight running step from session first, else first pending step. Benefit: closest to user intent. Cost: still mixed authority.
    - C. Latest pending Step Commit/trailer state. Benefit: disk-aligned. Cost: pending may not be committed.
-   - Recommendation: B, with multi-pending warning and canonical fallback.
+   - Recommendation superseded by final user lock: B target order, without the warning.
 
 9. Task detail UI:
    - A. Reuse `tasks:detail` and add Review-local per-task modal using `ParsedTask`. Benefit: no parser churn. Cost: new presentation.
@@ -237,7 +237,7 @@ Default `INERT-40`: change "appears hung" semantics to "no recent output" after 
 
 Default `VIEWONLY-NOT-BLOCKED`: dim completed mutable step surfaces, but keep evidence open actions accessible where the purpose is inspection. Review itself remains interactive for evidence review.
 
-Default `RESUME-ACTUAL`: Resume targets the currently running step when one exists, otherwise the first pending step in canonical order; if multiple pending steps exist, show a warning and choose canonical order.
+Default `RESUME-ACTUAL`: Resume targets the currently running step when one exists, otherwise the first pending step in canonical order. The final user-locked decision forbids a defensive multi-pending warning in Run 9.
 
 Default `NO-REVIEW-COMMIT`: Run 9 does not write a Review Step Commit. Run 12 owns JIRA output and any Review/JIRA commit semantics.
 
@@ -249,3 +249,12 @@ Override words:
 - `NO-NEW-IPC`: force renderer assembly. Not recommended.
 - `AGENT-REPORT`: ask Analyze to write a report artifact. Not recommended.
 - `BASE-4d792a1`: re-baseline from the prompt commit before spec writing. Requires explicit branch/worktree handling because the current observed branch is already at `fb1b905`.
+
+## S8 - Supersession Note From User-Locked Decisions
+
+The final user-approved Run 9 execution prompt supersedes two pre-dispatch defaults in this grill:
+
+- Evidence authority is **disk only**. Do not use renderer session state as Review evidence or enrichment, even when it appears to match disk proof.
+- Resume has **no multi-pending warning**. Run 9 assumes the sequential pipeline has only one incomplete target; the architectural guard that makes two pending steps impossible is deferred to Run 10.
+
+Where this grill conflicts with `spec.md`, `plan.md`, `research.md`, `contracts/`, ADR-0013, ADR-0014, or `tasks.md`, implementers must follow those later user-locked artifacts.

@@ -1,0 +1,7 @@
+{
+  "feature": "0009-review-evidence",
+  "spec_path": "specs/0009-review-evidence/spec.md",
+  "spec_hash": "sha256:c210a72ba2ef8a6736094b40644c789abffaa212e47bad1f460c9adc643510f1",
+  "updated_at": "2026-05-30T21:02:23Z",
+  "spec_self_validation": "passed"
+}
