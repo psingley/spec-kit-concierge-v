@@ -12,6 +12,7 @@ import { CustomizeModalContainer } from './CustomizeModalContainer';
 import { RequestModal } from './RequestModal';
 import { ClarifyStepContainer } from './ClarifyStepContainer';
 import { PassiveStepContainer } from './PassiveStepContainer';
+import { ReviewStepContainer } from './ReviewStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper, stepOrder } from './Stepper';
 import { TitlebarContainer } from './TitlebarContainer';
@@ -31,6 +32,8 @@ export const WorkspaceContainer = (): React.ReactElement => {
         ? 'pending'
         : step === 'plan' || step === 'tasks' || step === 'analyze'
           ? (passiveSteps[step].commitSha !== null ? 'complete' : passiveSteps[step].running ? 'pending' : 'not_available')
+          : step === 'review' && passiveSteps.analyze.commitSha !== null
+            ? 'pending'
           : 'not_available';
     return acc;
   }, {} as Record<StepName, StepState>);
@@ -39,7 +42,7 @@ export const WorkspaceContainer = (): React.ReactElement => {
       <TitlebarContainer />
       <Stepper states={states} viewedStep={viewedStep} onSelectStep={(step) => dispatch(workspaceStepViewed(step))} />
       <main className="workspace-main">
-        {viewedStep === 'specify' ? <SpecifyStepContainer /> : viewedStep === 'clarify' ? <ClarifyStepContainer /> : viewedStep === 'plan' || viewedStep === 'tasks' || viewedStep === 'analyze' ? <PassiveStepContainer step={viewedStep} /> : <section className="placeholder">Review is not implemented in Run 8.</section>}
+        {viewedStep === 'specify' ? <SpecifyStepContainer /> : viewedStep === 'clarify' ? <ClarifyStepContainer /> : viewedStep === 'plan' || viewedStep === 'tasks' || viewedStep === 'analyze' ? <PassiveStepContainer step={viewedStep} /> : <ReviewStepContainer />}
       </main>
       <ActivityRailContainer />
       <ActivityPillContainer />

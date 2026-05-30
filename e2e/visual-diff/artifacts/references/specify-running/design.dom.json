@@ -98,7 +98,7 @@
                       "children": [
                         {
                           "tag": "button",
-                          "text": "spec/draft-wquz",
+                          "text": "spec/draft-zamd",
                           "children": [
                             {
                               "tag": "svg",
@@ -123,7 +123,7 @@
                             },
                             {
                               "tag": "span",
-                              "text": "spec/draft-wquz",
+                              "text": "spec/draft-zamd",
                               "children": []
                             },
                             {

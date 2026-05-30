@@ -9,6 +9,7 @@ import './repositories.endpoint';
 import './branches.endpoint';
 import './artifacts.endpoint';
 import './tasksDetail.endpoint';
+import './reviewEvidence.endpoint';
 import './copilotSpecify.endpoint';
 import './copilotClarify.endpoint';
 import './copilotPassive.endpoint';
@@ -24,6 +25,7 @@ import type { repositoriesApi } from './repositories.endpoint';
 import type { branchesApi } from './branches.endpoint';
 import type { artifactsApi } from './artifacts.endpoint';
 import type { tasksDetailApi } from './tasksDetail.endpoint';
+import type { reviewEvidenceApi } from './reviewEvidence.endpoint';
 import type { copilotSpecifyApi } from './copilotSpecify.endpoint';
 import type { copilotClarifyApi } from './copilotClarify.endpoint';
 import type { copilotPassiveApi } from './copilotPassive.endpoint';
@@ -41,6 +43,7 @@ type Run4Endpoints = typeof rootApi.endpoints &
   typeof branchesApi.endpoints &
   typeof artifactsApi.endpoints &
   typeof tasksDetailApi.endpoints &
+  typeof reviewEvidenceApi.endpoints &
   typeof copilotSpecifyApi.endpoints &
   typeof copilotClarifyApi.endpoints &
   typeof copilotPassiveApi.endpoints;

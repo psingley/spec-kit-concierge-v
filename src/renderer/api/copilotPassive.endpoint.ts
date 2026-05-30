@@ -6,7 +6,7 @@ import {
   type PassiveStepName,
   type RendererCopilotPassiveAck
 } from './copilotPassive.factory';
-import { activityBusyChanged, recordActivity } from '../slices/activity';
+import { acpStreamEventReceived, activityBusyChanged, recordActivity } from '../slices/activity';
 import { stepCompleted, stepPending } from '../slices/steps';
 import {
   passiveStepRunFailed,
@@ -44,6 +44,15 @@ export const copilotPassiveApi = api.injectEndpoints({
             queryApi.dispatch(passiveStepRunProgressed({ step: arg.step }));
             queryApi.dispatch(activityBusyChanged({ busy: true, status: parsed.value.message }));
             queryApi.dispatch(recordActivity({ timestamp: parsed.value.timestamp, level: 'progress', message: parsed.value.message, step: arg.step, sessionId: parsed.value.sessionId }));
+            if (parsed.value.raw !== undefined) {
+              queryApi.dispatch(acpStreamEventReceived({
+                timestamp: parsed.value.timestamp,
+                step: arg.step,
+                sessionId: parsed.value.sessionId,
+                message: parsed.value.message,
+                raw: parsed.value.raw
+              }));
+            }
             return;
           }
           if (parsed.value.status === 'pass') {

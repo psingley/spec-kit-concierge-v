@@ -1,0 +1,13 @@
+{
+  "name": "review-read-only-dim",
+  "designPath": "design/v3-fetch/project/steps.jsx",
+  "primaryRegion": { "designSelector": ".review-step", "shippedSelector": ".review-step" },
+  "required": {
+    "texts": [{ "value": "Review" }, { "value": "This step is committed, view only." }, { "value": "Resume Review" }, { "value": "spec.md" }],
+    "headings": [{ "level": 2, "text": "Review" }],
+    "controls": [{ "role": "button", "name": "Resume Review", "count": 1 }],
+    "visualMarkers": []
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 5, "warnDiffPercent": 4 }
+}

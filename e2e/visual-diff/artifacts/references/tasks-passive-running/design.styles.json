@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "name": "tasks passive running status card",
+    "selector": ".passive-step",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "14px",
+      "border-top-color": "rgb(42, 55, 61)",
+      "padding": "18px"
+    }
+  }
+]

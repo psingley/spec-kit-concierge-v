@@ -29,6 +29,17 @@
       "name": "",
       "children": [
         {
+          "role": "status",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Resume Review",
+              "children": []
+            }
+          ]
+        },
+        {
           "role": "generic",
           "name": "",
           "children": [

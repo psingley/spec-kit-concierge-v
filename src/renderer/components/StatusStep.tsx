@@ -12,6 +12,13 @@ export type StatusStepProps = {
   onArtifactOpen: (path: string) => void;
 };
 
+const artifactSubtitle = (step: PassiveStepName, artifact: PassiveArtifactSummary): string => {
+  if (step === 'analyze') {
+    return 'remediation target';
+  }
+  return artifact.required ? 'required artifact' : `${artifact.kind} artifact`;
+};
+
 export const StatusStep = ({ step, rows, onArtifactOpen }: StatusStepProps): React.ReactElement => (
   <div className="evidence-grid" aria-label={`${step} status`}>
     {rows.map((row) => row.kind === 'artifact' ? (
@@ -19,7 +26,7 @@ export const StatusStep = ({ step, rows, onArtifactOpen }: StatusStepProps): Rea
         <span className="ev-status done"><Ico.File size={12} /></span>
         <span className="ev-main">
           <span className="ev-title">{row.artifact.path}</span>
-          <span className="ev-sub">{row.artifact.required ? 'required artifact' : `${row.artifact.kind} artifact`}</span>
+          <span className="ev-sub">{artifactSubtitle(step, row.artifact)}</span>
         </span>
         <span className="ev-actions"><span className="tag ok">view</span></span>
       </button>

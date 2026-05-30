@@ -1,12 +1,12 @@
 {
-  "runId": "2026-05-29T17:53:14.340Z",
+  "runId": "2026-05-30T23:27:49.728Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
-    "total": 37,
-    "pass": 37,
+    "total": 42,
+    "pass": 42,
     "fail": 0,
     "warn": 0,
     "worstScreen": "repo-browse-repo-selected"
@@ -34,24 +34,52 @@
       "priorityScore": 6
     },
     {
+      "name": "stepper-specify-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.98,
+      "priorityScore": 6
+    },
+    {
+      "name": "stepper-clarify-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.94,
+      "priorityScore": 6
+    },
+    {
+      "name": "stepper-plan-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.9,
+      "priorityScore": 6
+    },
+    {
+      "name": "stepper-tasks-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 6.04,
+      "priorityScore": 6
+    },
+    {
+      "name": "stepper-analyze-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.9,
+      "priorityScore": 6
+    },
+    {
+      "name": "stepper-review-current",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 5.93,
+      "priorityScore": 6
+    },
+    {
       "name": "specify-complete",
       "status": "PASS",
       "failures": [],
       "pixelResidual": 6.15,
-      "priorityScore": 6
-    },
-    {
-      "name": "tasks-passive-running",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.5,
-      "priorityScore": 6
-    },
-    {
-      "name": "analyze-passive-running",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 6.01,
       "priorityScore": 6
     },
     {
@@ -62,87 +90,45 @@
       "priorityScore": 5
     },
     {
-      "name": "stepper-specify-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 4.95,
-      "priorityScore": 5
-    },
-    {
-      "name": "stepper-clarify-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.07,
-      "priorityScore": 5
-    },
-    {
-      "name": "stepper-plan-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.07,
-      "priorityScore": 5
-    },
-    {
-      "name": "stepper-tasks-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.08,
-      "priorityScore": 5
-    },
-    {
-      "name": "stepper-analyze-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.08,
-      "priorityScore": 5
-    },
-    {
-      "name": "stepper-review-current",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 5.08,
-      "priorityScore": 5
-    },
-    {
       "name": "clarify-question",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.15,
+      "pixelResidual": 5.14,
       "priorityScore": 5
     },
     {
       "name": "clarify-ask-another",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.95,
+      "pixelResidual": 4.96,
       "priorityScore": 5
     },
     {
       "name": "clarify-malformed-reask",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.82,
+      "pixelResidual": 4.81,
       "priorityScore": 5
     },
     {
-      "name": "plan-passive-running",
+      "name": "review-populated",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.19,
+      "pixelResidual": 4.69,
       "priorityScore": 5
     },
     {
       "name": "activity-rail-idle",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.03,
+      "pixelResidual": 5.11,
       "priorityScore": 5
     },
     {
       "name": "activity-rail-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.44,
+      "pixelResidual": 5.46,
       "priorityScore": 5
     },
     {
@@ -163,28 +149,14 @@
       "name": "workspace-titlebar-repo-dropdown-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.85,
+      "pixelResidual": 3.86,
       "priorityScore": 4
     },
     {
       "name": "specify-input",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.99,
-      "priorityScore": 4
-    },
-    {
-      "name": "tasks-passive-idle",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 3.69,
-      "priorityScore": 4
-    },
-    {
-      "name": "analyze-passive-idle",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 4.06,
+      "pixelResidual": 4.03,
       "priorityScore": 4
     },
     {
@@ -209,31 +181,59 @@
       "priorityScore": 3
     },
     {
-      "name": "plan-passive-idle",
-      "status": "PASS",
-      "failures": [],
-      "pixelResidual": 3.47,
-      "priorityScore": 3
-    },
-    {
       "name": "plan-passive-done",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 2.7,
+      "pixelResidual": 2.83,
       "priorityScore": 3
     },
     {
       "name": "tasks-passive-done",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 2.76,
+      "pixelResidual": 3.11,
       "priorityScore": 3
     },
     {
       "name": "analyze-passive-done",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.05,
+      "pixelResidual": 2.8,
+      "priorityScore": 3
+    },
+    {
+      "name": "passive-artifact-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 2.61,
+      "priorityScore": 3
+    },
+    {
+      "name": "review-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.29,
+      "priorityScore": 3
+    },
+    {
+      "name": "review-read-only-dim",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.41,
+      "priorityScore": 3
+    },
+    {
+      "name": "review-resume-bounce",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.4,
+      "priorityScore": 3
+    },
+    {
+      "name": "review-task-modal",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 3.29,
       "priorityScore": 3
     },
     {
@@ -251,17 +251,24 @@
       "priorityScore": 2
     },
     {
-      "name": "passive-artifact-modal",
+      "name": "plan-passive-running",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 2.42,
+      "pixelResidual": 1.83,
       "priorityScore": 2
     },
     {
-      "name": "activity-pill-idle",
+      "name": "tasks-passive-running",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 1.54,
+      "pixelResidual": 1.86,
+      "priorityScore": 2
+    },
+    {
+      "name": "analyze-passive-running",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.9,
       "priorityScore": 2
     },
     {
@@ -270,6 +277,34 @@
       "failures": [],
       "pixelResidual": 1.34,
       "priorityScore": 1
+    },
+    {
+      "name": "plan-passive-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.33,
+      "priorityScore": 1
+    },
+    {
+      "name": "tasks-passive-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.38,
+      "priorityScore": 1
+    },
+    {
+      "name": "analyze-passive-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 1.46,
+      "priorityScore": 1
+    },
+    {
+      "name": "activity-pill-idle",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 0.12,
+      "priorityScore": 0
     }
   ]
 }

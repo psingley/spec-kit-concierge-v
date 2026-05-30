@@ -39,49 +39,9 @@
               "children": []
             },
             {
-              "tag": "table",
-              "children": [
-                {
-                  "tag": "thead",
-                  "children": [
-                    {
-                      "tag": "tr",
-                      "children": [
-                        {
-                          "tag": "th",
-                          "text": "File",
-                          "children": []
-                        },
-                        {
-                          "tag": "th",
-                          "text": "Status",
-                          "children": []
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "tag": "tbody",
-                  "children": [
-                    {
-                      "tag": "tr",
-                      "children": [
-                        {
-                          "tag": "td",
-                          "text": "plan.md",
-                          "children": []
-                        },
-                        {
-                          "tag": "td",
-                          "text": "Validated",
-                          "children": []
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "tag": "p",
+              "text": "Validated",
+              "children": []
             }
           ]
         }

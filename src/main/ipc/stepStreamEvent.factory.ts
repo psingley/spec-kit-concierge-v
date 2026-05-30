@@ -35,6 +35,7 @@ export type StepStreamEvent =
       level: 'info' | 'ok' | 'warn' | 'error';
       message: string;
       timestamp: string;
+      raw?: unknown;
     }
   | {
       type: 'done';
@@ -148,7 +149,10 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
   const root = requireRecord(value, 'InvalidStepStreamEvent', '$');
   if (!root.ok) return root;
   if (root.value.type === 'progress') {
-    const keys = requireExactKeys(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp'], 'InvalidStepStreamEvent', '$');
+    const progressKeys = Object.prototype.hasOwnProperty.call(root.value, 'raw')
+      ? ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw']
+      : ['type', 'step', 'sessionId', 'level', 'message', 'timestamp'];
+    const keys = requireExactKeys(root.value, progressKeys, 'InvalidStepStreamEvent', '$');
     if (!keys.ok) return keys;
     const sessionId = requireString(root.value.sessionId, 'InvalidStepStreamEvent', '$.sessionId');
     const message = requireString(root.value.message, 'InvalidStepStreamEvent', '$.message');
@@ -159,7 +163,7 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
     if (!isStepName(root.value.step) || !isLevel(root.value.level)) {
       return invalid('InvalidStepStreamEvent', 'progress event must target a valid step with a valid level', '$');
     }
-    return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value } };
+    return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value, raw: root.value.raw } };
   }
   if (root.value.type === 'done') {
     const allowed = ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'reason', 'summary'];

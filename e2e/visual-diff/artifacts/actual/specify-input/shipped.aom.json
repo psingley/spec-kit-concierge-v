@@ -76,6 +76,32 @@
                           "role": "button",
                           "name": "",
                           "children": []
+                        },
+                        {
+                          "role": "dialog",
+                          "name": "",
+                          "children": [
+                            {
+                              "role": "button",
+                              "name": "Customize",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Report a bug",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "Export activity log14 lines",
+                              "children": []
+                            },
+                            {
+                              "role": "button",
+                              "name": "About",
+                              "children": []
+                            }
+                          ]
                         }
                       ]
                     },

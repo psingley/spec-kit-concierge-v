@@ -22,6 +22,7 @@ export type IpcQueryArgs = {
     | 'branches:sessions'
     | 'artifacts:read'
     | 'tasks:detail'
+    | 'review:evidence'
     | 'copilot:specify'
     | 'copilot:clarify'
     | 'copilot:plan'
@@ -101,6 +102,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.artifacts!.read(args.payload) };
       case 'tasks:detail':
         return { data: await window.concierge.tasksDetail!.read(args.payload) };
+      case 'review:evidence':
+        return { data: await window.concierge.reviewEvidence!.read(args.payload) };
       case 'copilot:specify':
         return { data: await window.concierge.copilot!.specify(args.payload) };
       case 'copilot:clarify':

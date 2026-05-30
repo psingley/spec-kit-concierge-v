@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "name": "plan passive idle card",
+    "selector": ".passive-step",
+    "found": true,
+    "styles": {
+      "background-color": "rgb(17, 23, 27)",
+      "border-radius": "14px",
+      "padding": "18px"
+    }
+  }
+]

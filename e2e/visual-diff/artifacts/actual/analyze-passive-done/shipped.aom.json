@@ -29,6 +29,17 @@
       "name": "",
       "children": [
         {
+          "role": "status",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Resume Review",
+              "children": []
+            }
+          ]
+        },
+        {
           "role": "generic",
           "name": "",
           "children": [
@@ -45,17 +56,17 @@
           "children": [
             {
               "role": "button",
-              "name": "spec.mdremediation target view",
+              "name": "spec.mdremediation targetview",
               "children": []
             },
             {
               "role": "button",
-              "name": "plan.mdremediation target view",
+              "name": "plan.mdremediation targetview",
               "children": []
             },
             {
               "role": "button",
-              "name": "tasks.mdremediation target view",
+              "name": "tasks.mdremediation targetview",
               "children": []
             }
           ]

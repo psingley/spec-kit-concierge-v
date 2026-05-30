@@ -18,6 +18,7 @@ import { registerReposIpc } from './ipc/repos';
 import { registerSessionIpc } from './ipc/session';
 import { registerStepsIpc } from './ipc/steps';
 import { registerTasksDetailIpc } from './ipc/tasksDetail';
+import { registerReviewEvidenceIpc } from './ipc/reviewEvidence';
 import { registerWorkspaceIpc } from './ipc/workspace';
 import { verifyAgentManifestDrift } from './hooks/driftVerifier';
 import { createMainLogger, type MainLogger } from './logging';
@@ -60,6 +61,7 @@ app.whenReady().then(async () => {
   registerBranchesIpc({ ipcMain, logger });
   registerArtifactsIpc({ ipcMain, logger });
   registerTasksDetailIpc({ ipcMain, logger });
+  registerReviewEvidenceIpc({ ipcMain, logger, userDataPath: app.getPath('userData') });
   registerCopilotSpecifyIpc({ ipcMain, logger });
   registerCopilotClarifyIpc({ ipcMain, logger });
   registerCopilotPlanIpc({ ipcMain, logger });
