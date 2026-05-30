@@ -183,7 +183,7 @@ const renderPassiveState = async (
   const body = state === 'idle'
     ? `<div class="clarify-card empty"><p>${label} is ready when the prior step is complete.</p></div>`
     : state === 'running'
-      ? `<div class="clarify-card" role="status"><div class="spinner"></div><strong>${label} is running in the background.</strong><span>Navigate freely; the stepper and activity rail keep this step in-flight.</span></div>`
+      ? `<div class="clarify-card" role="status" aria-live="polite"><div class="spinner" data-vd-role="spinner"></div><strong>${label} is running in the background.</strong><span>Navigate freely; the stepper and activity rail keep this step in-flight.</span></div>`
       : `<div class="clarify-card"><p class="eyebrow">Pass</p><h3>${label} completed</h3><p class="meta">abc123</p></div><div class="evidence-grid">${rows}<div class="ev-row"><span class="ev-status done"></span><span class="ev-main"><span class="ev-title">Lifecycle hooks completed</span><span class="ev-sub">complete</span></span><span class="ev-actions"><span class="tag ok">complete</span></span></div></div>`;
   const modalMarkup = modal ? `
     <div role="dialog" aria-modal="true" aria-labelledby="artifact-viewer-title" class="modal artifact-viewer">

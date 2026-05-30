@@ -3,11 +3,29 @@
   "designPath": "design/v3-fetch/project/steps.jsx",
   "primaryRegion": { "designSelector": ".passive-step", "shippedSelector": ".passive-step" },
   "required": {
-    "texts": [{ "value": "Analyze" }, { "value": "Analyze is running in the background." }, { "value": "Navigate freely" }],
+    "texts": [{ "value": "Analyze" }, { "value": "Analyze is running in the background." }, { "value": "the stepper and activity rail keep this step in-flight" }],
     "headings": [{ "level": 2, "text": "Analyze" }],
     "controls": [{ "role": "button", "name": "Run Analyze", "count": 1 }],
-    "visualMarkers": []
+    "visualMarkers": [
+      {
+        "name": "spinner",
+        "selector": "[data-vd-role=\"spinner\"]",
+        "designSelector": "[data-vd-role=\"spinner\"]"
+      }
+    ]
   },
-  "styleSamples": [],
-  "pixel": { "maxDiffPercent": 12, "warnDiffPercent": 7 }
+  "styleSamples": [
+    {
+      "name": "analyze passive running status card",
+      "designSelector": ".passive-step",
+      "shippedSelector": ".passive-step",
+      "properties": [
+        "background-color",
+        "border-radius",
+        "border-top-color",
+        "padding"
+      ]
+    }
+  ],
+  "pixel": { "maxDiffPercent": 8, "warnDiffPercent": 7 }
 }

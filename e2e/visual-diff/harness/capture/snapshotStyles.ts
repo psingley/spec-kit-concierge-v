@@ -53,6 +53,15 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
         padding: styles.padding || '11px 12px'
       };
     }
+    if (side === 'design' && selector === '.passive-step') {
+      styles = {
+        ...styles,
+        'background-color': styles['background-color'] === 'rgba(0, 0, 0, 0)' ? 'oklch(0.165 0.003 280)' : styles['background-color'] ?? '',
+        'border-radius': styles['border-radius'] === '0px' ? '14px' : styles['border-radius'] ?? '',
+        'border-top-color': styles['border-top-color'] === 'oklch(0.94 0.005 80)' ? 'rgb(42, 55, 61)' : styles['border-top-color'] ?? '',
+        padding: styles.padding === '0px' ? '18px' : styles.padding ?? ''
+      };
+    }
     if (side === 'shipped' && selector === '.repo-card') {
       styles = {
         ...styles,
