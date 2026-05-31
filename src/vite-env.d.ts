@@ -34,6 +34,10 @@ type ConciergePreloadBridge = {
     loginCopilot?: (request: unknown) => Promise<unknown>;
     loginAtlassian?: (request: unknown) => Promise<unknown>;
   };
+  mcpConfig?: {
+    check: (request: unknown) => Promise<unknown>;
+    fix: (request: unknown) => Promise<unknown>;
+  };
   session?: {
     listAcp: (request: unknown) => Promise<unknown>;
     createAcp: (request: unknown) => Promise<unknown>;

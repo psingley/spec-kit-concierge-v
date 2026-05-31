@@ -14,6 +14,7 @@ import { setupSessionLifecycleListener } from './listeners/sessionLifecycle.list
 import { setupStepLifecycleListener } from './listeners/stepLifecycle.listener';
 import { setupTranscriptCaptureListener } from './listeners/transcriptCapture.listener';
 import { setupWorkspaceChangeListener } from './listeners/workspaceChange.listener';
+import { mcpConfigCheckRequested, setupMcpConfigCheckerListener } from './listeners/mcpConfigChecker.listener';
 
 const reducer = {
   ui: uiReducer,
@@ -37,12 +38,15 @@ export const createProductStore = () => {
   setupStepLifecycleListener(startListening);
   setupTranscriptCaptureListener(startListening);
   setupWorkspaceChangeListener(startListening);
+  setupMcpConfigCheckerListener(startListening);
 
-  return configureStore({
+  const productStore = configureStore({
     reducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(listenerMiddleware.middleware).concat(api.middleware)
   });
+  productStore.dispatch(mcpConfigCheckRequested({ reason: 'startup' }));
+  return productStore;
 };
 
 export const store = createProductStore();

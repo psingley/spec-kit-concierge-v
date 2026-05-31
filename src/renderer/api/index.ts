@@ -3,6 +3,7 @@ import './git.endpoint';
 import './steps.endpoint';
 import './preferences.endpoint';
 import './auth.endpoint';
+import './mcpConfig.endpoint';
 import './session.endpoint';
 import './activity.endpoint';
 import './repositories.endpoint';
@@ -16,6 +17,7 @@ import './copilotPassive.endpoint';
 import { api as rootApi, RUN2_TAG_TYPES } from './rootApi';
 import type { activityApi } from './activity.endpoint';
 import type { authApi } from './auth.endpoint';
+import type { mcpConfigApi } from './mcpConfig.endpoint';
 import type { gitApi } from './git.endpoint';
 import type { preferencesApi } from './preferences.endpoint';
 import type { sessionApi } from './session.endpoint';
@@ -37,6 +39,7 @@ type Run4Endpoints = typeof rootApi.endpoints &
   typeof stepsApi.endpoints &
   typeof preferencesApi.endpoints &
   typeof authApi.endpoints &
+  typeof mcpConfigApi.endpoints &
   typeof sessionApi.endpoints &
   typeof activityApi.endpoints &
   typeof repositoriesApi.endpoints &

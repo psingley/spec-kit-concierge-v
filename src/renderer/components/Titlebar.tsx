@@ -159,7 +159,7 @@ const MenuWrap = ({
               <div className="tb-menu-h">Auth status</div>
               <button type="button" role="menuitem" className="tb-menu-row">GitHub {authLabel('ok')}</button>
               <button type="button" role="menuitem" className="tb-menu-row">Copilot {authLabel('ok')}</button>
-              <button type="button" role="menuitem" className="tb-menu-row">Atlassian visible, not required</button>
+              <button type="button" role="menuitem" className="tb-menu-row">Atlassian MCP status shown in sign-in</button>
             </>
           ) : null}
           {id === 'model' ? (

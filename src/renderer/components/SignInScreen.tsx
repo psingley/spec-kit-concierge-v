@@ -13,6 +13,13 @@ export type SignInScreenProps = {
 
 const actionLabel = (status: AuthProviderStatus, starting = 'Signing in...'): string => (status === 'starting' ? starting : 'Sign in');
 
+const atlassianSubtitle = (status: AuthProviderStatus): string => {
+  if (status === 'ok') return 'Ready through GitHub Copilot CLI';
+  if (status === 'unknown') return 'Configured; reauthorize in Copilot';
+  if (status === 'error') return 'Configuration needs attention';
+  return 'Required before JIRA submission';
+};
+
 export const SignInScreen = ({ github, copilot, atlassian, onGitHub, onCopilot, onAtlassian }: SignInScreenProps): React.ReactElement => (
   <main className="screen signin signin-stage">
     <section className="signin-card" aria-labelledby="signin-heading">
@@ -57,11 +64,11 @@ export const SignInScreen = ({ github, copilot, atlassian, onGitHub, onCopilot, 
           <div className="signin-row-icon"><Ico.Atlassian size={15} /></div>
           <div className="signin-row-main">
             <div className="signin-row-title">Atlassian MCP</div>
-            <div className="signin-row-sub">{atlassian === 'ok' ? 'Connected to collette-travel.atlassian.net' : 'Required to send specs to JIRA'}</div>
+            <div className="signin-row-sub">{atlassianSubtitle(atlassian)}</div>
           </div>
           {atlassian === 'ok' ? <span className="signin-row-status"><span className="signin-dot ok" />Connected</span> : (
             <button type="button" className="btn primary" data-vd-role="signin-provider-action" onClick={onAtlassian} disabled={atlassian === 'starting'}>
-              <Ico.Atlassian size={12} />{actionLabel(atlassian, 'Connecting...')}
+              <Ico.Atlassian size={12} />{atlassian === 'unknown' ? 'Open Copilot' : actionLabel(atlassian, 'Configuring...')}
             </button>
           )}
         </div>

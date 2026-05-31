@@ -98,7 +98,7 @@
                       "children": [
                         {
                           "tag": "button",
-                          "text": "spec/draft-zyd0",
+                          "text": "spec/draft-4yms",
                           "children": [
                             {
                               "tag": "svg",
@@ -123,7 +123,7 @@
                             },
                             {
                               "tag": "span",
-                              "text": "spec/draft-zyd0",
+                              "text": "spec/draft-4yms",
                               "children": []
                             },
                             {

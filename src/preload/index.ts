@@ -49,6 +49,10 @@ contextBridge.exposeInMainWorld('concierge', {
     loginCopilot: (request: unknown) => ipcRenderer.invoke('auth:copilot:login', request) as Promise<unknown>,
     loginAtlassian: (request: unknown) => ipcRenderer.invoke('auth:atlassian:login', request) as Promise<unknown>
   },
+  mcpConfig: {
+    check: (request: unknown) => ipcRenderer.invoke('mcp:config:check', request) as Promise<unknown>,
+    fix: (request: unknown) => ipcRenderer.invoke('mcp:config:fix', request) as Promise<unknown>
+  },
   session: {
     listAcp: (request: unknown) => ipcRenderer.invoke('session:listAcp', request) as Promise<unknown>,
     createAcp: (request: unknown) => ipcRenderer.invoke('session:createAcp', request) as Promise<unknown>

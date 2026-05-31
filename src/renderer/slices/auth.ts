@@ -1,6 +1,12 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 export type AuthProviderStatus = 'unknown' | 'locked' | 'out' | 'starting' | 'ok' | 'error';
+export type AtlassianMcpConfigState =
+  | 'not_configured'
+  | 'configured_needs_auth'
+  | 'authenticated'
+  | 'malformed_config'
+  | 'write_failed_warning';
 export type AuthIdentity = {
   login: string;
   displayName?: string;
@@ -55,7 +61,24 @@ const authSlice = createSlice({
       state.lastError = null;
     },
     atlassianLoginSucceeded: (state) => {
-      state.atlassian = 'ok';
+      state.atlassian = 'out';
+      state.lastError = null;
+    },
+    atlassianMcpStatusHydrated: (
+      state,
+      action: PayloadAction<{ state: AtlassianMcpConfigState; message: string }>
+    ) => {
+      if (action.payload.state === 'authenticated') {
+        state.atlassian = 'ok';
+        state.lastError = null;
+        return;
+      }
+      if (action.payload.state === 'malformed_config' || action.payload.state === 'write_failed_warning') {
+        state.atlassian = 'error';
+        state.lastError = action.payload.message;
+        return;
+      }
+      state.atlassian = action.payload.state === 'configured_needs_auth' ? 'unknown' : 'out';
       state.lastError = null;
     },
     authLoginFailed: (
@@ -90,6 +113,7 @@ export const {
   githubLoginSucceeded,
   copilotLoginSucceeded,
   atlassianLoginSucceeded,
+  atlassianMcpStatusHydrated,
   authLoginFailed,
   authStatusHydrated
 } = authSlice.actions;

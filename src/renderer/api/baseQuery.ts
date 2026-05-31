@@ -15,6 +15,8 @@ export type IpcQueryArgs = {
     | 'auth:gh:login'
     | 'auth:copilot:login'
     | 'auth:atlassian:login'
+    | 'mcp:config:check'
+    | 'mcp:config:fix'
     | 'session:listAcp'
     | 'session:createAcp'
     | 'activity:read'
@@ -88,6 +90,10 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.auth!.loginCopilot!(args.payload) };
       case 'auth:atlassian:login':
         return { data: await window.concierge.auth!.loginAtlassian!(args.payload) };
+      case 'mcp:config:check':
+        return { data: await window.concierge.mcpConfig!.check(args.payload) };
+      case 'mcp:config:fix':
+        return { data: await window.concierge.mcpConfig!.fix(args.payload) };
       case 'session:listAcp':
         return { data: await window.concierge.session!.listAcp(args.payload) };
       case 'session:createAcp':

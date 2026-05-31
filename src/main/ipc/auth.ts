@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { IpcMain } from 'electron';
 import { loginCopilot, loginGitHub, type LoginResult } from '../data-layer/auth/cliAuth';
+import { checkCopilotMcpConfig, fixCopilotMcpConfig } from '../data-layer/mcp-config/copilotMcp';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
@@ -27,6 +28,7 @@ export type RegisterAuthIpcOptions = {
   checkStatus?: (provider: AuthProvider) => Promise<boolean | null>;
   loginGitHubAdapter?: () => Promise<LoginResult>;
   loginCopilotAdapter?: (githubConnected: boolean) => Promise<LoginResult>;
+  fixAtlassianAdapter?: () => Promise<LoginResult>;
   setTimeoutFn?: typeof setTimeout;
   now?: () => number;
 };
@@ -51,6 +53,10 @@ export const registerAuthIpc = ({
   checkStatus = defaultCheckStatus,
   loginGitHubAdapter = loginGitHub,
   loginCopilotAdapter = loginCopilot,
+  fixAtlassianAdapter = async () => {
+    const result = await fixCopilotMcpConfig({ status: await checkCopilotMcpConfig() });
+    return { status: 'ok', provider: 'atlassian', label: result.activityNotice ?? result.status.message };
+  },
   setTimeoutFn = setTimeout,
   now = () => performance.now()
 }: RegisterAuthIpcOptions): void => {
@@ -116,8 +122,6 @@ export const registerAuthIpc = ({
     return result;
   });
   handleLogin(AUTH_COPILOT_LOGIN_CHANNEL, 'copilot', async () => loginCopilotAdapter(githubConnected));
-  handleLogin(AUTH_ATLASSIAN_LOGIN_CHANNEL, 'atlassian', async () => {
-    await new Promise<void>((resolve) => setTimeoutFn(resolve, 200));
-    return { status: 'ok', provider: 'atlassian', label: 'Atlassian visual stub' };
-  });
+  void setTimeoutFn;
+  handleLogin(AUTH_ATLASSIAN_LOGIN_CHANNEL, 'atlassian', fixAtlassianAdapter);
 };

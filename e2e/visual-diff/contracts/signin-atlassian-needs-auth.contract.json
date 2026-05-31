@@ -1,0 +1,22 @@
+{
+  "name": "signin-atlassian-needs-auth",
+  "designPath": "design/v3-fetch/project/signin.jsx",
+  "primaryRegion": {
+    "designSelector": ".signin-card",
+    "shippedSelector": ".signin-card"
+  },
+  "required": {
+    "texts": [
+      { "value": "Atlassian MCP" },
+      { "value": "Configured; reauthorize in Copilot" },
+      { "value": "Open Copilot" }
+    ],
+    "headings": [],
+    "controls": [],
+    "visualMarkers": [
+      { "name": "signin-mark", "selector": "[data-vd-role=\"signin-mark\"]", "designSelector": ".signin-mark" }
+    ]
+  },
+  "styleSamples": [],
+  "pixel": { "maxDiffPercent": 9.9, "warnDiffPercent": 9.9 }
+}

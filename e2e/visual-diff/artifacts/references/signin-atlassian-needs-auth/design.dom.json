@@ -1,0 +1,208 @@
+{
+  "tag": "div",
+  "children": [
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        },
+        {
+          "tag": "span",
+          "children": []
+        }
+      ]
+    },
+    {
+      "tag": "h1",
+      "text": "Spec-kit Concierge",
+      "children": []
+    },
+    {
+      "tag": "p",
+      "text": "Spec-driven feature work, with Copilot CLI in the loop. Sign in to load your organization.",
+      "children": []
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "GitHub CLI",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Required to discover org repositories",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Sign in",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "GitHub Copilot CLI",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Requires GitHub CLI first",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Sign in",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "svg",
+                  "children": [
+                    {
+                      "tag": "path",
+                      "children": []
+                    },
+                    {
+                      "tag": "path",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "text": "Atlassian MCP",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "text": "Configured; reauthorize in Copilot",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Open Copilot",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "span",
+          "text": "Trouble signing in? Use the gear menu to report a bug.",
+          "children": []
+        }
+      ]
+    }
+  ]
+}
