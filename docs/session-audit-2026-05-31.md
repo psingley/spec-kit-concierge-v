@@ -58,9 +58,11 @@ NEEDS LIVE VERIFICATION (merged but not yet user-confirmed functional):
 - **Backlog:** filer rewrite (Task #6, root-caused), Figma harness (docs written: `docs/figma-harness-proposal.md` + `docs/ui-fidelity-harness-runbook.md`).
 
 ## Docs produced this session
-- `docs/ui-fidelity-harness-runbook.md` — the visual-fidelity methodology, reusable.
-- `docs/figma-harness-proposal.md` — Figma bidirectional feasibility (MEDIUM/high-value; Figma REST API + official Dev Mode MCP map to the verify layers; ~2-3 day MVP).
+- `docs/ui-fidelity-harness-runbook.md` — the visual-fidelity methodology, reusable. (411 lines.)
+- `docs/figma-harness-proposal.md` — Figma bidirectional feasibility (MEDIUM/high-value; Figma REST API + official Dev Mode MCP map to the verify layers; ~2-3 day MVP). (466 lines.)
 - `docs/session-audit-2026-05-31.md` — this file.
+
+**CORRECTION (forensic, post-investigation):** Earlier in this session I incorrectly stated the harness/Figma research agent "claimed to write [the two docs] but they never landed." That was WRONG and unfair to the agent. The agent (general-purpose subagent `a9b7f6df4ad730bb3`) genuinely called Write twice with the full content — verified in its transcript at `~/.claude/projects/.../subagents/agent-a9b7f6df4ad730bb3.jsonl`. The files were REAL, then DESTROYED by the parallel-codex working-directory collision: the 3 concurrent UI-fixer codex jobs running `git checkout -b` in the SHARED working dir + my collision-recovery `git checkout` operations wiped the UNTRACKED docs from the working tree (the agent's own final Read returned "File does not exist"). The docs were recovered verbatim from the agent transcript and committed (`36cac75`). LESSON: the parallel-codex-collision blast radius is WIDER than just code branches — it deletes unrelated UNTRACKED files in the shared dir. This reinforces the git-worktree rule (memory note): any parallel writer (codex OR subagent) writing to a shared working dir risks both branch corruption AND untracked-file loss. Subagent transcripts (`subagents/agent-<id>.jsonl`) are a recovery source — the full Write content is preserved there.
 
 ## Opus 4.8 / workflows (researched)
 Dynamic Workflows = type "workflow" → Claude writes a JS orchestration script fanning out dozens-to-hundreds of parallel subagents (16 concurrent, 1000 cap), plan lives in code not context. `/effort ultracode` = auto-orchestration. Opus 4.8: 1M context, ~4× less likely to overlook its own code flaws, fast mode 3× cheaper. Relevant for us: design-fidelity fan-out, multi-reviewer audit panels, per-file codex review — but our pipeline is codex-based (workflows spawn Claude agents, can't drive codex). Use workflows for parallel Claude-side verification/review, not for the codex build pipeline.
