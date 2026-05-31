@@ -6,6 +6,7 @@ import { RepoBrowseScreenContainer } from './components/RepoBrowseScreenContaine
 import { SignInScreenContainer } from './components/SignInScreenContainer';
 import { TitlebarContainer } from './components/TitlebarContainer';
 import { WorkspaceContainer } from './components/WorkspaceContainer';
+import { ModalHost } from './components/ModalHost';
 
 export const App = (): React.ReactElement => {
   const gateOpen = useAppSelector(selectAuthGateOpen);
@@ -21,6 +22,7 @@ export const App = (): React.ReactElement => {
         <div className="workspace-body no-activity">
           <RepoBrowseScreenContainer />
         </div>
+        <ModalHost />
       </div>
     );
   }

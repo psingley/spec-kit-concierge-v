@@ -2,14 +2,11 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import type { StepName, StepState } from '../slices/steps';
 import { workspaceStepViewed } from '../slices/workspace';
-import { selectWorkspaceBranch, selectWorkspaceSelectedRepo, selectWorkspaceViewedStep } from '../slices/workspace.selectors';
-import { selectUiShowAbout, selectUiShowActivity, selectUiShowRequest } from '../slices/ui.selectors';
-import { modalClosed } from '../slices/ui';
+import { selectWorkspaceViewedStep } from '../slices/workspace.selectors';
+import { selectUiShowActivity } from '../slices/ui.selectors';
 import { ActivityRailContainer } from './ActivityRailContainer';
-import { AboutModal } from './AboutModal';
-import { CustomizeModalContainer } from './CustomizeModalContainer';
-import { RequestModal } from './RequestModal';
 import { ClarifyStepContainer } from './ClarifyStepContainer';
+import { ModalHost } from './ModalHost';
 import { PassiveStepContainer } from './PassiveStepContainer';
 import { ReviewStepContainer } from './ReviewStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
@@ -23,8 +20,6 @@ export const WorkspaceContainer = (): React.ReactElement => {
   const viewedStep = useAppSelector(selectWorkspaceViewedStep);
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
   const passiveSteps = useAppSelector(selectSessionPassiveSteps);
-  const repo = useAppSelector(selectWorkspaceSelectedRepo);
-  const branch = useAppSelector(selectWorkspaceBranch);
   const showActivity = useAppSelector(selectUiShowActivity);
   const activitySide = useAppSelector(selectPreferencesActivitySide);
   const bodyClassName = `workspace-body ${!showActivity || activitySide === 'hidden' ? 'no-activity' : ''}${showActivity && activitySide === 'left' ? ' activity-left' : ''}`;
@@ -53,9 +48,7 @@ export const WorkspaceContainer = (): React.ReactElement => {
         </main>
         {showActivity && activitySide !== 'left' && activitySide !== 'hidden' ? <ActivityRailContainer /> : null}
       </div>
-      <CustomizeModalContainer />
-      <AboutModal open={useAppSelector(selectUiShowAbout)} onClose={() => dispatch(modalClosed('showAbout'))} repo={repo?.name ?? 'No repo'} branch={branch ?? 'No branch'} />
-      <RequestModal open={useAppSelector(selectUiShowRequest)} onClose={() => dispatch(modalClosed('showRequest'))} />
+      <ModalHost />
     </div>
   );
 };
