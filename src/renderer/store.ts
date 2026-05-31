@@ -9,6 +9,7 @@ import { stepsReducer } from './slices/steps';
 import { uiReducer } from './slices/ui';
 import { workspaceReducer } from './slices/workspace';
 import { setupAcpStreamSubscriptionListener } from './listeners/acpStreamSubscription.listener';
+import { setupActivityLoggerListener } from './listeners/activityLogger.listener';
 import { setupPreferencesPersistenceListener } from './listeners/preferencesPersistence.listener';
 import { setupSessionLifecycleListener } from './listeners/sessionLifecycle.listener';
 import { setupStepLifecycleListener } from './listeners/stepLifecycle.listener';
@@ -33,6 +34,7 @@ export const createProductStore = () => {
   const startListening = listenerMiddleware.startListening;
 
   setupAcpStreamSubscriptionListener(startListening);
+  setupActivityLoggerListener(startListening);
   setupPreferencesPersistenceListener(startListening);
   setupSessionLifecycleListener(startListening);
   setupStepLifecycleListener(startListening);

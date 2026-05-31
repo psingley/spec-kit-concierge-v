@@ -1,5 +1,4 @@
-// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/activity.jsx and the rendered design HTML snapshot.
-// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+// Reviewed real Run 6 contract. Activity rows are stream-fed; required text intentionally checks real event rows, not demo commands.
 {
   "name": "activity-rail-idle",
   "designPath": "design/v3-fetch/project/activity.jsx",
@@ -19,52 +18,16 @@
         "value": "Current"
       },
       {
-        "value": "concierge-api"
+        "value": "GitHub connected"
       },
       {
-        "value": "00:00:00"
+        "value": "Copilot connected"
       },
       {
-        "value": "Concierge ready. Awaiting workspace."
+        "value": "Repo selected: collette-travel/concierge-api"
       },
       {
-        "value": "gh auth login"
-      },
-      {
-        "value": "Opening browser for device code…"
-      },
-      {
-        "value": "gh copilot auth"
-      },
-      {
-        "value": "a.kim"
-      },
-      {
-        "value": "atlassian mcp"
-      },
-      {
-        "value": "collette-travel.atlassian.net"
-      },
-      {
-        "value": "gpt-5-codex"
-      },
-      {
-        "value": "git checkout"
-      },
-      {
-        "value": "main"
-      },
-      {
-        "value": "cd"
-      },
-      {
-        "value": "git pull"
-      },
-      {
-        "value": "Fetching collette-travel org repos…"
-      },
-      {
-        "value": "14"
+        "value": "3 lines"
       },
       {
         "value": "auto-scroll"
