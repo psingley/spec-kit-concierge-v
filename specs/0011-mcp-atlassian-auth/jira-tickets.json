@@ -1,0 +1,57 @@
+{
+  "schema": "concierge.jira.v1",
+  "feature": "0011-mcp-atlassian-auth",
+  "method": "direct-atlassian-mcp",
+  "cloudId": "20a57dd3-0f9f-41ca-94d0-0def6f4ff476",
+  "projectKey": "SKC",
+  "verifiedAt": "2026-05-31T14:46:22-04:00",
+  "epic": {
+    "key": "SKC-201",
+    "id": "210258",
+    "summary": "Run 11: MCP Config Detection & Atlassian Auth"
+  },
+  "phaseTickets": [
+    { "phase": 1, "key": "SKC-202", "id": "210259", "summary": "Run 11 Phase 1: Setup and product constants", "tasks": ["T001", "T002"] },
+    { "phase": 2, "key": "SKC-203", "id": "210260", "summary": "Run 11 Phase 2: Main MCP config data layer", "tasks": ["T003", "T004", "T005", "T006", "T007", "T008", "T009", "T010"] },
+    { "phase": 3, "key": "SKC-204", "id": "210261", "summary": "Run 11 Phase 3: MCP config IPC boundary", "tasks": ["T011", "T012", "T013", "T014", "T015"] },
+    { "phase": 4, "key": "SKC-205", "id": "210262", "summary": "Run 11 Phase 4: Renderer API and auth mapping", "tasks": ["T016", "T017", "T018", "T019", "T020"] },
+    { "phase": 5, "key": "SKC-206", "id": "210263", "summary": "Run 11 Phase 5: Coalesced MCP config checker", "tasks": ["T021", "T022"] },
+    { "phase": 6, "key": "SKC-207", "id": "210264", "summary": "Run 11 Phase 6: Atlassian auth UI and visual contracts", "tasks": ["T023", "T024"] },
+    { "phase": 7, "key": "SKC-208", "id": "210265", "summary": "Run 11 Phase 7: Verification and docs", "tasks": ["T025", "T026", "T027", "T028"] }
+  ],
+  "taskTickets": [
+    { "taskId": "T001", "key": "SKC-209", "id": "210274", "phaseKey": "SKC-202", "summary": "Add MCP config fixture JSON shapes" },
+    { "taskId": "T002", "key": "SKC-210", "id": "210275", "phaseKey": "SKC-202", "summary": "Add workspace gate prerequisites constant" },
+    { "taskId": "T003", "key": "SKC-211", "id": "210276", "phaseKey": "SKC-203", "summary": "Add path resolver tests" },
+    { "taskId": "T004", "key": "SKC-212", "id": "210277", "phaseKey": "SKC-203", "summary": "Implement MCP config path resolver" },
+    { "taskId": "T005", "key": "SKC-213", "id": "210278", "phaseKey": "SKC-203", "summary": "Add MCP config parse and detect tests" },
+    { "taskId": "T006", "key": "SKC-214", "id": "210279", "phaseKey": "SKC-203", "summary": "Implement MCP config parse and detect helpers" },
+    { "taskId": "T007", "key": "SKC-215", "id": "210280", "phaseKey": "SKC-203", "summary": "Add MCP OAuth evidence tests" },
+    { "taskId": "T008", "key": "SKC-216", "id": "210281", "phaseKey": "SKC-203", "summary": "Implement MCP OAuth auth evidence detection" },
+    { "taskId": "T009", "key": "SKC-217", "id": "210282", "phaseKey": "SKC-203", "summary": "Add Copilot MCP adapter tests" },
+    { "taskId": "T010", "key": "SKC-218", "id": "210283", "phaseKey": "SKC-203", "summary": "Implement Copilot MCP adapter" },
+    { "taskId": "T011", "key": "SKC-219", "id": "210284", "phaseKey": "SKC-204", "summary": "Add MCP config IPC factory tests" },
+    { "taskId": "T012", "key": "SKC-220", "id": "210285", "phaseKey": "SKC-204", "summary": "Implement MCP config IPC factory" },
+    { "taskId": "T013", "key": "SKC-221", "id": "210286", "phaseKey": "SKC-204", "summary": "Add MCP config IPC handler tests" },
+    { "taskId": "T014", "key": "SKC-222", "id": "210287", "phaseKey": "SKC-204", "summary": "Implement MCP config IPC handlers" },
+    { "taskId": "T015", "key": "SKC-223", "id": "210288", "phaseKey": "SKC-204", "summary": "Register MCP config IPC and preload bridge" },
+    { "taskId": "T016", "key": "SKC-224", "id": "210289", "phaseKey": "SKC-205", "summary": "Add renderer MCP config API tests" },
+    { "taskId": "T017", "key": "SKC-225", "id": "210290", "phaseKey": "SKC-205", "summary": "Implement renderer MCP config API" },
+    { "taskId": "T018", "key": "SKC-226", "id": "210291", "phaseKey": "SKC-205", "summary": "Add MCP-derived auth slice tests" },
+    { "taskId": "T019", "key": "SKC-227", "id": "210292", "phaseKey": "SKC-205", "summary": "Derive Atlassian chip state from MCP config" },
+    { "taskId": "T020", "key": "SKC-228", "id": "210293", "phaseKey": "SKC-205", "summary": "Repurpose Atlassian connect flow" },
+    { "taskId": "T021", "key": "SKC-229", "id": "210294", "phaseKey": "SKC-206", "summary": "Add MCP config checker listener tests" },
+    { "taskId": "T022", "key": "SKC-230", "id": "210295", "phaseKey": "SKC-206", "summary": "Implement MCP config checker listener" },
+    { "taskId": "T023", "key": "SKC-231", "id": "210296", "phaseKey": "SKC-207", "summary": "Update Atlassian sign-in and auth chip copy" },
+    { "taskId": "T024", "key": "SKC-232", "id": "210297", "phaseKey": "SKC-207", "summary": "Add Atlassian visual contracts" },
+    { "taskId": "T025", "key": "SKC-233", "id": "210298", "phaseKey": "SKC-208", "summary": "Add OAuth smoke note and Windows smoke flag" },
+    { "taskId": "T026", "key": "SKC-234", "id": "210299", "phaseKey": "SKC-208", "summary": "Run focused Run 11 unit tests" },
+    { "taskId": "T027", "key": "SKC-235", "id": "210300", "phaseKey": "SKC-208", "summary": "Run Run 11 visual-diff gate" },
+    { "taskId": "T028", "key": "SKC-236", "id": "210301", "phaseKey": "SKC-208", "summary": "Run final Run 11 verification gate" }
+  ],
+  "relationship": {
+    "epicToPhase": "Jira parent field",
+    "phaseToTask": "Parent-Child Link",
+    "note": "Jira rejected Task issues with Story parents, so tasks are linked to their phase stories with the project-supported Parent-Child Link issue link type."
+  }
+}
