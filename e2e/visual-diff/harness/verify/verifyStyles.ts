@@ -8,7 +8,8 @@ const colorEquivalents: Record<string, string> = {
   'rgb(237, 235, 231)': 'oklch(0.94 0.005 80)',
   'rgb(17, 23, 27)': 'oklch(0.165 0.003 280)',
   'rgb(21, 22, 24)': 'oklch(0.2 0.005 280)',
-  'rgb(23, 31, 36)': 'oklch(0.2 0.005 280)'
+  'rgb(23, 31, 36)': 'oklch(0.2 0.005 280)',
+  'rgb(19, 47, 59)': 'oklch(0.245 0.06 225)'
 };
 
 const shadowEquivalents: Record<string, string> = {

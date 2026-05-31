@@ -1,11 +1,12 @@
 import React from 'react';
-import type { AuthProviderStatus } from '../slices/auth';
+import type { AuthIdentity, AuthProviderStatus } from '../slices/auth';
 import { Ico } from './Icons';
 
 export type SignInScreenProps = {
   github: AuthProviderStatus;
   copilot: AuthProviderStatus;
   atlassian: AuthProviderStatus;
+  identity: AuthIdentity | null;
   onGitHub: () => void;
   onCopilot: () => void;
   onAtlassian: () => void;
@@ -20,7 +21,7 @@ const atlassianSubtitle = (status: AuthProviderStatus): string => {
   return 'Required before JIRA submission';
 };
 
-export const SignInScreen = ({ github, copilot, atlassian, onGitHub, onCopilot, onAtlassian }: SignInScreenProps): React.ReactElement => (
+export const SignInScreen = ({ github, copilot, atlassian, identity, onGitHub, onCopilot, onAtlassian }: SignInScreenProps): React.ReactElement => (
   <main className="screen signin signin-stage">
     <section className="signin-card" aria-labelledby="signin-heading">
       <div className="signin-mark" data-vd-role="signin-mark" aria-hidden="true">
@@ -38,7 +39,7 @@ export const SignInScreen = ({ github, copilot, atlassian, onGitHub, onCopilot, 
           <div className="signin-row-icon"><Ico.Github size={16} /></div>
           <div className="signin-row-main">
             <div className="signin-row-title">GitHub CLI</div>
-            <div className="signin-row-sub">{github === 'ok' ? 'Signed in as a.kim' : 'Required to discover org repositories'}</div>
+            <div className="signin-row-sub">{github === 'ok' ? `Signed in as ${identity?.login ?? 'github-user'}` : 'Required to discover org repositories'}</div>
           </div>
           {github === 'ok' ? <span className="signin-row-status"><span className="signin-dot ok" />Connected</span> : (
             <button type="button" className="btn primary" data-vd-role="signin-provider-action" onClick={onGitHub} disabled={github === 'starting'}>
