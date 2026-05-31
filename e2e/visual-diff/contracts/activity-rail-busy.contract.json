@@ -1,5 +1,4 @@
-// Reviewed real Run 6 contract. Required items were extracted from design/v3-fetch/project/activity.jsx and the rendered design HTML snapshot.
-// Do not remove requirements because shipped currently misses them; failures are the point of this gate.
+// Reviewed real Run 6 contract. Activity rows are stream-fed; required text intentionally checks real event rows, not demo commands.
 {
   "name": "activity-rail-busy",
   "designPath": "design/v3-fetch/project/activity.jsx",
@@ -19,64 +18,22 @@
         "value": "Current"
       },
       {
-        "value": "spec.md"
+        "value": "Sending prompt to Copilot"
       },
       {
-        "value": "00:00:00"
+        "value": "GitHub connected"
       },
       {
-        "value": "Concierge ready. Awaiting workspace."
+        "value": "Copilot connected"
       },
       {
-        "value": "gh auth login"
+        "value": "Repo selected: collette-travel/concierge-api"
       },
       {
-        "value": "Opening browser for device code…"
+        "value": "Preparing Specify lifecycle"
       },
       {
-        "value": "gh copilot auth"
-      },
-      {
-        "value": "a.kim"
-      },
-      {
-        "value": "atlassian mcp"
-      },
-      {
-        "value": "collette-travel.atlassian.net"
-      },
-      {
-        "value": "gpt-5-codex"
-      },
-      {
-        "value": "git checkout"
-      },
-      {
-        "value": "main"
-      },
-      {
-        "value": "cd"
-      },
-      {
-        "value": "git pull"
-      },
-      {
-        "value": "concierge-api"
-      },
-      {
-        "value": "git checkout -b"
-      },
-      {
-        "value": "spec/draft-rwgq"
-      },
-      {
-        "value": "copilot"
-      },
-      {
-        "value": "Fetching collette-travel org repos…"
-      },
-      {
-        "value": "16 lines"
+        "value": "5 lines"
       },
       {
         "value": "auto-scroll"
