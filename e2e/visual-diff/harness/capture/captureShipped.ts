@@ -45,7 +45,7 @@ for (const screen of selected) {
       }
     });
     const page = await electronApp.firstWindow();
-    await page.setViewportSize(viewport);
+    await page.setViewportSize(screen.viewport ?? viewport);
     await page.waitForLoadState('domcontentloaded');
     await screen.shippedSetup?.(page);
     await page.waitForTimeout(250);

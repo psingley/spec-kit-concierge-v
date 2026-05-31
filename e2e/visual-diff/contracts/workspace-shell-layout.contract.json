@@ -1,0 +1,111 @@
+// Reviewed whole-window shell contract. This captures the real 1000x700 Electron window,
+// not a cropped child region, so grid containment and docked activity layout regressions are visible.
+{
+  "name": "workspace-shell-layout",
+  "designPath": "design/v3-fetch/project/app.jsx",
+  "primaryRegion": {
+    "designSelector": ".app",
+    "shippedSelector": ".workspace"
+  },
+  "required": {
+    "texts": [
+      {
+        "value": "Spec-kit Concierge"
+      },
+      {
+        "value": "Specify"
+      },
+      {
+        "value": "Clarify"
+      },
+      {
+        "value": "Plan"
+      },
+      {
+        "value": "Analyze"
+      },
+      {
+        "value": "Tasks"
+      },
+      {
+        "value": "Review"
+      },
+      {
+        "value": "Activity"
+      }
+    ],
+    "headings": [],
+    "controls": [
+      {
+        "role": "button",
+        "name": "Idle",
+        "count": 1
+      }
+    ],
+    "visualMarkers": [
+      {
+        "name": "activity-pill-divider",
+        "selector": "[data-vd-role=\"activity-pill-divider\"]",
+        "designSelector": ".activity-pill .ap-divider"
+      },
+      {
+        "name": "activity-terminal-icon",
+        "selector": "[data-vd-role=\"activity-terminal-icon\"]",
+        "designSelector": ".activity-pill .ap-term"
+      },
+      {
+        "name": "activity-pulse-dot",
+        "selector": "[data-vd-role=\"activity-pulse-dot\"]",
+        "designSelector": ".activity .pulse-dot"
+      }
+    ]
+  },
+  "styleSamples": [
+    {
+      "name": "shell grid",
+      "designSelector": ".app",
+      "shippedSelector": ".workspace",
+      "properties": [
+        "display",
+        "grid-template-rows",
+        "height"
+      ]
+    },
+    {
+      "name": "activity body grid",
+      "designSelector": ".app-body",
+      "shippedSelector": ".workspace-body",
+      "properties": [
+        "display",
+        "min-height"
+      ]
+    },
+    {
+      "name": "docked activity rail",
+      "designSelector": ".activity",
+      "shippedSelector": ".activity",
+      "properties": [
+        "position",
+        "display",
+        "flex-direction",
+        "min-height",
+        "border-left-width"
+      ]
+    },
+    {
+      "name": "single titlebar activity pill",
+      "designSelector": ".titlebar-right .activity-pill",
+      "shippedSelector": ".titlebar-right .activity-pill",
+      "properties": [
+        "position",
+        "display",
+        "height",
+        "border-radius"
+      ]
+    }
+  ],
+  "pixel": {
+    "maxDiffPercent": 8,
+    "warnDiffPercent": 8
+  }
+}

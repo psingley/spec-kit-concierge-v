@@ -5,6 +5,7 @@ import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.sel
 import { selectSessionSpecMarkdown, selectSessionSpecifyRunning } from '../slices/session.selectors';
 import { modalOpened } from '../slices/ui';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
+import { ActivityPillContainer } from './ActivityPillContainer';
 import { Titlebar } from './Titlebar';
 
 export const TitlebarContainer = (): React.ReactElement => {
@@ -24,6 +25,7 @@ export const TitlebarContainer = (): React.ReactElement => {
       onCustomize={() => dispatch(modalOpened('showCustomize'))}
       onAbout={() => dispatch(modalOpened('showAbout'))}
       onRequest={() => dispatch(modalOpened('showRequest'))}
+      activityPill={<ActivityPillContainer />}
     />
   );
 };

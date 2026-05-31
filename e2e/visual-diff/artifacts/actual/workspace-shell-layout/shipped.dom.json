@@ -1,0 +1,887 @@
+{
+  "tag": "div",
+  "children": [
+    {
+      "tag": "header",
+      "children": [
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "marker": "brand-orb",
+              "children": [
+                {
+                  "tag": "span",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "text": "Spec-kit Concierge",
+              "children": []
+            },
+            {
+              "tag": "span",
+              "children": []
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "a.kim",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "auth-identity-dot",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "a.kim",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "collette-travel/concierge-api",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "collette-travel",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "/",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "concierge-api",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "main",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "circle",
+                          "children": []
+                        },
+                        {
+                          "tag": "circle",
+                          "children": []
+                        },
+                        {
+                          "tag": "circle",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "span",
+                      "text": "main",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "div",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "Claude Sonnet 4.5default",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "path",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Claude Sonnet 4.5",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "default",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "button",
+                  "text": "Settings",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "circle",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "button",
+              "text": "Idle",
+              "children": [
+                {
+                  "tag": "span",
+                  "text": "Idle",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "marker": "activity-terminal-icon",
+                  "children": [
+                    {
+                      "tag": "svg",
+                      "children": [
+                        {
+                          "tag": "rect",
+                          "children": []
+                        },
+                        {
+                          "tag": "path",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "activity-pill-divider",
+                  "children": []
+                },
+                {
+                  "tag": "span",
+                  "children": [
+                    {
+                      "tag": "canvas",
+                      "marker": "spinner",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "div",
+      "children": [
+        {
+          "tag": "main",
+          "children": [
+            {
+              "tag": "nav",
+              "role": "tablist",
+              "children": [
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Specify",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Specify",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "pending",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Clarify",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Clarify",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Plan",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Plan",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Tasks",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Tasks",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Analyze",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Analyze",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "step-separator",
+                  "children": []
+                },
+                {
+                  "tag": "button",
+                  "role": "tab",
+                  "text": "Review",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "step-orb",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Review",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "not_available",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "span",
+                  "marker": "stepper-track",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "stepper-track-fill",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "section",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "p",
+                              "text": "Step 1",
+                              "children": []
+                            },
+                            {
+                              "tag": "h2",
+                              "text": "Specify",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "tag": "div",
+                      "children": [
+                        {
+                          "tag": "div",
+                          "children": [
+                            {
+                              "tag": "textarea",
+                              "children": []
+                            },
+                            {
+                              "tag": "span",
+                              "children": []
+                            },
+                            {
+                              "tag": "div",
+                              "children": [
+                                {
+                                  "tag": "button",
+                                  "text": "Clear",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "span",
+                                  "children": []
+                                },
+                                {
+                                  "tag": "button",
+                                  "text": "Begin specify",
+                                  "children": [
+                                    {
+                                      "tag": "svg",
+                                      "marker": "begin-sparkle",
+                                      "children": [
+                                        {
+                                          "tag": "path",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "aside",
+          "children": [
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "Activity",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "marker": "activity-idle-dot",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "idle",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "span",
+                  "marker": "activity-pulse-dot",
+                  "children": []
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "div",
+                      "text": "Current",
+                      "children": []
+                    },
+                    {
+                      "tag": "div",
+                      "text": "Workspace: concierge-api · awaiting prompt",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:00",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Concierge ready. Awaiting workspace.",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:01",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "gh auth login",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:02",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Opening browser for device code…",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:03",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "gh copilot auth",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:04",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "✓",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "a.kim",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:05",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "atlassian mcp",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:06",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "✓",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "collette-travel.atlassian.net",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:07",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "gpt-5-codex",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:08",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "git checkout main",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:09",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "cd ~/work/concierge-api && git pull",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:10",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Fetching collette-travel org repos…",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:11",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "✓",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Workspace mounted: concierge-api",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:12",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Current workspace: concierge-api",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "00:00:13",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "→",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "Awaiting prompt.",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "tag": "div",
+              "children": [
+                {
+                  "tag": "div",
+                  "children": [
+                    {
+                      "tag": "span",
+                      "text": "14 lines",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "·",
+                      "children": []
+                    },
+                    {
+                      "tag": "span",
+                      "text": "auto-scroll",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "tag": "button",
+                  "text": "Clear",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

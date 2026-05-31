@@ -16,6 +16,7 @@ export type TitlebarProps = {
   onCustomize: () => void;
   onAbout: () => void;
   onRequest: () => void;
+  activityPill?: React.ReactNode;
 };
 
 type OpenMenu = 'repository' | 'branch' | 'auth' | 'model' | 'settings' | null;
@@ -183,7 +184,7 @@ const MenuWrap = ({
   );
 };
 
-export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, showDraftBranch = false, onCustomize, onAbout, onRequest }: TitlebarProps): React.ReactElement => {
+export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, showDraftBranch = false, onCustomize, onAbout, onRequest, activityPill = null }: TitlebarProps): React.ReactElement => {
   const [open, setOpen] = useState<OpenMenu>(null);
   const activeRepo = branch === null ? null : repo;
   const repoOwner = activeRepo?.owner ?? 'collette-travel';
@@ -225,10 +226,7 @@ export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, m
         <MenuWrap id="settings" open={open} setOpen={setOpen} label="Settings" buttonClassName="icon-btn" buttonAriaLabel="Settings" trailing={null} onCustomize={onCustomize} onAbout={onAbout} onRequest={onRequest}>
           <Ico.Gear size={13} />
         </MenuWrap>
-        <button type="button" className="titlebar-activity-pill" aria-label="Activity">
-          <Ico.Terminal size={12} />
-          <span className="activity-glyph" />
-        </button>
+        {activityPill}
       </div>
     </header>
   );

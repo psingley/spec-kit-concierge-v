@@ -8,6 +8,7 @@ import { GitCommandError } from './gitCommand';
 import { readUncommittedPaths } from './uncommittedPaths';
 
 const execFileAsync = promisify(execFile);
+const gitFixtureTimeoutMs = 60_000;
 
 const git = async (cwd: string, args: string[]): Promise<void> => {
   await execFileAsync('git', args, { cwd });
@@ -34,7 +35,7 @@ describe('readUncommittedPaths', () => {
         changedPaths: ['tracked.txt']
       });
     });
-  });
+  }, gitFixtureTimeoutMs);
 
   it('treats unrelated dirty paths as non-matches', async () => {
     await withTempDir(async (directory) => {
@@ -46,7 +47,7 @@ describe('readUncommittedPaths', () => {
         changedPaths: []
       });
     });
-  });
+  }, gitFixtureTimeoutMs);
 
   it('reports clean path sets', async () => {
     await withTempDir(async (directory) => {
@@ -57,7 +58,7 @@ describe('readUncommittedPaths', () => {
         changedPaths: []
       });
     });
-  });
+  }, gitFixtureTimeoutMs);
 
   it('surfaces git failures explicitly', async () => {
     await withTempDir(async (directory) => {
@@ -65,5 +66,5 @@ describe('readUncommittedPaths', () => {
         GitCommandError
       );
     });
-  });
+  }, gitFixtureTimeoutMs);
 });

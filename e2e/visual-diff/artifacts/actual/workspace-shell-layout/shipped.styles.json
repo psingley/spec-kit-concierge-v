@@ -1,0 +1,44 @@
+[
+  {
+    "name": "shell grid",
+    "selector": ".workspace",
+    "found": true,
+    "styles": {
+      "display": "grid",
+      "grid-template-rows": "44px 656px",
+      "height": "700px"
+    }
+  },
+  {
+    "name": "activity body grid",
+    "selector": ".workspace-body",
+    "found": true,
+    "styles": {
+      "display": "grid",
+      "min-height": "0px"
+    }
+  },
+  {
+    "name": "docked activity rail",
+    "selector": ".activity",
+    "found": true,
+    "styles": {
+      "position": "static",
+      "display": "flex",
+      "flex-direction": "column",
+      "min-height": "0px",
+      "border-left-width": "1px"
+    }
+  },
+  {
+    "name": "single titlebar activity pill",
+    "selector": ".titlebar-right .activity-pill",
+    "found": true,
+    "styles": {
+      "position": "static",
+      "display": "flex",
+      "height": "26px",
+      "border-radius": "999px"
+    }
+  }
+]

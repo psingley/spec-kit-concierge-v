@@ -19,7 +19,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "vd:generate-contract": "vite-node e2e/visual-diff/harness/contract/generateContract.ts",
-    "vd:capture": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && vite build --config vite.renderer.config.ts && sh -c 'vite-node e2e/visual-diff/harness/capture/captureDesign.ts \"$@\" && vite-node e2e/visual-diff/harness/capture/captureShipped.ts \"$@\"' --",
+    "vd:capture": "vite build --config vite.main.config.ts && vite build --config vite.preload.config.ts && VITE_CONCIERGE_VISUAL_STORE=1 vite build --config vite.renderer.config.ts && sh -c 'vite-node e2e/visual-diff/harness/capture/captureDesign.ts \"$@\" && vite-node e2e/visual-diff/harness/capture/captureShipped.ts \"$@\"' --",
     "vd:diff": "vite-node e2e/visual-diff/harness/diff.ts",
     "vd:report": "vite-node e2e/visual-diff/harness/report.ts",
     "vd:dev": "vite-node e2e/visual-diff/harness/dev/runDevLoop.ts",

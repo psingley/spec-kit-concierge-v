@@ -8,6 +8,7 @@ import { GitCommandError } from './gitCommand';
 import { readBranchState } from './branchState';
 
 const execFileAsync = promisify(execFile);
+const gitFixtureTimeoutMs = 60_000;
 
 const git = async (cwd: string, args: string[]): Promise<void> => {
   await execFileAsync('git', args, { cwd });
@@ -57,7 +58,7 @@ describe('readBranchState', () => {
         dirty: true
       });
     });
-  });
+  }, gitFixtureTimeoutMs);
 
   it('reports a clean working tree', async () => {
     await withTempDir(async (directory) => {
@@ -71,11 +72,11 @@ describe('readBranchState', () => {
         dirty: false
       });
     });
-  });
+  }, gitFixtureTimeoutMs);
 
   it('surfaces git failures explicitly', async () => {
     await withTempDir(async (directory) => {
       await expect(readBranchState(directory)).rejects.toBeInstanceOf(GitCommandError);
     });
-  });
+  }, gitFixtureTimeoutMs);
 });

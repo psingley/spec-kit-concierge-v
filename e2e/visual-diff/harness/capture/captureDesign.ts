@@ -49,7 +49,7 @@ try {
     const contract = await loadContract(screen.name);
     const dir = path.join(referencesDir, screen.name);
     await mkdir(dir, { recursive: true });
-    const page = await browser.newPage({ viewport });
+    const page = await browser.newPage({ viewport: screen.viewport ?? viewport });
     await page.goto(server.url);
     await page.waitForLoadState('networkidle');
     await screen.designSetup?.(page);

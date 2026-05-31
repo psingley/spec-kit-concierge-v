@@ -9,6 +9,7 @@ export type VisualDiffScreen = {
   designPath: string;
   designSetup?: (page: Page) => Promise<void>;
   shippedSetup?: (page: Page) => Promise<void>;
+  viewport?: { width: number; height: number };
   bbox?: Rect;
   masks?: Array<Rect & { reason: string }>;
 };
@@ -34,6 +35,14 @@ const scrollbarMask = {
   y: 0,
   width: 12,
   height: 720,
+  reason: 'Scrollbar gutter painting differs by Chromium host and is not product UI fidelity.'
+};
+
+const realWindowScrollbarMask = {
+  x: 988,
+  y: 0,
+  width: 12,
+  height: 700,
   reason: 'Scrollbar gutter painting differs by Chromium host and is not product UI fidelity.'
 };
 
@@ -404,6 +413,7 @@ export const screens: VisualDiffScreen[] = [
   { name: 'workspace-titlebar-closed-menus', designPath: 'design/v3-fetch/project/topbar.jsx', designSetup: reachWorkspace, shippedSetup: reachWorkspace, masks: [scrollbarMask] },
   { name: 'workspace-titlebar-repo-dropdown-open', designPath: 'design/v3-fetch/project/topbar.jsx', designSetup: async (page) => { await reachWorkspace(page); await openRepoMenu(page); }, shippedSetup: async (page) => { await reachWorkspace(page); await openRepoMenu(page); }, masks: [scrollbarMask] },
   { name: 'workspace-titlebar-gear-menu-open', designPath: 'design/v3-fetch/project/topbar.jsx', designSetup: async (page) => { await reachWorkspace(page); await openSettingsMenu(page); }, shippedSetup: async (page) => { await reachWorkspace(page); await openSettingsMenu(page); }, masks: [scrollbarMask] },
+  { name: 'workspace-shell-layout', designPath: 'design/v3-fetch/project/app.jsx', designSetup: openActivity, shippedSetup: openActivity, viewport: { width: 1000, height: 700 }, masks: [timestampMask, realWindowScrollbarMask] },
   ...['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'].map((step) => ({
     name: `stepper-${step}-current`,
     designPath: 'design/v3-fetch/project/app.jsx',

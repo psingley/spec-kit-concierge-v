@@ -18,7 +18,9 @@ export const App = (): React.ReactElement => {
     return (
       <div className="workspace">
         <TitlebarContainer />
-        <RepoBrowseScreenContainer />
+        <div className="workspace-body no-activity">
+          <RepoBrowseScreenContainer />
+        </div>
       </div>
     );
   }
