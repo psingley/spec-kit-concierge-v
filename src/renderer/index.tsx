@@ -14,7 +14,7 @@ import { store } from './store';
 
 const rootElement = document.getElementById('root');
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV || import.meta.env.VITE_CONCIERGE_VISUAL_STORE === '1') {
   window.__CONCIERGE_VISUAL_STORE__ = store;
 }
 

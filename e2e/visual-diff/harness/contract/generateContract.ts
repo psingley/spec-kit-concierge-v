@@ -83,6 +83,7 @@ const guessPrimaryRegion = (screenName: string): { designSelector: string; shipp
   if (screenName.startsWith('activity-rail')) return { designSelector: '.activity', shippedSelector: '.activity' };
   if (screenName.startsWith('activity-pill')) return { designSelector: '.activity-pill', shippedSelector: '.activity-pill' };
   if (screenName.startsWith('workspace-titlebar')) return { designSelector: '.titlebar', shippedSelector: '.titlebar' };
+  if (screenName === 'workspace-shell-layout') return { designSelector: '.app', shippedSelector: '.workspace' };
   if (screenName.startsWith('stepper')) return { designSelector: '.stepper', shippedSelector: '.stepper' };
   return { designSelector: 'body', shippedSelector: 'body' };
 };

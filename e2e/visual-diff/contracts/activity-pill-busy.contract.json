@@ -42,7 +42,7 @@
   "styleSamples": [
     {
       "name": "activity pill busy",
-      "designSelector": ".activity-pill.is-busy",
+      "designSelector": ".activity-pill",
       "shippedSelector": ".activity-pill",
       "properties": [
         "background-color",
