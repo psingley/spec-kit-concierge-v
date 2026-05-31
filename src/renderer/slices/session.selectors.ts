@@ -7,6 +7,12 @@ export const selectSessionModelId = (state: RootState) => state.session.modelId;
 export const selectSessionModeId = (state: RootState) => state.session.modeId;
 export const selectSessionSpecifyPrompt = (state: RootState) => state.session.specifyPrompt;
 export const selectSessionSpecifyRunning = (state: RootState) => state.session.specifyRunning;
+export const selectSessionAnyStepRunning = (state: RootState): boolean =>
+  state.session.specifyRunning ||
+  state.session.clarifyRunning ||
+  state.session.clarifyAskAnotherRunning ||
+  state.session.clarifyCompleting ||
+  Object.values(state.session.passiveSteps).some((step) => step.running);
 export const selectSessionSpecifyStarted = (state: RootState) => state.session.specifyStarted;
 export const selectSessionSpecMarkdown = (state: RootState) => state.session.specMarkdown;
 export const selectSessionArtifactPath = (state: RootState) => state.session.artifactPath;

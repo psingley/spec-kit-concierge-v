@@ -303,7 +303,10 @@ class TestAcpAdapterSession implements BoundCLISession {
     },
     authMethods: [],
     modes: { current: AGENT_MODE_URI, available: [{ id: AGENT_MODE_URI, name: 'Agent' }] },
-    models: { current: 'test-model', available: [{ id: 'test-model', name: 'Test model' }] },
+    models: {
+      current: 'claude-sonnet-4-5',
+      available: [{ id: 'claude-sonnet-4-5', name: 'Claude Sonnet 4.5', enablement: 'default' }]
+    },
     configOptions: []
   };
   readonly events = new EventEmitter();
