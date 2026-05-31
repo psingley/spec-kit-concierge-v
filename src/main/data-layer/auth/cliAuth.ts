@@ -35,6 +35,10 @@ export type GitHubAuthStatus = {
   login?: string;
 };
 
+export type CopilotAuthStatus = {
+  authenticated: boolean;
+};
+
 type GitHubApiUser = {
   login?: unknown;
   name?: unknown;
@@ -137,9 +141,41 @@ export const loginGitHub = async (
   return { status: 'ok', provider: 'github', identity: await readGitHubIdentity(authenticated.login, execFileAdapter) };
 };
 
+const hasEnvironmentCopilotToken = (): boolean =>
+  process.env.COPILOT_GITHUB_TOKEN !== undefined || process.env.GH_TOKEN !== undefined || process.env.GITHUB_TOKEN !== undefined;
+
+export const readCopilotAuthStatus = async (
+  githubLogin: string | undefined,
+  execFileAdapter: ExecFileAdapter = defaultExecFile,
+  platform = process.platform
+): Promise<CopilotAuthStatus> => {
+  if (hasEnvironmentCopilotToken()) {
+    return { authenticated: true };
+  }
+
+  if (githubLogin === undefined) {
+    return { authenticated: false };
+  }
+
+  if (platform !== 'darwin') {
+    return { authenticated: false };
+  }
+
+  try {
+    await execFileAdapter('security', ['find-generic-password', '-s', 'copilot-cli', '-a', `https://github.com:${githubLogin}`], {
+      shell: false
+    });
+    return { authenticated: true };
+  } catch {
+    return { authenticated: false };
+  }
+};
+
 export const loginCopilot = async (
   githubConnected: boolean,
-  adapterPath = process.env.CONCIERGE_TEST_COPILOT_ADAPTER
+  adapterPath = process.env.CONCIERGE_TEST_COPILOT_ADAPTER,
+  execFileAdapter: ExecFileAdapter = defaultExecFile,
+  platform = process.platform
 ): Promise<LoginResult> => {
   if (!githubConnected) {
     throw new Error('GitHub login is required before Copilot login.');
@@ -150,6 +186,20 @@ export const loginCopilot = async (
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   }
 
-  await execFileAsync('copilot', ['auth', 'login'], { shell: false });
+  const githubStatus = await readGitHubAuthStatus(execFileAdapter);
+  if (!githubStatus.authenticated) {
+    throw new Error('GitHub login is required before Copilot login.');
+  }
+
+  const existing = await readCopilotAuthStatus(githubStatus.login, execFileAdapter, platform);
+  if (existing.authenticated) {
+    return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
+  }
+
+  await execFileAdapter('copilot', ['login'], { shell: false });
+  const authenticated = await readCopilotAuthStatus(githubStatus.login, execFileAdapter, platform);
+  if (!authenticated.authenticated) {
+    throw new Error('Copilot CLI login did not complete.');
+  }
   return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
 };
