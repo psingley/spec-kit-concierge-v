@@ -20,6 +20,7 @@ import { registerStepsIpc } from './ipc/steps';
 import { registerTasksDetailIpc } from './ipc/tasksDetail';
 import { registerReviewEvidenceIpc } from './ipc/reviewEvidence';
 import { registerWorkspaceIpc } from './ipc/workspace';
+import { registerMcpConfigIpc } from './ipc/mcpConfig';
 import { verifyAgentManifestDrift } from './hooks/driftVerifier';
 import { createMainLogger, type MainLogger } from './logging';
 
@@ -69,6 +70,7 @@ app.whenReady().then(async () => {
   registerCopilotAnalyzeIpc({ ipcMain, logger });
   registerStepsIpc({ ipcMain, logger });
   registerPreferencesIpc({ ipcMain, logger });
+  registerMcpConfigIpc({ ipcMain, logger });
   registerAuthIpc({ ipcMain, logger });
   registerSessionIpc({ ipcMain, logger });
   registerActivityIpc({ ipcMain, logger });

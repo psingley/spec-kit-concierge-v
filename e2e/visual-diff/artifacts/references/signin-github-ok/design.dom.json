@@ -174,7 +174,7 @@
                 },
                 {
                   "tag": "div",
-                  "text": "Required to send specs to JIRA",
+                  "text": "Required before JIRA submission",
                   "children": []
                 }
               ]
@@ -182,21 +182,7 @@
             {
               "tag": "button",
               "text": "Sign in",
-              "children": [
-                {
-                  "tag": "svg",
-                  "children": [
-                    {
-                      "tag": "path",
-                      "children": []
-                    },
-                    {
-                      "tag": "path",
-                      "children": []
-                    }
-                  ]
-                }
-              ]
+              "children": []
             }
           ]
         }

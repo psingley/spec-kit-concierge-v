@@ -1,17 +1,45 @@
 {
-  "runId": "2026-05-30T23:27:49.728Z",
+  "runId": "2026-05-31T18:39:45.751Z",
   "viewport": {
     "width": 1280,
     "height": 720
   },
   "summary": {
-    "total": 42,
-    "pass": 42,
+    "total": 46,
+    "pass": 46,
     "fail": 0,
     "warn": 0,
-    "worstScreen": "repo-browse-repo-selected"
+    "worstScreen": "signin-atlassian-authenticated"
   },
   "screens": [
+    {
+      "name": "signin-atlassian-authenticated",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 9.53,
+      "priorityScore": 10
+    },
+    {
+      "name": "signin-atlassian-not-configured",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 8.88,
+      "priorityScore": 9
+    },
+    {
+      "name": "signin-atlassian-needs-auth",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 9.32,
+      "priorityScore": 9
+    },
+    {
+      "name": "signin-atlassian-write-failed",
+      "status": "PASS",
+      "failures": [],
+      "pixelResidual": 8.85,
+      "priorityScore": 9
+    },
     {
       "name": "repo-browse-repo-selected",
       "status": "PASS",
@@ -23,7 +51,7 @@
       "name": "signin-fresh",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.27,
+      "pixelResidual": 6.26,
       "priorityScore": 6
     },
     {
@@ -37,14 +65,14 @@
       "name": "stepper-specify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.98,
+      "pixelResidual": 5.88,
       "priorityScore": 6
     },
     {
       "name": "stepper-clarify-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.94,
+      "pixelResidual": 6.04,
       "priorityScore": 6
     },
     {
@@ -58,21 +86,21 @@
       "name": "stepper-tasks-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 6.04,
+      "pixelResidual": 5.85,
       "priorityScore": 6
     },
     {
       "name": "stepper-analyze-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.9,
+      "pixelResidual": 6.02,
       "priorityScore": 6
     },
     {
       "name": "stepper-review-current",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.93,
+      "pixelResidual": 5.94,
       "priorityScore": 6
     },
     {
@@ -86,28 +114,28 @@
       "name": "workspace-titlebar-closed-menus",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.99,
+      "pixelResidual": 4.98,
       "priorityScore": 5
     },
     {
       "name": "clarify-question",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.14,
+      "pixelResidual": 5.15,
       "priorityScore": 5
     },
     {
       "name": "clarify-ask-another",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.96,
+      "pixelResidual": 4.95,
       "priorityScore": 5
     },
     {
       "name": "clarify-malformed-reask",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.81,
+      "pixelResidual": 4.82,
       "priorityScore": 5
     },
     {
@@ -121,14 +149,14 @@
       "name": "activity-rail-idle",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.11,
+      "pixelResidual": 4.99,
       "priorityScore": 5
     },
     {
       "name": "activity-rail-busy",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 5.46,
+      "pixelResidual": 5.45,
       "priorityScore": 5
     },
     {
@@ -156,7 +184,7 @@
       "name": "specify-input",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 4.03,
+      "pixelResidual": 4.04,
       "priorityScore": 4
     },
     {
@@ -177,7 +205,7 @@
       "name": "workspace-titlebar-gear-menu-open",
       "status": "PASS",
       "failures": [],
-      "pixelResidual": 3.24,
+      "pixelResidual": 3.25,
       "priorityScore": 3
     },
     {

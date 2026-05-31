@@ -77,7 +77,7 @@ export const parseRendererAuthLoginResult = (
   }
   result.label = typeof root.value.label === 'string' ? root.value.label : undefined;
   if (result.provider === 'atlassian' && 'token' in root.value) {
-    return { ok: false, error: { name: 'InvalidAuthLogin', message: 'Atlassian stub must not expose OAuth tokens', path: '$.token' } };
+    return { ok: false, error: { name: 'InvalidAuthLogin', message: 'Atlassian login response must not expose OAuth tokens', path: '$.token' } };
   }
   return { ok: true, value: result };
 };

@@ -24,7 +24,7 @@
         "value": "Drives the spec-kit workflow"
       },
       {
-        "value": "Required to send specs to JIRA"
+        "value": "Required before JIRA submission"
       },
       {
         "value": "Spec-driven feature work, with Copilot CLI in the loop. Sign in to load your organization."

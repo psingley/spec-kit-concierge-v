@@ -19,6 +19,8 @@ describe('renderer API slice', () => {
       'loginGitHub',
       'loginCopilot',
       'loginAtlassianStub',
+      'checkMcpConfig',
+      'fixMcpConfig',
       'listAcpSessions',
       'createAcpSession',
       'getActivity',

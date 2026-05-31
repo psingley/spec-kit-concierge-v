@@ -105,7 +105,7 @@ export const createAuthLoginResponse = (value: unknown): FactoryResult<AuthLogin
   }
   response.label = optionalString(root.value.label);
   if (response.provider === 'atlassian' && (root.value as Record<string, unknown>).token !== undefined) {
-    return invalid('InvalidAuthLoginPayload', 'Atlassian stub must not include OAuth tokens', '$.token');
+    return invalid('InvalidAuthLoginPayload', 'Atlassian login response must not include OAuth tokens', '$.token');
   }
   return { ok: true, value: response };
 };

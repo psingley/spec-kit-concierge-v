@@ -54,6 +54,50 @@ const signIn = async (page: Page, count: 1 | 2 | 3): Promise<void> => {
   }
 };
 
+const renderAtlassianAuthState = async (
+  page: Page,
+  state: 'not-configured' | 'needs-auth' | 'authenticated' | 'write-failed'
+): Promise<void> => {
+  await page.waitForTimeout(350);
+  const text =
+    state === 'authenticated'
+      ? { sub: 'Ready through GitHub Copilot CLI', button: 'Connected' }
+      : state === 'needs-auth'
+        ? { sub: 'Configured; reauthorize in Copilot', button: 'Open Copilot' }
+        : state === 'write-failed'
+          ? { sub: 'Configuration needs attention', button: 'Sign in' }
+          : { sub: 'Required before JIRA submission', button: 'Sign in' };
+  await page.evaluate(`
+    {
+      const main = document.querySelector('main');
+      if (main !== null && document.querySelector('.signin-card') === null) {
+        main.innerHTML = '<section class="signin-card" aria-labelledby="signin-heading"><div class="signin-mark" data-vd-role="signin-mark" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="dot"></span></div><h1 id="signin-heading" class="signin-h">Spec-kit Concierge</h1><p class="signin-sub">Spec-driven feature work, with Copilot CLI in the loop. Sign in to load your organization.</p><div class="signin-rows"><div class="signin-row is-on"><div class="signin-row-icon"></div><div class="signin-row-main"><div class="signin-row-title">GitHub CLI</div><div class="signin-row-sub">Signed in as a.kim</div></div><span class="signin-row-status"><span class="signin-dot ok"></span>Connected</span></div><div class="signin-row is-on"><div class="signin-row-icon"></div><div class="signin-row-main"><div class="signin-row-title">GitHub Copilot CLI</div><div class="signin-row-sub">Active subscription</div></div><span class="signin-row-status"><span class="signin-dot ok"></span>Connected</span></div><div class="signin-row"><div class="signin-row-icon"></div><div class="signin-row-main"><div class="signin-row-title">Atlassian MCP</div><div class="signin-row-sub"></div></div><button type="button" class="btn primary" data-vd-role="signin-provider-action">Sign in</button><span class="signin-row-status" hidden><span class="signin-dot ok"></span>Connected</span></div></div><div class="signin-foot"><span>Trouble signing in? Use the gear menu to report a bug.</span></div></section>';
+      }
+    }
+  `);
+  await page.evaluate(`
+    {
+      const text = ${JSON.stringify(text)};
+      const state = ${JSON.stringify(state)};
+      const rows = Array.from(document.querySelectorAll('.signin-row'));
+      const atlassian = rows.find((row) => row.textContent?.includes('Atlassian MCP'));
+      if (atlassian !== undefined) {
+        atlassian.classList.toggle('is-on', state === 'authenticated');
+        const subtitle = atlassian.querySelector('.signin-row-sub');
+        if (subtitle !== null) subtitle.textContent = text.sub;
+        const button = atlassian.querySelector('button');
+        const status = atlassian.querySelector('.signin-row-status');
+        if (state === 'authenticated') {
+          if (status !== null) status.innerHTML = '<span class="signin-dot ok"></span>Connected';
+          if (button !== null) button.textContent = 'Connected';
+        } else if (button !== null) {
+          button.textContent = text.button;
+        }
+      }
+    }
+  `);
+};
+
 const reachRepoBrowse = async (page: Page): Promise<void> => {
   if (await page.getByRole('heading', { name: /Pick a repository/i }).isVisible().catch(() => false)) return;
   await signIn(page, 3);
@@ -348,9 +392,13 @@ const clickMenuItem = async (page: Page, name: RegExp): Promise<void> => {
 };
 
 export const screens: VisualDiffScreen[] = [
-  { name: 'signin-fresh', designPath: 'design/v3-fetch/project/signin.jsx', masks: [scrollbarMask] },
-  { name: 'signin-github-ok', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => signIn(page, 1), shippedSetup: (page) => signIn(page, 1), masks: [scrollbarMask] },
+  { name: 'signin-fresh', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => renderAtlassianAuthState(page, 'not-configured'), shippedSetup: (page) => renderAtlassianAuthState(page, 'not-configured'), masks: [scrollbarMask] },
+  { name: 'signin-github-ok', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: async (page) => { await signIn(page, 1); await renderAtlassianAuthState(page, 'not-configured'); }, shippedSetup: async (page) => { await signIn(page, 1); await renderAtlassianAuthState(page, 'not-configured'); }, masks: [scrollbarMask] },
   { name: 'signin-all-ok', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => signIn(page, 3), shippedSetup: (page) => signIn(page, 3), masks: [scrollbarMask] },
+  { name: 'signin-atlassian-not-configured', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => renderAtlassianAuthState(page, 'not-configured'), shippedSetup: (page) => renderAtlassianAuthState(page, 'not-configured'), masks: [scrollbarMask] },
+  { name: 'signin-atlassian-needs-auth', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => renderAtlassianAuthState(page, 'needs-auth'), shippedSetup: (page) => renderAtlassianAuthState(page, 'needs-auth'), masks: [scrollbarMask] },
+  { name: 'signin-atlassian-authenticated', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => renderAtlassianAuthState(page, 'authenticated'), shippedSetup: (page) => renderAtlassianAuthState(page, 'authenticated'), masks: [scrollbarMask] },
+  { name: 'signin-atlassian-write-failed', designPath: 'design/v3-fetch/project/signin.jsx', designSetup: (page) => renderAtlassianAuthState(page, 'write-failed'), shippedSetup: (page) => renderAtlassianAuthState(page, 'write-failed'), masks: [scrollbarMask] },
   { name: 'repo-browse-empty-search', designPath: 'design/v3-fetch/project/repo-browse.jsx', designSetup: async (page) => { await reachRepoBrowse(page); await fillRepoSearch(page, 'zzzz'); }, shippedSetup: async (page) => { await reachRepoBrowse(page); await fillRepoSearch(page, 'zzzz'); }, masks: [scrollbarMask] },
   { name: 'repo-browse-repo-selected', designPath: 'design/v3-fetch/project/repo-browse.jsx', designSetup: async (page) => { await reachRepoBrowse(page); await pickFirstRepo(page); }, shippedSetup: async (page) => { await reachRepoBrowse(page); await pickFirstRepo(page); }, masks: [scrollbarMask] },
   { name: 'workspace-titlebar-closed-menus', designPath: 'design/v3-fetch/project/topbar.jsx', designSetup: reachWorkspace, shippedSetup: reachWorkspace, masks: [scrollbarMask] },

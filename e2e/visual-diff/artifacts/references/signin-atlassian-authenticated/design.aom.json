@@ -1,0 +1,50 @@
+{
+  "role": "generic",
+  "name": "",
+  "children": [
+    {
+      "role": "heading",
+      "name": "Spec-kit Concierge",
+      "children": []
+    },
+    {
+      "role": "generic",
+      "name": "",
+      "children": [
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Sign in",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Sign in",
+              "children": []
+            }
+          ]
+        },
+        {
+          "role": "generic",
+          "name": "",
+          "children": [
+            {
+              "role": "button",
+              "name": "Connected",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

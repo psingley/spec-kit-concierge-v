@@ -6,13 +6,7 @@ import {
   type RendererAuthLoginResult,
   type RendererAuthStatus
 } from './auth.factory';
-import {
-  atlassianLoginSucceeded,
-  authLoginFailed,
-  authLoginStarted,
-  copilotLoginSucceeded,
-  githubLoginSucceeded
-} from '../slices/auth';
+import { authLoginFailed, authLoginStarted, copilotLoginSucceeded, githubLoginSucceeded } from '../slices/auth';
 import { recordActivity } from '../slices/activity';
 
 export type AuthStatusArgs = {
@@ -84,8 +78,7 @@ export const authApi = api.injectEndpoints({
           queryApi.dispatch(authLoginFailed({ provider: 'atlassian', message: parsed.error.message }));
           return { error: parsingError(parsed.error) };
         }
-        queryApi.dispatch(atlassianLoginSucceeded());
-        queryApi.dispatch(recordActivity({ timestamp: new Date().toISOString(), level: 'ok', message: 'Atlassian stub connected' }));
+        queryApi.dispatch(recordActivity({ timestamp: new Date().toISOString(), level: 'ok', message: parsed.value.label ?? 'Atlassian MCP configured' }));
         return { data: parsed.value };
       },
       invalidatesTags: ['Agent']
