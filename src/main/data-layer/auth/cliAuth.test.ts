@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loginGitHub, parseGitHubAuthStatus, type ExecFileAdapter } from './cliAuth';
+import { loginCopilot, loginGitHub, parseGitHubAuthStatus, type ExecFileAdapter } from './cliAuth';
 
 const authedSingle = `github.com
   ✓ Logged in to github.com account monalisa (keyring)
@@ -125,5 +125,73 @@ describe('loginGitHub', () => {
       'auth status --active --hostname github.com',
       'api user'
     ]);
+  });
+});
+
+describe('loginCopilot', () => {
+  it('returns quickly without starting copilot login when the active GitHub account has a Copilot CLI credential', async () => {
+    const invocations: string[] = [];
+    const execFile: ExecFileAdapter = async (command, args) => {
+      invocations.push(`${command} ${args.join(' ')}`);
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      if (command === 'security' && args[0] === 'find-generic-password') {
+        return { stdout: '', stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'darwin')).resolves.toEqual({
+      status: 'ok',
+      provider: 'copilot',
+      label: 'Copilot CLI ready'
+    });
+    expect(invocations).toEqual([
+      'gh auth status --active --hostname github.com',
+      'security find-generic-password -s copilot-cli -a https://github.com:monalisa'
+    ]);
+  });
+
+  it('runs the real copilot login subcommand and verifies the credential when no Copilot credential exists yet', async () => {
+    const invocations: string[] = [];
+    let credentialExists = false;
+    const execFile: ExecFileAdapter = async (command, args) => {
+      invocations.push(`${command} ${args.join(' ')}`);
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      if (command === 'security' && args[0] === 'find-generic-password') {
+        if (credentialExists) {
+          return { stdout: '', stderr: '' };
+        }
+        throw new Error('credential not found');
+      }
+      if (command === 'copilot' && args[0] === 'login') {
+        credentialExists = true;
+        return { stdout: '', stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'darwin')).resolves.toEqual({
+      status: 'ok',
+      provider: 'copilot',
+      label: 'Copilot CLI ready'
+    });
+    expect(invocations).toEqual([
+      'gh auth status --active --hostname github.com',
+      'security find-generic-password -s copilot-cli -a https://github.com:monalisa',
+      'copilot login',
+      'security find-generic-password -s copilot-cli -a https://github.com:monalisa'
+    ]);
+  });
+
+  it('requires GitHub to be connected before Copilot login', async () => {
+    const execFile: ExecFileAdapter = async () => {
+      throw new Error('should not cross the OS boundary');
+    };
+
+    await expect(loginCopilot(false, '', execFile, 'darwin')).rejects.toThrow('GitHub login is required before Copilot login.');
   });
 });

@@ -1,7 +1,5 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import type { IpcMain } from 'electron';
-import { loginCopilot, loginGitHub, readGitHubAuthStatus, type LoginResult } from '../data-layer/auth/cliAuth';
+import { loginCopilot, loginGitHub, readCopilotAuthStatus, readGitHubAuthStatus, type LoginResult } from '../data-layer/auth/cliAuth';
 import { checkCopilotMcpConfig, fixCopilotMcpConfig } from '../data-layer/mcp-config/copilotMcp';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
@@ -33,22 +31,13 @@ export type RegisterAuthIpcOptions = {
   now?: () => number;
 };
 
-const execFileAsync = promisify(execFile);
-
 const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | null> => {
   if (provider === 'github') {
     return (await readGitHubAuthStatus()).authenticated;
   }
 
-  const command = 'copilot';
-  const args = ['auth', 'status'];
-
-  try {
-    await execFileAsync(command, args, { shell: false });
-    return true;
-  } catch {
-    return false;
-  }
+  const githubStatus = await readGitHubAuthStatus();
+  return (await readCopilotAuthStatus(githubStatus.login)).authenticated;
 };
 
 export const registerAuthIpc = ({
