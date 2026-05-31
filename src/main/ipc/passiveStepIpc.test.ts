@@ -52,10 +52,10 @@ describe('registerPassiveStepIpc', () => {
     await vi.waitFor(() => expect(afterHook).toHaveBeenCalledTimes(1));
     expect(beforeHook).toHaveBeenCalledWith(expect.objectContaining({ featureDir: payload.repositoryPath, sessionId: expect.stringMatching(/^plan-/) }));
     expect(agentAdapter).toHaveBeenCalledWith(expect.objectContaining({ step: 'plan', modelId: 'gpt-5.5' }));
-    expect(harness.sender.send).toHaveBeenCalledWith('copilot:plan:event', expect.objectContaining({
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:plan:event', expect.objectContaining({
       subscriptionId: 'sub-1',
       event: expect.objectContaining({ type: 'done', step: 'plan', status: 'pass', commitSha: 'abc123' })
-    }));
+    })));
     const terminalEvents = harness.sender.send.mock.calls.filter((call) => call[1].event.type === 'done');
     expect(terminalEvents).toHaveLength(1);
   });

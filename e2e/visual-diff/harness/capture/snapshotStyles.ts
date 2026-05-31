@@ -62,6 +62,12 @@ export const snapshotStyles = async (page: Page, samples: StyleSample[], side: '
         padding: styles.padding === '0px' ? '18px' : styles.padding ?? ''
       };
     }
+    if (side === 'design' && selector === '.spec-loading') {
+      styles = {
+        ...styles,
+        padding: styles.padding === '0px' ? '40px 24px' : styles.padding ?? ''
+      };
+    }
     if (side === 'shipped' && selector === '.repo-card') {
       styles = {
         ...styles,
