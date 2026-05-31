@@ -25,7 +25,7 @@ export const registerReposIpc = ({
     try {
       const request = createReposListRequest(assertOnePayload(REPOS_LIST_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const response = createReposListResponse({ repositories: await listRepos() });
+      const response = createReposListResponse({ repositories: await listRepos(request.value.owner) });
       if (!response.ok) throw toError(response.error.message);
       logger.info({ channel: REPOS_LIST_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;

@@ -9,6 +9,7 @@ const execFileAsync = promisify(execFile);
 export type BoundaryFixture = {
   repoPath: string;
   ghAdapterPath: string;
+  reposAdapterPath: string;
   copilotAdapterPath: string;
   acpAdapterPath: string;
   repoName: string;
@@ -50,24 +51,25 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
     updatedAt: '2026-05-27T00:00:00Z'
   }));
   const ghAdapterPath = path.join(repoPath, 'gh-adapter.json');
+  const reposAdapterPath = path.join(repoPath, 'repos-adapter.json');
   const copilotAdapterPath = path.join(repoPath, 'copilot-adapter.json');
   const acpAdapterPath = path.join(repoPath, 'acp-adapter.json');
   await writeFile(
     ghAdapterPath,
     JSON.stringify(
       {
-        identity: { login: 'a.kim', displayName: 'Anika Kim' },
-        repositories
+        identity: { login: 'a.kim', displayName: 'Anika Kim' }
       },
       null,
       2
     ),
     'utf8'
   );
+  await writeFile(reposAdapterPath, JSON.stringify({ repositories }, null, 2), 'utf8');
   await writeFile(copilotAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
   await writeFile(acpAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
 
-  return { repoPath, ghAdapterPath, copilotAdapterPath, acpAdapterPath, repoName };
+  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, repoName };
 };
 
 export const gitLogLastMessage = async (repoPath: string): Promise<string> => {
