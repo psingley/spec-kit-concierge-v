@@ -17,7 +17,7 @@ import { setupStepLifecycleListener } from './listeners/stepLifecycle.listener';
 import { setupTranscriptCaptureListener } from './listeners/transcriptCapture.listener';
 import { setupWorkspaceChangeListener } from './listeners/workspaceChange.listener';
 import type { AppStartListening } from './listeners/types';
-import { createMemoryRouter } from 'react-router';
+import type { createMemoryRouter } from 'react-router';
 import { mcpConfigCheckRequested, setupMcpConfigCheckerListener } from './listeners/mcpConfigChecker.listener';
 
 const reducer = {

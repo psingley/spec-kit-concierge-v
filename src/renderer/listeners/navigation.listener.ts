@@ -1,4 +1,4 @@
-import { createMemoryRouter } from 'react-router';
+import type { createMemoryRouter } from 'react-router';
 import type { RootState } from '../store';
 import { selectAuthGateOpen } from '../slices/auth.selectors';
 import { selectWorkspaceSelectedRepo, selectWorkspaceBranch } from '../slices/workspace.selectors';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { RouterProvider, createMemoryRouter } from 'react-router';
+import type { createMemoryRouter } from 'react-router';
+import { RouterProvider } from 'react-router';
 import { Toasts } from './components/Toasts';
 
 type AppProps = {
