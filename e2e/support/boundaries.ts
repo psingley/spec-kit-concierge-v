@@ -12,7 +12,40 @@ export type BoundaryFixture = {
   reposAdapterPath: string;
   copilotAdapterPath: string;
   acpAdapterPath: string;
+  capabilitiesAdapterPath: string;
   repoName: string;
+};
+
+const verifiedCopilotInitialize = {
+  protocolVersion: 1,
+  agentCapabilities: {
+    loadSession: true,
+    mcpCapabilities: { http: true, sse: true },
+    promptCapabilities: { image: true, audio: false, embeddedContext: true },
+    sessionCapabilities: { list: {} }
+  },
+  agentInfo: { name: 'Copilot', title: 'Copilot', version: '1.0.54' },
+  authMethods: [
+    {
+      id: 'copilot-login',
+      name: 'Log in with Copilot CLI',
+      description: 'Run `copilot login` in the terminal',
+      _meta: {
+        'terminal-auth': {
+          command: 'copilot',
+          args: ['login'],
+          label: 'Copilot Login'
+        }
+      }
+    }
+  ]
+};
+
+export const createCapabilitiesAdapterFixture = async (): Promise<{ capabilitiesAdapterPath: string }> => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'concierge-capabilities-'));
+  const capabilitiesAdapterPath = path.join(dir, 'capabilities-adapter.json');
+  await writeFile(capabilitiesAdapterPath, JSON.stringify(verifiedCopilotInitialize, null, 2), 'utf8');
+  return { capabilitiesAdapterPath };
 };
 
 export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
@@ -54,6 +87,7 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   const reposAdapterPath = path.join(repoPath, 'repos-adapter.json');
   const copilotAdapterPath = path.join(repoPath, 'copilot-adapter.json');
   const acpAdapterPath = path.join(repoPath, 'acp-adapter.json');
+  const capabilitiesAdapterPath = path.join(repoPath, 'capabilities-adapter.json');
   await writeFile(
     ghAdapterPath,
     JSON.stringify(
@@ -68,8 +102,9 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   await writeFile(reposAdapterPath, JSON.stringify({ repositories }, null, 2), 'utf8');
   await writeFile(copilotAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
   await writeFile(acpAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
+  await writeFile(capabilitiesAdapterPath, JSON.stringify(verifiedCopilotInitialize, null, 2), 'utf8');
 
-  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, repoName };
+  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, capabilitiesAdapterPath, repoName };
 };
 
 export const gitLogLastMessage = async (repoPath: string): Promise<string> => {

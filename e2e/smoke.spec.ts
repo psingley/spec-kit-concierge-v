@@ -2,11 +2,17 @@ import { expect, test, _electron as electron } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import path from 'node:path';
 import packageJson from '../package.json';
+import { createCapabilitiesAdapterFixture } from './support/boundaries';
 
 test('opens the blank Electron shell without console errors', async () => {
+  const fixture = await createCapabilitiesAdapterFixture();
   const consoleErrors: string[] = [];
   const electronApp = await electron.launch({
-    args: [path.join(process.cwd(), '.vite/build/main.js')]
+    args: [path.join(process.cwd(), '.vite/build/main.js')],
+    env: {
+      ...process.env,
+      CONCIERGE_TEST_CAPABILITIES_ADAPTER: fixture.capabilitiesAdapterPath
+    }
   });
 
   const captureConsoleErrors = (page: Page): void => {

@@ -17,7 +17,8 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
       CONCIERGE_TEST_GH_ADAPTER: fixture.ghAdapterPath,
       CONCIERGE_TEST_REPOS_ADAPTER: fixture.reposAdapterPath,
       CONCIERGE_TEST_COPILOT_ADAPTER: fixture.copilotAdapterPath,
-      CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath
+      CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath,
+      CONCIERGE_TEST_CAPABILITIES_ADAPTER: fixture.capabilitiesAdapterPath
     }
   });
 
