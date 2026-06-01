@@ -63,21 +63,3 @@ export const checkoutBranch = async (repositoryPath: string, branch: string): Pr
   await runGit(repositoryPath, ['checkout', branch]);
   return { branch };
 };
-
-export const createDraftBranch = async (
-  repositoryPath: string,
-  now: () => number = () => Date.now()
-): Promise<{ branch: string }> => {
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const branch = `spec/draft-${(now() + attempt).toString(36)}`;
-    try {
-      await runGit(repositoryPath, ['checkout', '-b', branch]);
-      return { branch };
-    } catch (error) {
-      if (attempt === 4) {
-        throw error;
-      }
-    }
-  }
-  throw new Error('Unable to create draft branch.');
-};

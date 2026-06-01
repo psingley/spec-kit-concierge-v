@@ -34,19 +34,17 @@ export type GitCheckoutResponse = {
   branch: string;
 };
 
-export type GitCreateDraftRequest = {
+export type GitResetMainRequest = {
   repositoryPath: string;
   defaultBranch: string;
 };
 
-export type GitCreateDraftResponse = {
+export type GitResetMainResponse = {
   branch: string;
 };
 
 const isSafeBranch = (value: string): boolean =>
   value.length > 0 && !value.startsWith('-') && !value.includes('..') && !value.includes('\\');
-
-const isDraftBranch = (value: string): boolean => /^spec\/draft-[a-z0-9]+$/.test(value);
 
 export const createGitReadRequest = (value: unknown): FactoryResult<GitReadRequest, ErrorName> => {
   const root = requireRecord(value, 'InvalidGitReadPayload', '$');
@@ -96,9 +94,9 @@ export const createGitCheckoutResponse = (value: unknown): FactoryResult<GitChec
   return { ok: true, value: { branch: branch.value } };
 };
 
-export const createGitCreateDraftRequest = (
+export const createGitResetMainRequest = (
   value: unknown
-): FactoryResult<GitCreateDraftRequest, GitMutationErrorName> => {
+): FactoryResult<GitResetMainRequest, GitMutationErrorName> => {
   const root = requireRecord(value, 'InvalidGitMutationPayload', '$');
   if (!root.ok) return root;
   const keys = requireExactKeys(root.value, ['repositoryPath', 'defaultBranch'], 'InvalidGitMutationPayload', '$');
@@ -113,17 +111,17 @@ export const createGitCreateDraftRequest = (
   return { ok: true, value: { repositoryPath: repositoryPath.value, defaultBranch: defaultBranch.value } };
 };
 
-export const createGitCreateDraftResponse = (
+export const createGitResetMainResponse = (
   value: unknown
-): FactoryResult<GitCreateDraftResponse, GitMutationErrorName> => {
+): FactoryResult<GitResetMainResponse, GitMutationErrorName> => {
   const root = requireRecord(value, 'InvalidGitMutationPayload', '$');
   if (!root.ok) return root;
   const keys = requireExactKeys(root.value, ['branch'], 'InvalidGitMutationPayload', '$');
   if (!keys.ok) return keys;
   const branch = requireString(root.value.branch, 'InvalidGitMutationPayload', '$.branch');
   if (!branch.ok) return branch;
-  if (!isDraftBranch(branch.value)) {
-    return invalid('InvalidGitMutationPayload', 'branch must be spec/draft-<base36>', '$.branch');
+  if (!isSafeBranch(branch.value)) {
+    return invalid('InvalidGitMutationPayload', 'branch must be a safe ref name', '$.branch');
   }
   return { ok: true, value: { branch: branch.value } };
 };

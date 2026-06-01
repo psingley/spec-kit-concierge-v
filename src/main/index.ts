@@ -13,6 +13,7 @@ import { registerCopilotPlanIpc } from './ipc/copilotPlan';
 import { registerCopilotTasksIpc } from './ipc/copilotTasks';
 import { registerCopilotAnalyzeIpc } from './ipc/copilotAnalyze';
 import { registerGitIpc } from './ipc/git';
+import { registerEnsureLocalRepoIpc } from './ipc/ensureLocalRepo';
 import { registerPreferencesIpc } from './ipc/preferences';
 import { registerReposIpc } from './ipc/repos';
 import { registerSessionIpc } from './ipc/session';
@@ -59,6 +60,7 @@ app.whenReady().then(async () => {
   registerWorkspaceIpc({ ipcMain, logger });
   registerGitIpc({ ipcMain, logger });
   registerReposIpc({ ipcMain, logger });
+  registerEnsureLocalRepoIpc({ ipcMain, logger, documentsRoot: app.getPath('documents') });
   registerBranchesIpc({ ipcMain, logger });
   registerArtifactsIpc({ ipcMain, logger });
   registerTasksDetailIpc({ ipcMain, logger });

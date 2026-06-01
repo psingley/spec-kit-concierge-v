@@ -14,7 +14,7 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     git: {
       read: vi.fn(),
       checkout: vi.fn(),
-      createDraft: vi.fn()
+      resetMain: vi.fn()
     },
     steps: {
       read: vi.fn()
@@ -42,6 +42,9 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     },
     repos: {
       list: vi.fn()
+    },
+    repo: {
+      ensureLocal: vi.fn()
     },
     branches: {
       sessions: vi.fn()

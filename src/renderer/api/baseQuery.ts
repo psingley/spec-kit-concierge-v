@@ -7,7 +7,7 @@ export type IpcQueryArgs = {
     | 'workspace:read'
     | 'git:read'
     | 'git:checkout'
-    | 'git:createDraft'
+    | 'git:resetMain'
     | 'steps:read'
     | 'preferences:read'
     | 'preferences:write'
@@ -21,6 +21,7 @@ export type IpcQueryArgs = {
     | 'session:createAcp'
     | 'activity:read'
     | 'repos:list'
+    | 'repo:ensureLocal'
     | 'branches:sessions'
     | 'artifacts:read'
     | 'tasks:detail'
@@ -74,8 +75,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.git!.read(args.payload) };
       case 'git:checkout':
         return { data: await window.concierge.git!.checkout!(args.payload) };
-      case 'git:createDraft':
-        return { data: await window.concierge.git!.createDraft!(args.payload) };
+      case 'git:resetMain':
+        return { data: await window.concierge.git!.resetMain!(args.payload) };
       case 'steps:read':
         return { data: await window.concierge.steps!.read(args.payload) };
       case 'preferences:read':
@@ -102,6 +103,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.activity!.read(args.payload) };
       case 'repos:list':
         return { data: await window.concierge.repos!.list(args.payload) };
+      case 'repo:ensureLocal':
+        return { data: await window.concierge.repo!.ensureLocal(args.payload) };
       case 'branches:sessions':
         return { data: await window.concierge.branches!.sessions(args.payload) };
       case 'artifacts:read':

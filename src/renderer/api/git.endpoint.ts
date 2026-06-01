@@ -1,7 +1,6 @@
 import { api } from './rootApi';
 import { parsingError } from './endpointUtils';
 import { parseRendererGitBranchResult, parseRendererGitState, type RendererGitBranchResult, type RendererGitState } from './git.factory';
-import { draftSessionCreated, workspaceEntered, type RepositorySummary } from '../slices/workspace';
 
 export type GitReadArgs = {
   repositoryPath: string;
@@ -31,18 +30,12 @@ export const gitApi = api.injectEndpoints({
       },
       invalidatesTags: ['GitState', 'Workspace', 'StepState']
     }),
-    createDraftBranch: builder.mutation<RendererGitBranchResult, { repo: RepositorySummary }>({
-      async queryFn(arg, queryApi, _extraOptions, baseQuery) {
-        const response = await baseQuery({
-          channel: 'git:createDraft',
-          payload: { repositoryPath: arg.repo.path, defaultBranch: arg.repo.defaultBranch }
-        });
+    resetToMain: builder.mutation<RendererGitBranchResult, { repositoryPath: string; defaultBranch: string }>({
+      async queryFn(arg, _queryApi, _extraOptions, baseQuery) {
+        const response = await baseQuery({ channel: 'git:resetMain', payload: arg });
         if (response.error !== undefined) return { error: response.error };
         const parsed = parseRendererGitBranchResult(response.data);
-        if (!parsed.ok) return { error: parsingError(parsed.error) };
-        queryApi.dispatch(workspaceEntered({ repo: arg.repo, branch: parsed.value.branch }));
-        queryApi.dispatch(draftSessionCreated({ branch: parsed.value.branch }));
-        return { data: parsed.value };
+        return parsed.ok ? { data: parsed.value } : { error: parsingError(parsed.error) };
       },
       invalidatesTags: ['GitState', 'Workspace', 'StepState']
     })

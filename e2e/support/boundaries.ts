@@ -12,11 +12,16 @@ export type BoundaryFixture = {
   reposAdapterPath: string;
   copilotAdapterPath: string;
   acpAdapterPath: string;
+  ensureLocalAdapterPath: string;
   repoName: string;
 };
 
 export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   const repoPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-run6-'));
+  // Adapter files live OUTSIDE the git working tree. The app's "start new session"
+  // flow runs `git clean -fd`, which would otherwise delete untracked adapter JSON
+  // sitting inside repoPath and break later boundary reads.
+  const adapterDir = await mkdtemp(path.join(os.tmpdir(), 'concierge-run6-adapters-'));
   await execFileAsync('git', ['init', '-b', 'main'], { cwd: repoPath });
   await execFileAsync('git', ['config', 'user.email', 'run6@example.test'], { cwd: repoPath });
   await execFileAsync('git', ['config', 'user.name', 'Run 6 Test'], { cwd: repoPath });
@@ -50,10 +55,14 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
     language,
     updatedAt: '2026-05-27T00:00:00Z'
   }));
-  const ghAdapterPath = path.join(repoPath, 'gh-adapter.json');
-  const reposAdapterPath = path.join(repoPath, 'repos-adapter.json');
-  const copilotAdapterPath = path.join(repoPath, 'copilot-adapter.json');
-  const acpAdapterPath = path.join(repoPath, 'acp-adapter.json');
+  const ghAdapterPath = path.join(adapterDir, 'gh-adapter.json');
+  const reposAdapterPath = path.join(adapterDir, 'repos-adapter.json');
+  const copilotAdapterPath = path.join(adapterDir, 'copilot-adapter.json');
+  const acpAdapterPath = path.join(adapterDir, 'acp-adapter.json');
+  const ensureLocalAdapterPath = path.join(adapterDir, 'ensure-local-adapter.json');
+  // Map every fixture repo slug to its real local path so repo:ensureLocal resolves
+  // a clean local checkout WITHOUT cloning over the network.
+  const ensureLocalMap = Object.fromEntries(repositories.map((repo) => [`${repo.owner}/${repo.name}`, repo.path]));
   await writeFile(
     ghAdapterPath,
     JSON.stringify(
@@ -68,8 +77,9 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   await writeFile(reposAdapterPath, JSON.stringify({ repositories }, null, 2), 'utf8');
   await writeFile(copilotAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
   await writeFile(acpAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
+  await writeFile(ensureLocalAdapterPath, JSON.stringify(ensureLocalMap, null, 2), 'utf8');
 
-  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, repoName };
+  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, ensureLocalAdapterPath, repoName };
 };
 
 export const gitLogLastMessage = async (repoPath: string): Promise<string> => {

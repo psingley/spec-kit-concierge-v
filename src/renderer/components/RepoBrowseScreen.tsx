@@ -9,6 +9,12 @@ export type RepoBrowseScreenProps = {
   selectedRepo: RepositorySummary | null;
   loading: boolean;
   error: boolean;
+  /** A local clone is being fetched into Documents/Concierge — honest, live state. */
+  cloning?: boolean;
+  /** The clone (or local-repo detection) failed — honest, surfaced error. */
+  cloneError?: boolean;
+  /** The local repo is resolved and git operations are safe to run. */
+  localReady?: boolean;
   onSelectRepo: (repo: RepositorySummary) => void;
   onResume: (repo: RepositorySummary, branch: string) => void;
   onStartNew: (repo: RepositorySummary) => void;
@@ -50,7 +56,7 @@ const presentedSessionsFor = (sessions: BranchSession[]): PresentedSession[] =>
     timestamp: 'recent'
   }));
 
-export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, error, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
+export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, error, cloning = false, cloneError = false, localReady = true, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
   const [query, setQuery] = useState('');
   const filtered = useMemo(() => repositories.filter((repo) => repo.name.toLowerCase().includes(query.toLowerCase())), [query, repositories]);
   const presentedSessions = selectedRepo === null ? [] : presentedSessionsFor(sessions);
@@ -106,6 +112,12 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
               </>
             )}
           </div>
+        ) : cloning ? (
+          <div className="rb-cloning" role="status">Cloning {selectedRepo.owner}/{selectedRepo.name}…</div>
+        ) : cloneError ? (
+          <div className="rb-empty">Could not clone {selectedRepo.owner}/{selectedRepo.name}.</div>
+        ) : !localReady ? (
+          <div className="rb-empty">Preparing {selectedRepo.owner}/{selectedRepo.name}…</div>
         ) : (
           <section aria-label="Branch sessions" className="session-picker">
             <div className="rb-branches-h">{presentedSessions.length} prior {presentedSessions.length === 1 ? 'session' : 'sessions'}</div>

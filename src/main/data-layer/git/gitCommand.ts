@@ -1,12 +1,27 @@
 import { execFile } from 'node:child_process';
-import { mkdir, unlink, writeFile } from 'node:fs/promises';
+import { access, mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import type { ConciergeStepCommit } from '../../domain/factories/types';
 import { isStepName, type StepName } from '../../hooks/manifest';
+import { resolveGitBinary } from './gitBinary';
 import { parseConciergeStepTrailer } from './trailers';
 
 const execFileAsync = promisify(execFile);
+
+/**
+ * Distinguish the two failure modes that both surface as `spawn ... ENOENT`:
+ * a missing git binary (handled by resolveGitBinary) vs. a missing cwd. A repo
+ * that was never cloned locally lands here with a clear, actionable message
+ * instead of the misleading "git binary missing" ENOENT — on macOS AND Windows.
+ */
+const ensureCwdExists = async (repositoryPath: string): Promise<void> => {
+  try {
+    await access(repositoryPath);
+  } catch {
+    throw new Error(`repository not cloned locally at ${repositoryPath}`);
+  }
+};
 
 export class GitCommandError extends Error {
   constructor(
@@ -29,15 +44,17 @@ type ExecFailure = Error & {
 };
 
 export const runGit = async (repositoryPath: string, args: string[]): Promise<string> => {
+  await ensureCwdExists(repositoryPath);
+  const gitBinary = await resolveGitBinary();
   try {
-    const { stdout } = await execFileAsync('git', args, { cwd: repositoryPath });
+    const { stdout } = await execFileAsync(gitBinary, args, { cwd: repositoryPath });
 
     return stdout.trim();
   } catch (error) {
     const failure = error as ExecFailure;
     throw new GitCommandError(
       `git ${args.join(' ')} failed`,
-      ['git', ...args],
+      [gitBinary, ...args],
       error,
       failure.stdout ?? '',
       failure.stderr ?? '',

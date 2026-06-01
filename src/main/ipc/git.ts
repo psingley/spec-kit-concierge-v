@@ -1,32 +1,33 @@
 import type { IpcMain } from 'electron';
 import { readBranchState } from '../data-layer/git/branchState';
-import { checkoutBranch, createDraftBranch } from '../data-layer/git/branchSessions';
+import { checkoutBranch } from '../data-layer/git/branchSessions';
+import { resetToCleanMain } from '../data-layer/git/resetToCleanMain';
 import { readUncommittedPaths } from '../data-layer/git/uncommittedPaths';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createGitCheckoutRequest,
   createGitCheckoutResponse,
-  createGitCreateDraftRequest,
-  createGitCreateDraftResponse,
+  createGitResetMainRequest,
+  createGitResetMainResponse,
   createGitReadRequest,
   createGitReadResponse,
   type GitCheckoutResponse,
-  type GitCreateDraftResponse,
+  type GitResetMainResponse,
   type GitReadRequest,
   type GitReadResponse
 } from './git.factory';
 
 export const GIT_READ_CHANNEL = 'git:read';
 export const GIT_CHECKOUT_CHANNEL = 'git:checkout';
-export const GIT_CREATE_DRAFT_CHANNEL = 'git:createDraft';
+export const GIT_RESET_MAIN_CHANNEL = 'git:resetMain';
 
 export type RegisterGitIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'error'>;
   readGit?: (request: GitReadRequest) => Promise<GitReadResponse>;
   checkout?: typeof checkoutBranch;
-  createDraft?: typeof createDraftBranch;
+  resetMain?: typeof resetToCleanMain;
   now?: () => number;
 };
 
@@ -35,7 +36,7 @@ export const registerGitIpc = ({
   logger,
   readGit,
   checkout = checkoutBranch,
-  createDraft = createDraftBranch,
+  resetMain = resetToCleanMain,
   now = () => performance.now()
 }: RegisterGitIpcOptions): void => {
   const read =
@@ -91,20 +92,18 @@ export const registerGitIpc = ({
     }
   });
 
-  ipcMain.handle(GIT_CREATE_DRAFT_CHANNEL, async (event, ...args: unknown[]): Promise<GitCreateDraftResponse> => {
+  ipcMain.handle(GIT_RESET_MAIN_CHANNEL, async (event, ...args: unknown[]): Promise<GitResetMainResponse> => {
     const startedAt = now();
     const context = getSenderContext(event);
     try {
-      const request = createGitCreateDraftRequest(assertOnePayload(GIT_CREATE_DRAFT_CHANNEL, args));
+      const request = createGitResetMainRequest(assertOnePayload(GIT_RESET_MAIN_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const fixedDraftNow = Number.parseInt(process.env.CONCIERGE_TEST_DRAFT_NOW ?? '', 10);
-      const draftNow = Number.isFinite(fixedDraftNow) ? () => fixedDraftNow : undefined;
-      const response = createGitCreateDraftResponse(await createDraft(request.value.repositoryPath, draftNow));
+      const response = createGitResetMainResponse(await resetMain(request.value.repositoryPath, request.value.defaultBranch));
       if (!response.ok) throw toError(response.error.message);
-      logger.info({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+      logger.info({ channel: GIT_RESET_MAIN_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logHandlerError(logger, { channel: GIT_CREATE_DRAFT_CHANNEL, context, startedAt, now }, error);
+      logHandlerError(logger, { channel: GIT_RESET_MAIN_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

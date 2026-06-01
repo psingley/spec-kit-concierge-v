@@ -19,7 +19,7 @@ type ConciergePreloadBridge = {
   git?: {
     read: (request: unknown) => Promise<unknown>;
     checkout?: (request: unknown) => Promise<unknown>;
-    createDraft?: (request: unknown) => Promise<unknown>;
+    resetMain?: (request: unknown) => Promise<unknown>;
   };
   steps?: {
     read: (request: unknown) => Promise<unknown>;
@@ -47,6 +47,9 @@ type ConciergePreloadBridge = {
   };
   repos?: {
     list: (request: unknown) => Promise<unknown>;
+  };
+  repo?: {
+    ensureLocal: (request: unknown) => Promise<unknown>;
   };
   branches?: {
     sessions: (request: unknown) => Promise<unknown>;

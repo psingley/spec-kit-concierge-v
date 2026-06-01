@@ -117,11 +117,14 @@ const reachWorkspace = async (page: Page): Promise<void> => {
   if (await page.locator('[aria-label="Specify prompt"], .prompt-input, [data-testid="spec-markdown"], .md-panel, .spec-loading').first().isVisible().catch(() => false)) return;
   await reachRepoBrowse(page);
   await pickFirstRepo(page);
+  // The selected repo must finish resolving its local clone before the
+  // "Start a new session" CTA appears (honest clone-or-resume readiness).
   const start = page.getByRole('button', { name: /Start a new session/i });
+  await start.waitFor({ timeout: 15_000 }).catch(() => undefined);
   if (await start.isVisible().catch(() => false)) {
     await start.click();
   }
-  await page.locator('[aria-label="Specify prompt"], .prompt-input').first().waitFor();
+  await page.locator('[aria-label="Specify prompt"], .prompt-input').first().waitFor({ timeout: 45_000 });
 };
 
 const fillRepoSearch = async (page: Page, value: string): Promise<void> => {

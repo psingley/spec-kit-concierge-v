@@ -34,7 +34,7 @@ contextBridge.exposeInMainWorld('concierge', {
     read: (request: unknown) => ipcRenderer.invoke('git:read', request) as Promise<unknown>
     ,
     checkout: (request: unknown) => ipcRenderer.invoke('git:checkout', request) as Promise<unknown>,
-    createDraft: (request: unknown) => ipcRenderer.invoke('git:createDraft', request) as Promise<unknown>
+    resetMain: (request: unknown) => ipcRenderer.invoke('git:resetMain', request) as Promise<unknown>
   },
   steps: {
     read: (request: unknown) => ipcRenderer.invoke('steps:read', request) as Promise<unknown>
@@ -62,6 +62,9 @@ contextBridge.exposeInMainWorld('concierge', {
   },
   repos: {
     list: (request: unknown) => ipcRenderer.invoke('repos:list', request) as Promise<unknown>
+  },
+  repo: {
+    ensureLocal: (request: unknown) => ipcRenderer.invoke('repo:ensureLocal', request) as Promise<unknown>
   },
   branches: {
     sessions: (request: unknown) => ipcRenderer.invoke('branches:sessions', request) as Promise<unknown>
