@@ -5,6 +5,7 @@ import { SpecifyStep } from './SpecifyStep';
 
 const renderComplete = (requireScroll: boolean) => {
   const onBegin = vi.fn();
+  const onAdvanceToClarify = vi.fn();
   render(
     <SpecifyStep
       prompt="Build it"
@@ -15,14 +16,15 @@ const renderComplete = (requireScroll: boolean) => {
       requireScroll={requireScroll}
       onPromptChange={vi.fn()}
       onBegin={onBegin}
+      onAdvanceToClarify={onAdvanceToClarify}
     />
   );
-  return { onBegin };
+  return { onBegin, onAdvanceToClarify };
 };
 
 describe('SpecifyStep scroll gate', () => {
   it('keeps the complete-state continue action locked until the review is fully scrolled', () => {
-    const { onBegin } = renderComplete(true);
+    const { onAdvanceToClarify } = renderComplete(true);
 
     const continueButton = screen.getByRole('button', { name: /clarify/i });
     expect(continueButton).toBeDisabled();
@@ -37,15 +39,50 @@ describe('SpecifyStep scroll gate', () => {
 
     expect(continueButton).toBeEnabled();
     fireEvent.click(continueButton);
-    expect(onBegin).toHaveBeenCalledTimes(1);
+    expect(onAdvanceToClarify).toHaveBeenCalledTimes(1);
   });
 
   it('leaves the complete-state continue action unlocked when the scroll gate is disabled', () => {
-    const { onBegin } = renderComplete(false);
+    const { onAdvanceToClarify } = renderComplete(false);
 
     const continueButton = screen.getByRole('button', { name: /clarify/i });
     expect(continueButton).toBeEnabled();
     fireEvent.click(continueButton);
+    expect(onAdvanceToClarify).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('SpecifyStep CTA routing', () => {
+  it('advances the view (not re-run specify) when the post-completion Clarify CTA is clicked', () => {
+    const { onBegin, onAdvanceToClarify } = renderComplete(false);
+
+    const clarifyButton = screen.getByRole('button', { name: /clarify/i });
+    fireEvent.click(clarifyButton);
+
+    expect(onAdvanceToClarify).toHaveBeenCalledTimes(1);
+    expect(onBegin).not.toHaveBeenCalled();
+  });
+
+  it('runs specify when the initial Begin specify button is clicked', () => {
+    const onBegin = vi.fn();
+    const onAdvanceToClarify = vi.fn();
+    render(
+      <SpecifyStep
+        prompt="Build it"
+        running={false}
+        specMarkdown=""
+        failureReason={null}
+        canBegin
+        requireScroll={false}
+        onPromptChange={vi.fn()}
+        onBegin={onBegin}
+        onAdvanceToClarify={onAdvanceToClarify}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /begin specify/i }));
+
     expect(onBegin).toHaveBeenCalledTimes(1);
+    expect(onAdvanceToClarify).not.toHaveBeenCalled();
   });
 });

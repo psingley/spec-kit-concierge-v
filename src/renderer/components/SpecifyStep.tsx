@@ -11,6 +11,7 @@ export type SpecifyStepProps = {
   requireScroll: boolean;
   onPromptChange: (prompt: string) => void;
   onBegin: () => void;
+  onAdvanceToClarify: () => void;
 };
 
 export const SpecifyStep = ({
@@ -21,7 +22,8 @@ export const SpecifyStep = ({
   canBegin,
   requireScroll,
   onPromptChange,
-  onBegin
+  onBegin,
+  onAdvanceToClarify
 }: SpecifyStepProps): React.ReactElement => {
   const [mode, setMode] = useState<'preview' | 'edit'>('preview');
   const [editorOpen, setEditorOpen] = useState(false);
@@ -144,7 +146,7 @@ export const SpecifyStep = ({
             >
               Jump to end
             </button>
-            <button type="button" className="btn primary" disabled={!gateUnlocked || running} onClick={onBegin}>
+            <button type="button" className="btn primary" disabled={!gateUnlocked || running} onClick={onAdvanceToClarify}>
               Clarify <Ico.Right size={13} />
             </button>
           </div>

@@ -10,6 +10,7 @@ import {
   selectSessionSpecifyPrompt,
   selectSessionSpecifyRunning
 } from '../slices/session.selectors';
+import { workspaceStepViewed } from '../slices/workspace';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { SpecifyStep } from './SpecifyStep';
 
@@ -38,6 +39,7 @@ export const SpecifyStepContainer = (): React.ReactElement => {
           void runSpecify({ repositoryPath: repo.path, branch: branch ?? repo.defaultBranch, prompt, modelId });
         }
       }}
+      onAdvanceToClarify={() => dispatch(workspaceStepViewed('clarify'))}
     />
   );
 };
