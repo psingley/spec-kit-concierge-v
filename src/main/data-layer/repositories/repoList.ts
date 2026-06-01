@@ -24,6 +24,7 @@ const isRepositorySummary = (value: unknown): value is RepositorySummary => {
 };
 
 export const listRepositories = async (
+  owner: 'collette-travel' = 'collette-travel',
   adapterPath = process.env.CONCIERGE_TEST_GH_ADAPTER
 ): Promise<RepositorySummary[]> => {
   const config = await readTestAdapterConfig(adapterPath);
@@ -32,7 +33,7 @@ export const listRepositories = async (
   }
 
   const { stdout } = await runGh(
-    ['repo', 'list', 'collette-travel', '--json', 'id,name,owner,description,primaryLanguage,updatedAt,defaultBranchRef']
+    ['repo', 'list', owner, '--json', 'id,name,owner,description,primaryLanguage,updatedAt,defaultBranchRef']
   );
   const rows = JSON.parse(stdout) as Array<Record<string, unknown>>;
   return rows.flatMap((row) => {
