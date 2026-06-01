@@ -28,13 +28,24 @@ const trailerStatusToState = (status: string): StepState => {
   return 'not_available';
 };
 
+// Branches that may carry a Concierge session: the legacy `spec/*` convention plus
+// spec-kit's numbered feature branches (e.g. `014-remove-faux-controls`). The default
+// `main`/`master` branches are never resumable sessions.
+const DEFAULT_BRANCHES: ReadonlySet<string> = new Set(['main', 'master']);
+const SPEC_KIT_FEATURE_BRANCH = /^\d{3,4}-/;
+
+const isCandidateSessionBranch = (branch: string): boolean =>
+  !DEFAULT_BRANCHES.has(branch) && (branch.startsWith('spec/') || SPEC_KIT_FEATURE_BRANCH.test(branch));
+
+const sessionLabel = (branch: string): string => (branch.startsWith('spec/') ? branch.replace(/^spec\//, '') : branch);
+
 export const listBranchSessions = async (repositoryPath: string): Promise<BranchSessionSummary[]> => {
   const output = await runGit(repositoryPath, ['branch', '--format=%(refname:short)']);
   const currentBranch = await runGit(repositoryPath, ['branch', '--show-current']);
   const branches = output
     .split(/\r?\n/)
     .map((branch) => branch.trim())
-    .filter((branch) => branch.startsWith('spec/'));
+    .filter(isCandidateSessionBranch);
 
   const originalBranch = currentBranch.trim();
   const sessions: BranchSessionSummary[] = [];
@@ -42,14 +53,19 @@ export const listBranchSessions = async (repositoryPath: string): Promise<Branch
     if (branch !== originalBranch) {
       await runGit(repositoryPath, ['checkout', branch]);
     }
+    const history = await readConciergeStepHistory(repositoryPath);
+    // Only branches with a real Concierge session (≥1 step trailer) are resumable.
+    if (history.length === 0) {
+      continue;
+    }
     const states = emptyStates();
-    for (const record of await readConciergeStepHistory(repositoryPath)) {
+    for (const record of history) {
       states[record.step] = trailerStatusToState(record.status);
       if (record.step === 'specify' && record.status === 'pass') {
         states.clarify = 'pending';
       }
     }
-    sessions.push({ branch, label: branch.replace(/^spec\//, ''), restoredStates: states });
+    sessions.push({ branch, label: sessionLabel(branch), restoredStates: states });
   }
   if (originalBranch.length > 0) {
     await runGit(repositoryPath, ['checkout', originalBranch]);

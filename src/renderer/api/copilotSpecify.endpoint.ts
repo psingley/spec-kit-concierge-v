@@ -2,7 +2,7 @@ import { api } from './rootApi';
 import { parsingError } from './endpointUtils';
 import { parseRendererCopilotSpecifyAck, parseRendererStepStreamEvent, type RendererCopilotSpecifyAck } from './copilotSpecify.factory';
 import { activityBusyChanged, recordActivity } from '../slices/activity';
-import { specifyCompletedInWorkspace } from '../slices/workspace';
+import { branchUpdated, specifyCompletedInWorkspace } from '../slices/workspace';
 import { stepCompleted, stepPending } from '../slices/steps';
 import { specifyRunFailed, specifyRunProgressed, specifyRunStarted, specifyRunSucceeded } from '../slices/session';
 
@@ -33,6 +33,9 @@ export const copilotSpecifyApi = api.injectEndpoints({
             queryApi.dispatch(stepCompleted({ step: 'specify', commitSha: parsed.value.commitSha ?? '', trailer: 'Concierge-Step: specify:pass' }));
             queryApi.dispatch(stepPending({ step: 'clarify', sessionId: parsed.value.sessionId }));
             queryApi.dispatch(specifyCompletedInWorkspace());
+            if (parsed.value.branch !== undefined && parsed.value.branch.length > 0) {
+              queryApi.dispatch(branchUpdated({ branch: parsed.value.branch }));
+            }
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Specify complete' }));
           } else {
             queryApi.dispatch(specifyRunFailed({ reason: parsed.value.reason ?? 'Specify failed' }));

@@ -45,6 +45,7 @@ export type StepStreamEvent =
       specMarkdown?: string;
       artifactPath?: string;
       commitSha?: string;
+      branch?: string;
       reason?: string;
       summary?: ClarifySummary | PassiveStepSummary;
     };
@@ -166,7 +167,7 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
     return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value, raw: root.value.raw } };
   }
   if (root.value.type === 'done') {
-    const allowed = ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'reason', 'summary'];
+    const allowed = ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'branch', 'reason', 'summary'];
     if (!Object.keys(root.value).every((key) => allowed.includes(key))) {
       return invalid('InvalidStepStreamEvent', 'done event contains an unexpected key', '$');
     }
@@ -176,7 +177,7 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
       return invalid('InvalidStepStreamEvent', 'done event must target a valid step with pass/fail', '$');
     }
     const summary = parseSummary(root.value.summary) ?? parsePassiveSummary(root.value.summary);
-    return { ok: true, value: { type: 'done', step: root.value.step, sessionId: sessionId.value, status: root.value.status, specMarkdown: typeof root.value.specMarkdown === 'string' ? root.value.specMarkdown : undefined, artifactPath: typeof root.value.artifactPath === 'string' ? root.value.artifactPath : undefined, commitSha: typeof root.value.commitSha === 'string' ? root.value.commitSha : undefined, reason: typeof root.value.reason === 'string' ? root.value.reason : undefined, summary } };
+    return { ok: true, value: { type: 'done', step: root.value.step, sessionId: sessionId.value, status: root.value.status, specMarkdown: typeof root.value.specMarkdown === 'string' ? root.value.specMarkdown : undefined, artifactPath: typeof root.value.artifactPath === 'string' ? root.value.artifactPath : undefined, commitSha: typeof root.value.commitSha === 'string' ? root.value.commitSha : undefined, branch: typeof root.value.branch === 'string' ? root.value.branch : undefined, reason: typeof root.value.reason === 'string' ? root.value.reason : undefined, summary } };
   }
   return invalid('InvalidStepStreamEvent', 'event type must be progress or done', '$.type');
 };

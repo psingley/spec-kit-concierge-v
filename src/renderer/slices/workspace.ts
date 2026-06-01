@@ -82,6 +82,9 @@ const workspaceSlice = createSlice({
       state.viewedStep = 'specify';
       state.maxReachedStep = action.payload.restoredStates?.clarify === 'pending' || action.payload.restoredStates?.specify === 'complete' ? 'clarify' : 'specify';
     },
+    branchUpdated: (state, action: PayloadAction<{ branch: string }>) => {
+      state.branch = action.payload.branch;
+    },
     workspaceStepViewed: (state, action: PayloadAction<StepName>) => {
       state.viewedStep = action.payload;
     },
@@ -99,6 +102,7 @@ export const {
   repositoryBrowseReset,
   branchSessionsLoaded,
   workspaceEntered,
+  branchUpdated,
   workspaceStepViewed,
   specifyCompletedInWorkspace
 } = workspaceSlice.actions;

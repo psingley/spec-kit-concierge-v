@@ -90,17 +90,33 @@ export const discoverOptionalArtifacts = async (
   return discovered;
 };
 
+const featureDirRelativePrefix = (context: StepContractContext): string => {
+  if (context.repositoryPath === undefined || context.featureDir === undefined) {
+    return '';
+  }
+
+  return path.relative(context.repositoryPath, context.featureDir);
+};
+
 export const commitCandidate = (
   step: StepName,
   files: string[],
   context: StepContractContext = {}
-): ConciergeStepCommit => ({
-  step,
-  status: 'pass',
-  files,
-  message: `Concierge ${step} step`,
-  ...(step === 'analyze' ? { allowEmptyCommit: true } : {}),
-  ...(step === 'plan' && context.contextFilePath !== undefined
-    ? { files: [...files, context.contextFilePath] }
-    : {})
-});
+): ConciergeStepCommit => {
+  const planFiles =
+    step === 'plan' && context.contextFilePath !== undefined ? [...files, context.contextFilePath] : files;
+
+  // analyze remediation targets already arrive repo-root-relative (sourced from `git diff --name-only`),
+  // so they must not be re-prefixed; every other step yields feature-dir basenames.
+  const prefix = step === 'analyze' ? '' : featureDirRelativePrefix(context);
+  const resolvedFiles =
+    prefix.length === 0 ? planFiles : planFiles.map((file) => path.join(prefix, file));
+
+  return {
+    step,
+    status: 'pass',
+    files: resolvedFiles,
+    message: `Concierge ${step} step`,
+    ...(step === 'analyze' ? { allowEmptyCommit: true } : {})
+  };
+};
