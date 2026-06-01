@@ -16,7 +16,7 @@ export type RepoBrowseScreenProps = {
   /** The local repo is resolved and git operations are safe to run. */
   localReady?: boolean;
   onSelectRepo: (repo: RepositorySummary) => void;
-  onResume: (repo: RepositorySummary, branch: string) => void;
+  onResume: (repo: RepositorySummary, session: BranchSession) => void;
   onStartNew: (repo: RepositorySummary) => void;
   onBackToRepos: () => void;
 };
@@ -36,6 +36,7 @@ type PresentedSession = {
   step: StepName;
   timestamp: string;
   restoredStates: BranchSession['restoredStates'];
+  session: BranchSession;
 };
 
 const pipClassName = (state: BranchSession['restoredStates'][StepName]): string => {
@@ -61,7 +62,8 @@ const presentedSessionsFor = (sessions: BranchSession[]): PresentedSession[] =>
     branch: session.branch,
     step: sessionStep(session),
     timestamp: 'recent',
-    restoredStates: session.restoredStates
+    restoredStates: session.restoredStates,
+    session
   }));
 
 export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, error, cloning = false, cloneError = false, localReady = true, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
@@ -136,7 +138,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
                   type="button"
                   aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
                   className="rb-branch-card session-row"
-                  onClick={() => onResume(selectedRepo, session.branch)}
+                  onClick={() => onResume(selectedRepo, session.session)}
                 >
                   <span className="rb-branch-glyph" />
                   <span className="rb-branch-card-main">

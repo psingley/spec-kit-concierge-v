@@ -16,7 +16,6 @@ export type TitlebarProps = {
   repositories?: RepositorySummary[];
   repositoriesError?: boolean;
   modelDisabled?: boolean;
-  showDraftBranch?: boolean;
   onCustomize: () => void;
   onAbout: () => void;
   onRequest: () => void;
@@ -219,14 +218,14 @@ const AuthChipChildren = ({ authSummary }: { authSummary: string }): React.React
   </>
 );
 
-export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, models, repositories = [], repositoriesError = false, modelDisabled = false, showDraftBranch = false, onCustomize, onAbout, onRequest, onModelSelect, activityPill = null }: TitlebarProps): React.ReactElement => {
+export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, models, repositories = [], repositoriesError = false, modelDisabled = false, onCustomize, onAbout, onRequest, onModelSelect, activityPill = null }: TitlebarProps): React.ReactElement => {
   const [open, setOpen] = useState<OpenMenu>(null);
   const activeRepo = branch === null ? null : repo;
   const accountLabel = identity?.login ?? 'this account';
   const repoOwner = activeRepo?.owner ?? accountLabel;
   const repoName = activeRepo?.name ?? 'pick repo';
   const repoLabel = `${repoOwner}/${repoName}`;
-  const branchLabel = showDraftBranch && branch !== null ? branch : activeRepo?.defaultBranch ?? 'main';
+  const branchLabel = branch ?? activeRepo?.defaultBranch ?? 'main';
   const modelOption = getModelOption(model, models);
   const selectedModelTag = modelTag(modelOption);
   const connectedCount = [github, copilot, atlassian].filter((status) => status === 'ok').length;

@@ -4,7 +4,8 @@ import { ensureLocalRepoApi } from '../api/ensureLocalRepo.endpoint';
 import { gitApi } from '../api/git.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
-import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type RepositorySummary } from '../slices/workspace';
+import { stepsRestoredFromSession } from '../slices/steps';
+import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type BranchSession, type RepositorySummary } from '../slices/workspace';
 import { selectWorkspaceSelectedRepo, selectWorkspaceSessions } from '../slices/workspace.selectors';
 import { RepoBrowseScreen } from './RepoBrowseScreen';
 
@@ -43,11 +44,12 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
       .catch(() => undefined);
   };
 
-  const resume = (repo: RepositorySummary, branch: string): void => {
+  const resume = (repo: RepositorySummary, session: BranchSession): void => {
     if (localPath === null) return;
-    void checkoutBranch({ repositoryPath: localPath, branch }).then(() =>
-      dispatch(workspaceEntered({ repo: { ...repo, path: localPath }, branch }))
-    );
+    void checkoutBranch({ repositoryPath: localPath, branch: session.branch }).then(() => {
+      dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
+      dispatch(workspaceEntered({ repo: { ...repo, path: localPath }, branch: session.branch, restoredStates: session.restoredStates }));
+    });
   };
 
   // "Start a new session": reset to a clean default branch from origin, then hand
