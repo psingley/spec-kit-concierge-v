@@ -9,6 +9,21 @@ import { selectSessionPassiveStep } from '../slices/session.selectors';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { PassiveStep } from './PassiveStep';
 import { workspaceStepViewed } from '../slices/workspace';
+import { stepOrder, type StepName } from '../slices/steps';
+
+const stepLabel: Record<StepName, string> = {
+  specify: 'Specify',
+  clarify: 'Clarify',
+  plan: 'Plan',
+  tasks: 'Tasks',
+  analyze: 'Analyze',
+  review: 'Review'
+};
+
+const nextStepAfter = (step: StepName): StepName => {
+  const index = stepOrder.indexOf(step);
+  return stepOrder[Math.min(index + 1, stepOrder.length - 1)] ?? 'review';
+};
 
 export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
@@ -21,6 +36,7 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
   const [readArtifact, artifact] = artifactsApi.useLazyReadArtifactQuery();
   const [readTasksDetail, tasksDetail] = tasksDetailApi.useLazyGetTasksDetailQuery();
   const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
+  const resumeStep = nextStepAfter(step);
 
   return (
     <PassiveStep
@@ -32,8 +48,8 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
       artifactError={(isTasksArtifact ? tasksDetail.error : artifact.error) !== undefined ? 'Unable to read artifact.' : undefined}
       artifactTasks={tasksDetail.data?.tasks ?? []}
       viewOnly={record.commitSha !== null}
-      resumeLabel="Review"
-      onResume={() => dispatch(workspaceStepViewed('review'))}
+      resumeLabel={stepLabel[resumeStep]}
+      onResume={() => dispatch(workspaceStepViewed(resumeStep))}
       onRun={() => {
         if (record.commitSha !== null) {
           return;

@@ -60,4 +60,16 @@ describe('useStepFromUrl', () => {
 
     expect(result.current).toBe('specify');
   });
+
+  it('returns tasks from the URL once tasks is reachable', () => {
+    mockUseAppSelector
+      .mockReturnValueOnce('plan')
+      .mockReturnValueOnce('tasks');
+
+    const { result } = renderHook(() => useStepFromUrl(), {
+      wrapper: wrapper('/workspace?step=tasks')
+    });
+
+    expect(result.current).toBe('tasks');
+  });
 });

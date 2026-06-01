@@ -1,13 +1,19 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { StepName } from './steps';
+import { stepOrder, type StepName } from './steps';
 
-const STEP_ORDER: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
+const laterStep = (left: StepName, right: StepName): StepName =>
+  stepOrder.indexOf(left) >= stepOrder.indexOf(right) ? left : right;
+
+const stepAfter = (step: StepName): StepName => {
+  const index = stepOrder.indexOf(step);
+  return stepOrder[Math.min(index + 1, stepOrder.length - 1)] ?? step;
+};
 
 // Where a resumed session should land: the FIRST step that is not complete.
 // (e.g. specify complete + clarify pending -> 'clarify'.) When every step is
 // complete the session is finished, so land on 'review'.
 const firstIncompleteStep = (restoredStates: BranchSession['restoredStates']): StepName => {
-  const incomplete = STEP_ORDER.find((step) => restoredStates[step] !== 'complete');
+  const incomplete = stepOrder.find((step) => restoredStates[step] !== 'complete');
   return incomplete ?? 'review';
 };
 
@@ -137,6 +143,9 @@ const workspaceSlice = createSlice({
       // Keep the user on the clarify done view; they click Plan in the stepper
       // to continue (mirrors specifyCompletedInWorkspace keeping viewedStep).
       state.viewedStep = 'clarify';
+    },
+    passiveStepCompletedInWorkspace: (state, action: PayloadAction<StepName>) => {
+      state.maxReachedStep = laterStep(state.maxReachedStep, stepAfter(action.payload));
     }
   },
   extraReducers: () => {}
@@ -150,7 +159,8 @@ export const {
   branchUpdated,
   workspaceStepViewed,
   specifyCompletedInWorkspace,
-  clarifyCompletedInWorkspace
+  clarifyCompletedInWorkspace,
+  passiveStepCompletedInWorkspace
 } = workspaceSlice.actions;
 export const workspaceReducer = workspaceSlice.reducer;
 export default workspaceReducer;

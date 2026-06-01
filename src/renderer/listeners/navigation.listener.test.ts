@@ -67,6 +67,21 @@ describe('navigation listener branch-null routing', () => {
     expect(router.state.location.search).toBe('?step=plan');
   });
 
+  it('navigates from a blank workspace search to the viewed reachable step exactly once', async () => {
+    const store = createProductStore();
+    const router = createTestRouter('/workspace');
+    const navigate = vi.spyOn(router, 'navigate');
+    store.wireRouter(router);
+
+    store.dispatch(workspaceStepViewed('tasks'));
+    await waitForListener();
+
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith('/workspace?step=tasks', { replace: true });
+    expect(router.state.location.pathname).toBe('/workspace');
+    expect(router.state.location.search).toBe('?step=tasks');
+  });
+
   it('navigates a resumed session to its first incomplete step', async () => {
     const store = createProductStore();
     const router = createTestRouter('/repos');

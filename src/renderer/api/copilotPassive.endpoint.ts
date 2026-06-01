@@ -14,6 +14,7 @@ import {
   passiveStepRunStarted,
   passiveStepRunSucceeded
 } from '../slices/session';
+import { passiveStepCompletedInWorkspace } from '../slices/workspace';
 import type { PassiveStepSummary } from './stepStreamEvent';
 
 export type RunPassiveStepArgs = {
@@ -77,6 +78,7 @@ export const copilotPassiveApi = api.injectEndpoints({
               artifacts: summary?.artifacts ?? [],
               milestones: summary?.milestones
             }));
+            queryApi.dispatch(passiveStepCompletedInWorkspace(arg.step));
             queryApi.dispatch(stepCompleted({ step: arg.step, commitSha, trailer: `Concierge-Step: ${arg.step}:pass` }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: `${arg.step} complete` }));
             teardown();
