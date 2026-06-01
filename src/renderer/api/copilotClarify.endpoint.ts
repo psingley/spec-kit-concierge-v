@@ -33,6 +33,19 @@ export const copilotClarifyApi = api.injectEndpoints({
     runClarify: builder.mutation<RendererCopilotClarifyAck, RunClarifyArgs>({
       async queryFn(arg, queryApi, _extraOptions, baseQuery) {
         const subscriptionId = `clarify-${Date.now().toString(36)}`;
+        let unsubscribed = false;
+        let guardTimer: ReturnType<typeof setTimeout> | undefined;
+        const teardown = () => {
+          if (unsubscribed) {
+            return;
+          }
+          unsubscribed = true;
+          if (guardTimer !== undefined) {
+            clearTimeout(guardTimer);
+            guardTimer = undefined;
+          }
+          unsubscribe();
+        };
         const unsubscribe = window.concierge.copilot!.subscribeStepStream('copilot:clarify', subscriptionId, (event) => {
           const parsed = parseRendererStepStreamEvent(event);
           if (!parsed.ok) {
@@ -87,27 +100,33 @@ export const copilotClarifyApi = api.injectEndpoints({
               }));
               queryApi.dispatch(stepCompleted({ step: 'clarify', commitSha: parsed.value.commitSha, trailer: 'Concierge-Step: clarify:pass' }));
               queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify complete' }));
+              // Genuine terminal: clarify committed. Questions-only "Clarify ready" passes
+              // (no commitSha) are intermediate and intentionally keep the listener alive.
+              teardown();
             } else {
               queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify ready' }));
             }
           } else {
             queryApi.dispatch(clarifyRunFailed({ reason: parsed.value.reason ?? 'Clarify failed' }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify failed' }));
+            teardown();
           }
         });
         const response = await baseQuery({ channel: 'copilot:clarify', payload: { ...arg, subscriptionId, modelId: arg.modelId ?? undefined } });
         if (response.error !== undefined) {
-          unsubscribe();
+          teardown();
           return { error: response.error };
         }
         const parsed = parseRendererCopilotClarifyAck(response.data);
         if (!parsed.ok) {
-          unsubscribe();
+          teardown();
           return { error: parsingError(parsed.error) };
         }
         queryApi.dispatch(clarifyRunStarted({ sessionId: parsed.value.sessionId, mode: arg.operation, questionId: arg.questionId }));
         queryApi.dispatch(stepPending({ step: 'clarify', sessionId: parsed.value.sessionId }));
-        setTimeout(unsubscribe, 60_000);
+        // Safety ceiling well above the longest real run (~370s); the listener is normally
+        // torn down by the genuine terminal (commit or fail) above. Cleared inside teardown().
+        guardTimer = setTimeout(teardown, 3_600_000);
         return { data: parsed.value };
       },
       invalidatesTags: ['StepState', 'Step', 'Transcript']

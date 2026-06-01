@@ -34,6 +34,19 @@ export const copilotPassiveApi = api.injectEndpoints({
       async queryFn(arg, queryApi, _extraOptions, baseQuery) {
         const subscriptionId = `${arg.step}-${Date.now().toString(36)}`;
         const channel = channelForStep(arg.step);
+        let unsubscribed = false;
+        let guardTimer: ReturnType<typeof setTimeout> | undefined;
+        const teardown = () => {
+          if (unsubscribed) {
+            return;
+          }
+          unsubscribed = true;
+          if (guardTimer !== undefined) {
+            clearTimeout(guardTimer);
+            guardTimer = undefined;
+          }
+          unsubscribe();
+        };
         const unsubscribe = window.concierge.copilot!.subscribeStepStream(channel, subscriptionId, (event) => {
           const parsed = parseRendererStepStreamEvent(event);
           if (!parsed.ok) {
@@ -66,24 +79,28 @@ export const copilotPassiveApi = api.injectEndpoints({
             }));
             queryApi.dispatch(stepCompleted({ step: arg.step, commitSha, trailer: `Concierge-Step: ${arg.step}:pass` }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: `${arg.step} complete` }));
+            teardown();
           } else {
             queryApi.dispatch(passiveStepRunFailed({ step: arg.step, reason: parsed.value.reason ?? `${arg.step} failed` }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: `${arg.step} failed` }));
+            teardown();
           }
         });
         const response = await baseQuery({ channel, payload: { repositoryPath: arg.repositoryPath, branch: arg.branch, modelId: arg.modelId ?? undefined, subscriptionId } });
         if (response.error !== undefined) {
-          unsubscribe();
+          teardown();
           return { error: response.error };
         }
         const parsed = parseRendererCopilotPassiveAck(response.data);
         if (!parsed.ok) {
-          unsubscribe();
+          teardown();
           return { error: parsingError(parsed.error) };
         }
         queryApi.dispatch(passiveStepRunStarted({ step: arg.step, sessionId: parsed.value.sessionId, modelId: arg.modelId }));
         queryApi.dispatch(stepPending({ step: arg.step, sessionId: parsed.value.sessionId }));
-        setTimeout(unsubscribe, 60_000);
+        // Safety ceiling well above the longest real run (~370s); the listener is normally
+        // torn down by the terminal done event above. Cleared inside teardown().
+        guardTimer = setTimeout(teardown, 3_600_000);
         return { data: parsed.value };
       },
       invalidatesTags: ['StepState', 'Step', 'Transcript']

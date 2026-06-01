@@ -18,6 +18,19 @@ export const copilotSpecifyApi = api.injectEndpoints({
     runSpecify: builder.mutation<RendererCopilotSpecifyAck, RunSpecifyArgs>({
       async queryFn(arg, queryApi, _extraOptions, baseQuery) {
         const subscriptionId = `sub-${Date.now().toString(36)}`;
+        let unsubscribed = false;
+        let guardTimer: ReturnType<typeof setTimeout> | undefined;
+        const teardown = () => {
+          if (unsubscribed) {
+            return;
+          }
+          unsubscribed = true;
+          if (guardTimer !== undefined) {
+            clearTimeout(guardTimer);
+            guardTimer = undefined;
+          }
+          unsubscribe();
+        };
         const unsubscribe = window.concierge.copilot!.subscribeSpecify(subscriptionId, (event) => {
           const parsed = parseRendererStepStreamEvent(event);
           if (!parsed.ok) {
@@ -37,24 +50,28 @@ export const copilotSpecifyApi = api.injectEndpoints({
               queryApi.dispatch(branchUpdated({ branch: parsed.value.branch }));
             }
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Specify complete' }));
+            teardown();
           } else {
             queryApi.dispatch(specifyRunFailed({ reason: parsed.value.reason ?? 'Specify failed' }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Specify failed' }));
+            teardown();
           }
         });
         const response = await baseQuery({ channel: 'copilot:specify', payload: { ...arg, subscriptionId, modelId: arg.modelId ?? undefined } });
         if (response.error !== undefined) {
-          unsubscribe();
+          teardown();
           return { error: response.error };
         }
         const parsed = parseRendererCopilotSpecifyAck(response.data);
         if (!parsed.ok) {
-          unsubscribe();
+          teardown();
           return { error: parsingError(parsed.error) };
         }
         queryApi.dispatch(specifyRunStarted({ sessionId: parsed.value.sessionId, modelId: arg.modelId }));
         queryApi.dispatch(stepPending({ step: 'specify', sessionId: parsed.value.sessionId }));
-        setTimeout(unsubscribe, 60_000);
+        // Safety ceiling well above the longest real run (~370s); the listener is normally
+        // torn down by the terminal done event above. Cleared inside teardown().
+        guardTimer = setTimeout(teardown, 3_600_000);
         return { data: parsed.value };
       },
       invalidatesTags: ['StepState', 'Step', 'Transcript']
