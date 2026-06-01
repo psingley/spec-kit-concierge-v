@@ -33,13 +33,9 @@ export type IpcQueryArgs = {
   payload?: unknown;
 };
 
-export type IpcQueryError = {
-  status: 'IPC_ERROR' | 'PARSING_ERROR';
-  data: {
-    name: string;
-    message: string;
-  };
-};
+export type IpcQueryError =
+  | { status: 'IPC_ERROR' | 'PARSING_ERROR'; data: { name: string; message: string } }
+  | { status: 'CUSTOM_ERROR'; data: { message: string }; error: string };
 
 const toIpcError = (error: unknown): IpcQueryError => {
   if (error instanceof Error) {

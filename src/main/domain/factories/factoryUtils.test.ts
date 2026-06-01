@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { commitCandidate, factoryEscape, readRequiredArtifact, validateRequiredMarkdown } from './factoryUtils';
 
 const fsMocks = vi.hoisted(() => ({
@@ -32,7 +33,7 @@ describe('factoryUtils', () => {
     const result = await readRequiredArtifact('/feature', 'spec.md');
 
     expect(result).toBe('# Spec');
-    expect(mockedReadFile).toHaveBeenCalledWith(expect.stringContaining('/feature/spec.md'), 'utf8');
+    expect(mockedReadFile).toHaveBeenCalledWith(path.join('/feature', 'spec.md'), 'utf8');
     expect(mockedReadFile).toHaveBeenCalledTimes(1);
   });
 

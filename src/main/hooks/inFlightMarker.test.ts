@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFile, rm } from 'node:fs/promises';
+import path from 'node:path';
 import { safeWrite } from '../data-layer/fs/safeWrite';
 import {
   defaultExpectedArtifacts,
@@ -43,9 +44,9 @@ describe('inFlightMarker', () => {
   it('builds deterministic marker paths', () => {
     const result = markerPath({ userDataPath: '/tmp/user', sessionId: 's1', step: 'specify' });
 
-    expect(result).toContain('/tmp/user');
+    expect(result).toContain(path.join('/tmp', 'user'));
     expect(result).toContain('in-flight');
-    expect(result.endsWith('/s1/specify.marker')).toBe(true);
+    expect(result.endsWith(path.normalize('/s1/specify.marker'))).toBe(true);
   });
 
   it('writes marker JSON through safeWrite', async () => {
@@ -60,7 +61,7 @@ describe('inFlightMarker', () => {
     });
 
     expect(mockedSafeWrite).toHaveBeenCalledTimes(1);
-    expect(mockedSafeWrite.mock.calls[0]?.[0].targetPath).toContain('/s1/plan.marker');
+    expect(mockedSafeWrite.mock.calls[0]?.[0].targetPath).toContain(path.normalize('/s1/plan.marker'));
     expect(JSON.parse(mockedSafeWrite.mock.calls[0]?.[0].contents ?? '{}')).toMatchObject({ step: 'plan', sessionId: 's1' });
   });
 
@@ -79,7 +80,7 @@ describe('inFlightMarker', () => {
 
     await expect(readInFlightMarker({ userDataPath: '/tmp/user', sessionId: 's3', step: 'specify' })).rejects.toThrow('InvalidInFlightMarker');
     expect(mockedReadFile).toHaveBeenCalledTimes(1);
-    expect(mockedReadFile.mock.calls[0]?.[0]).toContain('/s3/specify.marker');
+    expect(mockedReadFile.mock.calls[0]?.[0]).toContain(path.normalize('/s3/specify.marker'));
   });
 
   it('removes markers and exposes default artifact expectations', async () => {
@@ -87,7 +88,7 @@ describe('inFlightMarker', () => {
 
     await removeInFlightMarker({ userDataPath: '/tmp/user', sessionId: 's4', step: 'specify' });
 
-    expect(mockedRm).toHaveBeenCalledWith(expect.stringContaining('/s4/specify.marker'), { force: false });
+    expect(mockedRm).toHaveBeenCalledWith(expect.stringContaining(path.normalize('/s4/specify.marker')), { force: false });
     expect(defaultExpectedArtifacts('specify')).toContain('spec.md');
     expect(defaultExpectedArtifacts('plan')).toContain('research.md');
   });

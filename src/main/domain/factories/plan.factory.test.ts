@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readdir, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { validatePlanArtifacts } from './plan.factory';
 
 const fsMocks = vi.hoisted(() => ({ readFile: vi.fn(), readdir: vi.fn() }));
@@ -26,7 +27,7 @@ describe('validatePlanArtifacts', () => {
     expect(result.ok).toBe(true);
     expect(result).toMatchObject({ commit: { step: 'plan', files: ['plan.md', 'research.md', 'CONTEXT.md'] } });
     expect(vi.mocked(readFile)).toHaveBeenCalledTimes(4);
-    expect(vi.mocked(readdir)).toHaveBeenCalledWith(expect.stringContaining('contracts/'), { withFileTypes: true });
+    expect(vi.mocked(readdir)).toHaveBeenCalledWith(expect.stringContaining(path.sep + 'contracts'), { withFileTypes: true });
   });
 
   it('adds present optional plan artifacts without requiring all of them', async () => {

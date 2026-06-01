@@ -1,6 +1,7 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import type { IpcMain } from 'electron';
-import { loginCopilot, loginGitHub, readCopilotAuthStatus, readGitHubAuthStatus, type LoginResult } from '../data-layer/auth/cliAuth';
-import { checkCopilotMcpConfig, fixCopilotMcpConfig } from '../data-layer/mcp-config/copilotMcp';
+import { loginCopilot, loginGitHub, type LoginResult } from '../data-layer/auth/cliAuth';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
@@ -30,6 +31,8 @@ export type RegisterAuthIpcOptions = {
   now?: () => number;
 };
 
+const execFileAsync = promisify(execFile);
+
 const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | null> => {
   if (provider === 'copilot') {
     // Copilot CLI has no status command; check for a valid gh token with copilot scope
@@ -46,12 +49,7 @@ const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | nul
     return true;
   } catch {
     return false;
-  if (provider === 'github') {
-    return (await readGitHubAuthStatus()).authenticated;
   }
-
-  const githubStatus = await readGitHubAuthStatus();
-  return (await readCopilotAuthStatus(githubStatus.login)).authenticated;
 };
 
 export const registerAuthIpc = ({
@@ -60,10 +58,6 @@ export const registerAuthIpc = ({
   checkStatus = defaultCheckStatus,
   loginGitHubAdapter = loginGitHub,
   loginCopilotAdapter = loginCopilot,
-  fixAtlassianAdapter = async () => {
-    const result = await fixCopilotMcpConfig({ status: await checkCopilotMcpConfig() });
-    return { status: 'ok', provider: 'atlassian', label: result.activityNotice ?? result.status.message };
-  },
   setTimeoutFn = setTimeout,
   now = () => performance.now()
 }: RegisterAuthIpcOptions): void => {
@@ -129,6 +123,8 @@ export const registerAuthIpc = ({
     return result;
   });
   handleLogin(AUTH_COPILOT_LOGIN_CHANNEL, 'copilot', async () => loginCopilotAdapter(githubConnected));
-  void setTimeoutFn;
-  handleLogin(AUTH_ATLASSIAN_LOGIN_CHANNEL, 'atlassian', fixAtlassianAdapter);
+  handleLogin(AUTH_ATLASSIAN_LOGIN_CHANNEL, 'atlassian', async () => {
+    await new Promise<void>((resolve) => setTimeoutFn(resolve, 200));
+    return { status: 'ok', provider: 'atlassian', label: 'Atlassian visual stub' };
+  });
 };

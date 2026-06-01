@@ -45,14 +45,13 @@ export const createProductStore = () => {
   setupWorkspaceChangeListener(startListening);
   setupMcpConfigCheckerListener(startListening);
 
-  const productStore = configureStore({
   const store = configureStore({
     reducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(listenerMiddleware.middleware).concat(api.middleware)
   });
 
-  return Object.assign(store, {
+  const productStore = Object.assign(store, {
     wireRouter: (router: ReturnType<typeof createMemoryRouter>) => {
       setupNavigationListener(startListening as unknown as AppStartListening, router);
     }

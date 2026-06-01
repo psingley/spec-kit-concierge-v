@@ -40,7 +40,7 @@ describe('auth endpoint', () => {
   describe('login error handling', () => {
     it('dispatches authLoginFailed and toastShown when GitHub login IPC rejects', async () => {
       installConciergeBridge({
-        auth: { loginGitHub: vi.fn(async () => { throw new Error('gh not found'); }) }
+        auth: { status: vi.fn(), loginGitHub: vi.fn(async () => { throw new Error('gh not found'); }) }
       });
       const store = createFullAuthStore();
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -59,7 +59,7 @@ describe('auth endpoint', () => {
 
     it('dispatches authLoginFailed and toastShown when Copilot login IPC rejects', async () => {
       installConciergeBridge({
-        auth: { loginCopilot: vi.fn(async () => { throw new Error('copilot unavailable'); }) }
+        auth: { status: vi.fn(), loginCopilot: vi.fn(async () => { throw new Error('copilot unavailable'); }) }
       });
       const store = createFullAuthStore();
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -79,7 +79,7 @@ describe('auth endpoint', () => {
 
     it('dispatches authLoginFailed and toastShown when Atlassian login IPC rejects', async () => {
       installConciergeBridge({
-        auth: { loginAtlassian: vi.fn(async () => { throw new Error('network timeout'); }) }
+        auth: { status: vi.fn(), loginAtlassian: vi.fn(async () => { throw new Error('network timeout'); }) }
       });
       const store = createFullAuthStore();
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});

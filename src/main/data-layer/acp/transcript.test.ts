@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
@@ -72,9 +72,13 @@ describe('ACP transcript writer', () => {
   });
 
   it('surfaces filesystem errors explicitly', async () => {
+    const userDataPath = await createTempUserData();
+    // Place a regular file where the 'transcripts' directory would go so mkdir fails on all platforms
+    await writeFile(path.join(userDataPath, 'transcripts'), 'blocker');
+
     await expect(
       writeAcpTranscript({
-        userDataPath: '/dev/null',
+        userDataPath,
         sessionId: 'session',
         step: 'step',
         timestamp: new Date('2026-05-27T12:00:00.000Z'),

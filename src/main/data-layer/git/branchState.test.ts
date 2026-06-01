@@ -33,7 +33,7 @@ const createAheadBehindFixture = async (directory: string): Promise<string> => {
   await commitFile(workPath, 'initial.txt', 'initial');
   await git(workPath, ['push', '-u', 'origin', 'main']);
 
-  await git(directory, ['clone', remotePath, otherPath]);
+  await git(directory, ['clone', remotePath, otherPath, '--branch', 'main']);
   await git(otherPath, ['config', 'user.email', 'concierge@example.com']);
   await git(otherPath, ['config', 'user.name', 'Concierge Test']);
   await commitFile(otherPath, 'remote.txt', 'remote');

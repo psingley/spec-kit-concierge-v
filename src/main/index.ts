@@ -58,7 +58,7 @@ app.whenReady().then(async () => {
       await installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]);
       logger.info('React DevTools and Redux DevTools installed');
     } catch (error) {
-      logger.warn('Failed to install DevTools extensions', { error });
+      logger.warn({ error }, 'Failed to install DevTools extensions');
     }
   }
 

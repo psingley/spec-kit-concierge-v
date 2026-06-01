@@ -6,7 +6,13 @@ import {
   type RendererAuthLoginResult,
   type RendererAuthStatus
 } from './auth.factory';
-import { authLoginFailed, authLoginStarted, copilotLoginSucceeded, githubLoginSucceeded } from '../slices/auth';
+import {
+  atlassianLoginSucceeded,
+  authLoginFailed,
+  authLoginStarted,
+  copilotLoginSucceeded,
+  githubLoginSucceeded
+} from '../slices/auth';
 import { recordActivity } from '../slices/activity';
 import { toastShown } from '../slices/ui';
 
@@ -95,18 +101,6 @@ export const authApi = api.injectEndpoints({
     loginAtlassianStub: builder.mutation<RendererAuthLoginResult, void>({
       async queryFn(_arg, queryApi, _extraOptions, baseQuery) {
         queryApi.dispatch(authLoginStarted({ provider: 'atlassian' }));
-        const response = await baseQuery({ channel: 'auth:atlassian:login', payload: { provider: 'atlassian' } });
-        if (response.error !== undefined) {
-          queryApi.dispatch(authLoginFailed({ provider: 'atlassian', message: response.error.data.message }));
-          return { error: response.error };
-        }
-        const parsed = parseRendererAuthLoginResult(response.data);
-        if (!parsed.ok) {
-          queryApi.dispatch(authLoginFailed({ provider: 'atlassian', message: parsed.error.message }));
-          return { error: parsingError(parsed.error) };
-        }
-        queryApi.dispatch(recordActivity({ timestamp: new Date().toISOString(), level: 'ok', message: parsed.value.label ?? 'Atlassian MCP configured' }));
-        return { data: parsed.value };
         try {
           const response = await baseQuery({ channel: 'auth:atlassian:login', payload: { provider: 'atlassian' } });
           if (response.error !== undefined) {

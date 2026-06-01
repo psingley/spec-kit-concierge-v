@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { validateClarifyArtifacts } from './clarify.factory';
 
 const fsMocks = vi.hoisted(() => ({ readFile: vi.fn() }));
@@ -37,7 +38,7 @@ Q: This requirement example is outside the Clarifications section
       expect(result.ok).toBe(true);
       expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
       expect(result).toMatchObject({ questions: [expect.objectContaining({ id: 'q1', position: 1 }), expect.objectContaining({ id: 'q2', position: 2 })] });
-      expect(vi.mocked(readFile)).toHaveBeenCalledWith('/feature/spec.md', 'utf8');
+      expect(vi.mocked(readFile)).toHaveBeenCalledWith(path.join('/feature', 'spec.md'), 'utf8');
     });
   });
 

@@ -1,4 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
+import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { registerTasksDetailIpc, TASKS_DETAIL_CHANNEL } from './tasksDetail';
 
@@ -48,8 +49,8 @@ describe('registerTasksDetailIpc', () => {
     });
 
     expect(handle).toHaveBeenCalledWith(TASKS_DETAIL_CHANNEL, expect.any(Function));
-    expect(mockedStat).toHaveBeenCalledWith('/repo/specs/0001/tasks.md');
-    expect(mockedReadFile).toHaveBeenCalledWith('/repo/specs/0001/tasks.md', 'utf8');
+    expect(mockedStat).toHaveBeenCalledWith(path.join('/repo', 'specs/0001/tasks.md'));
+    expect(mockedReadFile).toHaveBeenCalledWith(path.join('/repo', 'specs/0001/tasks.md'), 'utf8');
     expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ channel: TASKS_DETAIL_CHANNEL, success: true }), 'ipc handler invocation');
   });
 
