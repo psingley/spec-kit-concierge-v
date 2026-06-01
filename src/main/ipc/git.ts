@@ -4,7 +4,7 @@ import { checkoutBranch } from '../data-layer/git/branchSessions';
 import { resetToCleanMain } from '../data-layer/git/resetToCleanMain';
 import { readUncommittedPaths } from '../data-layer/git/uncommittedPaths';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, logHandlerSuccess, toError } from './handlerUtils';
 import {
   createGitCheckoutRequest,
   createGitCheckoutResponse,
@@ -98,9 +98,26 @@ export const registerGitIpc = ({
     try {
       const request = createGitResetMainRequest(assertOnePayload(GIT_RESET_MAIN_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const response = createGitResetMainResponse(await resetMain(request.value.repositoryPath, request.value.defaultBranch));
+      const result = await resetMain(request.value.repositoryPath, request.value.defaultBranch);
+      const response = createGitResetMainResponse(result);
       if (!response.ok) throw toError(response.error.message);
-      logger.info({ channel: GIT_RESET_MAIN_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+      // Principle XV: log the catch-up evidence so the line proves
+      // "caught up: <before> -> <after> (+N commits on <branch>)" — or, on the
+      // local-only path, a clear "no origin catch-up" with commitsAdvanced 0.
+      logHandlerSuccess(logger, {
+        channel: GIT_RESET_MAIN_CHANNEL,
+        context,
+        startedAt,
+        now,
+        detail: {
+          branch: result.branch,
+          beforeSha: result.beforeSha,
+          afterSha: result.afterSha,
+          originSha: result.originSha,
+          commitsAdvanced: result.commitsAdvanced,
+          caughtUp: result.beforeSha === null ? 'local-only, no origin catch-up' : `${result.beforeSha} -> ${result.afterSha} (+${result.commitsAdvanced} on ${result.branch})`
+        }
+      });
       return response.value;
     } catch (error) {
       logHandlerError(logger, { channel: GIT_RESET_MAIN_CHANNEL, context, startedAt, now }, error);

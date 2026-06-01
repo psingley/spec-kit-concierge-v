@@ -1,6 +1,8 @@
 import {
   invalid,
+  hasOnlyKeys,
   isStringArray,
+  optionalString,
   requireBoolean,
   requireExactKeys,
   requireNumber,
@@ -36,7 +38,7 @@ export type GitCheckoutResponse = {
 
 export type GitResetMainRequest = {
   repositoryPath: string;
-  defaultBranch: string;
+  defaultBranch: string | undefined;
 };
 
 export type GitResetMainResponse = {
@@ -99,25 +101,38 @@ export const createGitResetMainRequest = (
 ): FactoryResult<GitResetMainRequest, GitMutationErrorName> => {
   const root = requireRecord(value, 'InvalidGitMutationPayload', '$');
   if (!root.ok) return root;
-  const keys = requireExactKeys(root.value, ['repositoryPath', 'defaultBranch'], 'InvalidGitMutationPayload', '$');
-  if (!keys.ok) return keys;
+  // `defaultBranch` is OPTIONAL: when the picked repo's metadata carries it we
+  // thread the real default branch (master/develop/main); when absent,
+  // resetToCleanMain falls back to 'main' as a last resort.
+  if (!hasOnlyKeys(root.value, ['repositoryPath']) && !hasOnlyKeys(root.value, ['repositoryPath', 'defaultBranch'])) {
+    return invalid('InvalidGitMutationPayload', 'payload must contain repositoryPath and optionally defaultBranch', '$');
+  }
   const repositoryPath = requireString(root.value.repositoryPath, 'InvalidGitMutationPayload', '$.repositoryPath');
-  const defaultBranch = requireString(root.value.defaultBranch, 'InvalidGitMutationPayload', '$.defaultBranch');
   if (!repositoryPath.ok) return repositoryPath;
-  if (!defaultBranch.ok) return defaultBranch;
-  if (!isSafeBranch(defaultBranch.value)) {
+
+  if (root.value.defaultBranch === undefined || !('defaultBranch' in root.value)) {
+    return { ok: true, value: { repositoryPath: repositoryPath.value, defaultBranch: undefined } };
+  }
+
+  const defaultBranch = optionalString(root.value.defaultBranch);
+  if (defaultBranch === undefined) {
+    return invalid('InvalidGitMutationPayload', 'defaultBranch must be a string when present', '$.defaultBranch');
+  }
+  if (!isSafeBranch(defaultBranch)) {
     return invalid('InvalidGitMutationPayload', 'defaultBranch must be a safe ref name', '$.defaultBranch');
   }
-  return { ok: true, value: { repositoryPath: repositoryPath.value, defaultBranch: defaultBranch.value } };
+  return { ok: true, value: { repositoryPath: repositoryPath.value, defaultBranch } };
 };
 
 export const createGitResetMainResponse = (
   value: unknown
 ): FactoryResult<GitResetMainResponse, GitMutationErrorName> => {
+  // The internal ResetToCleanMainResult carries catch-up evidence
+  // (beforeSha/afterSha/originSha/commitsAdvanced) for logging; the IPC response
+  // sent to the renderer projects down to `{ branch }`, so we read `branch` and
+  // ignore the extra evidence fields rather than requiring exact keys.
   const root = requireRecord(value, 'InvalidGitMutationPayload', '$');
   if (!root.ok) return root;
-  const keys = requireExactKeys(root.value, ['branch'], 'InvalidGitMutationPayload', '$');
-  if (!keys.ok) return keys;
   const branch = requireString(root.value.branch, 'InvalidGitMutationPayload', '$.branch');
   if (!branch.ok) return branch;
   if (!isSafeBranch(branch.value)) {
