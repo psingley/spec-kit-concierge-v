@@ -145,9 +145,33 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
         return { outcome: 'closed' as const };
       })
     };
-    const supervisorFactory: ClarifySupervisorFactory = async () => ({ start: async () => session });
-    return { calls, session, supervisorFactory };
+    const factoryEnvs: Array<Record<string, string> | undefined> = [];
+    const supervisorFactory: ClarifySupervisorFactory = async (options) => {
+      factoryEnvs.push(options?.env);
+      return { start: async () => session };
+    };
+    return { calls, session, supervisorFactory, factoryEnvs };
   };
+
+  it('creates the clarify supervisor with SPECIFY_FEATURE (basename) and SPECIFY_FEATURE_DIRECTORY (repo-relative) env', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/012-remove-faux-traffic-lights');
+    const { factoryEnvs, supervisorFactory } = buildStubSupervisor();
+
+    registerCopilotClarifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      supervisorFactory
+    });
+
+    await harness.handlers.get('copilot:clarify')!({ sender: harness.sender }, { ...basePayload, repositoryPath, operation: 'next' });
+    await vi.waitFor(() => expect(factoryEnvs.length).toBe(1));
+    expect(factoryEnvs[0]).toEqual({
+      SPECIFY_FEATURE: '012-remove-faux-traffic-lights',
+      SPECIFY_FEATURE_DIRECTORY: 'specs/012-remove-faux-traffic-lights'
+    });
+  });
 
   it('prompts the live ACP session on answer WITHOUT calling loadSession (regression: "already loaded")', async () => {
     const harness = createHarness();

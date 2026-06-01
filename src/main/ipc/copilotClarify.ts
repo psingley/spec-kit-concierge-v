@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
@@ -29,7 +30,9 @@ export type ClarifyAgentAdapter = (
   request: CopilotClarifyRequest & { sessionId: string; featureDir: string }
 ) => Promise<ClarifyAgentAdapterResult>;
 
-export type ClarifySupervisorFactory = () => Promise<CodingAgent>;
+export type ClarifySupervisorFactoryOptions = { env?: Record<string, string> };
+
+export type ClarifySupervisorFactory = (options?: ClarifySupervisorFactoryOptions) => Promise<CodingAgent>;
 
 export type RegisterCopilotClarifyIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
@@ -96,14 +99,24 @@ const buildAnswerPrompt = (answers: CopilotClarifyRequest['answers']): string =>
 
 const defaultSupervisorFactory =
   (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): ClarifySupervisorFactory =>
-  async () => {
+  async (options) => {
     const manifest = await loadAgentManifest(logger);
     const agent = manifest.agents.copilot;
     if (agent === undefined) {
       throw new Error('Copilot agent manifest entry is missing.');
     }
-    return new BoundCLISupervisor({ agent, logger, userDataPath });
+    return new BoundCLISupervisor({ agent, logger, userDataPath, env: options?.env });
   };
+
+// In a multi-spec worktree spec-kit's check-prerequisites.sh re-derives the active
+// feature by scanning specs/ and kept picking the wrong one. common.sh honors the
+// SPECIFY_FEATURE env (branch-name equivalent = the feature folder basename) and
+// SPECIFY_FEATURE_DIRECTORY (repo-relative or absolute) before any scan, so pin both
+// onto the spawned clarify process to target OUR feature deterministically.
+const clarifyFeatureEnv = (repositoryPath: string, featureDir: string): Record<string, string> => ({
+  SPECIFY_FEATURE: path.basename(featureDir),
+  SPECIFY_FEATURE_DIRECTORY: path.relative(repositoryPath, featureDir)
+});
 
 const defaultAgentAdapter =
   (supervisorFactory: ClarifySupervisorFactory): ClarifyAgentAdapter =>
@@ -134,7 +147,8 @@ const defaultAgentAdapter =
       return { message };
     }
 
-    const supervisor = await supervisorFactory();
+    const featureEnv = clarifyFeatureEnv(request.repositoryPath, request.featureDir);
+    const supervisor = await supervisorFactory({ env: featureEnv });
     const session = await supervisor.start();
     const created = await session.newSession(request.repositoryPath, [], { step: 'clarify' });
     if (request.modelId !== undefined) {
@@ -142,7 +156,7 @@ const defaultAgentAdapter =
     }
     const prompt =
       request.operation === 'next'
-        ? 'Run /speckit.clarify for this feature. Pose your clarification questions one at a time as Markdown option tables; do not answer them yourself.'
+        ? `Run /speckit.clarify for this feature. Clarify ONLY the feature at ${request.featureDir} (SPECIFY_FEATURE=${featureEnv.SPECIFY_FEATURE}). Do not scan for or switch to any other feature; do not ask which feature to target — it is already determined. Pose your clarification questions one at a time as Markdown option tables; do not answer them yourself.`
         : request.operation === 'answer' || request.operation === 'commit'
           ? buildAnswerPrompt(request.answers)
           : request.operation === 'reaskMalformed'

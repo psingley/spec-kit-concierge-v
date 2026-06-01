@@ -37,6 +37,11 @@ export type BoundCLISupervisorOptions = {
   now?: () => Date;
   setTimeoutFn?: typeof setTimeout;
   clearTimeoutFn?: typeof clearTimeout;
+  // Opt-in environment override for the spawned ACP process. When undefined the
+  // child inherits the parent process env unchanged (passive steps rely on this).
+  // When provided it is merged onto process.env so callers (e.g. clarify) can pin
+  // SPECIFY_FEATURE without dropping inherited PATH/HOME/etc.
+  env?: Record<string, string>;
 };
 
 type SpawnedBoundCLI = ChildProcess & {
@@ -483,7 +488,10 @@ export class BoundCLISupervisor implements CodingAgent {
     ];
     const spawnOptions: SpawnOptions = {
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false
+      shell: false,
+      // Inherit parent env by default (unchanged behavior). Only merge an override
+      // when one is supplied so passive-step spawns are unaffected.
+      env: this.options.env === undefined ? process.env : { ...process.env, ...this.options.env }
     };
     const child = spawn(this.options.agent.binary, launchArgs, spawnOptions) as SpawnedBoundCLI;
 

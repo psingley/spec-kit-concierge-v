@@ -206,7 +206,8 @@ describe('BoundCLISupervisor', () => {
 
     expect(spawn).toHaveBeenCalledWith('copilot', ['--allow-all-tools', '--acp'], {
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false
+      shell: false,
+      env: process.env
     });
     expect(session.capabilities).toMatchObject({
       protocolVersion: 1,
@@ -219,6 +220,28 @@ describe('BoundCLISupervisor', () => {
 
     await expect(session.dispose()).resolves.toEqual({ outcome: 'closed' });
     expect(child.kill).not.toHaveBeenCalled();
+  });
+
+  it('inherits the parent process env by default (no env override -> passive steps unaffected)', async () => {
+    await startSession();
+
+    const spawnEnv = vi.mocked(spawn).mock.calls[0]?.[2]?.env;
+    expect(spawnEnv).toBe(process.env);
+  });
+
+  it('merges an env override onto the inherited parent env when env is provided', async () => {
+    await startSession(createFakeChild(), {
+      env: { SPECIFY_FEATURE: '012-remove-faux-traffic-lights', SPECIFY_FEATURE_DIRECTORY: 'specs/012-remove-faux-traffic-lights' }
+    });
+
+    const spawnEnv = vi.mocked(spawn).mock.calls[0]?.[2]?.env;
+    expect(spawnEnv).toMatchObject({
+      SPECIFY_FEATURE: '012-remove-faux-traffic-lights',
+      SPECIFY_FEATURE_DIRECTORY: 'specs/012-remove-faux-traffic-lights'
+    });
+    // Inherited parent env keys must still be present (we merge, not replace).
+    expect(spawnEnv?.PATH).toBe(process.env.PATH);
+    expect(spawnEnv).not.toBe(process.env);
   });
 
   it('creates a new ACP session with cwd and MCP server parameters', async () => {
