@@ -198,9 +198,13 @@ export const listBranchSessions = async (
     const states = emptyStates();
     for (const record of history) {
       states[record.step as StepName] = trailerStatusToState(record.status);
-      if (record.step === 'specify' && record.status === 'pass') {
-        states.clarify = 'pending';
-      }
+    }
+    // "specify done → clarify becomes available" is only a fallback for when clarify
+    // has no trailer of its own yet. Applied after the loop and guarded on
+    // not_available so it never clobbers a real clarify:pass (complete) back to
+    // pending — that bug made resume of a clarified session land back on Clarify.
+    if (states.specify === 'complete' && states.clarify === 'not_available') {
+      states.clarify = 'pending';
     }
 
     // Dirty/in-progress: spec.md exists but no branch-unique pass trailer for

@@ -120,6 +120,27 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
     expect(session.restoredStates.plan).toBe('not_available');
   });
 
+  it('does NOT clobber a real clarify:pass back to pending when specify:pass is also present (Bug 30)', async () => {
+    const wtPath = `${HOME}/session-014`;
+    // History (newest first, as git log returns): plan, clarify, specify all pass.
+    const fullHistory: ConciergeStepHistoryRecord[] = [
+      { step: 'plan', status: 'pass', commitSha: 'p1', warnings: [] },
+      { step: 'clarify', status: 'pass', commitSha: 'c1', warnings: [] },
+      { step: 'specify', status: 'pass', commitSha: 's1', warnings: [] }
+    ];
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: fullHistory }
+    );
+
+    const session = (await listBranchSessions(CLONE, deps))[0]!;
+    // The specify-done→clarify-pending fallback must not overwrite the real clarify:pass.
+    expect(session.restoredStates.specify).toBe('complete');
+    expect(session.restoredStates.clarify).toBe('complete');
+    expect(session.restoredStates.plan).toBe('complete');
+    expect(session.restoredStates.tasks).toBe('not_available');
+  });
+
   it('strips spec/ from a legacy spec/* worktree label', async () => {
     const wtPath = `${HOME}/session-legacy`;
     const { deps } = makeDeps(
