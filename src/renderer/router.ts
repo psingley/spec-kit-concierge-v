@@ -19,10 +19,10 @@ const deriveInitialEntry = (store: AppStore): string => {
 
 const RootLayout = (): React.ReactElement =>
   React.createElement(
-    React.Fragment,
-    null,
+    'div',
+    { className: 'app-root' },
     React.createElement(TitlebarContainer),
-    React.createElement(Outlet)
+    React.createElement('div', { className: 'app-outlet' }, React.createElement(Outlet))
   );
 
 export const createAppRouter = (store: AppStore) => {
