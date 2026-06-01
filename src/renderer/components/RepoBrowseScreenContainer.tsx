@@ -3,7 +3,8 @@ import { branchesApi } from '../api/branches.endpoint';
 import { gitApi } from '../api/git.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
-import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type RepositorySummary } from '../slices/workspace';
+import { stepsRestoredFromSession } from '../slices/steps';
+import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type BranchSession, type RepositorySummary } from '../slices/workspace';
 import { selectWorkspaceSelectedRepo, selectWorkspaceSessions } from '../slices/workspace.selectors';
 import { RepoBrowseScreen } from './RepoBrowseScreen';
 
@@ -25,8 +26,11 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     }
   }, [branchSessions.data, dispatch]);
 
-  const resume = (repo: RepositorySummary, branch: string): void => {
-    void checkoutBranch({ repositoryPath: repo.path, branch }).then(() => dispatch(workspaceEntered({ repo, branch })));
+  const resume = (repo: RepositorySummary, session: BranchSession): void => {
+    void checkoutBranch({ repositoryPath: repo.path, branch: session.branch }).then(() => {
+      dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
+      dispatch(workspaceEntered({ repo, branch: session.branch, restoredStates: session.restoredStates }));
+    });
   };
 
   return (

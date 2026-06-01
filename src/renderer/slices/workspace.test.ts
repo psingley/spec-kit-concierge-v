@@ -9,7 +9,7 @@ import {
   selectWorkspaceDirty,
   selectWorkspaceState
 } from './workspace.selectors';
-import workspaceReducer from './workspace';
+import workspaceReducer, { workspaceEntered, workspaceInitialState } from './workspace';
 
 describe('workspace slice', () => {
   it('initializes to the Run 4 locked state', () => {
@@ -26,6 +26,20 @@ describe('workspace slice', () => {
       maxReachedStep: 'specify',
       viewedStep: 'specify'
     });
+  });
+
+  it('restores the branch and reached step from a resumed session instead of a fresh specify', () => {
+    const next = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({
+        repo: { id: 'r1', name: 'concierge-api', owner: 'collette-travel', path: '/work/concierge-api', defaultBranch: 'main' },
+        branch: 'spec/runtime-session',
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+      })
+    );
+
+    expect(next.branch).toBe('spec/runtime-session');
+    expect(next.maxReachedStep).toBe('clarify');
   });
 
   it('exposes base selectors through RootState', () => {

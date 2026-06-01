@@ -39,7 +39,6 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model={null}
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5', enablement: 'default' }]}
-        showDraftBranch
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
@@ -67,7 +66,6 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model={null}
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5' }]}
-        showDraftBranch
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
@@ -76,6 +74,28 @@ describe('Titlebar dropdowns', () => {
     );
 
     expect(screen.getByRole('button', { name: 'spec/draft-abcd1234' })).toBeInTheDocument();
+  });
+
+  it('shows the live workspace branch on resume even when no draft is in flight', () => {
+    render(
+      <Titlebar
+        repo={{ id: 'repo-2', owner: 'collette-travel', name: 'concierge-api', path: '/work/concierge-api', defaultBranch: 'main', language: 'TypeScript' }}
+        branch="016-remove-traffic-dots"
+        identity={{ login: 'a.kim', displayName: 'Anika Kim' }}
+        github="ok"
+        copilot="ok"
+        atlassian="ok"
+        model={null}
+        models={[{ id: 'gpt-5.5', name: 'GPT-5.5' }]}
+        onCustomize={vi.fn()}
+        onAbout={vi.fn()}
+        onRequest={vi.fn()}
+        onModelSelect={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: '016-remove-traffic-dots' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'main' })).not.toBeInTheDocument();
   });
 
   it('closes an open menu when the user clicks outside', () => {

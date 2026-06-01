@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { RepoBrowseScreen } from './RepoBrowseScreen';
 import type { BranchSession, RepositorySummary } from '../slices/workspace';
@@ -80,5 +80,33 @@ describe('RepoBrowseScreen visual contract', () => {
 
     expect(screen.getByText('1 prior session')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'spec/runtime-sessionClarifyrecent' })).toBeInTheDocument();
+  });
+
+  it('resumes with the full session so step-state can be restored', () => {
+    const onResume = vi.fn();
+    const sessions: BranchSession[] = [
+      {
+        branch: 'spec/runtime-session',
+        label: 'Runtime session',
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+      }
+    ];
+
+    render(
+      <RepoBrowseScreen
+        repositories={repositories}
+        sessions={sessions}
+        selectedRepo={repositories[1]!}
+        loading={false}
+        onSelectRepo={vi.fn()}
+        onResume={onResume}
+        onStartNew={vi.fn()}
+        onBackToRepos={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'spec/runtime-sessionClarifyrecent' }));
+
+    expect(onResume).toHaveBeenCalledWith(repositories[1]!, sessions[0]!);
   });
 });

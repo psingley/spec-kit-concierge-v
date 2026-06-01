@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { selectAuthAtlassianStatus, selectAuthCopilotStatus, selectAuthGithubStatus, selectAuthIdentity } from '../slices/auth.selectors';
 import { preferencesUpdated } from '../slices/preferences';
 import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.selectors';
-import { selectSessionAnyStepRunning, selectSessionSpecMarkdown, selectSessionSpecifyRunning } from '../slices/session.selectors';
+import { selectSessionAnyStepRunning } from '../slices/session.selectors';
 import { modalOpened } from '../slices/ui';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { ActivityPillContainer } from './ActivityPillContainer';
@@ -12,9 +12,7 @@ import { Titlebar } from './Titlebar';
 
 export const TitlebarContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const specifyRunning = useAppSelector(selectSessionSpecifyRunning);
   const stepRunning = useAppSelector(selectSessionAnyStepRunning);
-  const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
   const selectedModel = useAppSelector(selectPreferencesSelectedCopilotModel);
   const { data: capabilities } = api.endpoints.getBoundCLICapabilities.useQuery();
   const models = capabilities?.models.available ?? [];
@@ -30,7 +28,6 @@ export const TitlebarContainer = (): React.ReactElement => {
       model={model}
       models={models}
       modelDisabled={stepRunning}
-      showDraftBranch={specifyRunning || specMarkdown.trim().length > 0}
       onCustomize={() => dispatch(modalOpened('showCustomize'))}
       onAbout={() => dispatch(modalOpened('showAbout'))}
       onRequest={() => dispatch(modalOpened('showRequest'))}

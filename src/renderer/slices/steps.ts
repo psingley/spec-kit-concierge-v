@@ -103,6 +103,16 @@ const stepsSlice = createSlice({
         warnings: []
       });
     },
+    stepsRestoredFromSession: (state, action: PayloadAction<{ states: Record<StepName, StepState> }>) => {
+      stepsAdapter.setAll(
+        state,
+        stepNames.map((step) => ({
+          id: step,
+          status: action.payload.states[step],
+          warnings: []
+        }))
+      );
+    },
     stepsRestored: (state, action: PayloadAction<{ records: TrailerStepRecord[] }>) => {
       const latestByStep = new Map<StepName, TrailerStepRecord>();
 
@@ -148,6 +158,6 @@ export const clarifyQuestionMalformed = createAction<ClarifyQuestionMalformedPay
   'clarify/questionMalformed'
 );
 
-export const { stepPending, stepCompleted, stepReset, stepsRestored } = stepsSlice.actions;
+export const { stepPending, stepCompleted, stepReset, stepsRestored, stepsRestoredFromSession } = stepsSlice.actions;
 export const stepsReducer = stepsSlice.reducer;
 export default stepsReducer;

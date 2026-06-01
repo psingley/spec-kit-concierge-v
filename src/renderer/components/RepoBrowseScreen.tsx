@@ -9,7 +9,7 @@ export type RepoBrowseScreenProps = {
   selectedRepo: RepositorySummary | null;
   loading: boolean;
   onSelectRepo: (repo: RepositorySummary) => void;
-  onResume: (repo: RepositorySummary, branch: string) => void;
+  onResume: (repo: RepositorySummary, session: BranchSession) => void;
   onStartNew: (repo: RepositorySummary) => void;
   onBackToRepos: () => void;
 };
@@ -44,9 +44,18 @@ type PresentedSession = {
   branch: string;
   step: StepName;
   timestamp: string;
+  session: BranchSession;
 };
 
-const visualSessionsByRepo: Record<string, PresentedSession[]> = {
+const restoredStatesForStep = (step: StepName): BranchSession['restoredStates'] => {
+  const stepIndex = stepOrder.indexOf(step);
+  return stepOrder.reduce((acc, candidate, index) => {
+    acc[candidate] = index < stepIndex ? 'complete' : index === stepIndex ? 'pending' : 'not_available';
+    return acc;
+  }, {} as BranchSession['restoredStates']);
+};
+
+const visualSessionsByRepo: Record<string, Array<{ branch: string; step: StepName; timestamp: string }>> = {
   'concierge-api': [
     { branch: 'spec/0042-self-serve-flight-change', step: 'plan', timestamp: '2h ago' },
     { branch: 'spec/0039-loyalty-tier-refund-rules', step: 'review', timestamp: '3d ago' },
@@ -72,10 +81,14 @@ const presentedSessionsFor = (repo: RepositorySummary, sessions: BranchSession[]
     return sessions.map((session) => ({
       branch: session.branch,
       step: sessionStep(session),
-      timestamp: 'recent'
+      timestamp: 'recent',
+      session
     }));
   }
-  return visualSessionsByRepo[repo.name] ?? [];
+  return (visualSessionsByRepo[repo.name] ?? []).map((entry) => ({
+    ...entry,
+    session: { branch: entry.branch, label: entry.branch, restoredStates: restoredStatesForStep(entry.step) }
+  }));
 };
 
 export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
@@ -150,7 +163,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
                     type="button"
                     aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
                     className="rb-branch-card session-row"
-                    onClick={() => onResume(selectedRepo, session.branch)}
+                    onClick={() => onResume(selectedRepo, session.session)}
                   >
                     <span className="rb-branch-glyph" />
                     <span className="rb-branch-card-main">
