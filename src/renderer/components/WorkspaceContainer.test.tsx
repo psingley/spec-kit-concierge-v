@@ -1,8 +1,8 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
-import { act, render, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import type { AppStore } from '../store';
 import { createProductStore } from '../store';
 import { installConciergeBridge } from '../api/testBridge';
@@ -12,6 +12,7 @@ import {
   passiveStepRunSucceeded,
   specifyRunSucceeded
 } from '../slices/session';
+import { clarifyCompletedInWorkspace, workspaceEntered, workspaceStepViewed } from '../slices/workspace';
 
 const clarifyDone = clarifyRunSucceeded({ artifactPath: 'spec.md', commitSha: 'clarify-sha', questions: [], answers: [] });
 
@@ -35,6 +36,27 @@ const renderWorkspace = () => {
     });
   };
   return { store, dispatch, ...utils };
+};
+
+const renderCountingWorkspace = (store: AppStore, initialEntry: string) => {
+  let renderCount = 0;
+  const CountingWorkspace = (): React.ReactElement => {
+    renderCount += 1;
+    return <WorkspaceContainer />;
+  };
+
+  const utils = render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <CountingWorkspace />
+      </MemoryRouter>
+    </Provider>
+  );
+
+  return {
+    ...utils,
+    getRenderCount: () => renderCount
+  };
 };
 
 describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)', () => {
@@ -83,5 +105,46 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
     expect(stepState(container, 'clarify')).toBe('complete');
     expect(stepState(container, 'plan')).toBe('pending');
     expect(stepState(container, 'tasks')).toBe('not_available');
+  });
+
+  it('opens completed plan artifacts without recursive workspace rendering', async () => {
+    const readArtifact = vi.fn().mockResolvedValue({ artifactPath: 'plan.md', text: '# Plan', size: 6, mtimeMs: 1 });
+    installConciergeBridge({
+      artifacts: {
+        read: readArtifact
+      }
+    });
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge',
+      defaultBranch: 'main'
+    };
+
+    act(() => {
+      store.dispatch(workspaceEntered({ repo, branch: null }));
+      store.dispatch(specifyRunSucceeded({ specMarkdown: '# Spec', artifactPath: 'spec.md', commitSha: 'specify-sha' }));
+      store.dispatch(clarifyRunSucceeded({ artifactPath: 'clarify.md', commitSha: 'clarify-sha', questions: [], answers: [] }));
+      store.dispatch(clarifyCompletedInWorkspace());
+      store.dispatch(passiveStepRunSucceeded({
+        step: 'plan',
+        commitSha: 'plan-sha',
+        artifacts: [{ path: 'plan.md', kind: 'markdown', required: true }]
+      }));
+      store.dispatch(workspaceStepViewed('plan'));
+    });
+
+    const { getRenderCount } = renderCountingWorkspace(store, '/workspace?step=plan');
+    const beforeOpen = getRenderCount();
+
+    fireEvent.click(screen.getByText('plan.md'));
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: 'plan.md' })).toBeInTheDocument();
+    });
+    expect(readArtifact).toHaveBeenCalledWith({ repositoryPath: '/work/concierge', artifactPath: 'plan.md' });
+    expect(getRenderCount() - beforeOpen).toBeLessThanOrEqual(4);
   });
 });

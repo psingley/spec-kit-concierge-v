@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createMemoryRouter } from 'react-router';
 import { copilotLoginSucceeded, githubLoginSucceeded } from '../slices/auth';
-import { repositorySelected, workspaceEntered } from '../slices/workspace';
+import { repositorySelected, workspaceEntered, workspaceStepViewed } from '../slices/workspace';
 import { createProductStore } from '../store';
 
 const repo = {
@@ -51,5 +51,19 @@ describe('navigation listener branch-null routing', () => {
     await waitForListener();
 
     expect(router.state.location.pathname).toBe('/repos');
+  });
+
+  it('does not replace-navigate when the workspace step is already encoded in the URL', async () => {
+    const store = createProductStore();
+    const router = createTestRouter('/workspace?step=plan');
+    const navigate = vi.spyOn(router, 'navigate');
+    store.wireRouter(router);
+
+    store.dispatch(workspaceStepViewed('plan'));
+    await waitForListener();
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(router.state.location.pathname).toBe('/workspace');
+    expect(router.state.location.search).toBe('?step=plan');
   });
 });

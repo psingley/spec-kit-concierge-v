@@ -14,17 +14,24 @@ export const setupNavigationListener = (
   startListening: AppStartListening,
   router: ReturnType<typeof createMemoryRouter>
 ): void => {
+  const navigateIfChanged = (to: string): void => {
+    const current = `${router.state.location.pathname}${router.state.location.search}`;
+    if (current !== to) {
+      void router.navigate(to, { replace: true });
+    }
+  };
+
   startListening({
     predicate: (_action, currentState, previousState) =>
       selectAuthGateOpen(currentState as RootState) !== selectAuthGateOpen(previousState as RootState),
     effect: (_action, listenerApi) => {
       const state = listenerApi.getState() as RootState;
       if (!selectAuthGateOpen(state)) {
-        void router.navigate('/sign-in', { replace: true });
+        navigateIfChanged('/sign-in');
       } else if (selectSessionEntered(state)) {
-        void router.navigate('/workspace', { replace: true });
+        navigateIfChanged('/workspace');
       } else {
-        void router.navigate('/repos', { replace: true });
+        navigateIfChanged('/repos');
       }
     }
   });
@@ -32,21 +39,21 @@ export const setupNavigationListener = (
   startListening({
     actionCreator: workspaceEntered,
     effect: () => {
-      void router.navigate('/workspace?step=specify', { replace: true });
+      navigateIfChanged('/workspace?step=specify');
     }
   });
 
   startListening({
     actionCreator: repositoryBrowseReset,
     effect: () => {
-      void router.navigate('/repos', { replace: true });
+      navigateIfChanged('/repos');
     }
   });
 
   startListening({
     actionCreator: workspaceStepViewed,
     effect: (action) => {
-      void router.navigate(`/workspace?step=${action.payload}`, { replace: true });
+      navigateIfChanged(`/workspace?step=${action.payload}`);
     }
   });
 };
