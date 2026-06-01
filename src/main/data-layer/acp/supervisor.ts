@@ -485,6 +485,13 @@ export class BoundCLISupervisor implements CodingAgent {
       throw new Error('Bound CLI process did not expose stdio pipes.');
     }
 
+    // Without a listener, a spawn error (e.g. ENOENT when the binary is missing)
+    // becomes an uncaught exception that crashes the process.  Convert it to a
+    // rejecting promise so it can be caught below.
+    const childSpawnError = new Promise<never>((_, reject) => {
+      child.once('error', reject);
+    });
+
     const transcriptRecords: AcpTranscriptRecord[] = [];
     const sessionRef: { current?: LiveBoundCLISession } = {};
     const protocol = createAcpProtocol({
@@ -503,7 +510,7 @@ export class BoundCLISupervisor implements CodingAgent {
     // before re-throwing.
     let rawCapabilities: unknown;
     try {
-      rawCapabilities = await protocol.initialize();
+      rawCapabilities = await Promise.race([protocol.initialize(), childSpawnError]);
     } catch (initError) {
       child.kill();
       throw initError;
