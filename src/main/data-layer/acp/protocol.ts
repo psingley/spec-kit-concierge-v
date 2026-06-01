@@ -11,6 +11,8 @@ import {
   type McpServer,
   type NewSessionRequest,
   type PromptRequest,
+  type RequestPermissionRequest,
+  type RequestPermissionResponse,
   type SessionNotification,
   type SetSessionConfigOptionRequest
 } from '@agentclientprotocol/sdk';
@@ -48,8 +50,19 @@ export type CreateAcpProtocolOptions = {
 class ConciergeAcpClient implements Client {
   constructor(private readonly options: AcpProtocolClient) {}
 
-  async requestPermission(): Promise<{ outcome: { outcome: 'cancelled' } }> {
-    return { outcome: { outcome: 'cancelled' } };
+  async requestPermission(params: RequestPermissionRequest): Promise<RequestPermissionResponse> {
+    // The supervisor launches the agent with --allow-all-tools, so any permission
+    // request that still surfaces should be auto-approved rather than cancelled
+    // (a cancelled outcome would silently stall the agent). Pick the first
+    // allow-style option the agent offered; only fall back to cancelled when the
+    // agent offered no allow option at all.
+    const allowOption = params.options.find(
+      (option) => option.kind === 'allow_once' || option.kind === 'allow_always'
+    );
+    if (allowOption === undefined) {
+      return { outcome: { outcome: 'cancelled' } };
+    }
+    return { outcome: { outcome: 'selected', optionId: allowOption.optionId } };
   }
 
   async sessionUpdate(params: SessionNotification): Promise<void> {

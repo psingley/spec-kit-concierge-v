@@ -4,6 +4,8 @@ import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
+import type { StepHook } from '../hooks/types';
+import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
@@ -18,15 +20,28 @@ import {
 export const COPILOT_SPECIFY_CHANNEL = 'copilot:specify';
 export const COPILOT_SPECIFY_EVENT_CHANNEL = 'copilot:specify:event';
 
-export type SpecifyAgentAdapter = (request: CopilotSpecifyRequest & { sessionId: string; featureDir: string }) => Promise<void>;
+export type SpecifyAgentAdapter = (
+  request: CopilotSpecifyRequest & {
+    sessionId: string;
+    featureDir: string;
+    onUpdate?: (update: BoundCLIPromptUpdate) => void;
+  }
+) => Promise<void>;
 
 export type RegisterCopilotSpecifyIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
   agentAdapter?: SpecifyAgentAdapter;
+  beforeHook?: StepHook;
+  afterHook?: StepHook;
   now?: () => number;
 };
+
+// Spec Kit's /speckit.specify command owns the workflow and the output location.
+// The user's feature description is passed as the slash command's $ARGUMENTS input.
+export const buildSpecifyPrompt = (featureDescription: string): string =>
+  `/speckit.specify ${featureDescription}`;
 
 const defaultAgentAdapter =
   (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): SpecifyAgentAdapter =>
@@ -38,15 +53,41 @@ async (request) => {
   }
   const supervisor = new BoundCLISupervisor({ agent, logger, userDataPath });
   const session = await supervisor.start();
-  const created = await session.newSession(request.repositoryPath, [], { step: 'specify' });
-  if (request.modelId !== undefined) {
-    await session.setModel(created.sessionId, request.modelId);
+  try {
+    const created = await session.newSession(request.repositoryPath, [], { step: 'specify' });
+    if (request.modelId !== undefined) {
+      await session.setModel(created.sessionId, request.modelId);
+    }
+    await session.prompt(created.sessionId, buildSpecifyPrompt(request.prompt), request.onUpdate);
+  } finally {
+    await session.dispose();
   }
-  await session.prompt(
-    created.sessionId,
-    `Create or update spec.md for this Spec Kit feature request. Keep the generated specification concise and valid markdown.\n\n${request.prompt}`
-  );
-  await session.dispose();
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+// Spec Kit writes the spec to the feature directory recorded in .specify/feature.json
+// (key feature_directory, relative to the repo root), not the repo root itself.
+const resolveFeatureDir = async (repositoryPath: string): Promise<string> => {
+  const fs = await import('node:fs/promises');
+  const manifestPath = path.join(repositoryPath, '.specify', 'feature.json');
+  let raw: string;
+  try {
+    raw = await fs.readFile(manifestPath, 'utf8');
+  } catch {
+    throw new Error('spec-kit feature directory not found (.specify/feature.json missing)');
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error('spec-kit feature directory unreadable (.specify/feature.json is malformed JSON)');
+  }
+  if (!isRecord(parsed) || typeof parsed.feature_directory !== 'string' || parsed.feature_directory.trim().length === 0) {
+    throw new Error('spec-kit feature directory missing (.specify/feature.json has no feature_directory)');
+  }
+  return path.join(repositoryPath, parsed.feature_directory);
 };
 
 export const registerCopilotSpecifyIpc = ({
@@ -54,6 +95,8 @@ export const registerCopilotSpecifyIpc = ({
   logger,
   userDataPath = app.getPath('userData'),
   agentAdapter = defaultAgentAdapter(logger, userDataPath),
+  beforeHook = beforeSpecifyHook,
+  afterHook = afterSpecifyHook,
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
@@ -96,7 +139,8 @@ export const registerCopilotSpecifyIpc = ({
         terminalSent = true;
         sendEvent(streamEvent);
       };
-      const featureDir = request.value.repositoryPath;
+      // Resolve against the repo root for the before-hook; the real feature directory
+      // is discovered from .specify/feature.json after spec-kit has run.
       const artifactPath = 'spec.md';
       try {
         sendEvent({
@@ -107,9 +151,9 @@ export const registerCopilotSpecifyIpc = ({
           message: 'Preparing Specify lifecycle',
           timestamp: new Date().toISOString()
         });
-        const before = await beforeSpecifyHook({
+        const before = await beforeHook({
           repositoryPath: request.value.repositoryPath,
-          featureDir,
+          featureDir: request.value.repositoryPath,
           sessionId,
           userDataPath,
           authStatus: { githubLoggedIn: true, copilotLoggedIn: true }
@@ -125,8 +169,26 @@ export const registerCopilotSpecifyIpc = ({
           message: 'Sending prompt to Copilot',
           timestamp: new Date().toISOString()
         });
-        await agentAdapter({ ...request.value, sessionId, featureDir });
-        const after = await afterSpecifyHook({
+        await agentAdapter({
+          ...request.value,
+          sessionId,
+          featureDir: request.value.repositoryPath,
+          onUpdate: (update) => {
+            sendEvent({
+              type: 'progress',
+              step: 'specify',
+              sessionId,
+              level: 'info',
+              message: 'Streaming specify output',
+              timestamp: new Date().toISOString(),
+              raw: update
+            });
+          }
+        });
+        // spec-kit has now created/updated .specify/feature.json; resolve the real
+        // feature directory so both the artifact read and the after-hook use it.
+        const featureDir = await resolveFeatureDir(request.value.repositoryPath);
+        const after = await afterHook({
           repositoryPath: request.value.repositoryPath,
           featureDir,
           sessionId,
@@ -142,7 +204,7 @@ export const registerCopilotSpecifyIpc = ({
           throw new Error(reason);
         }
         const specMarkdown = await import('node:fs/promises').then((fs) =>
-          fs.readFile(path.join(request.value.repositoryPath, artifactPath), 'utf8')
+          fs.readFile(path.join(featureDir, artifactPath), 'utf8')
         );
         terminal({
           type: 'done',
