@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createProductStore } from '../store';
 import {
+  selectSessionEntered,
   selectWorkspaceActiveRepoPath,
   selectWorkspaceAgents,
   selectWorkspaceAhead,
@@ -9,7 +10,7 @@ import {
   selectWorkspaceDirty,
   selectWorkspaceState
 } from './workspace.selectors';
-import workspaceReducer, { branchUpdated, workspaceEntered, workspaceInitialState } from './workspace';
+import workspaceReducer, { branchUpdated, repositoryBrowseReset, repositorySelected, workspaceEntered, workspaceInitialState } from './workspace';
 
 describe('workspace slice', () => {
   it('updates the branch when the target repo HEAD changes after a step', () => {
@@ -31,8 +32,34 @@ describe('workspace slice', () => {
       sessions: [],
       activeStep: 'specify',
       maxReachedStep: 'specify',
-      viewedStep: 'specify'
+      viewedStep: 'specify',
+      sessionEntered: false
     });
+  });
+
+  it('sessionEntered is false after repositorySelected', () => {
+    const state = workspaceReducer(
+      workspaceInitialState,
+      repositorySelected({ id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' })
+    );
+    expect(state.sessionEntered).toBe(false);
+  });
+
+  it('sessionEntered becomes true after workspaceEntered', () => {
+    const state = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({ repo: { id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' }, branch: null })
+    );
+    expect(state.sessionEntered).toBe(true);
+  });
+
+  it('sessionEntered resets to false after repositoryBrowseReset', () => {
+    const entered = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({ repo: { id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' }, branch: null })
+    );
+    const reset = workspaceReducer(entered, repositoryBrowseReset());
+    expect(reset.sessionEntered).toBe(false);
   });
 
   it('restores the branch and reached step from a resumed session instead of a fresh specify', () => {
@@ -59,5 +86,6 @@ describe('workspace slice', () => {
     expect(selectWorkspaceAhead(state)).toBe(0);
     expect(selectWorkspaceBehind(state)).toBe(0);
     expect(selectWorkspaceDirty(state)).toBe(false);
+    expect(selectSessionEntered(state)).toBe(false);
   });
 });

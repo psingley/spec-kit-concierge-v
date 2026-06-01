@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppSelector } from './hooks/store';
 import { selectAuthGateOpen } from './slices/auth.selectors';
-import { selectWorkspaceSelectedRepo } from './slices/workspace.selectors';
+import { selectSessionEntered } from './slices/workspace.selectors';
 import { RepoBrowseScreenContainer } from './components/RepoBrowseScreenContainer';
 import { SignInScreenContainer } from './components/SignInScreenContainer';
 import { TitlebarContainer } from './components/TitlebarContainer';
@@ -10,14 +10,16 @@ import { ModalHost } from './components/ModalHost';
 
 export const App = (): React.ReactElement => {
   const gateOpen = useAppSelector(selectAuthGateOpen);
-  const repo = useAppSelector(selectWorkspaceSelectedRepo);
+  const entered = useAppSelector(selectSessionEntered);
   if (!gateOpen) {
     return <SignInScreenContainer />;
   }
-  // ADR-0016 detached-worktree model: branch=null is legitimate for a freshly-entered
-  // session (spec-kit names the branch on first specify run via before_specify hook).
-  // Only gate on repo=null; downstream components handle branch=null safely.
-  if (repo === null) {
+  // Render the workspace only after workspaceEntered is dispatched (Resume or
+  // Start new session). Merely selecting a repo card (repositorySelected) is not
+  // enough — the intermediate browse screen (prior-session list + Start CTA) must
+  // stay visible until the user explicitly enters a session. This also supports
+  // ADR-0016 detached-worktree sessions where branch=null is legitimate.
+  if (!entered) {
     return (
       <div className="workspace">
         <TitlebarContainer />

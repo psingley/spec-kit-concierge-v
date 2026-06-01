@@ -19,6 +19,10 @@ export type WorkspaceState = {
   activeStep: StepName;
   maxReachedStep: StepName;
   viewedStep: StepName;
+  // True once workspaceEntered is dispatched (Start new session or Resume).
+  // Distinguishes "repo card clicked" from "session entered" — the intermediate
+  // browse screen (prior-session list + Start CTA) stays visible until this is true.
+  sessionEntered: boolean;
 };
 
 export type RepositorySummary = {
@@ -55,7 +59,8 @@ export const workspaceInitialState: WorkspaceState = {
   sessions: [],
   activeStep: 'specify',
   maxReachedStep: 'specify',
-  viewedStep: 'specify'
+  viewedStep: 'specify',
+  sessionEntered: false
 };
 
 const workspaceSlice = createSlice({
@@ -67,12 +72,14 @@ const workspaceSlice = createSlice({
       state.activeRepoPath = action.payload.path;
       state.branch = null;
       state.sessions = [];
+      state.sessionEntered = false;
     },
     repositoryBrowseReset: (state) => {
       state.selectedRepo = null;
       state.activeRepoPath = null;
       state.branch = null;
       state.sessions = [];
+      state.sessionEntered = false;
     },
     branchSessionsLoaded: (state, action: PayloadAction<BranchSession[]>) => {
       state.sessions = action.payload;
@@ -90,6 +97,7 @@ const workspaceSlice = createSlice({
       state.activeStep = 'specify';
       state.viewedStep = 'specify';
       state.maxReachedStep = action.payload.restoredStates?.clarify === 'pending' || action.payload.restoredStates?.specify === 'complete' ? 'clarify' : 'specify';
+      state.sessionEntered = true;
     },
     branchUpdated: (state, action: PayloadAction<{ branch: string }>) => {
       state.branch = action.payload.branch;

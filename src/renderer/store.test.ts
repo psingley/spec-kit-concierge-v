@@ -32,7 +32,8 @@ describe('product store assembly', () => {
       sessions: [],
       activeStep: 'specify',
       maxReachedStep: 'specify',
-      viewedStep: 'specify'
+      viewedStep: 'specify',
+      sessionEntered: false
     });
     expect(state.steps).toEqual({ ids: [], entities: {} });
     expect(state.session).toMatchObject({ activeSessionId: null, modelId: null, modeId: null, specifyPrompt: '', specMarkdown: '' });
