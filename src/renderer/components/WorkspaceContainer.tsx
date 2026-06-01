@@ -32,11 +32,13 @@ export const WorkspaceContainer = (): React.ReactElement => {
         ? (clarifyComplete ? 'complete' : 'pending')
         : step === 'plan'
           ? (passiveSteps.plan.commitSha !== null ? 'complete' : passiveSteps.plan.running || clarifyComplete ? 'pending' : 'not_available')
-          : step === 'tasks' || step === 'analyze'
-            ? (passiveSteps[step].commitSha !== null ? 'complete' : passiveSteps[step].running ? 'pending' : 'not_available')
-            : step === 'review' && passiveSteps.analyze.commitSha !== null
-              ? 'pending'
-            : 'not_available';
+          : step === 'tasks'
+            ? (passiveSteps.tasks.commitSha !== null ? 'complete' : passiveSteps.tasks.running || passiveSteps.plan.commitSha !== null ? 'pending' : 'not_available')
+            : step === 'analyze'
+              ? (passiveSteps.analyze.commitSha !== null ? 'complete' : passiveSteps.analyze.running || passiveSteps.tasks.commitSha !== null ? 'pending' : 'not_available')
+              : step === 'review' && passiveSteps.analyze.commitSha !== null
+                ? 'pending'
+              : 'not_available';
     return acc;
   }, {} as Record<StepName, StepState>);
   return (

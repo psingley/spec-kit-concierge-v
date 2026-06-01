@@ -75,6 +75,34 @@ describe('review evidence aggregation', () => {
     expect(summary.analyzeReport).toMatchObject({ analyzeCommitSha: 'analyze-sha', extractionStatus: 'captured' });
   });
 
+  it('builds git-show paths feature-dir-relative without a leading slash when featureDir equals the repo root', async () => {
+    const git = vi.fn(async (_repositoryPath: string, args: string[]) => {
+      const command = args.join(' ');
+      // featureDir === repositoryPath -> the committed spec lives at the repo root,
+      // so the git-show path must be a bare `spec.md`, never `/spec.md`.
+      if (command === 'show clarify-sha:spec.md') return '# Spec\n';
+      throw new Error(`unexpected git call ${command}`);
+    });
+
+    const summary = await buildReviewEvidence({
+      repositoryPath: '/repo',
+      featureDir: '/repo',
+      userDataPath: '/user'
+    }, {
+      readHistory: async () => [
+        { step: 'clarify', status: 'pass', commitSha: 'clarify-sha', warnings: [] }
+      ],
+      git,
+      readFile: vi.fn(async () => '[]')
+    });
+
+    expect(summary.clarifications).toEqual([]);
+    const showCalls = git.mock.calls.filter(([, args]) => args[0] === 'show');
+    for (const [, args] of showCalls) {
+      expect(args[1]).not.toMatch(/:\//);
+    }
+  });
+
   it('reads app-owned analyze report bodies only inside the feature evidence root', async () => {
     const body = await readReviewEvidenceBody({
       repositoryPath: '/repo',

@@ -10,6 +10,16 @@ import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/wo
 import { PassiveStep } from './PassiveStep';
 import { workspaceStepViewed } from '../slices/workspace';
 
+// Mirror of ReviewStepContainer.featureDirFromBranch: Spec Kit writes artifacts
+// (plan.md, research.md, ...) under the feature dir specs/<slug>, not the worktree
+// root. Reads must target that dir or artifacts:read joins <root>/plan.md -> ENOENT.
+const featureDirFromBranch = (repositoryPath: string, branch: string | null): string => {
+  if (branch?.startsWith('spec/') === true) {
+    return `${repositoryPath}/specs/${branch.slice('spec/'.length)}`;
+  }
+  return repositoryPath;
+};
+
 export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
   const dispatch = useAppDispatch();
@@ -42,10 +52,11 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
       onArtifactOpen={(path) => {
         setArtifactPath(path);
         if (repo !== null) {
+          const featureDir = featureDirFromBranch(repo.path, branch);
           if (path.endsWith('tasks.md')) {
-            void readTasksDetail({ repositoryPath: repo.path, artifactPath: path });
+            void readTasksDetail({ repositoryPath: featureDir, artifactPath: path });
           } else {
-            void readArtifact({ repositoryPath: repo.path, artifactPath: path });
+            void readArtifact({ repositoryPath: featureDir, artifactPath: path });
           }
         }
       }}

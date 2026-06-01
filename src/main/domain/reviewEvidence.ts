@@ -57,6 +57,14 @@ const kindForArtifact = (artifactPath: string): ReviewEvidenceArtifact['kind'] =
 const safeRelativeFeatureDir = (repositoryPath: string, featureDir: string): string =>
   path.relative(repositoryPath, featureDir).split(path.sep).join('/');
 
+// git-show / cat-file paths are repo-root-relative and must NOT carry a leading
+// slash. When featureDir === repositoryPath the relative dir is '' and a naive
+// `${rel}/${name}` yields `/spec.md` -> `fatal: path '/spec.md' does not exist`.
+// posix.join collapses the empty segment so we always get `spec.md` or
+// `specs/<slug>/spec.md`.
+const repoRelativeArtifact = (relativeFeatureDir: string, artifactName: string): string =>
+  path.posix.join(relativeFeatureDir, artifactName);
+
 const artifactExistsAtCommit = async (
   repositoryPath: string,
   commitSha: string,
@@ -81,18 +89,19 @@ const discoverPlanOptionalAtCommit = async (
   const optional = STEP_ARTIFACT_MANIFEST.plan.optionalFiles;
   const direct = [];
   for (const artifact of optional.filter((candidate) => !candidate.endsWith('/'))) {
-    if (await artifactExistsAtCommit(repositoryPath, commitSha, `${relativeFeatureDir}/${artifact}`, git)) {
+    if (await artifactExistsAtCommit(repositoryPath, commitSha, repoRelativeArtifact(relativeFeatureDir, artifact), git)) {
       direct.push(artifact);
     }
   }
 
   let contractFiles: string[] = [];
   try {
-    const output = await git(repositoryPath, ['ls-tree', '-r', '--name-only', commitSha, `${relativeFeatureDir}/contracts`]);
+    const output = await git(repositoryPath, ['ls-tree', '-r', '--name-only', commitSha, repoRelativeArtifact(relativeFeatureDir, 'contracts')]);
+    const stripPrefix = relativeFeatureDir === '' ? '' : `${relativeFeatureDir}/`;
     contractFiles = output
       .split(/\r?\n/)
       .filter(Boolean)
-      .map((file) => file.slice(`${relativeFeatureDir}/`.length))
+      .map((file) => file.slice(stripPrefix.length))
       .filter((file) => file.startsWith('contracts/'));
   } catch {
     contractFiles = [];
@@ -114,7 +123,7 @@ const discoverManifestOptionalAtCommit = async (
   const relativeFeatureDir = safeRelativeFeatureDir(repositoryPath, featureDir);
   const discovered: string[] = [];
   for (const artifact of STEP_ARTIFACT_MANIFEST[step].optionalFiles.filter((candidate) => !candidate.endsWith('/'))) {
-    if (await artifactExistsAtCommit(repositoryPath, commitSha, `${relativeFeatureDir}/${artifact}`, git)) {
+    if (await artifactExistsAtCommit(repositoryPath, commitSha, repoRelativeArtifact(relativeFeatureDir, artifact), git)) {
       discovered.push(artifact);
     }
   }
@@ -152,7 +161,7 @@ const readCommittedSpec = async (
   git: (repositoryPath: string, args: string[]) => Promise<string>
 ): Promise<string> => {
   const relativeFeatureDir = safeRelativeFeatureDir(repositoryPath, featureDir);
-  return git(repositoryPath, ['show', `${commitSha}:${relativeFeatureDir}/spec.md`]);
+  return git(repositoryPath, ['show', `${commitSha}:${repoRelativeArtifact(relativeFeatureDir, 'spec.md')}`]);
 };
 
 const readAnalyzeReportIndex = async (
