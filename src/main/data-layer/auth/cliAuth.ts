@@ -1,8 +1,5 @@
-import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { promisify } from 'node:util';
-
-const execFileAsync = promisify(execFile);
+import { runGh } from './execGh';
 
 export type LoginIdentity = {
   login: string;
@@ -30,6 +27,18 @@ export const readTestAdapterConfig = async (filePath: string | undefined): Promi
   return JSON.parse(await readFile(filePath, 'utf8')) as TestAdapterConfig;
 };
 
+const isGhMissing = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message;
+  // Windows cmd.exe: "not recognized as an internal or external command"
+  if (msg.includes('not recognized as an internal or external command')) return true;
+  // Windows PowerShell: "is not recognized as the name of a cmdlet"
+  if (msg.includes('is not recognized as the name of a cmdlet')) return true;
+  // POSIX: binary not found
+  if ((error as NodeJS.ErrnoException).code === 'ENOENT') return true;
+  return false;
+};
+
 export const loginGitHub = async (adapterPath = process.env.CONCIERGE_TEST_GH_ADAPTER): Promise<LoginResult> => {
   const config = await readTestAdapterConfig(adapterPath);
   if (config !== undefined) {
@@ -42,18 +51,21 @@ export const loginGitHub = async (adapterPath = process.env.CONCIERGE_TEST_GH_AD
 
   // Check if already authenticated before attempting interactive login
   try {
-    const { stdout } = await execFileAsync('gh', ['auth', 'status', '--active'], { shell: true });
+    const { stdout } = await runGh(['auth', 'status', '--active']);
     const loginMatch = stdout.match(/Logged in to .+ account (\S+)/);
     return {
       status: 'ok',
       provider: 'github',
       identity: { login: loginMatch?.[1] ?? 'github-user' }
     };
-  } catch {
+  } catch (statusError) {
+    if (isGhMissing(statusError)) {
+      throw new Error('GitHub CLI (gh) is not installed or not in PATH. Install it from https://cli.github.com/');
+    }
     // Not authenticated — attempt web-based device flow
   }
 
-  await execFileAsync('gh', ['auth', 'login', '--web'], { shell: true });
+  await runGh(['auth', 'login', '--web']);
   return { status: 'ok', provider: 'github', identity: { login: 'github-user' } };
 };
 
@@ -72,12 +84,15 @@ export const loginCopilot = async (
 
   // Copilot CLI shares GitHub's OAuth token; verify gh copilot works
   try {
-    await execFileAsync('gh', ['copilot', '--help'], { shell: true });
+    await runGh(['copilot', '--help']);
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
-  } catch {
+  } catch (copilotError) {
+    if (isGhMissing(copilotError)) {
+      throw new Error('GitHub CLI (gh) is not installed or not in PATH. Install it from https://cli.github.com/');
+    }
     // Fall back to copilot login (device flow, opens browser)
   }
 
-  await execFileAsync('copilot', ['login'], { shell: true });
+  await runGh(['copilot', 'login']);
   return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
 };

@@ -1,7 +1,6 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import type { IpcMain } from 'electron';
 import { loginCopilot, loginGitHub, type LoginResult } from '../data-layer/auth/cliAuth';
+import { runGh } from '../data-layer/auth/execGh';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
@@ -31,13 +30,11 @@ export type RegisterAuthIpcOptions = {
   now?: () => number;
 };
 
-const execFileAsync = promisify(execFile);
-
 const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | null> => {
   if (provider === 'copilot') {
     // Copilot CLI has no status command; check for a valid gh token with copilot scope
     try {
-      await execFileAsync('gh', ['copilot', '--help'], { shell: true });
+      await runGh(['copilot', '--help']);
       return true;
     } catch {
       return false;
@@ -45,7 +42,7 @@ const defaultCheckStatus = async (provider: AuthProvider): Promise<boolean | nul
   }
 
   try {
-    await execFileAsync('gh', ['auth', 'status'], { shell: true });
+    await runGh(['auth', 'status']);
     return true;
   } catch {
     return false;

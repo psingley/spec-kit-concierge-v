@@ -5,6 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { AgentManifestEntry } from '../agents/manifest';
 import type { MainLogger } from '../../logging';
+import { resolveWindowsBinary } from '../auth/execGh';
 import type { BoundCLISession, CodingAgent } from './agent';
 import { createBoundCLICapabilities, parseBoundCLIConfigOptions } from './capabilities';
 import { createAcpProtocol, type AcpProtocol, type AcpTranscriptRecord } from './protocol';
@@ -479,7 +480,8 @@ export class BoundCLISupervisor implements CodingAgent {
       stdio: ['pipe', 'pipe', 'pipe'],
       shell: false
     };
-    const child = spawn(this.options.agent.binary, launchArgs, spawnOptions) as SpawnedBoundCLI;
+    const binary = await resolveWindowsBinary(this.options.agent.binary);
+    const child = spawn(binary, launchArgs, spawnOptions) as SpawnedBoundCLI;
 
     if (child.stdin === null || child.stdout === null || child.stderr === null) {
       throw new Error('Bound CLI process did not expose stdio pipes.');

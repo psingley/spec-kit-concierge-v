@@ -1,8 +1,5 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import { readTestAdapterConfig } from '../auth/cliAuth';
-
-const execFileAsync = promisify(execFile);
+import { runGh } from '../auth/execGh';
 
 export type RepositorySummary = {
   id: string;
@@ -34,10 +31,8 @@ export const listRepositories = async (
     return config.repositories.filter(isRepositorySummary);
   }
 
-  const { stdout } = await execFileAsync(
-    'gh',
-    ['repo', 'list', 'collette-travel', '--json', 'id,name,owner,description,primaryLanguage,updatedAt,defaultBranchRef'],
-    { shell: false }
+  const { stdout } = await runGh(
+    ['repo', 'list', 'collette-travel', '--json', 'id,name,owner,description,primaryLanguage,updatedAt,defaultBranchRef']
   );
   const rows = JSON.parse(stdout) as Array<Record<string, unknown>>;
   return rows.flatMap((row) => {
