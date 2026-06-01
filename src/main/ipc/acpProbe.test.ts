@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ACP_PROBE_BOUND_CLI_CHANNEL, registerAcpProbeIpc } from './acpProbe';
 import { verifiedCopilotInitialize } from '../data-layer/acp/capabilities.factory.spec';
-import { createBoundCLICapabilities } from '../data-layer/acp/capabilities';
+import { createBoundCLICapabilities, parseModels, parseModes } from '../data-layer/acp/capabilities';
+import { AGENT_MODE_URI, type BoundCLINewSessionResult } from '../data-layer/acp/types';
 
 const capabilities = (() => {
   const result = createBoundCLICapabilities(verifiedCopilotInitialize);
@@ -11,6 +12,66 @@ const capabilities = (() => {
 
   return result.value;
 })();
+
+// Captured shape of the live copilot 1.0.56 session/new response: 14 models on
+// SessionModelState.availableModels with currentModelId 'gpt-5.5'.
+const liveSessionNewModels = [
+  'auto',
+  'gpt-5.5',
+  'gpt-5.4',
+  'gpt-5.3-codex',
+  'gpt-5.2-codex',
+  'gpt-5.2',
+  'gpt-5.4-mini',
+  'gpt-5-mini',
+  'gpt-4.1',
+  'claude-sonnet-4.6',
+  'claude-sonnet-4.5',
+  'claude-haiku-4.5',
+  'claude-opus-4.8',
+  'claude-opus-4.7'
+];
+
+const liveSessionNewState = {
+  sessionId: 'probe-session',
+  models: {
+    availableModels: liveSessionNewModels.map((id) => ({
+      modelId: id,
+      name: id,
+      _meta: { copilotUsage: '1x', copilotEnablement: 'enabled' }
+    })),
+    currentModelId: 'gpt-5.5'
+  },
+  modes: {
+    availableModes: [{ id: AGENT_MODE_URI, name: 'Agent' }],
+    currentModeId: AGENT_MODE_URI
+  },
+  configOptions: []
+};
+
+const newSessionResultFromLive = (): BoundCLINewSessionResult => {
+  const parsedModels = parseModels(liveSessionNewState.models);
+  const parsedModes = parseModes(liveSessionNewState.modes);
+  return {
+    sessionId: liveSessionNewState.sessionId,
+    currentModeId: parsedModes.current,
+    currentModelId: parsedModels.current,
+    availableModels: parsedModels.available,
+    availableModes: parsedModes.available,
+    configOptions: []
+  };
+};
+
+// Default newSession returns the same single-model state the initialize fixture
+// carries, so existing assertions that compare against `capabilities` hold.
+const newSessionResultFromInitialize = (): BoundCLINewSessionResult => ({
+  sessionId: 'probe-session',
+  currentModeId: capabilities.modes.current,
+  currentModelId: capabilities.models.current,
+  availableModels: capabilities.models.available,
+  availableModes: capabilities.modes.available,
+  configOptions: capabilities.configOptions
+});
 
 describe('registerAcpProbeIpc', () => {
   it('registers only acp:probeBoundCLI and returns supervisor capabilities', async () => {
@@ -28,7 +89,11 @@ describe('registerAcpProbeIpc', () => {
       logger,
       userDataPath: '/tmp/user-data',
       supervisorFactory: async () => ({
-        start: vi.fn(async () => ({ capabilities, dispose }))
+        start: vi.fn(async () => ({
+          capabilities,
+          newSession: vi.fn(async () => newSessionResultFromInitialize()),
+          dispose
+        }))
       })
     });
 
@@ -53,7 +118,11 @@ describe('registerAcpProbeIpc', () => {
       logger,
       userDataPath: '/tmp/user-data',
       supervisorFactory: async () => ({
-        start: vi.fn(async () => ({ capabilities, dispose: vi.fn() }))
+        start: vi.fn(async () => ({
+          capabilities,
+          newSession: vi.fn(async () => newSessionResultFromInitialize()),
+          dispose: vi.fn()
+        }))
       })
     });
 
@@ -79,7 +148,11 @@ describe('registerAcpProbeIpc', () => {
       userDataPath: '/tmp/user-data',
       now: vi.fn().mockReturnValueOnce(100).mockReturnValueOnce(101),
       supervisorFactory: async () => ({
-        start: vi.fn(async () => ({ capabilities, dispose: vi.fn() }))
+        start: vi.fn(async () => ({
+          capabilities,
+          newSession: vi.fn(async () => newSessionResultFromInitialize()),
+          dispose: vi.fn()
+        }))
       })
     });
 
@@ -113,7 +186,11 @@ describe('registerAcpProbeIpc', () => {
       userDataPath: '/tmp/user-data',
       now: vi.fn().mockReturnValueOnce(10).mockReturnValueOnce(15),
       supervisorFactory: async () => ({
-        start: vi.fn(async () => ({ capabilities, dispose }))
+        start: vi.fn(async () => ({
+          capabilities,
+          newSession: vi.fn(async () => newSessionResultFromInitialize()),
+          dispose
+        }))
       })
     });
 
@@ -124,11 +201,45 @@ describe('registerAcpProbeIpc', () => {
         channel: ACP_PROBE_BOUND_CLI_CHANNEL,
         context: { senderId: 7 },
         success: true,
-        latencyMs: 5
+        latencyMs: 5,
+        modelCount: capabilities.models.available.length,
+        currentModel: capabilities.models.current
       },
       'ipc handler invocation'
     );
     expect(dispose).toHaveBeenCalled();
+  });
+
+  it('sources models from session/new (14 live copilot models), not initialize', async () => {
+    // ROOT CAUSE: availableModels is on session/new (SessionModelState), never
+    // on initialize. The probe must call session/new and overlay its lists so
+    // the renderer model picker is populated. Without this, models.available
+    // is empty by construction and "Model unavailable" hangs Specify.
+    const handlers = new Map<string, (event: { sender: { id: number } }) => Promise<unknown>>();
+    const dispose = vi.fn(async () => ({ outcome: 'closed' }));
+    const newSession = vi.fn(async () => newSessionResultFromLive());
+    const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
+    registerAcpProbeIpc({
+      ipcMain: {
+        handle: vi.fn((channel: string, handler: (event: { sender: { id: number } }) => Promise<unknown>) => {
+          handlers.set(channel, handler);
+        })
+      },
+      logger,
+      userDataPath: '/tmp/user-data',
+      supervisorFactory: async () => ({
+        start: vi.fn(async () => ({ capabilities, newSession, dispose }))
+      })
+    });
+
+    const result = (await handlers.get(ACP_PROBE_BOUND_CLI_CHANNEL)?.({ sender: { id: 7 } })) as {
+      models: { available: unknown[]; current?: string };
+    };
+
+    expect(newSession).toHaveBeenCalledWith('/tmp/user-data', []);
+    expect(result.models.available).toHaveLength(14);
+    expect(result.models.current).toBe('gpt-5.5');
+    expect(dispose).toHaveBeenCalledTimes(1);
   });
 
   it('logs failure and disposes when supervisor start fails after session creation', async () => {

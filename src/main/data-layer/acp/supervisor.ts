@@ -6,7 +6,7 @@ import path from 'node:path';
 import type { AgentManifestEntry } from '../agents/manifest';
 import type { MainLogger } from '../../logging';
 import type { BoundCLISession, CodingAgent } from './agent';
-import { createBoundCLICapabilities, parseBoundCLIConfigOptions } from './capabilities';
+import { createBoundCLICapabilities, parseBoundCLIConfigOptions, parseModels, parseModes } from './capabilities';
 import { createAcpProtocol, type AcpProtocol, type AcpTranscriptRecord } from './protocol';
 import {
   AGENT_MODE_URI,
@@ -145,16 +145,20 @@ class LiveBoundCLISession implements BoundCLISession {
     this.#state = 'ready';
     await this.writeTranscript(sessionId, options.step ?? 'session-new');
 
-    const modes = toRecord(result.modes);
-    const models = toRecord(result.models);
-    const currentModeId = options.modeId ?? (typeof modes.currentModeId === 'string' ? modes.currentModeId : AGENT_MODE_URI);
-    const currentModelId =
-      typeof models.currentModelId === 'string' ? models.currentModelId : this.capabilities.models.current;
+    // ACP capture proved availableModels/availableModes live on session/new
+    // (SessionModelState), not on initialize. Parse them here so callers (e.g.
+    // the probe) can populate the otherwise-empty capabilities lists.
+    const parsedModes = parseModes(result.modes);
+    const parsedModels = parseModels(result.models);
+    const currentModeId = options.modeId ?? parsedModes.current;
+    const currentModelId = parsedModels.current ?? this.capabilities.models.current;
 
     return {
       sessionId,
       currentModeId,
       currentModelId,
+      availableModels: parsedModels.available,
+      availableModes: parsedModes.available,
       configOptions: parseBoundCLIConfigOptions(result.configOptions)
     };
   }
@@ -319,7 +323,9 @@ class TestAcpAdapterSession implements BoundCLISession {
       sessionId: 'test-acp-session',
       currentModeId: AGENT_MODE_URI,
       currentModelId: this.capabilities.models.current,
-      configOptions: []
+      availableModels: this.capabilities.models.available,
+      availableModes: this.capabilities.modes.available,
+      configOptions: this.capabilities.configOptions
     };
   }
 

@@ -94,6 +94,11 @@ export type BoundCLINewSessionResult = {
   sessionId: BoundCLISessionId;
   currentModeId: string;
   currentModelId?: string;
+  // Live ACP capture proved availableModels/availableModes live on the
+  // session/new response (SessionModelState), not on initialize. Surface them
+  // here so the probe can populate capabilities.models/modes/configOptions.
+  availableModels: BoundCLIModel[];
+  availableModes: BoundCLIMode[];
   configOptions: BoundCLIConfigOption[];
 };
 

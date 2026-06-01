@@ -14,19 +14,62 @@ import {
   type CopilotSpecifyRequest,
   type StepStreamEvent
 } from './copilotSpecify.factory';
+import {
+  createSpecifyReadinessAdapters,
+  evaluateSpecifyReadiness,
+  type SpecifyReadinessReport
+} from './specifyReadiness';
 
 export const COPILOT_SPECIFY_CHANNEL = 'copilot:specify';
 export const COPILOT_SPECIFY_EVENT_CHANNEL = 'copilot:specify:event';
+export const SPECIFY_READINESS_CHANNEL = 'specify:readiness';
 
 export type SpecifyAgentAdapter = (request: CopilotSpecifyRequest & { sessionId: string; featureDir: string }) => Promise<void>;
+
+export type SpecifyReadinessEvaluator = (request: {
+  repositoryPath: string;
+  modelId?: string;
+}) => Promise<SpecifyReadinessReport>;
 
 export type RegisterCopilotSpecifyIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
   agentAdapter?: SpecifyAgentAdapter;
+  evaluateReadiness?: SpecifyReadinessEvaluator;
   now?: () => number;
 };
+
+// Probe live capabilities via session/new (where availableModels actually
+// live) so readiness can verify a model is selectable before the ACP turn.
+const probeCapabilities =
+  (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string) =>
+  async (): Promise<{ available: string[]; current?: string }> => {
+    const manifest = await loadAgentManifest(logger);
+    const agent = manifest.agents.copilot;
+    if (agent === undefined) {
+      throw new Error('Copilot agent manifest entry is missing.');
+    }
+    const supervisor = new BoundCLISupervisor({ agent, logger, userDataPath });
+    const session = await supervisor.start();
+    try {
+      const state = await session.newSession(userDataPath, []);
+      return {
+        available: state.availableModels.map((model) => model.id),
+        current: state.currentModelId
+      };
+    } finally {
+      await session.dispose();
+    }
+  };
+
+const defaultEvaluateReadiness =
+  (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): SpecifyReadinessEvaluator =>
+  (request) =>
+    evaluateSpecifyReadiness(
+      request,
+      createSpecifyReadinessAdapters({ capabilitiesProbe: probeCapabilities(logger, userDataPath) })
+    );
 
 const defaultAgentAdapter =
   (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): SpecifyAgentAdapter =>
@@ -54,6 +97,7 @@ export const registerCopilotSpecifyIpc = ({
   logger,
   userDataPath = app.getPath('userData'),
   agentAdapter = defaultAgentAdapter(logger, userDataPath),
+  evaluateReadiness = defaultEvaluateReadiness(logger, userDataPath),
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
@@ -107,6 +151,26 @@ export const registerCopilotSpecifyIpc = ({
           message: 'Preparing Specify lifecycle',
           timestamp: new Date().toISOString()
         });
+        // Readiness preflight: verify every precondition BEFORE firing the ACP
+        // turn so an unmet condition (e.g. no model selected) blocks honestly
+        // instead of firing-and-hanging into the escape-hatch path.
+        const readiness = await evaluateReadiness({
+          repositoryPath: request.value.repositoryPath,
+          modelId: request.value.modelId
+        });
+        logger.info(
+          { channel: SPECIFY_READINESS_CHANNEL, context, checks: readiness.checks, ready: readiness.ready },
+          'ipc handler invocation'
+        );
+        if (!readiness.ready) {
+          const reason = readiness.failingCheck?.detail ?? 'Specify preconditions are not met.';
+          terminal({ type: 'done', step: 'specify', sessionId, status: 'fail', reason });
+          logger.error(
+            { channel: SPECIFY_READINESS_CHANNEL, context, success: false, ready: false, failingCheck: readiness.failingCheck?.name },
+            'ipc handler invocation'
+          );
+          return;
+        }
         const before = await beforeSpecifyHook({
           repositoryPath: request.value.repositoryPath,
           featureDir,

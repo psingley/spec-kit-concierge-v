@@ -18,7 +18,7 @@ describe('registerSessionIpc', () => {
     const info = vi.spyOn(logger, 'info');
     const session = {
       listSessions: vi.fn(async () => [{ sessionId: 's1', title: 'Work', cwd: '/repo', updatedAt: 'now' }]),
-      newSession: vi.fn(async () => ({ sessionId: 's2', currentModeId: 'mode', currentModelId: 'model', configOptions: [] })),
+      newSession: vi.fn(async () => ({ sessionId: 's2', currentModeId: 'mode', currentModelId: 'model', availableModels: [], availableModes: [], configOptions: [] })),
       setModel: vi.fn(async () => {}),
       dispose: vi.fn(async () => ({ outcome: 'closed' }))
     };
