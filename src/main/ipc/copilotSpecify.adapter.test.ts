@@ -9,8 +9,6 @@ const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 // Shared fixtures threaded through the post-spawn args (copilotSessionId, logDir).
 const FAKE_UUID = '11111111-1111-4111-8111-111111111111';
 const FAKE_LOGDIR = '/tmp/user/copilot-logs/specify-abc';
-// Repo-relative feature dir pinned on the spawn env as SPECIFY_FEATURE_DIRECTORY.
-const FAKE_FEATURE_DIR = 'specs/012-my-feature';
 
 // ---------------------------------------------------------------------------
 // buildSpecifyPrompt
@@ -104,7 +102,6 @@ const run = (
     FAKE_UUID,
     FAKE_LOGDIR,
     branchName,
-    FAKE_FEATURE_DIR,
     killSpy
   );
 
@@ -210,19 +207,6 @@ describe('runSpecifyPrintMode spawn argv', () => {
     // Even when a branch hint is threaded in, it must NOT become GIT_BRANCH_NAME:
     // the worktree is detached and spec-kit's before_specify hook owns naming.
     expect(opts.env.GIT_BRANCH_NAME).toBe(before);
-  });
-
-  it('pins SPECIFY_FEATURE_DIRECTORY on the spawn env so the agent writes spec.md + feature.json to it', async () => {
-    const spawnFn = vi.fn(() => makeFakeChild({ stdoutLines: [resultLine(0)] })) as unknown as SpawnAdapter;
-
-    await run('copilot', [], 'my feature', '/target/repo', undefined, undefined, spawnFn);
-
-    const [, , opts] = (spawnFn as ReturnType<typeof vi.fn>).mock.calls[0] as [
-      string,
-      string[],
-      { env: Record<string, string | undefined> }
-    ];
-    expect(opts.env.SPECIFY_FEATURE_DIRECTORY).toBe(FAKE_FEATURE_DIR);
   });
 });
 

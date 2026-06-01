@@ -10,7 +10,6 @@ import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
 import { runGit } from '../data-layer/git/gitCommand';
-import { allocateBranchName } from '../data-layer/git/allocateBranchName';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -65,11 +64,6 @@ export type SpecifyAgentAdapter = (
   request: CopilotSpecifyRequest & {
     sessionId: string;
     featureDir: string;
-    // Repo-relative feature dir (e.g. "specs/012-foo") pre-computed via
-    // allocateBranchName and pinned onto the spawn env as SPECIFY_FEATURE_DIRECTORY
-    // so the specify agent writes BOTH spec.md and feature.json to it (skipping its
-    // misfiring auto-scan that could target a different pre-existing feature).
-    specifyFeatureDirectory: string;
     // Real RFC-4122 v4 UUID handed to copilot via --session-id (the Concierge
     // sessionId is not a valid UUID and copilot rejects it — see the handler).
     copilotSessionId: string;
@@ -94,10 +88,6 @@ export type RegisterCopilotSpecifyIpcOptions = {
   beforeHook?: StepHook;
   afterHook?: StepHook;
   branchReader?: (repositoryPath: string) => Promise<string>;
-  // Pre-computes the repo-relative feature dir (via the side-effect-free
-  // create-new-feature.sh --dry-run) so it can be pinned on the spawn env BEFORE
-  // the agent runs (Bug 24 root fix). Injected so tests can stub it.
-  allocateFeatureBranchName?: (clonePath: string, description: string) => Promise<string>;
   now?: () => number;
 };
 
@@ -317,10 +307,6 @@ export const runSpecifyPrintMode = (
   // the detached-worktree model (ADR-0016) spec-kit's before_specify hook names
   // the real branch itself, so we must NOT set GIT_BRANCH_NAME and pre-empt it.
   _branchName: string | undefined,
-  // Repo-relative feature dir (e.g. "specs/012-foo") pinned onto the spawn env as
-  // SPECIFY_FEATURE_DIRECTORY so the specify agent writes spec.md AND feature.json
-  // to it, skipping its misfiring specs/ auto-scan (Bug 24 root fix).
-  specifyFeatureDirectory: string,
   killProcessTree: KillProcessTree = defaultKillProcessTree
 ): Promise<SpecifyRunOutcome> => {
   const args = [
@@ -333,11 +319,9 @@ export const runSpecifyPrintMode = (
     '-p',
     prompt
   ];
-  // Pin SPECIFY_FEATURE_DIRECTORY so the specify agent honors it for BOTH the
-  // spec.md and feature.json writes (skipping its misfiring auto-scan). GIT_BRANCH_NAME
-  // stays deliberately UNSET so spec-kit's before_specify hook still creates the
-  // feature-steered branch from the detached HEAD (the branch naming is separate).
-  const env = { ...process.env, SPECIFY_FEATURE_DIRECTORY: specifyFeatureDirectory };
+  // Inherit the plain env: GIT_BRANCH_NAME is deliberately unset so spec-kit's
+  // before_specify hook creates the feature-steered branch from the detached HEAD.
+  const env = process.env;
   return new Promise<SpecifyRunOutcome>((resolve, reject) => {
     const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false, detached: true, env });
 
@@ -485,8 +469,7 @@ async (request) => {
     spawnFn,
     request.copilotSessionId,
     request.logDir,
-    request.branch,
-    request.specifyFeatureDirectory
+    request.branch
   );
   // Completion binding: copilot's authoritative end-of-turn outcome keyed by our
   // copilot session id (ids/usage only — no PII).
@@ -517,7 +500,6 @@ export const registerCopilotSpecifyIpc = ({
   // equivalent to `git -C <worktreePath> branch --show-current`; it returns the
   // real spec-kit-named branch (empty only on a still-detached HEAD).
   branchReader = (repositoryPath) => runGit(repositoryPath, ['branch', '--show-current']),
-  allocateFeatureBranchName = (clonePath, description) => allocateBranchName(clonePath, description),
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
@@ -607,13 +589,6 @@ export const registerCopilotSpecifyIpc = ({
         if (!before.ok) {
           throw new Error(before.escapeHatchReason);
         }
-        // Pre-compute the feature dir BEFORE the spawn via the side-effect-free
-        // create-new-feature.sh --dry-run, then PIN it on the spawn env so the
-        // specify agent writes spec.md AND feature.json to it (skipping its
-        // misfiring specs/ auto-scan). If allocation throws, fail the step — do
-        // NOT fall back to the old scan-based behavior (Bug 24 root fix).
-        const branchName = await allocateFeatureBranchName(request.value.repositoryPath, request.value.prompt);
-        const featureRel = path.posix.join('specs', branchName);
         sendEvent({
           type: 'progress',
           step: 'specify',
@@ -639,7 +614,6 @@ export const registerCopilotSpecifyIpc = ({
           ...request.value,
           sessionId,
           featureDir: request.value.repositoryPath,
-          specifyFeatureDirectory: featureRel,
           copilotSessionId,
           logDir,
           onUpdate: (line) => {
@@ -653,22 +627,9 @@ export const registerCopilotSpecifyIpc = ({
             });
           }
         });
-        // The feature dir is the one we PINNED on the spawn env — authoritative.
-        // We do NOT re-read .specify/feature.json to discover it (that re-introduces
-        // the corrupt scan-based source). resolveFeatureDir stays for the
-        // resume/clarify paths; the specify happy-path uses the pin (pin in, pin out).
-        const featureDir = path.join(request.value.repositoryPath, featureRel);
-        // Hard consistency assertion (NOT a self-heal): read the agent-written
-        // feature.json and confirm spec-kit honored SPECIFY_FEATURE_DIRECTORY. If it
-        // disagrees, FAIL loudly — silently rewriting feature.json would mask
-        // spec-kit contract drift.
-        const writtenFeatureDir = await resolveFeatureDir(request.value.repositoryPath);
-        const writtenRel = path.relative(request.value.repositoryPath, writtenFeatureDir).split(path.sep).join('/');
-        if (writtenRel !== featureRel) {
-          throw new Error(
-            `spec-kit ignored SPECIFY_FEATURE_DIRECTORY: pinned ${featureRel} but feature.json wrote ${writtenRel}`
-          );
-        }
+        // spec-kit has now created/updated .specify/feature.json; resolve the real
+        // feature directory so both the artifact read and the after-hook use it.
+        const featureDir = await resolveFeatureDir(request.value.repositoryPath);
         const after = await afterHook({
           repositoryPath: request.value.repositoryPath,
           featureDir,
