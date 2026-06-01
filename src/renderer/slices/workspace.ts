@@ -73,7 +73,10 @@ const workspaceSlice = createSlice({
     },
     workspaceEntered: (
       state,
-      action: PayloadAction<{ repo: RepositorySummary; branch: string; restoredStates?: BranchSession['restoredStates'] }>
+      // branch is nullable: a new (detached) session enters with no branch yet —
+      // spec-kit names it later and branchUpdated sets it (ADR-0016). Resume
+      // passes the known branch.
+      action: PayloadAction<{ repo: RepositorySummary; branch: string | null; restoredStates?: BranchSession['restoredStates'] }>
     ) => {
       state.selectedRepo = action.payload.repo;
       state.activeRepoPath = action.payload.repo.path;

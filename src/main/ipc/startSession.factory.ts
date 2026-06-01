@@ -12,7 +12,6 @@ export type StartSessionRequest = {
 export type StartSessionResponse = {
   sessionId: string;
   worktreePath: string;
-  branch: string;
 };
 
 export const createStartSessionRequest = (value: unknown): FactoryResult<StartSessionRequest, ErrorName> => {
@@ -49,16 +48,14 @@ export const createStartSessionRequest = (value: unknown): FactoryResult<StartSe
 export const createStartSessionResponse = (value: unknown): FactoryResult<StartSessionResponse, ErrorName> => {
   const root = requireRecord(value, 'InvalidStartSessionPayload', '$');
   if (!root.ok) return root;
-  const keys = requireExactKeys(root.value, ['sessionId', 'worktreePath', 'branch'], 'InvalidStartSessionPayload', '$');
+  const keys = requireExactKeys(root.value, ['sessionId', 'worktreePath'], 'InvalidStartSessionPayload', '$');
   if (!keys.ok) return keys;
   const sessionId = requireString(root.value.sessionId, 'InvalidStartSessionPayload', '$.sessionId');
   const worktreePath = requireString(root.value.worktreePath, 'InvalidStartSessionPayload', '$.worktreePath');
-  const branch = requireString(root.value.branch, 'InvalidStartSessionPayload', '$.branch');
   if (!sessionId.ok) return sessionId;
   if (!worktreePath.ok) return worktreePath;
-  if (!branch.ok) return branch;
   return {
     ok: true,
-    value: { sessionId: sessionId.value, worktreePath: worktreePath.value, branch: branch.value }
+    value: { sessionId: sessionId.value, worktreePath: worktreePath.value }
   };
 };

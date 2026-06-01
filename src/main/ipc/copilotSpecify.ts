@@ -9,7 +9,7 @@ import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
-import { readBranchState } from '../data-layer/git/branchState';
+import { runGit } from '../data-layer/git/gitCommand';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
@@ -302,7 +302,10 @@ export const runSpecifyPrintMode = (
   spawnFn: SpawnAdapter,
   copilotSessionId: string,
   logDir: string,
-  branchName: string | undefined,
+  // Branch hint from the renderer; intentionally NOT threaded into the env. With
+  // the detached-worktree model (ADR-0016) spec-kit's before_specify hook names
+  // the real branch itself, so we must NOT set GIT_BRANCH_NAME and pre-empt it.
+  _branchName: string | undefined,
   killProcessTree: KillProcessTree = defaultKillProcessTree
 ): Promise<SpecifyRunOutcome> => {
   const args = [
@@ -315,13 +318,9 @@ export const runSpecifyPrintMode = (
     '-p',
     prompt
   ];
-  // GIT_BRANCH_NAME forces spec-kit's before_specify hook to REUSE the
-  // app-pre-created worktree branch instead of generating a second one
-  // (ADR-0016). Only set when known; otherwise inherit the plain env.
-  const env =
-    branchName !== undefined && branchName.length > 0
-      ? { ...process.env, GIT_BRANCH_NAME: branchName }
-      : process.env;
+  // Inherit the plain env: GIT_BRANCH_NAME is deliberately unset so spec-kit's
+  // before_specify hook creates the feature-steered branch from the detached HEAD.
+  const env = process.env;
   return new Promise<SpecifyRunOutcome>((resolve, reject) => {
     const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false, detached: true, env });
 
@@ -518,7 +517,11 @@ export const registerCopilotSpecifyIpc = ({
   evaluateReadiness = defaultEvaluateReadiness(logger, userDataPath),
   beforeHook = beforeSpecifyHook,
   afterHook = afterSpecifyHook,
-  branchReader = async (repositoryPath) => (await readBranchState(repositoryPath)).branch,
+  // Read the WORKTREE's current branch AFTER spec-kit's after-hook has named it.
+  // `branch --show-current` is run with cwd=repositoryPath (the worktree), i.e.
+  // equivalent to `git -C <worktreePath> branch --show-current`; it returns the
+  // real spec-kit-named branch (empty only on a still-detached HEAD).
+  branchReader = (repositoryPath) => runGit(repositoryPath, ['branch', '--show-current']),
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {

@@ -12,7 +12,9 @@ export type WorktreeManagerDeps = {
 export type CreateWorktreeResult = {
   sessionId: string;
   worktreePath: string;
-  branch: string;
+  // null until spec-kit's before_specify hook names the real branch — the
+  // worktree starts on a DETACHED HEAD with no pre-named branch (ADR-0016).
+  branch: string | null;
 };
 
 const defaultPathExists = async (target: string): Promise<boolean> => {
@@ -42,22 +44,22 @@ const hasOrigin = async (
 };
 
 /**
- * Create an isolated git worktree for a session on a pre-allocated branch
- * (ADR-0016 Phase 1). The worktree is a SIBLING of the clone (see worktreePath)
- * sharing the clone's object store, so this is cheap (no re-clone) and cannot
- * pollute the clone's git status. When an `origin` remote exists the base is the
- * freshly fetched `origin/<default>` tip; otherwise the local `<default>`.
+ * Create an isolated git worktree for a session on a DETACHED HEAD (ADR-0016).
+ * The worktree is a SIBLING of the clone (see worktreePath) sharing the clone's
+ * object store, so this is cheap (no re-clone) and cannot pollute the clone's
+ * git status. When an `origin` remote exists the base is the freshly fetched
+ * `origin/<default>` tip; otherwise the local `<default>`.
  *
- * `branchName` is allocated by the app up front (see allocateBranchName) and
- * passed verbatim to `git worktree add -b`, so spec-kit's before_specify hook
- * (driven by GIT_BRANCH_NAME) reuses this exact branch instead of creating a
- * second one.
+ * Crucially the worktree is created WITHOUT a pre-named branch (`--detach`):
+ * spec-kit's own before_specify hook creates the real, feature-steered branch
+ * (NNN-slug) from the detached HEAD when specify runs. The branch is therefore
+ * unknown at creation time and returned as `null` — callers read the worktree's
+ * actual branch only after spec-kit has named it.
  */
 export const createWorktree = async (
   clonePath: string,
   sessionId: string,
   defaultBranch: string,
-  branchName: string,
   deps: WorktreeManagerDeps = {}
 ): Promise<CreateWorktreeResult> => {
   const runGit = deps.runGit ?? runGitDefault;
@@ -69,9 +71,9 @@ export const createWorktree = async (
   }
   const base = originPresent ? `origin/${defaultBranch}` : defaultBranch;
 
-  await runGit(clonePath, ['worktree', 'add', target, '-b', branchName, base]);
+  await runGit(clonePath, ['worktree', 'add', '--detach', target, base]);
 
-  return { sessionId, worktreePath: target, branch: branchName };
+  return { sessionId, worktreePath: target, branch: null };
 };
 
 /**

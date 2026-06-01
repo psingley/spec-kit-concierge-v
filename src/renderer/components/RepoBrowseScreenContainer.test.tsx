@@ -25,11 +25,10 @@ const makeStore = () =>
   });
 
 describe('RepoBrowseScreenContainer startNew', () => {
-  it('calls startSession and enters the workspace pointed at the WORKTREE path', async () => {
+  it('calls startSession and enters the workspace pointed at the WORKTREE path (branch null until spec-kit names it)', async () => {
     const startSession = vi.fn(async () => ({
       sessionId: 'session-xyz',
-      worktreePath: '/clone.worktrees/session-xyz',
-      branch: '003-add-dark-mode'
+      worktreePath: '/clone.worktrees/session-xyz'
     }));
     installConciergeBridge({
       repos: { list: vi.fn(async () => ({ repositories: [repo] })) },
@@ -66,7 +65,9 @@ describe('RepoBrowseScreenContainer startNew', () => {
     await waitFor(() => {
       // repo.path becomes the WORKTREE path so all downstream git + spawn run there.
       expect(store.getState().workspace.activeRepoPath).toBe('/clone.worktrees/session-xyz');
-      expect(store.getState().workspace.branch).toBe('003-add-dark-mode');
+      // No branch yet — the detached worktree is unnamed until spec-kit's
+      // before_specify hook creates the real branch (branchUpdated sets it later).
+      expect(store.getState().workspace.branch).toBeNull();
     });
   });
 });

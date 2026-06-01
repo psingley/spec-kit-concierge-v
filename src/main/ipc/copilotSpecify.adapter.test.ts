@@ -193,8 +193,9 @@ describe('runSpecifyPrintMode spawn argv', () => {
     expect(opts.cwd).toBe('/target/repo');
   });
 
-  it('sets env.GIT_BRANCH_NAME to the pre-allocated branch so spec-kit reuses it', async () => {
+  it('does NOT inject GIT_BRANCH_NAME — spec-kit names the branch itself from the detached HEAD', async () => {
     const spawnFn = vi.fn(() => makeFakeChild({ stdoutLines: [resultLine(0)] })) as unknown as SpawnAdapter;
+    const before = process.env.GIT_BRANCH_NAME;
 
     await run('copilot', [], 'my feature', '/target/repo', undefined, undefined, spawnFn, undefined, '003-add-dark-mode');
 
@@ -203,20 +204,8 @@ describe('runSpecifyPrintMode spawn argv', () => {
       string[],
       { env: Record<string, string | undefined> }
     ];
-    expect(opts.env.GIT_BRANCH_NAME).toBe('003-add-dark-mode');
-  });
-
-  it('does NOT inject GIT_BRANCH_NAME when no branch is provided', async () => {
-    const spawnFn = vi.fn(() => makeFakeChild({ stdoutLines: [resultLine(0)] })) as unknown as SpawnAdapter;
-    const before = process.env.GIT_BRANCH_NAME;
-
-    await run('copilot', [], 'my feature', '/target/repo', undefined, undefined, spawnFn);
-
-    const [, , opts] = (spawnFn as ReturnType<typeof vi.fn>).mock.calls[0] as [
-      string,
-      string[],
-      { env: Record<string, string | undefined> }
-    ];
+    // Even when a branch hint is threaded in, it must NOT become GIT_BRANCH_NAME:
+    // the worktree is detached and spec-kit's before_specify hook owns naming.
     expect(opts.env.GIT_BRANCH_NAME).toBe(before);
   });
 });

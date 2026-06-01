@@ -30,8 +30,12 @@ export const SpecifyStepContainer = (): React.ReactElement => {
       requireScroll={useAppSelector(selectPreferencesRequireScrollToUnlock)}
       onPromptChange={(value) => dispatch(specifyPromptChanged(value))}
       onBegin={() => {
-        if (repo !== null && branch !== null) {
-          void runSpecify({ repositoryPath: repo.path, branch, prompt, modelId });
+        // A new (detached) session has no branch yet — spec-kit names it during
+        // this very run (ADR-0016), so we must NOT gate on branch. The branch
+        // field is informational only (no longer drives GIT_BRANCH_NAME); fall
+        // back to the repo's default branch when unknown.
+        if (repo !== null) {
+          void runSpecify({ repositoryPath: repo.path, branch: branch ?? repo.defaultBranch, prompt, modelId });
         }
       }}
     />

@@ -52,7 +52,12 @@ const parseBranchName = (stdout: string): string => {
 };
 
 /**
- * Compute the next feature branch name WITHOUT side effects (ADR-0016 Phase 1).
+ * RETAINED FOR FUTURE USE (no longer called from the start-session flow): with
+ * the detached-worktree model (ADR-0016) spec-kit's before_specify hook owns
+ * branch naming, so the app no longer pre-allocates the branch name. This pure
+ * dry-run allocator is kept exported for potential future flows (e.g. preview).
+ *
+ * Compute the next feature branch name WITHOUT side effects.
  * Runs `create-new-feature.sh --dry-run --json [--short-name <name>] "<desc>"`
  * with cwd=clonePath so the clone (which sees every branch) computes the
  * correct NNN prefix, then parses the BRANCH_NAME out of the JSON.

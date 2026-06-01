@@ -53,16 +53,18 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     });
   };
 
-  // "Start a new session": pre-create an isolated git worktree on a freshly
-  // allocated branch (ADR-0016), then enter the workspace pointed at the WORKTREE
-  // path so all downstream git + spec-kit spawns run there. spec-kit reuses the
-  // pre-created branch via GIT_BRANCH_NAME — no destructive shared-dir reset.
+  // "Start a new session": create an isolated DETACHED git worktree (ADR-0016),
+  // then enter the workspace pointed at the WORKTREE path so all downstream git +
+  // spec-kit spawns run there. No branch is pre-allocated — spec-kit's
+  // before_specify hook names the real branch during specify, and branchUpdated
+  // then sets the titlebar to it. Until then branch is null and the titlebar
+  // falls back to the repo's default branch (no fake placeholder).
   const startNew = (repo: RepositorySummary): void => {
     if (localPath === null) return;
     void startSession({ clonePath: localPath, defaultBranch: repo.defaultBranch, description: 'new session' })
       .unwrap()
       .then((result) =>
-        dispatch(workspaceEntered({ repo: { ...repo, path: result.worktreePath }, branch: result.branch }))
+        dispatch(workspaceEntered({ repo: { ...repo, path: result.worktreePath }, branch: null }))
       )
       .catch(() => undefined);
   };

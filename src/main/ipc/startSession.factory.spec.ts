@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createStartSessionRequest, createStartSessionResponse } from './startSession.factory';
 
 const request = { clonePath: '/clone', defaultBranch: 'main', description: 'Add dark mode' };
-const response = { sessionId: 'session-xyz', worktreePath: '/clone.worktrees/session-xyz', branch: '003-add-dark-mode' };
+const response = { sessionId: 'session-xyz', worktreePath: '/clone.worktrees/session-xyz' };
 
 describe('startSession IPC factory', () => {
   it('accepts happy-path request and response payloads', () => {

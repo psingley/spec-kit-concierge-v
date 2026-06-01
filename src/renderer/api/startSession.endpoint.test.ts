@@ -3,10 +3,10 @@ import { createRtkQueryTestStore } from '../../test/rtkQueryStore';
 import { startSessionApi } from './startSession.endpoint';
 import { installConciergeBridge } from './testBridge';
 
-const result = { sessionId: 'session-xyz', worktreePath: '/clone.worktrees/session-xyz', branch: '003-add-dark-mode' };
+const result = { sessionId: 'session-xyz', worktreePath: '/clone.worktrees/session-xyz' };
 
 describe('startSession endpoint', () => {
-  it('starts a session through preload and validates the triple', async () => {
+  it('starts a session through preload and validates the {sessionId, worktreePath} pair (no branch — spec-kit names it)', async () => {
     installConciergeBridge({ repo: { ensureLocal: vi.fn(), startSession: vi.fn(async () => result) } });
     const { store } = createRtkQueryTestStore(startSessionApi);
 

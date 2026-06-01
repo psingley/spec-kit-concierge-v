@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto';
 import type { IpcMain } from 'electron';
-import { allocateBranchName as allocateBranchNameDefault } from '../data-layer/git/allocateBranchName';
 import { createWorktree as createWorktreeDefault } from '../data-layer/git/worktreeManager';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, logHandlerError, logHandlerSuccess, toError } from './handlerUtils';
@@ -20,7 +19,6 @@ const mintSessionId = (): string =>
 export type RegisterStartSessionIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'error'>;
-  allocateBranchName?: typeof allocateBranchNameDefault;
   createWorktree?: typeof createWorktreeDefault;
   mintSessionId?: () => string;
   now?: () => number;
@@ -29,7 +27,6 @@ export type RegisterStartSessionIpcOptions = {
 export const registerStartSessionIpc = ({
   ipcMain,
   logger,
-  allocateBranchName = allocateBranchNameDefault,
   createWorktree = createWorktreeDefault,
   mintSessionId: mintId = mintSessionId,
   now = () => performance.now()
@@ -41,15 +38,16 @@ export const registerStartSessionIpc = ({
       const request = createStartSessionRequest(assertOnePayload(REPO_START_SESSION_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
 
-      const { clonePath, defaultBranch, description, shortName } = request.value;
-      const branchName = await allocateBranchName(clonePath, description, shortName);
+      const { clonePath, defaultBranch } = request.value;
+      // No branch is pre-allocated here: the worktree is created DETACHED and
+      // spec-kit's before_specify hook names the real branch when specify runs
+      // (ADR-0016). allocateBranchName is intentionally NOT called.
       const sessionId = mintId();
-      const created = await createWorktree(clonePath, sessionId, defaultBranch, branchName);
+      const created = await createWorktree(clonePath, sessionId, defaultBranch);
 
       const response = createStartSessionResponse({
         sessionId: created.sessionId,
-        worktreePath: created.worktreePath,
-        branch: created.branch
+        worktreePath: created.worktreePath
       });
       if (!response.ok) throw toError(response.error.message);
 
@@ -58,7 +56,7 @@ export const registerStartSessionIpc = ({
         context,
         startedAt,
         now,
-        detail: { sessionId: created.sessionId, branch: created.branch }
+        detail: { sessionId: created.sessionId }
       });
       return response.value;
     } catch (error) {

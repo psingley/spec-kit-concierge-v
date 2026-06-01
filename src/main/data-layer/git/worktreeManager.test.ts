@@ -6,20 +6,20 @@ import { worktreePath } from './worktreePaths';
 const clonePath = path.join('/Users', 'dev', 'Documents', 'Concierge', 'psingley', 'workcells');
 
 describe('createWorktree', () => {
-  it('fetches origin then adds the sibling worktree on origin/<default> when origin exists', async () => {
+  it('fetches origin then adds a DETACHED sibling worktree on origin/<default> when origin exists', async () => {
     const runGit = vi.fn(async (_cwd: string, args: string[]) => (args[0] === 'remote' ? 'origin\n' : ''));
 
-    const result = await createWorktree(clonePath, 'session-1', 'main', '003-add-dark-mode', { runGit });
+    const result = await createWorktree(clonePath, 'session-1', 'main', { runGit });
 
     const expectedPath = worktreePath(clonePath, 'session-1');
-    expect(result).toEqual({ sessionId: 'session-1', worktreePath: expectedPath, branch: '003-add-dark-mode' });
+    // No branch is pre-named — spec-kit names the real branch later. Detached HEAD.
+    expect(result).toEqual({ sessionId: 'session-1', worktreePath: expectedPath, branch: null });
     expect(runGit).toHaveBeenCalledWith(clonePath, ['fetch', 'origin', '--prune']);
     expect(runGit).toHaveBeenCalledWith(clonePath, [
       'worktree',
       'add',
+      '--detach',
       expectedPath,
-      '-b',
-      '003-add-dark-mode',
       'origin/main'
     ]);
   });
@@ -27,17 +27,18 @@ describe('createWorktree', () => {
   it('falls back to the local default branch (no fetch) when origin is absent', async () => {
     const runGit = vi.fn(async (_cwd: string, args: string[]) => (args[0] === 'remote' ? '' : ''));
 
-    const result = await createWorktree(clonePath, 'session-2', 'main', '004-feature', { runGit });
+    const result = await createWorktree(clonePath, 'session-2', 'main', { runGit });
 
     const expectedPath = worktreePath(clonePath, 'session-2');
     expect(result.worktreePath).toBe(expectedPath);
+    expect(result.branch).toBeNull();
     expect(runGit).not.toHaveBeenCalledWith(clonePath, ['fetch', 'origin', '--prune']);
-    expect(runGit).toHaveBeenCalledWith(clonePath, ['worktree', 'add', expectedPath, '-b', '004-feature', 'main']);
+    expect(runGit).toHaveBeenCalledWith(clonePath, ['worktree', 'add', '--detach', expectedPath, 'main']);
   });
 
   it('targets a SIBLING path (not a child) of the clone', async () => {
     const runGit = vi.fn(async (_cwd: string, args: string[]) => (args[0] === 'remote' ? '' : ''));
-    const result = await createWorktree(clonePath, 'session-3', 'main', '005-x', { runGit });
+    const result = await createWorktree(clonePath, 'session-3', 'main', { runGit });
     expect(result.worktreePath.startsWith(`${clonePath}${path.sep}`)).toBe(false);
     expect(result.worktreePath).toBe(path.join(path.dirname(clonePath), 'workcells.worktrees', 'session-3'));
   });
