@@ -34,13 +34,13 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
 
     const gitHubSignIn = page
       .locator('.signin-row')
-      .filter({ hasText: /GitHub CLI/i })
+      .filter({ has: page.locator('.signin-row-title', { hasText: /^GitHub CLI$/ }) })
       .getByRole('button', { name: /Sign in/i });
     await gitHubSignIn.click();
     await expect(page.getByText(/Signed in as a.kim/i)).toBeVisible();
     await page
       .locator('.signin-row')
-      .filter({ hasText: /GitHub Copilot CLI/i })
+      .filter({ has: page.locator('.signin-row-title', { hasText: /^GitHub Copilot CLI$/ }) })
       .getByRole('button', { name: /Sign in/i })
       .click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
