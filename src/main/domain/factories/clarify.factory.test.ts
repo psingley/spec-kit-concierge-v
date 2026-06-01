@@ -12,57 +12,102 @@ vi.mock('node:fs/promises', () => ({
 describe('validateClarifyArtifacts', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  describe('happy path', () => {
-    it('returns a commit candidate for well-formed questions in spec.md', async () => {
+  describe('spec-kit real "- Q: → A:" format', () => {
+    it('commits when resolved - Q: → A: bullets are present', async () => {
       vi.mocked(readFile).mockResolvedValue(`# Feature Spec
 
 ## Clarifications
 
-Q: Which API should the workflow call first?
-- A: GitHub
-- B: Jira
+### Session 2026-06-01
 
-Q: Where should answers be written?
-- A: spec.md
-- B: clarifications.md
+- Q: Which API should the workflow call first? → A: GitHub
+- Q: Where should answers be written? → A: spec.md
 
 ## Requirements
 
-Q: This requirement example is outside the Clarifications section
-- A: Ignore
-- B: Ignore` as never);
+Body unrelated to clarifications.` as never);
 
       const result = await validateClarifyArtifacts('/feature');
 
       expect(result.ok).toBe(true);
       expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
-      expect(result).toMatchObject({ questions: [expect.objectContaining({ id: 'q1', position: 1 }), expect.objectContaining({ id: 'q2', position: 2 })] });
       expect(vi.mocked(readFile)).toHaveBeenCalledWith('/feature/spec.md', 'utf8');
     });
-  });
 
-  describe('empty object equivalent', () => {
-    it('returns a named error when no questions are found', async () => {
-      vi.mocked(readFile).mockResolvedValue('## Clarifications\n\n{}' as never);
+    it('tolerates the ASCII -> arrow variant', async () => {
+      vi.mocked(readFile).mockResolvedValue(`## Clarifications
+
+### Session 2026-06-01
+
+- Q: Pick a target? -> A: Production` as never);
 
       const result = await validateClarifyArtifacts('/feature');
 
-      expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
+    });
+
+    // Live-repro regression: spec-kit's no-questions-needed flow leaves Pending
+    // answers. These are advisory, not blocking, and MUST still commit.
+    it('regression: commits with Pending answers (live-repro)', async () => {
+      vi.mocked(readFile).mockResolvedValue(`# Feature Spec
+
+## Clarifications
+
+### Session 2026-06-01
+
+- Q: First open question? → A: Pending
+- Q: Second open question? → A: Pending
+- Q: Third open question? → A: Pending
+- Q: Fourth open question? → A: Pending
+- Q: Fifth open question? → A: Pending` as never);
+
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
     });
   });
 
-  describe('null artifact read', () => {
-    it('returns a named error', async () => {
+  describe('no clarifications to record', () => {
+    it('commits when there is no ## Clarifications section', async () => {
+      vi.mocked(readFile).mockResolvedValue('# Feature Spec\n\n## Requirements\n\nSome content.' as never);
+
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
+    });
+
+    it('commits when the ## Clarifications section is present but empty', async () => {
+      vi.mocked(readFile).mockResolvedValue('# Feature Spec\n\n## Clarifications\n\n## Requirements\n\nContent.' as never);
+
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
+    });
+
+    it('honors the no-questions-needed sentinel', async () => {
+      vi.mocked(readFile).mockResolvedValue('no questions needed' as never);
+
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { files: ['spec.md'] } });
+    });
+  });
+
+  describe('missing / empty artifact', () => {
+    it('escapes when read returns null', async () => {
       vi.mocked(readFile).mockResolvedValue(null as never);
 
       const result = await validateClarifyArtifacts('/feature');
 
       expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
     });
-  });
 
-  describe('undefined artifact read', () => {
-    it('returns a named error', async () => {
+    it('escapes when read rejects', async () => {
       vi.mocked(readFile).mockRejectedValue(new Error('missing'));
 
       const result = await validateClarifyArtifacts('/feature');
@@ -71,49 +116,39 @@ Q: This requirement example is outside the Clarifications section
     });
   });
 
-  describe('hostile malformed input', () => {
-    it('rejects frontmatter-like blocks', async () => {
+  describe('hostile / malformed content', () => {
+    it('rejects hostile frontmatter', async () => {
       vi.mocked(readFile).mockResolvedValue(`---
 token: secret
 ---
 
-Q: Pick one
-- A: Alpha
-- B: Beta` as never);
+## Clarifications
+
+- Q: Pick one? → A: Alpha` as never);
 
       const result = await validateClarifyArtifacts('/feature');
 
       expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
     });
-  });
 
-  describe('partial structurally plausible input', () => {
-    it('reports malformed questions with one-based position', async () => {
-      const logger = { warn: vi.fn() };
-      vi.mocked(readFile).mockResolvedValue('Q: Pick one\n- A: Alpha' as never);
+    it('rejects content containing the literal MALFORMED marker', async () => {
+      vi.mocked(readFile).mockResolvedValue('## Clarifications\n\n- Q: MALFORMED → A: x' as never);
 
-      const result = await validateClarifyArtifacts('/feature', { logger, modelId: 'model-1', now: () => new Date('2026-05-27T00:00:00.000Z') });
+      const result = await validateClarifyArtifacts('/feature');
 
-      expect(result).toMatchObject({ kind: 'malformed-questions', malformedQuestions: [expect.objectContaining({ malformationCategory: 'choices-missing', position: 1 })] });
-      expect(logger.warn).toHaveBeenCalledWith(expect.objectContaining({ modelId: 'model-1', malformationCategory: 'choices-missing' }), 'clarify question malformed');
+      expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
     });
-  });
 
-  describe('extra-key rejection', () => {
-    it('rejects blocks with unexpected keys', async () => {
-      vi.mocked(readFile).mockResolvedValue('Q: Pick one\n- A: Alpha\n- B: Beta\nmodel: hostile' as never);
+    it('rejects a - Q: bullet with no answer segment', async () => {
+      vi.mocked(readFile).mockResolvedValue(`## Clarifications
 
-      await expect(validateClarifyArtifacts('/feature')).resolves.toMatchObject({ ok: false, kind: 'malformed-questions', malformedQuestions: [expect.objectContaining({ malformationCategory: 'unexpected-key', position: 1 })] });
-    });
-  });
+### Session 2026-06-01
 
-  describe('zero-question sentinel', () => {
-    it('honors the exact no-question sentinel only', async () => {
-      vi.mocked(readFile).mockResolvedValue('no questions needed' as never);
-      await expect(validateClarifyArtifacts('/feature')).resolves.toMatchObject({ ok: true, commit: { files: ['spec.md'] } });
+- Q: This question has no answer arrow at all` as never);
 
-      vi.mocked(readFile).mockResolvedValue('No questions needed' as never);
-      await expect(validateClarifyArtifacts('/feature')).resolves.toMatchObject({ ok: false, kind: 'escape-hatch' });
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
     });
   });
 });

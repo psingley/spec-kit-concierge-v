@@ -1,54 +1,6 @@
 import { STEP_ARTIFACT_MANIFEST } from '../../hooks/manifest';
 import { commitCandidate, factoryEscape, readRequiredArtifact } from './factoryUtils';
-import type { ClarifyQuestion, MalformedClarifyQuestion, StepContractContext, StepContractResult } from './types';
-
-const emitMalformed = (
-  malformed: MalformedClarifyQuestion,
-  context: StepContractContext
-): void => {
-  context.logger?.warn?.(
-    {
-      questionId: malformed.id,
-      position: malformed.position,
-      malformationCategory: malformed.malformationCategory,
-      rawOutput: malformed.rawOutput,
-      timestamp: (context.now?.() ?? new Date()).toISOString(),
-      modelId: context.modelId ?? 'unknown'
-    },
-    'clarify question malformed'
-  );
-};
-
-const parseQuestion = (block: string, index: number): ClarifyQuestion | MalformedClarifyQuestion => {
-  const id = `q${index + 1}`;
-  const position = index + 1;
-  if (/^(\*\*|__)/m.test(block)) {
-    return { id, position, malformationCategory: 'parser-breaking-emphasis', rawOutput: block };
-  }
-  if (block.includes('\r\n') && block.includes('\n') && !/\r\n/.test(block.replace(/\r\n/g, ''))) {
-    return { id, position, malformationCategory: 'mixed-line-endings', rawOutput: block };
-  }
-  const lines = block.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const unexpectedKey = lines.find((line) => /^[A-Za-z0-9_-]+\s*:/.test(line) && !line.startsWith('Q:'));
-  if (unexpectedKey !== undefined) {
-    return { id, position, malformationCategory: 'unexpected-key', rawOutput: block };
-  }
-  const questionLine = lines.find((line) => line.startsWith('Q:'));
-  if (questionLine === undefined || questionLine.slice(2).trim().length === 0) {
-    return { id, position, malformationCategory: 'empty-question-text', rawOutput: block };
-  }
-  const choices = lines
-    .filter((line) => /^-\s*[A-Za-z0-9]+\s*:/.test(line))
-    .map((line) => {
-      const match = /^-\s*([A-Za-z0-9]+)\s*:\s*(.+)$/.exec(line);
-      return { key: match?.[1] ?? '', label: match?.[2] ?? '' };
-    });
-  if (choices.length < 2 || choices.some((choice) => choice.key.length === 0 || choice.label.length === 0)) {
-    return { id, position, malformationCategory: 'choices-missing', rawOutput: block };
-  }
-
-  return { id, position, text: questionLine.slice(2).trim(), choices };
-};
+import type { StepContractContext, StepContractResult } from './types';
 
 const hasHostileFrontmatter = (rawText: string): boolean => {
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(rawText);
@@ -63,16 +15,26 @@ const hasHostileFrontmatter = (rawText: string): boolean => {
     .some((line) => /^[A-Za-z0-9_-]+\s*:/.test(line));
 };
 
-const extractClarificationBody = (rawText: string): string => {
+const extractClarificationBody = (rawText: string): string | undefined => {
   const marker = /^## Clarifications\s*$/m.exec(rawText);
   if (marker === null) {
-    return rawText;
+    return undefined;
   }
 
   const afterMarker = rawText.slice(marker.index + marker[0].length);
   const nextSection = /\n##\s+/.exec(afterMarker);
   return nextSection === null ? afterMarker : afterMarker.slice(0, nextSection.index);
 };
+
+// spec-kit's real clarify agent records single-line bullets under
+// "## Clarifications / ### Session YYYY-MM-DD":
+//   - Q: <question text> → A: <answer-or-Pending>
+// Tolerate the unicode arrow the agent emits (→), the ASCII arrow (->), and
+// en-dash / em-dash variants. A bullet that opens with "- Q:" but carries no
+// "<arrow> A:" segment at all is genuinely broken.
+const ARROW = String.raw`(?:->|→|–>|—>|‒>|⟶|⇒)`;
+const QA_BULLET = new RegExp(String.raw`^\s*-\s*Q\s*:\s*(.+?)\s*${ARROW}\s*A\s*:\s*(.+?)\s*$`, 'i');
+const Q_BULLET_OPENING = /^\s*-\s*Q\s*:/i;
 
 export const validateClarifyArtifacts = async (
   featureDir: string,
@@ -85,35 +47,40 @@ export const validateClarifyArtifacts = async (
   if (hasHostileFrontmatter(rawText) || /MALFORMED/i.test(rawText)) {
     return factoryEscape();
   }
+
+  const committable = (): StepContractResult => ({
+    ok: true,
+    commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context)
+  });
+
   if (rawText.trim() === 'no questions needed') {
-    return { ok: true, commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context) };
+    return committable();
   }
 
   const clarificationBody = extractClarificationBody(rawText);
-  const blocks = clarificationBody
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
-    .filter((block) => block.length > 0)
-    .filter((block) => /^Q:/m.test(block) || /^[A-Za-z0-9_-]+\s*:/m.test(block));
-  if (blocks.length === 0) {
+  // No Clarifications section at all -> nothing to clarify -> committable.
+  if (clarificationBody === undefined) {
+    return committable();
+  }
+
+  const bulletLines = clarificationBody
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => Q_BULLET_OPENING.test(line));
+
+  // Clarifications section present but no "- Q:" bullets (e.g. empty section,
+  // prose-only, or the no-questions-needed flow) -> committable.
+  if (bulletLines.length === 0) {
+    return committable();
+  }
+
+  // Every "- Q:" bullet must carry a well-formed "<arrow> A:" segment. Pending
+  // answers are advisory, not blocking. A "- Q:" with no answer segment is the
+  // only genuinely broken shape we reject.
+  const broken = bulletLines.some((line) => !QA_BULLET.test(line));
+  if (broken) {
     return factoryEscape();
   }
-  const wellFormedQuestions: ClarifyQuestion[] = [];
-  const malformedQuestions: MalformedClarifyQuestion[] = [];
 
-  for (const [index, block] of blocks.entries()) {
-    const parsed = parseQuestion(block, index);
-    if ('malformationCategory' in parsed) {
-      malformedQuestions.push(parsed);
-      emitMalformed(parsed, context);
-    } else {
-      wellFormedQuestions.push(parsed);
-    }
-  }
-
-  if (malformedQuestions.length > 0) {
-    return { ok: false, kind: 'malformed-questions', wellFormedQuestions, malformedQuestions, rawText };
-  }
-
-  return { ok: true, commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context), questions: wellFormedQuestions };
+  return committable();
 };
