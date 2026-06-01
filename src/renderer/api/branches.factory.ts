@@ -1,5 +1,5 @@
 import { requireExactKeys, requireRecord, requireString, type RendererBoundaryErrorName, type RendererFactoryResult } from './factoryUtils';
-import type { BranchSession } from '../slices/workspace';
+import type { BranchSession, RestoredStepCommits } from '../slices/workspace';
 import type { StepName, StepState } from '../slices/steps';
 
 type ErrorName = 'InvalidBranchSessions';
@@ -22,16 +22,18 @@ export const parseRendererBranchSessions = (
   for (const session of root.value.sessions) {
     const record = requireRecord(session, 'InvalidBranchSessions', '$.sessions[]');
     if (!record.ok) return record;
-    const recordKeys = requireExactKeys<ErrorName>(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates']);
+    const recordKeys = requireExactKeys<ErrorName>(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates', 'restoredStepCommits']);
     if (!recordKeys.ok) return recordKeys;
     const sessionId = requireString(record.value.sessionId, 'InvalidBranchSessions', '$.sessions[].sessionId');
     const worktreePath = requireString(record.value.worktreePath, 'InvalidBranchSessions', '$.sessions[].worktreePath');
     const label = requireString(record.value.label, 'InvalidBranchSessions', '$.sessions[].label');
     const restored = requireRecord(record.value.restoredStates, 'InvalidBranchSessions', '$.sessions[].restoredStates');
+    const restoredStepCommits = requireRecord(record.value.restoredStepCommits, 'InvalidBranchSessions', '$.sessions[].restoredStepCommits');
     if (!sessionId.ok) return sessionId;
     if (!worktreePath.ok) return worktreePath;
     if (!label.ok) return label;
     if (!restored.ok) return restored;
+    if (!restoredStepCommits.ok) return restoredStepCommits;
     // branch is null for a detached, not-yet-named worktree; otherwise a non-empty string.
     const rawBranch = record.value.branch;
     let branch: string | null;
@@ -49,7 +51,17 @@ export const parseRendererBranchSessions = (
       }
       restoredStates[step] = restored.value[step] as StepState;
     }
-    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates });
+    const commits: RestoredStepCommits = {};
+    for (const [step, commitSha] of Object.entries(restoredStepCommits.value)) {
+      if (!stepNames.includes(step as StepName)) {
+        return { ok: false, error: { name: 'InvalidBranchSessions', message: 'invalid restored step commit key', path: `$.sessions[].restoredStepCommits.${step}` } };
+      }
+      if (typeof commitSha !== 'string' || commitSha.trim().length === 0) {
+        return { ok: false, error: { name: 'InvalidBranchSessions', message: 'invalid restored step commit', path: `$.sessions[].restoredStepCommits.${step}` } };
+      }
+      commits[step as StepName] = commitSha;
+    }
+    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates, restoredStepCommits: commits });
   }
   return { ok: true, value: { sessions } };
 };

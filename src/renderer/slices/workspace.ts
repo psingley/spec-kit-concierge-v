@@ -46,6 +46,8 @@ export type RepositorySummary = {
   updatedAt?: string;
 };
 
+export type RestoredStepCommits = Partial<Record<StepName, string>>;
+
 export type BranchSession = {
   // The worktree directory basename (ADR-0016): stable per-session key.
   sessionId: string;
@@ -56,6 +58,7 @@ export type BranchSession = {
   branch: string | null;
   label: string;
   restoredStates: Record<StepName, 'not_available' | 'pending' | 'complete'>;
+  restoredStepCommits: RestoredStepCommits;
 };
 
 export const workspaceInitialState: WorkspaceState = {

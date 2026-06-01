@@ -1,5 +1,5 @@
 import { invalid, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
-import type { BranchSessionSummary, StepName, StepState } from '../data-layer/git/branchSessions';
+import type { BranchSessionSummary, RestoredStepCommits, StepName, StepState } from '../data-layer/git/branchSessions';
 
 type ErrorName = 'InvalidBranchesPayload';
 const stepNames: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
@@ -33,16 +33,18 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
   for (const session of root.value.sessions) {
     const record = requireRecord(session, 'InvalidBranchesPayload', '$.sessions[]');
     if (!record.ok) return record;
-    const recordKeys = requireExactKeys(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates'], 'InvalidBranchesPayload', '$.sessions[]');
+    const recordKeys = requireExactKeys(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates', 'restoredStepCommits'], 'InvalidBranchesPayload', '$.sessions[]');
     if (!recordKeys.ok) return recordKeys;
     const sessionId = requireString(record.value.sessionId, 'InvalidBranchesPayload', '$.sessions[].sessionId');
     const worktreePath = requireString(record.value.worktreePath, 'InvalidBranchesPayload', '$.sessions[].worktreePath');
     const label = requireString(record.value.label, 'InvalidBranchesPayload', '$.sessions[].label');
     const restoredStates = requireRecord(record.value.restoredStates, 'InvalidBranchesPayload', '$.sessions[].restoredStates');
+    const restoredStepCommits = requireRecord(record.value.restoredStepCommits, 'InvalidBranchesPayload', '$.sessions[].restoredStepCommits');
     if (!sessionId.ok) return sessionId;
     if (!worktreePath.ok) return worktreePath;
     if (!label.ok) return label;
     if (!restoredStates.ok) return restoredStates;
+    if (!restoredStepCommits.ok) return restoredStepCommits;
     if (sessionId.value.includes('..') || worktreePath.value.includes('..')) {
       return invalid('InvalidBranchesPayload', 'sessionId/worktreePath must not contain traversal', '$.sessions[]');
     }
@@ -72,7 +74,17 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
       }
       restored[step] = state as StepState;
     }
-    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates: restored });
+    const commits: RestoredStepCommits = {};
+    for (const [step, commitSha] of Object.entries(restoredStepCommits.value)) {
+      if (!stepNames.includes(step as StepName)) {
+        return invalid('InvalidBranchesPayload', 'restored step commit key must be a known step', `$.sessions[].restoredStepCommits.${step}`);
+      }
+      if (typeof commitSha !== 'string' || commitSha.trim().length === 0 || commitSha.includes('..')) {
+        return invalid('InvalidBranchesPayload', 'restored step commit must be a safe non-empty string', `$.sessions[].restoredStepCommits.${step}`);
+      }
+      commits[step as StepName] = commitSha;
+    }
+    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates: restored, restoredStepCommits: commits });
   }
   return { ok: true, value: { sessions } };
 };

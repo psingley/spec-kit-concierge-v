@@ -41,6 +41,7 @@ export const ClarifyStep = ({
 }: ClarifyStepProps): React.ReactElement => {
   const activeQuestion = questions.find((question) => question.id === activeQuestionId) ?? questions[0] ?? null;
   const inFlight = running || askAnotherRunning || completing;
+  const complete = completion !== null;
 
   // Selecting a concrete multiple-choice answer auto-advances to the next question.
   // A radio onChange always carries a multiple-choice key (the free-text "Other"/short
@@ -63,8 +64,8 @@ export const ClarifyStep = ({
           <h2 id="clarify-heading">Clarify</h2>
         </div>
         <div className="segmented" role="group" aria-label="Clarify actions">
-          <button type="button" onClick={onStart} disabled={inFlight}><Ico.Sparkles size={13} />Run</button>
-          <button type="button" onClick={onAskAnother} disabled={inFlight || questions.length === 0}><Ico.Plus size={13} />Ask another</button>
+          <button type="button" onClick={onStart} disabled={inFlight || complete}><Ico.Sparkles size={13} />Run</button>
+          <button type="button" onClick={onAskAnother} disabled={inFlight || complete || questions.length === 0}><Ico.Plus size={13} />Ask another</button>
         </div>
       </div>
 
@@ -105,7 +106,7 @@ export const ClarifyStep = ({
         ) : activeQuestion === null ? (
           <div className="clarify-card empty">
             <p>Clarify is ready after Specify completes.</p>
-            <button type="button" className="btn primary" onClick={onStart} disabled={inFlight}>Run Clarify</button>
+            <button type="button" className="btn primary" onClick={onStart} disabled={inFlight || complete}>Run Clarify</button>
           </div>
         ) : activeQuestion.malformed === true ? (
           <div className="clarify-card malformed" aria-live="polite">

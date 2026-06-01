@@ -66,4 +66,27 @@ describe('navigation listener branch-null routing', () => {
     expect(router.state.location.pathname).toBe('/workspace');
     expect(router.state.location.search).toBe('?step=plan');
   });
+
+  it('navigates a resumed session to its first incomplete step', async () => {
+    const store = createProductStore();
+    const router = createTestRouter('/repos');
+    store.wireRouter(router);
+
+    store.dispatch(workspaceEntered({
+      repo,
+      branch: '015-remove-activity-left',
+      restoredStates: {
+        specify: 'complete',
+        clarify: 'complete',
+        plan: 'complete',
+        tasks: 'pending',
+        analyze: 'not_available',
+        review: 'not_available'
+      }
+    }));
+    await waitForListener();
+
+    expect(router.state.location.pathname).toBe('/workspace');
+    expect(router.state.location.search).toBe('?step=tasks');
+  });
 });

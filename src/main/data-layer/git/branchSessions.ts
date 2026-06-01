@@ -4,6 +4,7 @@ import { worktreesHome } from './worktreePaths';
 
 export type StepName = 'specify' | 'clarify' | 'plan' | 'tasks' | 'analyze' | 'review';
 export type StepState = 'not_available' | 'pending' | 'complete';
+export type RestoredStepCommits = Partial<Record<StepName, string>>;
 
 export type BranchSessionSummary = {
   // The worktree directory basename (ADR-0016): stable per-session key. Always present.
@@ -16,6 +17,7 @@ export type BranchSessionSummary = {
   branch: string | null;
   label: string;
   restoredStates: Record<StepName, StepState>;
+  restoredStepCommits: RestoredStepCommits;
 };
 
 export type BranchSessionsDeps = {
@@ -196,8 +198,16 @@ export const listBranchSessions = async (
     const specMdPresent = await hasSpecMd(worktree.worktreePath, revisionRange, runGit);
 
     const states = emptyStates();
+    const restoredStepCommits: RestoredStepCommits = {};
+    const seenSteps = new Set<StepName>();
     for (const record of history) {
-      states[record.step as StepName] = trailerStatusToState(record.status);
+      const step = record.step as StepName;
+      if (seenSteps.has(step)) {
+        continue;
+      }
+      seenSteps.add(step);
+      states[step] = trailerStatusToState(record.status);
+      restoredStepCommits[step] = record.commitSha;
     }
     // "specify done → clarify becomes available" is only a fallback for when clarify
     // has no trailer of its own yet. Applied after the loop and guarded on
@@ -230,7 +240,8 @@ export const listBranchSessions = async (
       worktreePath: worktree.worktreePath,
       branch: worktree.branch,
       label: sessionLabel(worktree.branch, sessionId),
-      restoredStates: states
+      restoredStates: states,
+      restoredStepCommits
     });
   }
 

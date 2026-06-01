@@ -5,6 +5,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { api } from '../api';
 import { installConciergeBridge } from '../api/testBridge';
+import { sessionReducer } from '../slices/session';
 import { stepsReducer } from '../slices/steps';
 import { workspaceReducer } from '../slices/workspace';
 import { RepoBrowseScreenContainer } from './RepoBrowseScreenContainer';
@@ -20,7 +21,7 @@ const repo = {
 
 const makeStore = () =>
   configureStore({
-    reducer: { workspace: workspaceReducer, steps: stepsReducer, [api.reducerPath]: api.reducer },
+    reducer: { workspace: workspaceReducer, steps: stepsReducer, session: sessionReducer, [api.reducerPath]: api.reducer },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware)
   });
 
@@ -90,7 +91,8 @@ describe('RepoBrowseScreenContainer resume (Phase 2: read worktree in place)', (
               worktreePath: '/clone.worktrees/session-014',
               branch: '014-remove-faux-controls',
               label: '014-remove-faux-controls',
-              restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+              restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' },
+              restoredStepCommits: { specify: 'specify-sha' }
             }
           ]
         }))

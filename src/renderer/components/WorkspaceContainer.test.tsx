@@ -10,8 +10,10 @@ import { WorkspaceContainer } from './WorkspaceContainer';
 import {
   clarifyRunSucceeded,
   passiveStepRunSucceeded,
+  sessionRestoredFromResume,
   specifyRunSucceeded
 } from '../slices/session';
+import { stepsRestoredFromSession } from '../slices/steps';
 import { clarifyCompletedInWorkspace, workspaceEntered, workspaceStepViewed } from '../slices/workspace';
 
 const clarifyDone = clarifyRunSucceeded({ artifactPath: 'spec.md', commitSha: 'clarify-sha', questions: [], answers: [] });
@@ -146,5 +148,59 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
     });
     expect(readArtifact).toHaveBeenCalledWith({ repositoryPath: '/work/concierge', artifactPath: 'plan.md' });
     expect(getRenderCount() - beforeOpen).toBeLessThanOrEqual(4);
+  });
+
+  it('reconstructs a resumed branch complete through plan across steps, session, landing step, and panel guard', () => {
+    installConciergeBridge();
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge.worktrees/session-015',
+      defaultBranch: 'main'
+    };
+    const restoredStates = {
+      specify: 'complete',
+      clarify: 'complete',
+      plan: 'complete',
+      tasks: 'pending',
+      analyze: 'not_available',
+      review: 'not_available'
+    } as const;
+    const restoredStepCommits = {
+      specify: 'specify-sha',
+      clarify: 'clarify-sha',
+      plan: 'plan-sha'
+    };
+
+    act(() => {
+      store.dispatch(stepsRestoredFromSession({ states: restoredStates, commitShas: restoredStepCommits }));
+      store.dispatch(sessionRestoredFromResume({
+        specMarkdown: '# Spec',
+        commitSha: 'specify-sha',
+        restoredStepCommits
+      }));
+      store.dispatch(workspaceEntered({ repo, branch: '015-remove-activity-left', restoredStates }));
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/workspace?step=plan']}>
+          <WorkspaceContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const state = store.getState();
+    expect(state.steps.entities.specify).toMatchObject({ status: 'complete', commitSha: 'specify-sha' });
+    expect(state.steps.entities.clarify).toMatchObject({ status: 'complete', commitSha: 'clarify-sha' });
+    expect(state.steps.entities.plan).toMatchObject({ status: 'complete', commitSha: 'plan-sha' });
+    expect(state.session.clarifyCompletion?.commitSha).toBe('clarify-sha');
+    expect(state.session.passiveSteps.plan.commitSha).toBe('plan-sha');
+    expect(state.workspace.activeStep).toBe('tasks');
+
+    expect(screen.getByRole('heading', { name: 'Plan completed' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Run Plan/i })).not.toBeInTheDocument();
   });
 });

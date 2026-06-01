@@ -139,6 +139,11 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
     expect(session.restoredStates.clarify).toBe('complete');
     expect(session.restoredStates.plan).toBe('complete');
     expect(session.restoredStates.tasks).toBe('not_available');
+    expect(session.restoredStepCommits).toEqual({
+      specify: 's1',
+      clarify: 'c1',
+      plan: 'p1'
+    });
   });
 
   it('strips spec/ from a legacy spec/* worktree label', async () => {

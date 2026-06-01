@@ -38,6 +38,8 @@ export type ClarifyCompletionSummary = {
 };
 
 export type PassiveStepName = 'plan' | 'tasks' | 'analyze';
+export type ResumableStepName = 'specify' | 'clarify' | PassiveStepName;
+export type RestoredStepCommits = Partial<Record<ResumableStepName, string>>;
 
 export type PassiveArtifactSummary = {
   path: string;
@@ -163,17 +165,40 @@ const sessionSlice = createSlice({
     },
     sessionRestoredFromResume: (
       state,
-      action: PayloadAction<{ specMarkdown: string; commitSha: string | null }>
+      action: PayloadAction<{ specMarkdown: string; commitSha: string | null; restoredStepCommits?: RestoredStepCommits }>
     ) => {
       // Resume hydration (ADR-0016): the live session slice starts empty, so a
       // completed Specify would otherwise render as the empty prompt. Seed the
       // committed spec content + commit so WorkspaceContainer derives Specify as
       // complete with its evidence. A blank spec (in-flight session) leaves
       // Specify pending — no fake "started" flag is set.
+      const restoredStepCommits = action.payload.restoredStepCommits ?? {};
       state.specMarkdown = action.payload.specMarkdown;
-      state.commitSha = action.payload.commitSha;
-      if (action.payload.specMarkdown.length > 0) {
-        state.specifyStarted = true;
+      state.commitSha = restoredStepCommits.specify ?? action.payload.commitSha;
+      state.artifactPath = action.payload.specMarkdown.length > 0 ? 'spec.md' : null;
+      state.specifyRunning = false;
+      state.failureReason = null;
+      state.specifyStarted = action.payload.specMarkdown.length > 0 || restoredStepCommits.specify !== undefined;
+      state.clarifyRunning = false;
+      state.clarifyAskAnotherRunning = false;
+      state.clarifyCompleting = false;
+      state.clarifyNoQuestionsNeeded = false;
+      state.clarifyActiveQuestionId = null;
+      state.clarifyFailureReason = null;
+      clarifyQuestionsAdapter.removeAll(state.clarifyQuestions);
+      clarifyAnswersAdapter.removeAll(state.clarifyAnswers);
+      clarifyReasksAdapter.removeAll(state.clarifyReasks);
+      state.clarifyCompletion = restoredStepCommits.clarify !== undefined
+        ? { artifactPath: 'spec.md', commitSha: restoredStepCommits.clarify, questions: [], answers: [] }
+        : null;
+      for (const step of ['plan', 'tasks', 'analyze'] as const) {
+        const record = state.passiveSteps[step];
+        record.sessionId = null;
+        record.running = false;
+        record.commitSha = restoredStepCommits[step] ?? null;
+        record.failureReason = null;
+        record.artifacts = [];
+        record.milestones = [];
       }
     },
     specifyRunFailed: (state, action: PayloadAction<{ reason: string }>) => {

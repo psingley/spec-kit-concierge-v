@@ -51,7 +51,7 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
   // always failed for a branch used by a worktree). We point the workspace at the
   // worktree path and restore step-state from the session's recovered states.
   const resume = (repo: RepositorySummary, session: BranchSession): void => {
-    dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
+    dispatch(stepsRestoredFromSession({ states: session.restoredStates, commitShas: session.restoredStepCommits }));
     // Hydrate the LIVE session slice with the worktree's committed spec.md FIRST,
     // then enter the workspace. WorkspaceContainer derives Specify (complete +
     // evidence) from this slice, so without it a completed Specify would render as
@@ -60,7 +60,11 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     // session returns an empty spec and we still enter, landing on Specify.
     void resumeSession({ worktreePath: session.worktreePath })
       .unwrap()
-      .then((result) => dispatch(sessionRestoredFromResume({ specMarkdown: result.specMarkdown, commitSha: result.specCommitSha })))
+      .then((result) => dispatch(sessionRestoredFromResume({
+        specMarkdown: result.specMarkdown,
+        commitSha: session.restoredStepCommits.specify ?? result.specCommitSha,
+        restoredStepCommits: session.restoredStepCommits
+      })))
       .catch(() => undefined)
       .finally(() =>
         dispatch(workspaceEntered({ repo: { ...repo, path: session.worktreePath }, branch: session.branch, restoredStates: session.restoredStates }))

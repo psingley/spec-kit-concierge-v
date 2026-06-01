@@ -14,6 +14,7 @@ import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper } from './Stepper';
 import { selectSessionClarifyCompletion, selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
+import { selectStepEntities } from '../slices/steps.selectors';
 
 export const WorkspaceContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
@@ -21,11 +22,12 @@ export const WorkspaceContainer = (): React.ReactElement => {
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
   const clarifyCompletion = useAppSelector(selectSessionClarifyCompletion);
   const passiveSteps = useAppSelector(selectSessionPassiveSteps);
+  const restoredStepEntities = useAppSelector(selectStepEntities);
   const showActivity = useAppSelector(selectUiShowActivity);
   const activitySide = useAppSelector(selectPreferencesActivitySide);
   const bodyClassName = `workspace-body ${!showActivity || activitySide === 'hidden' ? 'no-activity' : ''}${showActivity && activitySide === 'left' ? ' activity-left' : ''}`;
   const clarifyComplete = clarifyCompletion !== null;
-  const states = stepOrder.reduce((acc, step) => {
+  const sessionDerivedStates = stepOrder.reduce((acc, step) => {
     acc[step] = step === 'specify'
       ? (specMarkdown.length > 0 ? 'complete' : 'pending')
       : step === 'clarify' && specMarkdown.length > 0
@@ -41,6 +43,13 @@ export const WorkspaceContainer = (): React.ReactElement => {
               : 'not_available';
     return acc;
   }, {} as Record<StepName, StepState>);
+  const hasFullRestoredSnapshot = stepOrder.every((step) => restoredStepEntities[step] !== undefined);
+  const states = hasFullRestoredSnapshot
+    ? stepOrder.reduce((acc, step) => {
+      acc[step] = restoredStepEntities[step]?.status ?? 'not_available';
+      return acc;
+    }, {} as Record<StepName, StepState>)
+    : sessionDerivedStates;
   return (
     <div className="workspace">
       <div className={bodyClassName}>

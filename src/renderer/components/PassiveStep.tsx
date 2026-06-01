@@ -50,9 +50,15 @@ export const PassiveStep = ({
           <p className="eyebrow">Step {stepNumber[step]}</p>
           <h2 id={`${step}-heading`}>{stepLabel[step]}</h2>
         </div>
-        <button type="button" className="btn primary" onClick={onRun} disabled={record.running || viewOnly}>
-          {record.running ? <><span className="spinner tiny" />Running</> : <><Ico.Sparkles size={13} />Run {stepLabel[step]}</>}
-        </button>
+        {viewOnly ? (
+          <button type="button" className="btn ghost" disabled>
+            <Ico.Check size={13} />Committed
+          </button>
+        ) : (
+          <button type="button" className="btn primary" onClick={onRun} disabled={record.running}>
+            {record.running ? <><span className="spinner tiny" />Running</> : <><Ico.Sparkles size={13} />Run {stepLabel[step]}</>}
+          </button>
+        )}
       </div>
       <div className="clarify-shell">
         {viewOnly ? (

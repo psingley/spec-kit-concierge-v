@@ -1,7 +1,7 @@
 import type { createMemoryRouter } from 'react-router';
 import type { RootState } from '../store';
 import { selectAuthGateOpen } from '../slices/auth.selectors';
-import { selectSessionEntered } from '../slices/workspace.selectors';
+import { selectSessionEntered, selectWorkspaceActiveStep } from '../slices/workspace.selectors';
 import { workspaceEntered, repositoryBrowseReset, workspaceStepViewed } from '../slices/workspace';
 import type { AppStartListening, ListenerTopicDescriptor } from './types';
 
@@ -38,8 +38,9 @@ export const setupNavigationListener = (
 
   startListening({
     actionCreator: workspaceEntered,
-    effect: () => {
-      navigateIfChanged('/workspace?step=specify');
+    effect: (_action, listenerApi) => {
+      const state = listenerApi.getState() as RootState;
+      navigateIfChanged(`/workspace?step=${selectWorkspaceActiveStep(state)}`);
     }
   });
 

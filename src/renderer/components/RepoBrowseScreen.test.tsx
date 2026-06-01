@@ -100,7 +100,8 @@ describe('RepoBrowseScreen visual contract', () => {
         worktreePath: '/repo/itinerary-service.worktrees/session-runtime',
         branch: 'spec/runtime-session',
         label: 'Runtime session',
-        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' },
+        restoredStepCommits: { specify: 'specify-sha' }
       }
     ];
 
@@ -129,7 +130,8 @@ describe('RepoBrowseScreen visual contract', () => {
         worktreePath: '/repo/itinerary-service.worktrees/session-detached',
         branch: null,
         label: 'session-detached',
-        restoredStates: { specify: 'pending', clarify: 'not_available', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+        restoredStates: { specify: 'pending', clarify: 'not_available', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' },
+        restoredStepCommits: {}
       }
     ];
 
@@ -158,7 +160,8 @@ describe('RepoBrowseScreen visual contract', () => {
         branch: 'spec/three-state',
         label: 'Three state',
         // specify complete, clarify pending (dirty/in-progress), the rest not_available.
-        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' },
+        restoredStepCommits: { specify: 'specify-sha' }
       }
     ];
 
@@ -195,7 +198,8 @@ describe('RepoBrowseScreen visual contract', () => {
         worktreePath: '/repo/itinerary-service.worktrees/session-runtime',
         branch: 'spec/runtime-session',
         label: 'Runtime session',
-        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' },
+        restoredStepCommits: { specify: 'specify-sha' }
       }
     ];
 

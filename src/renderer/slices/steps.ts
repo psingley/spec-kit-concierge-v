@@ -107,14 +107,19 @@ const stepsSlice = createSlice({
         warnings: []
       });
     },
-    stepsRestoredFromSession: (state, action: PayloadAction<{ states: Record<StepName, StepState> }>) => {
+    stepsRestoredFromSession: (state, action: PayloadAction<{ states: Record<StepName, StepState>; commitShas?: Partial<Record<StepName, string>> }>) => {
       stepsAdapter.setAll(
         state,
-        stepNames.map((step) => ({
-          id: step,
-          status: action.payload.states[step],
-          warnings: []
-        }))
+        stepNames.map((step) => {
+          const status = action.payload.states[step];
+          const commitSha = status === 'complete' ? action.payload.commitShas?.[step] : undefined;
+          return {
+            id: step,
+            status,
+            ...(commitSha !== undefined ? { commitSha, trailer: `Concierge-Step: ${step}:pass` } : {}),
+            warnings: []
+          };
+        })
       );
     },
     stepsRestored: (state, action: PayloadAction<{ records: TrailerStepRecord[] }>) => {

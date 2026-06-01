@@ -35,6 +35,9 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
       resumeLabel="Review"
       onResume={() => dispatch(workspaceStepViewed('review'))}
       onRun={() => {
+        if (record.commitSha !== null) {
+          return;
+        }
         if (repo !== null && branch !== null) {
           void runPassiveStep({ step, repositoryPath: repo.path, branch, modelId });
         }
