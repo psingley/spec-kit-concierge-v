@@ -220,7 +220,7 @@ describe('BoundCLISupervisor', () => {
 
     expect(spawn).toHaveBeenCalledWith('copilot', ['--allow-all-tools', '--acp'], {
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false
+      shell: process.platform === 'win32'
     });
     expect(session.capabilities).toMatchObject({
       protocolVersion: 1,
