@@ -33,20 +33,36 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
   for (const session of root.value.sessions) {
     const record = requireRecord(session, 'InvalidBranchesPayload', '$.sessions[]');
     if (!record.ok) return record;
-    const recordKeys = requireExactKeys(record.value, ['branch', 'label', 'restoredStates'], 'InvalidBranchesPayload', '$.sessions[]');
+    const recordKeys = requireExactKeys(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates'], 'InvalidBranchesPayload', '$.sessions[]');
     if (!recordKeys.ok) return recordKeys;
-    const branch = requireString(record.value.branch, 'InvalidBranchesPayload', '$.sessions[].branch');
+    const sessionId = requireString(record.value.sessionId, 'InvalidBranchesPayload', '$.sessions[].sessionId');
+    const worktreePath = requireString(record.value.worktreePath, 'InvalidBranchesPayload', '$.sessions[].worktreePath');
     const label = requireString(record.value.label, 'InvalidBranchesPayload', '$.sessions[].label');
     const restoredStates = requireRecord(record.value.restoredStates, 'InvalidBranchesPayload', '$.sessions[].restoredStates');
-    if (!branch.ok) return branch;
+    if (!sessionId.ok) return sessionId;
+    if (!worktreePath.ok) return worktreePath;
     if (!label.ok) return label;
     if (!restoredStates.ok) return restoredStates;
-    // Accept legacy spec/* refs and spec-kit's NNNN-slug feature branches
-    // (e.g. 014-remove-faux-controls). Still reject path traversal.
-    const isLegacySpecRef = branch.value.startsWith('spec/');
-    const isSpecKitFeatureBranch = /^\d{3,4}-/.test(branch.value);
-    if ((!isLegacySpecRef && !isSpecKitFeatureBranch) || branch.value.includes('..')) {
-      return invalid('InvalidBranchesPayload', 'branch must be a safe spec/* or NNNN-slug ref', '$.sessions[].branch');
+    if (sessionId.value.includes('..') || worktreePath.value.includes('..')) {
+      return invalid('InvalidBranchesPayload', 'sessionId/worktreePath must not contain traversal', '$.sessions[]');
+    }
+    // branch is null for a detached, not-yet-named worktree (start-new before
+    // spec-kit names the branch). A named branch must be a legacy spec/* ref or
+    // spec-kit's NNNN-slug feature branch (e.g. 014-remove-faux-controls), with no
+    // path traversal.
+    const rawBranch = record.value.branch;
+    let branch: string | null;
+    if (rawBranch === null) {
+      branch = null;
+    } else if (typeof rawBranch === 'string') {
+      const isLegacySpecRef = rawBranch.startsWith('spec/');
+      const isSpecKitFeatureBranch = /^\d{3,4}-/.test(rawBranch);
+      if ((!isLegacySpecRef && !isSpecKitFeatureBranch) || rawBranch.includes('..')) {
+        return invalid('InvalidBranchesPayload', 'branch must be a safe spec/* or NNNN-slug ref', '$.sessions[].branch');
+      }
+      branch = rawBranch;
+    } else {
+      return invalid('InvalidBranchesPayload', 'branch must be a string or null', '$.sessions[].branch');
     }
     const restored = {} as Record<StepName, StepState>;
     for (const step of stepNames) {
@@ -56,7 +72,7 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
       }
       restored[step] = state as StepState;
     }
-    sessions.push({ branch: branch.value, label: label.value, restoredStates: restored });
+    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates: restored });
   }
   return { ok: true, value: { sessions } };
 };

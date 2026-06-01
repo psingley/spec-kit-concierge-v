@@ -33,7 +33,13 @@ export type RepositorySummary = {
 };
 
 export type BranchSession = {
-  branch: string;
+  // The worktree directory basename (ADR-0016): stable per-session key.
+  sessionId: string;
+  // The session's isolated worktree path. Resume enters the workspace pointed
+  // here — no checkout in the clone (Phase 2).
+  worktreePath: string;
+  // null for a detached, not-yet-named worktree (spec-kit hasn't branched yet).
+  branch: string | null;
   label: string;
   restoredStates: Record<StepName, 'not_available' | 'pending' | 'complete'>;
 };

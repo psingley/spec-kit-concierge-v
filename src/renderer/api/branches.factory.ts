@@ -22,14 +22,26 @@ export const parseRendererBranchSessions = (
   for (const session of root.value.sessions) {
     const record = requireRecord(session, 'InvalidBranchSessions', '$.sessions[]');
     if (!record.ok) return record;
-    const recordKeys = requireExactKeys<ErrorName>(record.value, ['branch', 'label', 'restoredStates']);
+    const recordKeys = requireExactKeys<ErrorName>(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates']);
     if (!recordKeys.ok) return recordKeys;
-    const branch = requireString(record.value.branch, 'InvalidBranchSessions', '$.sessions[].branch');
+    const sessionId = requireString(record.value.sessionId, 'InvalidBranchSessions', '$.sessions[].sessionId');
+    const worktreePath = requireString(record.value.worktreePath, 'InvalidBranchSessions', '$.sessions[].worktreePath');
     const label = requireString(record.value.label, 'InvalidBranchSessions', '$.sessions[].label');
     const restored = requireRecord(record.value.restoredStates, 'InvalidBranchSessions', '$.sessions[].restoredStates');
-    if (!branch.ok) return branch;
+    if (!sessionId.ok) return sessionId;
+    if (!worktreePath.ok) return worktreePath;
     if (!label.ok) return label;
     if (!restored.ok) return restored;
+    // branch is null for a detached, not-yet-named worktree; otherwise a non-empty string.
+    const rawBranch = record.value.branch;
+    let branch: string | null;
+    if (rawBranch === null) {
+      branch = null;
+    } else {
+      const parsedBranch = requireString(rawBranch, 'InvalidBranchSessions', '$.sessions[].branch');
+      if (!parsedBranch.ok) return parsedBranch;
+      branch = parsedBranch.value;
+    }
     const restoredStates = {} as Record<StepName, StepState>;
     for (const step of stepNames) {
       if (!states.includes(restored.value[step] as StepState)) {
@@ -37,7 +49,7 @@ export const parseRendererBranchSessions = (
       }
       restoredStates[step] = restored.value[step] as StepState;
     }
-    sessions.push({ branch: branch.value, label: label.value, restoredStates });
+    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates });
   }
   return { ok: true, value: { sessions } };
 };

@@ -71,3 +71,54 @@ describe('RepoBrowseScreenContainer startNew', () => {
     });
   });
 });
+
+describe('RepoBrowseScreenContainer resume (Phase 2: read worktree in place)', () => {
+  it('enters the workspace pointed at the session worktree, restores step-state, and NEVER checks out', async () => {
+    const checkout = vi.fn();
+    installConciergeBridge({
+      repos: { list: vi.fn(async () => ({ repositories: [repo] })) },
+      repo: {
+        ensureLocal: vi.fn(async () => ({ localPath: '/clone', cloned: false })),
+        startSession: vi.fn()
+      },
+      git: { read: vi.fn(), checkout, resetMain: vi.fn() },
+      branches: {
+        sessions: vi.fn(async () => ({
+          sessions: [
+            {
+              sessionId: 'session-014',
+              worktreePath: '/clone.worktrees/session-014',
+              branch: '014-remove-faux-controls',
+              label: '014-remove-faux-controls',
+              restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+            }
+          ]
+        }))
+      }
+    });
+    const store = makeStore();
+
+    render(
+      <Provider store={store}>
+        <RepoBrowseScreenContainer />
+      </Provider>
+    );
+
+    const repoButton = await screen.findByRole('button', { name: /workcells/ });
+    fireEvent.click(repoButton);
+
+    const resumeButton = await screen.findByRole('button', { name: /014-remove-faux-controls/ });
+    fireEvent.click(resumeButton);
+
+    await waitFor(() => {
+      // Workspace points at the session's WORKTREE path — not the clone — and the
+      // branch + restored states come straight from the session (no checkout).
+      expect(store.getState().workspace.activeRepoPath).toBe('/clone.worktrees/session-014');
+      expect(store.getState().workspace.branch).toBe('014-remove-faux-controls');
+      expect(store.getState().steps.entities.specify?.status).toBe('complete');
+    });
+
+    // The entire Phase 2 point: resume reads the worktree in place. No `git checkout`.
+    expect(checkout).not.toHaveBeenCalled();
+  });
+});

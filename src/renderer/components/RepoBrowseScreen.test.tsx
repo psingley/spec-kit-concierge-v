@@ -96,6 +96,8 @@ describe('RepoBrowseScreen visual contract', () => {
   it('uses runtime branch sessions when provided', () => {
     const sessions: BranchSession[] = [
       {
+        sessionId: 'session-runtime',
+        worktreePath: '/repo/itinerary-service.worktrees/session-runtime',
         branch: 'spec/runtime-session',
         label: 'Runtime session',
         restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
@@ -117,12 +119,42 @@ describe('RepoBrowseScreen visual contract', () => {
     );
 
     expect(screen.getByText('1 prior session')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'spec/runtime-sessionClarifyrecent' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Runtime sessionClarifyrecent' })).toBeInTheDocument();
+  });
+
+  it('renders a detached (not-yet-named) session by its sessionId label', () => {
+    const sessions: BranchSession[] = [
+      {
+        sessionId: 'session-detached',
+        worktreePath: '/repo/itinerary-service.worktrees/session-detached',
+        branch: null,
+        label: 'session-detached',
+        restoredStates: { specify: 'pending', clarify: 'not_available', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+      }
+    ];
+
+    render(
+      <RepoBrowseScreen
+        repositories={repositories}
+        sessions={sessions}
+        selectedRepo={repositories[1]!}
+        loading={false}
+        error={false}
+        onSelectRepo={vi.fn()}
+        onResume={vi.fn()}
+        onStartNew={vi.fn()}
+        onBackToRepos={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'session-detachedSpecifyrecent' })).toBeInTheDocument();
   });
 
   it('renders a distinct pip visual per step state (complete / pending / not_available)', () => {
     const sessions: BranchSession[] = [
       {
+        sessionId: 'session-three-state',
+        worktreePath: '/repo/itinerary-service.worktrees/session-three-state',
         branch: 'spec/three-state',
         label: 'Three state',
         // specify complete, clarify pending (dirty/in-progress), the rest not_available.
@@ -159,6 +191,8 @@ describe('RepoBrowseScreen visual contract', () => {
     const onResume = vi.fn();
     const sessions: BranchSession[] = [
       {
+        sessionId: 'session-runtime',
+        worktreePath: '/repo/itinerary-service.worktrees/session-runtime',
         branch: 'spec/runtime-session',
         label: 'Runtime session',
         restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
@@ -179,7 +213,7 @@ describe('RepoBrowseScreen visual contract', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'spec/runtime-sessionClarifyrecent' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Runtime sessionClarifyrecent' }));
 
     expect(onResume).toHaveBeenCalledWith(repositories[1]!, sessions[0]!);
   });

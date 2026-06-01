@@ -1,201 +1,190 @@
-import { execFile } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
-import { promisify } from 'node:util';
-import { describe, expect, it } from 'vitest';
-import { withTempDir } from '../../../test/tempDir';
-import { listBranchSessions } from './branchSessions';
+import { describe, expect, it, vi } from 'vitest';
+import { listBranchSessions, type BranchSessionsDeps } from './branchSessions';
+import type { ConciergeStepHistoryRecord } from './gitCommand';
 
-const execFileAsync = promisify(execFile);
-const gitFixtureTimeoutMs = 60_000;
+const CLONE = '/Users/dev/Documents/Concierge/psingley/repo';
+const HOME = '/Users/dev/Documents/Concierge/psingley/repo.worktrees';
 
-const git = async (cwd: string, args: string[]): Promise<void> => {
-  await execFileAsync('git', args, { cwd });
+// A `git worktree list --porcelain` fixture: the clone's own worktree (on main)
+// plus session worktrees under `<clone>.worktrees/`.
+const porcelain = (
+  ...worktrees: { path: string; branch?: string; detached?: boolean }[]
+): string =>
+  worktrees
+    .map((wt) => {
+      const lines = [`worktree ${wt.path}`, 'HEAD 0123456789abcdef0123456789abcdef01234567'];
+      lines.push(wt.detached === true ? 'detached' : `branch refs/heads/${wt.branch}`);
+      return lines.join('\n');
+    })
+    .join('\n\n');
+
+// Records the cwd + args of every git invocation so tests can assert NO checkout.
+type Call = { cwd: string; args: string[] };
+
+// A POSIX-style path seam so the worktree-home math is deterministic regardless of
+// the host OS the test runs on.
+const platformPath = {
+  join: (...parts: string[]): string => parts.join('/'),
+  dirname: (p: string): string => p.slice(0, p.lastIndexOf('/')),
+  basename: (p: string): string => p.slice(p.lastIndexOf('/') + 1)
 };
 
-const commitWithTrailer = async (
-  repositoryPath: string,
-  name: string,
-  step: string,
-  status: string
-): Promise<void> => {
-  await writeFile(path.join(repositoryPath, name), `# ${name}\n`);
-  await git(repositoryPath, ['add', name]);
-  await git(repositoryPath, ['commit', '-m', `Concierge ${step} step\n\nConcierge-Step: ${step}:${status}`]);
+const makeDeps = (
+  porcelainOut: string,
+  historyByCwd: Record<string, ConciergeStepHistoryRecord[]>,
+  statusByCwd: Record<string, string> = {}
+): { deps: BranchSessionsDeps; calls: Call[] } => {
+  const calls: Call[] = [];
+  const runGit = vi.fn(async (cwd: string, args: string[]): Promise<string> => {
+    calls.push({ cwd, args });
+    if (args[0] === 'worktree' && args[1] === 'list') {
+      return porcelainOut;
+    }
+    if (args[0] === 'branch' && args[1] === '--format=%(refname:short)') {
+      // The clone has main locally — used as the comparison base.
+      return 'main\n014-remove-faux-controls\nspec/draft-legacy';
+    }
+    if (args[0] === 'diff') {
+      // No committed-unique spec.md by default; specMd presence comes via status.
+      return '';
+    }
+    if (args[0] === 'status') {
+      return statusByCwd[cwd] ?? '';
+    }
+    return '';
+  });
+  const readHistory = vi.fn(async (cwd: string): Promise<ConciergeStepHistoryRecord[]> => historyByCwd[cwd] ?? []);
+  return { deps: { runGit, readHistory, platformPath }, calls };
 };
 
-const writeSpecMd = async (repositoryPath: string, featureSlug: string): Promise<string> => {
-  const relativePath = path.join('specs', featureSlug, 'spec.md');
-  await mkdir(path.join(repositoryPath, 'specs', featureSlug), { recursive: true });
-  await writeFile(path.join(repositoryPath, relativePath), '# Spec\n');
-  return relativePath;
-};
+const specifyPass = (): ConciergeStepHistoryRecord[] => [
+  { step: 'specify', status: 'pass', commitSha: 'abc', warnings: [] }
+];
 
-const createFixture = async (directory: string): Promise<string> => {
-  const repositoryPath = path.join(directory, 'work');
-  await git(directory, ['init', repositoryPath]);
-  await git(repositoryPath, ['checkout', '-b', 'main']);
-  await git(repositoryPath, ['config', 'user.email', 'concierge@example.com']);
-  await git(repositoryPath, ['config', 'user.name', 'Concierge Test']);
-  await writeFile(path.join(repositoryPath, 'initial.txt'), 'initial');
-  await git(repositoryPath, ['add', 'initial.txt']);
-  await git(repositoryPath, ['commit', '-m', 'initial']);
+describe('listBranchSessions (Phase 2: reads worktrees in place, never checks out)', () => {
+  it('NEVER issues a git checkout', async () => {
+    const wtPath = `${HOME}/session-014`;
+    const { deps, calls } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: specifyPass() }
+    );
 
-  // Real historical Concierge sessions live on main. These trailers MUST NOT
-  // leak into feature branches that merely sit on top of main.
-  await commitWithTrailer(repositoryPath, 'main-session.md', 'specify', 'pass');
+    await listBranchSessions(CLONE, deps);
 
-  // Legacy spec/draft-* branch with a branch-unique specify:pass session.
-  await git(repositoryPath, ['checkout', '-b', 'spec/draft-legacy']);
-  await commitWithTrailer(repositoryPath, 'legacy-spec.md', 'specify', 'pass');
+    expect(calls.some((call) => call.args[0] === 'checkout')).toBe(false);
+  });
 
-  // Spec-kit NNN-slug feature branch with a branch-unique specify:pass session.
-  await git(repositoryPath, ['checkout', 'main']);
-  await git(repositoryPath, ['checkout', '-b', '014-remove-faux-controls']);
-  await commitWithTrailer(repositoryPath, 'feature-spec.md', 'specify', 'pass');
+  it('enumerates sessions from `worktree list --porcelain`, not from branch + checkout', async () => {
+    const wtPath = `${HOME}/session-014`;
+    const { deps, calls } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: specifyPass() }
+    );
 
-  await git(repositoryPath, ['checkout', 'main']);
-  return repositoryPath;
-};
+    await listBranchSessions(CLONE, deps);
 
-describe('listBranchSessions', () => {
-  it(
-    'includes spec-kit NNN-slug feature branches with a specify:pass trailer',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        const sessions = await listBranchSessions(repositoryPath);
+    expect(calls.some((call) => call.cwd === CLONE && call.args[0] === 'worktree' && call.args[1] === 'list')).toBe(true);
+  });
 
-        const specKit = sessions.find((session) => session.branch === '014-remove-faux-controls');
-        expect(specKit).toBeDefined();
-        expect(specKit?.restoredStates.specify).toBe('complete');
-        expect(specKit?.label).toBe('014-remove-faux-controls');
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+  it('reads each session worktree IN PLACE with git -C <worktreePath> (not the clone)', async () => {
+    const wtPath = `${HOME}/session-014`;
+    const { deps, calls } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: specifyPass() }
+    );
 
-  it(
-    'keeps legacy spec/* branches and strips the spec/ prefix from their label',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        const sessions = await listBranchSessions(repositoryPath);
+    await listBranchSessions(CLONE, deps);
 
-        const legacy = sessions.find((session) => session.branch === 'spec/draft-legacy');
-        expect(legacy).toBeDefined();
-        expect(legacy?.label).toBe('draft-legacy');
-        expect(legacy?.restoredStates.specify).toBe('complete');
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+    // The per-session status read runs against the worktree path, never the clone.
+    expect(calls.some((call) => call.cwd === wtPath && call.args[0] === 'status')).toBe(true);
+  });
 
-  it(
-    'excludes the default branch from resumable sessions',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        const sessions = await listBranchSessions(repositoryPath);
+  it('parses a worktree into a session with sessionId, worktreePath, branch and 3-state', async () => {
+    const wtPath = `${HOME}/session-014`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: specifyPass() }
+    );
 
-        expect(sessions.some((session) => session.branch === 'main')).toBe(false);
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+    const sessions = await listBranchSessions(CLONE, deps);
 
-  it(
-    "does not leak main's trailers into a branch with zero unique commits",
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        // A feature branch sitting exactly on main: 0 unique commits, no spec.md.
-        await git(repositoryPath, ['checkout', '-b', '015-no-unique-commits']);
-        await git(repositoryPath, ['checkout', 'main']);
+    expect(sessions).toHaveLength(1);
+    const session = sessions[0]!;
+    expect(session.sessionId).toBe('session-014');
+    expect(session.worktreePath).toBe(wtPath);
+    expect(session.branch).toBe('014-remove-faux-controls');
+    expect(session.label).toBe('014-remove-faux-controls');
+    // ADR-0008: only the 3 canonical states.
+    expect(session.restoredStates.specify).toBe('complete');
+    expect(session.restoredStates.clarify).toBe('pending');
+    expect(session.restoredStates.plan).toBe('not_available');
+  });
 
-        const sessions = await listBranchSessions(repositoryPath);
-        const bare = sessions.find((session) => session.branch === '015-no-unique-commits');
+  it('strips spec/ from a legacy spec/* worktree label', async () => {
+    const wtPath = `${HOME}/session-legacy`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: 'spec/draft-legacy' }),
+      { [wtPath]: specifyPass() }
+    );
 
-        // Inherited main trailers must not make it complete. With no spec.md and no
-        // unique trailer the branch is not a resumable session at all.
-        expect(bare).toBeUndefined();
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+    const sessions = await listBranchSessions(CLONE, deps);
 
-  it(
-    'reports a branch-unique specify:pass trailer as complete',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        const sessions = await listBranchSessions(repositoryPath);
+    expect(sessions[0]!.branch).toBe('spec/draft-legacy');
+    expect(sessions[0]!.label).toBe('draft-legacy');
+  });
 
-        const specKit = sessions.find((session) => session.branch === '014-remove-faux-controls');
-        expect(specKit?.restoredStates.specify).toBe('complete');
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+  it('treats a detached (not-yet-named) worktree as a pending, unnamed session', async () => {
+    const wtPath = `${HOME}/session-detached`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, detached: true }),
+      {} // no history
+    );
 
-  it(
-    'reports a branch with a working-tree spec.md but no pass trailer as pending (dirty/in-progress)',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        await git(repositoryPath, ['checkout', '-b', '016-dirty-in-progress']);
-        // Uncommitted spec.md only — work began but no Step Commit yet.
-        await writeSpecMd(repositoryPath, '016-dirty-in-progress');
-        await git(repositoryPath, ['checkout', '-f', 'main']);
+    const sessions = await listBranchSessions(CLONE, deps);
 
-        const sessions = await listBranchSessions(repositoryPath);
-        const dirty = sessions.find((session) => session.branch === '016-dirty-in-progress');
+    expect(sessions).toHaveLength(1);
+    const session = sessions[0]!;
+    expect(session.branch).toBeNull();
+    // The label falls back to the sessionId when the branch is not yet named.
+    expect(session.label).toBe('session-detached');
+    expect(session.restoredStates.specify).toBe('pending');
+  });
 
-        expect(dirty).toBeDefined();
-        expect(dirty?.restoredStates.specify).toBe('pending');
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+  it("excludes the clone's own worktree (on main) from sessions", async () => {
+    const wtPath = `${HOME}/session-014`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '014-remove-faux-controls' }),
+      { [wtPath]: specifyPass() }
+    );
 
-  it(
-    'reports a branch with a committed-unique spec.md but no pass trailer as pending',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        await git(repositoryPath, ['checkout', '-b', '017-committed-no-trailer']);
-        const relativePath = await writeSpecMd(repositoryPath, '017-committed-no-trailer');
-        await git(repositoryPath, ['add', relativePath]);
-        await git(repositoryPath, ['commit', '-m', 'add spec without trailer']);
-        await git(repositoryPath, ['checkout', 'main']);
+    const sessions = await listBranchSessions(CLONE, deps);
 
-        const sessions = await listBranchSessions(repositoryPath);
-        const inProgress = sessions.find((session) => session.branch === '017-committed-no-trailer');
+    expect(sessions.some((session) => session.worktreePath === CLONE)).toBe(false);
+  });
 
-        expect(inProgress).toBeDefined();
-        expect(inProgress?.restoredStates.specify).toBe('pending');
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+  it('reports a worktree with a dirty (uncommitted) spec.md but no pass trailer as pending', async () => {
+    const wtPath = `${HOME}/session-dirty`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '016-dirty-in-progress' }),
+      {}, // no trailer history
+      { [wtPath]: '?? specs/016-dirty-in-progress/spec.md' }
+    );
 
-  it(
-    'reports a bare branch with no spec.md and no unique trailer as not a session',
-    async () => {
-      await withTempDir(async (directory) => {
-        const repositoryPath = await createFixture(directory);
-        await git(repositoryPath, ['checkout', '-b', '018-bare-branch']);
-        await writeFile(path.join(repositoryPath, 'unrelated.txt'), 'noise\n');
-        await git(repositoryPath, ['add', 'unrelated.txt']);
-        await git(repositoryPath, ['commit', '-m', 'unrelated change, no spec']);
-        await git(repositoryPath, ['checkout', 'main']);
+    const sessions = await listBranchSessions(CLONE, deps);
 
-        const sessions = await listBranchSessions(repositoryPath);
-        const bare = sessions.find((session) => session.branch === '018-bare-branch');
+    expect(sessions).toHaveLength(1);
+    expect(sessions[0]!.restoredStates.specify).toBe('pending');
+  });
 
-        expect(bare).toBeUndefined();
-      });
-    },
-    gitFixtureTimeoutMs
-  );
+  it('does not surface a named worktree with no trailer and no spec.md', async () => {
+    const wtPath = `${HOME}/session-bare`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '018-bare-branch' }),
+      {} // no history, no spec.md
+    );
+
+    const sessions = await listBranchSessions(CLONE, deps);
+
+    expect(sessions.some((session) => session.worktreePath === wtPath)).toBe(false);
+  });
 });

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { branchesApi } from '../api/branches.endpoint';
 import { ensureLocalRepoApi } from '../api/ensureLocalRepo.endpoint';
-import { gitApi } from '../api/git.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { startSessionApi } from '../api/startSession.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
@@ -27,7 +26,6 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     { repositoryPath: localPath ?? '' },
     { skip: localPath === null }
   );
-  const [checkoutBranch] = gitApi.useCheckoutBranchMutation();
   const [startSession] = startSessionApi.useStartSessionMutation();
 
   useEffect(() => {
@@ -45,12 +43,13 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
       .catch(() => undefined);
   };
 
+  // Resume reads the session's worktree IN PLACE (ADR-0016, Phase 2): the worktree
+  // already exists on its branch, so there is NO `git checkout` in the clone (that
+  // always failed for a branch used by a worktree). We point the workspace at the
+  // worktree path and restore step-state from the session's recovered states.
   const resume = (repo: RepositorySummary, session: BranchSession): void => {
-    if (localPath === null) return;
-    void checkoutBranch({ repositoryPath: localPath, branch: session.branch }).then(() => {
-      dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
-      dispatch(workspaceEntered({ repo: { ...repo, path: localPath }, branch: session.branch, restoredStates: session.restoredStates }));
-    });
+    dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
+    dispatch(workspaceEntered({ repo: { ...repo, path: session.worktreePath }, branch: session.branch, restoredStates: session.restoredStates }));
   };
 
   // "Start a new session": create an isolated DETACHED git worktree (ADR-0016),

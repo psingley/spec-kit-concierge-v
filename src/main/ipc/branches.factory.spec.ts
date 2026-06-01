@@ -3,7 +3,7 @@ import { createBranchSessionsRequest, createBranchSessionsResponse } from './bra
 
 const restoredStates = { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' };
 const request = { repositoryPath: '/repo' };
-const response = { sessions: [{ branch: 'spec/0006-specify-vertical', label: 'Specify vertical', restoredStates }] };
+const response = { sessions: [{ sessionId: 'session-0006', worktreePath: '/repo.worktrees/session-0006', branch: 'spec/0006-specify-vertical', label: 'Specify vertical', restoredStates }] };
 
 describe('branches IPC factory', () => {
   it('accepts happy path payloads', () => {
@@ -11,8 +11,12 @@ describe('branches IPC factory', () => {
     expect(createBranchSessionsResponse(response)).toEqual({ ok: true, value: response });
   });
   it('accepts spec-kit NNNN-slug feature branches', () => {
-    const speckitResponse = { sessions: [{ branch: '014-remove-faux-controls', label: '014-remove-faux-controls', restoredStates }] };
+    const speckitResponse = { sessions: [{ sessionId: 'session-014', worktreePath: '/repo.worktrees/session-014', branch: '014-remove-faux-controls', label: '014-remove-faux-controls', restoredStates }] };
     expect(createBranchSessionsResponse(speckitResponse)).toEqual({ ok: true, value: speckitResponse });
+  });
+  it('accepts a detached (not-yet-named) worktree with branch null', () => {
+    const detachedResponse = { sessions: [{ sessionId: 'session-detached', worktreePath: '/repo.worktrees/session-detached', branch: null, label: 'session-detached', restoredStates }] };
+    expect(createBranchSessionsResponse(detachedResponse)).toEqual({ ok: true, value: detachedResponse });
   });
   it('rejects empty objects', () => {
     expect(createBranchSessionsRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });

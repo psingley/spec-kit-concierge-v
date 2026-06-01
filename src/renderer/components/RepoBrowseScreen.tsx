@@ -32,7 +32,11 @@ const stepLabels: Record<StepName, string> = {
 };
 
 type PresentedSession = {
-  branch: string;
+  // Stable per-session key (worktree basename); branch may be null for a detached,
+  // not-yet-named session, so the sessionId — not the branch — keys the row.
+  sessionId: string;
+  // Human label: the branch (spec/ stripped) or the sessionId for a detached session.
+  label: string;
   step: StepName;
   timestamp: string;
   restoredStates: BranchSession['restoredStates'];
@@ -59,7 +63,8 @@ const sessionStep = (session: BranchSession): StepName => {
 
 const presentedSessionsFor = (sessions: BranchSession[]): PresentedSession[] =>
   sessions.map((session) => ({
-    branch: session.branch,
+    sessionId: session.sessionId,
+    label: session.label,
     step: sessionStep(session),
     timestamp: 'recent',
     restoredStates: session.restoredStates,
@@ -134,15 +139,15 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
             <div className="rb-branch-list">
               {presentedSessions.map((session) => (
                 <button
-                  key={session.branch}
+                  key={session.sessionId}
                   type="button"
-                  aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
+                  aria-label={`${session.label}${stepLabels[session.step]}${session.timestamp}`}
                   className="rb-branch-card session-row"
                   onClick={() => onResume(selectedRepo, session.session)}
                 >
                   <span className="rb-branch-glyph" />
                   <span className="rb-branch-card-main">
-                    <span className="rb-branch-name mono">{session.branch}</span>
+                    <span className="rb-branch-name mono">{session.label}</span>
                     <span className="rb-branch-meta">
                       <span className="rb-branch-step">{stepLabels[session.step]}</span>
                       <span className="rb-branch-pips" aria-hidden="true">
