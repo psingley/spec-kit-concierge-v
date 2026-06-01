@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router';
 import { useAppSelector } from './store';
 import { selectWorkspaceActiveStep, selectWorkspaceMaxReachedStep } from '../slices/workspace.selectors';
 import type { StepName } from '../slices/steps';
-import { stepOrder } from '../components/Stepper';
+import { stepOrder } from '../slices/steps';
 
 const validSteps: ReadonlySet<string> = new Set(stepOrder);
 
