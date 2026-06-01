@@ -32,9 +32,17 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     };
     await expectNoSeriousA11yViolations();
 
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    const gitHubSignIn = page
+      .locator('.signin-row')
+      .filter({ hasText: /GitHub CLI/i })
+      .getByRole('button', { name: /Sign in/i });
+    await gitHubSignIn.click();
     await expect(page.getByText(/Signed in as a.kim/i)).toBeVisible();
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await page
+      .locator('.signin-row')
+      .filter({ hasText: /GitHub Copilot CLI/i })
+      .getByRole('button', { name: /Sign in/i })
+      .click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
 
     await expectNoSeriousA11yViolations();
