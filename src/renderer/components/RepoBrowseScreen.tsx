@@ -127,7 +127,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
         ) : null}
         {loading ? <p>Loading repositories...</p> : null}
         {selectedRepo === null ? (
-          <div className="rb-list repo-list">
+          <div className="rb-list repo-list" tabIndex={0} aria-label="Repository list">
             {filtered.length === 0 ? <div className="rb-empty">No repos match "{query}"</div> : null}
             {query === '' && recent.length > 0 ? (
               <>
@@ -141,7 +141,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
         ) : (
           <section aria-label="Branch sessions" className="session-picker">
             <div className="rb-branches-h">{presentedSessions.length} prior {presentedSessions.length === 1 ? 'session' : 'sessions'}</div>
-            <div className="rb-branch-list">
+            <div className="rb-branch-list" tabIndex={0} aria-label="Branch sessions list">
               {presentedSessions.map((session) => {
                 const stepIndex = stepOrder.indexOf(session.step);
                 return (

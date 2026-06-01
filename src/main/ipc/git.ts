@@ -116,20 +116,28 @@ export const registerGitIpc = ({
       const request = createGitCreateDraftRequest(assertOnePayload(GIT_CREATE_DRAFT_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
 
-      // Resolve owner/repo → local path, clone if needed
-      const localPath = await cloneRepo({
-        userDataPath,
-        repositoryPath: request.value.repositoryPath,
-        defaultBranch: request.value.defaultBranch
-      });
+      // Resolve owner/repo → local path, clone if needed.
+      // If repositoryPath is already an absolute local path (e.g. test fixture),
+      // skip clone (and the subsequent push) and use it directly.
+      const rawPath = request.value.repositoryPath;
+      const isLocalPath = rawPath.startsWith('/') || rawPath.includes('\\');
+      const localPath = isLocalPath
+        ? rawPath
+        : await cloneRepo({
+            userDataPath,
+            repositoryPath: rawPath,
+            defaultBranch: request.value.defaultBranch
+          });
 
       const fixedDraftNow = Number.parseInt(process.env.CONCIERGE_TEST_DRAFT_NOW ?? '', 10);
       const draftNow = Number.isFinite(fixedDraftNow) ? () => fixedDraftNow : undefined;
       const response = createGitCreateDraftResponse(await createDraft(localPath, draftNow));
       if (!response.ok) throw toError(response.error.message);
 
-      // Push the draft branch to origin
-      await pushBranch(localPath);
+      // Push the draft branch to origin (skip for local paths — no remote configured)
+      if (!isLocalPath) {
+        await pushBranch(localPath);
+      }
 
       logger.info({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;

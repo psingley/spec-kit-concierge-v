@@ -126,7 +126,10 @@ export const registerCopilotClarifyIpc = ({
     };
     const run = async (): Promise<void> => {
       try {
-        const repositoryPath = resolveLocalRepoPath(userDataPath, request.value.repositoryPath);
+        const rawRepoPath = request.value.repositoryPath;
+        const repositoryPath = rawRepoPath.startsWith('/') || rawRepoPath.includes('\\')
+          ? rawRepoPath
+          : resolveLocalRepoPath(userDataPath, rawRepoPath);
         const featureDir = repositoryPath;
         if (request.value.operation === 'next') {
           const before = await beforeClarifyHook({ repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });

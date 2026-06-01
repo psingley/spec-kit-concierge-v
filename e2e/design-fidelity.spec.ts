@@ -131,7 +131,11 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   test('full-window workspace specify complete', async () => {
     await page.getByLabel('Specify prompt').fill('Build a hello-world feature');
     await page.getByRole('button', { name: /Begin Specify/i }).click();
-    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature', { timeout: 20_000 });
+    // Wait for specify to complete (stepper shows complete), then navigate back to Specify tab
+    // because the app auto-advances to Clarify on completion.
+    await expect(page.getByTestId('step-specify')).toContainText('complete', { timeout: 20_000 });
+    await page.getByRole('tab', { name: /specify/i }).click();
+    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature');
     await screenshot('full-window-workspace-specify-complete');
   });
 

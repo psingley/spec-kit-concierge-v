@@ -36,7 +36,7 @@ export const Activity = ({ entries, currentStatus, busy, side, onClear }: Activi
           <div className="now-text">{renderMessage(currentStatus)}</div>
         </div>
       </div>
-      <div className="activity-stream" aria-live="polite">
+      <div className="activity-stream" role="log" aria-label="Activity log entries" aria-live="polite" tabIndex={0}>
         {entries.length === 0 ? (
           <div className="log-line muted">
             <span className="ts">--:--:--</span>

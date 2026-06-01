@@ -44,9 +44,10 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     await page.getByLabel('Specify prompt').fill('Build a hello-world feature');
     await page.getByRole('button', { name: /Begin Specify/i }).click();
     await expect(page.getByText(/Specify is generating|Preparing Specify|Sending prompt/i).first()).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature', { timeout: 20_000 });
+    await expect(page.getByTestId('step-specify')).toContainText('complete', { timeout: 20_000 });
+    await page.getByRole('tab', { name: /specify/i }).click();
+    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature');
     await page.screenshot({ path: screenshotPath, fullPage: true });
-    await expect(page.getByTestId('step-specify')).toContainText('complete');
     await expect(page.getByTestId('step-clarify')).toContainText('pending');
     await expectNoSeriousA11yViolations();
 

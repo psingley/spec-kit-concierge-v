@@ -155,7 +155,7 @@ const MenuWrap = ({
                 <Ico.Search size={12} />
                 <input aria-label="Filter repos" placeholder="Filter repos…" readOnly />
               </div>
-              <div className="tb-menu-scroll">
+              <div className="tb-menu-scroll" tabIndex={0} aria-label="Repository list">
                 <div className="tb-menu-group"><Ico.Clock size={10} />Recent</div>
                 {REPO_MENU_RECENT.map((entry) => (
                   <RepoMenuRow key={entry.name} name={entry.name} branches={entry.branches} meta={entry.meta} active={entry.name === 'concierge-api'} />
