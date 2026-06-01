@@ -17,11 +17,25 @@ import { verifiedCopilotInitialize } from './capabilities.factory.spec';
 
 const spawnMock = vi.hoisted(() => vi.fn());
 
+// execFile is imported by execGh.ts (via supervisor.ts) at module init time.
+// Must use vi.hoisted so the value exists when the vi.mock factory runs.
+// The mock invokes its callback with empty stdout so resolveWindowsBinary
+// falls back to the bare binary name, which spawnMock then receives.
+const execFileMock = vi.hoisted(() =>
+  vi.fn((_file: unknown, _args: unknown, callback: unknown) => {
+    if (typeof callback === 'function') {
+      (callback as (err: null, result: { stdout: string; stderr: string }) => void)(null, { stdout: '', stderr: '' });
+    }
+  })
+);
+
 vi.mock('node:child_process', () => ({
   default: {
-    spawn: spawnMock
+    spawn: spawnMock,
+    execFile: execFileMock
   },
-  spawn: spawnMock
+  spawn: spawnMock,
+  execFile: execFileMock
 }));
 
 const manifestResult = createAgentManifest(agentsJson);
