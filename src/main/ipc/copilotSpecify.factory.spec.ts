@@ -12,6 +12,19 @@ describe('copilot specify IPC factory', () => {
     expect(createCopilotSpecifyAck(ack)).toEqual({ ok: true, value: ack });
     expect(createStepStreamEvent(done)).toEqual({ ok: true, value: done });
   });
+  it('accepts a passing done event carrying the post-specify branch', () => {
+    const passWithBranch = {
+      type: 'done',
+      step: 'specify',
+      sessionId: 'specify-1',
+      status: 'pass',
+      specMarkdown: '# Spec',
+      artifactPath: 'specs/0012-x/spec.md',
+      commitSha: 'abc123',
+      branch: '014-remove-faux-controls'
+    };
+    expect(createStepStreamEvent(passWithBranch)).toEqual({ ok: true, value: passWithBranch });
+  });
   it('rejects empty objects', () => {
     expect(createCopilotSpecifyRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });
     expect(createCopilotSpecifyAck({})).toMatchObject({ ok: false, error: { name: 'InvalidCopilotSpecifyPayload' } });

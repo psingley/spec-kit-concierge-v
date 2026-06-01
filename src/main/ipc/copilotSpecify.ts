@@ -4,6 +4,7 @@ import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
+import { readBranchState } from '../data-layer/git/branchState';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
 import {
@@ -25,6 +26,7 @@ export type RegisterCopilotSpecifyIpcOptions = {
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
   agentAdapter?: SpecifyAgentAdapter;
+  branchReader?: (repositoryPath: string) => Promise<string>;
   now?: () => number;
 };
 
@@ -54,6 +56,7 @@ export const registerCopilotSpecifyIpc = ({
   logger,
   userDataPath = app.getPath('userData'),
   agentAdapter = defaultAgentAdapter(logger, userDataPath),
+  branchReader = async (repositoryPath) => (await readBranchState(repositoryPath)).branch,
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
@@ -144,6 +147,7 @@ export const registerCopilotSpecifyIpc = ({
         const specMarkdown = await import('node:fs/promises').then((fs) =>
           fs.readFile(path.join(request.value.repositoryPath, artifactPath), 'utf8')
         );
+        const branch = await branchReader(request.value.repositoryPath).catch(() => undefined);
         terminal({
           type: 'done',
           step: 'specify',
@@ -151,7 +155,8 @@ export const registerCopilotSpecifyIpc = ({
           status: 'pass',
           specMarkdown,
           artifactPath,
-          commitSha: after.commit.commitSha
+          commitSha: after.commit.commitSha,
+          ...(branch !== undefined ? { branch } : {})
         });
         logger.info({ channel: COPILOT_SPECIFY_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       } catch (error) {

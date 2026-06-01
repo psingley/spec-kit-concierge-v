@@ -22,6 +22,8 @@ export type StepContractResult =
     };
 
 export type StepContractContext = {
+  repositoryPath?: string;
+  featureDir?: string;
   modelId?: string;
   contextFilePath?: string;
   remediationFiles?: readonly string[];

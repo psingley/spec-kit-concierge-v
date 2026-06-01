@@ -9,9 +9,16 @@ import {
   selectWorkspaceDirty,
   selectWorkspaceState
 } from './workspace.selectors';
-import workspaceReducer from './workspace';
+import workspaceReducer, { branchUpdated, workspaceInitialState } from './workspace';
 
 describe('workspace slice', () => {
+  it('updates the branch when the target repo HEAD changes after a step', () => {
+    const state = workspaceReducer({ ...workspaceInitialState, branch: 'main' }, branchUpdated({ branch: '014-remove-faux-controls' }));
+
+    expect(state.branch).toBe('014-remove-faux-controls');
+  });
+
+
   it('initializes to the Run 4 locked state', () => {
     expect(workspaceReducer(undefined, { type: 'test/init' })).toEqual({
       activeRepoPath: null,

@@ -67,4 +67,51 @@ describe('factoryUtils', () => {
     expect(analyze.allowEmptyCommit).toBe(true);
     expect(plan.message).toBe('Concierge plan step');
   });
+
+  it('prefixes commit files with the feature-dir-relative path when featureDir is a subdir', () => {
+    const specify = commitCandidate('specify', ['spec.md'], {
+      repositoryPath: '/repo',
+      featureDir: '/repo/specs/0012-remove-faux-controls'
+    });
+
+    expect(specify.files).toEqual(['specs/0012-remove-faux-controls/spec.md']);
+  });
+
+  it('keeps bare commit files when featureDir equals repositoryPath (no regression)', () => {
+    const tasks = commitCandidate('tasks', ['tasks.md'], {
+      repositoryPath: '/repo',
+      featureDir: '/repo'
+    });
+
+    expect(tasks.files).toEqual(['tasks.md']);
+  });
+
+  it('keeps bare commit files when repositoryPath/featureDir are absent (backward compatible)', () => {
+    const tasks = commitCandidate('tasks', ['tasks.md']);
+
+    expect(tasks.files).toEqual(['tasks.md']);
+  });
+
+  it('prefixes the plan context file alongside required files for a subdir featureDir', () => {
+    const plan = commitCandidate('plan', ['plan.md', 'research.md'], {
+      repositoryPath: '/repo',
+      featureDir: '/repo/specs/0012-x',
+      contextFilePath: 'CONTEXT.md'
+    });
+
+    expect(plan.files).toEqual([
+      'specs/0012-x/plan.md',
+      'specs/0012-x/research.md',
+      'specs/0012-x/CONTEXT.md'
+    ]);
+  });
+
+  it('does not re-prefix analyze remediation files that are already repo-root-relative', () => {
+    const analyze = commitCandidate('analyze', ['specs/0012-x/spec.md'], {
+      repositoryPath: '/repo',
+      featureDir: '/repo/specs/0012-x'
+    });
+
+    expect(analyze.files).toEqual(['specs/0012-x/spec.md']);
+  });
 });

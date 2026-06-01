@@ -88,6 +88,9 @@ const workspaceSlice = createSlice({
       state.viewedStep = 'specify';
       state.maxReachedStep = 'specify';
     },
+    branchUpdated: (state, action: PayloadAction<{ branch: string }>) => {
+      state.branch = action.payload.branch;
+    },
     workspaceStepViewed: (state, action: PayloadAction<StepName>) => {
       state.viewedStep = action.payload;
     },
@@ -106,6 +109,7 @@ export const {
   branchSessionsLoaded,
   workspaceEntered,
   draftSessionCreated,
+  branchUpdated,
   workspaceStepViewed,
   specifyCompletedInWorkspace
 } = workspaceSlice.actions;
