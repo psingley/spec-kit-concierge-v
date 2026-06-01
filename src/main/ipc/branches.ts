@@ -1,5 +1,6 @@
 import type { IpcMain } from 'electron';
 import { app } from 'electron';
+import path from 'node:path';
 import { listBranchSessions } from '../data-layer/git/branchSessions';
 import { resolveLocalRepoPath } from '../data-layer/git/repoClone';
 import type { MainLogger } from '../logging';
@@ -33,7 +34,8 @@ export const registerBranchesIpc = ({
       // Resolve owner/repo → local path (skip if already absolute)
       const repoPath = request.value.repositoryPath.includes('/')
         && !request.value.repositoryPath.includes('\\')
-        && !request.value.repositoryPath.startsWith('/')
+        && !path.isAbsolute(request.value.repositoryPath)
+        && !path.win32.isAbsolute(request.value.repositoryPath)
         ? resolveLocalRepoPath(userDataPath, request.value.repositoryPath)
         : request.value.repositoryPath;
 

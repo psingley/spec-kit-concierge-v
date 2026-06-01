@@ -127,7 +127,7 @@ export const registerCopilotClarifyIpc = ({
     const run = async (): Promise<void> => {
       try {
         const rawRepoPath = request.value.repositoryPath;
-        const repositoryPath = rawRepoPath.startsWith('/') || rawRepoPath.includes('\\')
+        const repositoryPath = path.isAbsolute(rawRepoPath) || path.win32.isAbsolute(rawRepoPath)
           ? rawRepoPath
           : resolveLocalRepoPath(userDataPath, rawRepoPath);
         const featureDir = repositoryPath;

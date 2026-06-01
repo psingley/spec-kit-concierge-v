@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { invalid, isStringArray, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
 import type { ParsedTask } from '../domain/tasksDetail';
 
@@ -7,7 +8,7 @@ export type TasksDetailRequest = { repositoryPath: string; artifactPath: string 
 export type TasksDetailResponse = { tasks: ParsedTask[] };
 
 const safeRelativePath = (value: string): boolean =>
-  value.length > 0 && !value.startsWith('/') && !value.includes('..') && !value.includes('\\');
+  value.length > 0 && !path.isAbsolute(value) && !path.win32.isAbsolute(value) && !value.includes('..') && !value.includes('\\');
 
 const isTasksArtifactPath = (value: string): boolean => value.endsWith('tasks.md');
 

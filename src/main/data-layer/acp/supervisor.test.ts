@@ -235,6 +235,21 @@ describe('BoundCLISupervisor', () => {
     expect(child.kill).not.toHaveBeenCalled();
   });
 
+  it('uses a shell for the bound CLI on Windows so command shims can launch', async () => {
+    const originalPlatform = process.platform;
+    Object.defineProperty(process, 'platform', { value: 'win32' });
+    try {
+      const { session } = await startSession();
+      expect(spawnMock).toHaveBeenCalledWith('copilot', ['--allow-all-tools', '--acp'], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+        shell: true
+      });
+      await session.dispose();
+    } finally {
+      Object.defineProperty(process, 'platform', { value: originalPlatform });
+    }
+  });
+
   it('creates a new ACP session with cwd and MCP server parameters', async () => {
     const { child, session } = await startSession();
 

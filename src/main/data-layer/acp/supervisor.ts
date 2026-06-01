@@ -478,7 +478,7 @@ export class BoundCLISupervisor implements CodingAgent {
     ];
     const spawnOptions: SpawnOptions = {
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false
+      shell: process.platform === 'win32'
     };
     const binary = await resolveWindowsBinary(this.options.agent.binary);
     const child = spawn(binary, launchArgs, spawnOptions) as SpawnedBoundCLI;

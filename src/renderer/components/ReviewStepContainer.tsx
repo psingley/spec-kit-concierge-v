@@ -13,6 +13,9 @@ const featureDirFromBranch = (repositoryPath: string, branch: string | null): st
   return repositoryPath;
 };
 
+const isAbsoluteArtifactPath = (value: string): boolean =>
+  value.startsWith('/') || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('\\\\');
+
 export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
   const branch = useAppSelector(selectWorkspaceBranch);
@@ -26,7 +29,7 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const [readReviewEvidenceBody, reviewEvidenceBody] = reviewEvidenceApi.useLazyReadReviewEvidenceBodyQuery();
   const [readTasksDetail, tasksDetail] = tasksDetailApi.useLazyGetTasksDetailQuery();
   const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
-  const isAppOwnedArtifact = artifactPath?.startsWith('/') ?? false;
+  const isAppOwnedArtifact = artifactPath === null ? false : isAbsoluteArtifactPath(artifactPath);
 
   return (
     <ReviewStep
@@ -43,7 +46,7 @@ export const ReviewStepContainer = (): React.ReactElement => {
         if (request !== undefined) {
           if (path.endsWith('tasks.md')) {
             void readTasksDetail({ repositoryPath: request.featureDir, artifactPath: path });
-          } else if (path.startsWith('/')) {
+          } else if (isAbsoluteArtifactPath(path)) {
             void readReviewEvidenceBody({ ...request, artifactPath: path });
           } else {
             void readArtifact({ repositoryPath: request.featureDir, artifactPath: path });

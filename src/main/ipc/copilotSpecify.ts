@@ -100,7 +100,7 @@ export const registerCopilotSpecifyIpc = ({
       // Resolve owner/repo to local absolute path.
       // If already absolute (e.g. test fixture), use it directly.
       const rawRepoPath = request.value.repositoryPath;
-      const repositoryPath = rawRepoPath.startsWith('/') || rawRepoPath.includes('\\')
+      const repositoryPath = path.isAbsolute(rawRepoPath) || path.win32.isAbsolute(rawRepoPath)
         ? rawRepoPath
         : resolveLocalRepoPath(userDataPath, rawRepoPath);
       const featureDir = repositoryPath;

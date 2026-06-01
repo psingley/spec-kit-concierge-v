@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { invalid, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
 import type { ReviewEvidenceBody, ReviewEvidenceSummary } from '../domain/reviewEvidence';
 
@@ -20,7 +21,8 @@ export type ReviewEvidenceRequestPayload = ReviewEvidenceRequest | ReviewEvidenc
 
 export type ReviewEvidenceResponse = ReviewEvidenceSummary | ReviewEvidenceBody;
 
-const safeAbsolutePath = (value: string): boolean => value.startsWith('/') && !value.includes('\0');
+const safeAbsolutePath = (value: string): boolean =>
+  (path.isAbsolute(value) || path.win32.isAbsolute(value)) && !value.includes('\0');
 const safeArtifactPath = (value: string): boolean => value.length > 0 && !value.includes('\0');
 
 export const createReviewEvidenceRequest = (value: unknown): FactoryResult<ReviewEvidenceRequestPayload, ErrorName> => {

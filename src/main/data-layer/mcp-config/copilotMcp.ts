@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { promisify } from 'node:util';
+import { resolveWindowsBinary } from '../auth/execGh';
 import { findOAuthEvidence } from './authEvidence';
 import { resolveCopilotMcpConfigPath, resolveCopilotOAuthConfigDir, type CopilotPathEnv } from './paths';
 import { ATLASSIAN_AUTHV2_URL, detectAtlassianServer, parseMcpConfig } from './parse';
@@ -11,7 +12,7 @@ const execFileAsync = promisify(execFile);
 export type ExecFileLike = (
   file: string,
   args: string[],
-  options: { shell: false }
+  options: { shell: boolean }
 ) => Promise<{ stdout?: string; stderr?: string }>;
 
 export const checkCopilotMcpConfig = async (env: CopilotPathEnv = process.env): Promise<McpConfigStatus> => {
@@ -81,7 +82,7 @@ export const fixCopilotMcpConfig = async ({
 
   const writeKind = status.isLegacyEndpoint ? 'upgraded' : 'configured';
   try {
-    await execFile('copilot', ['mcp', 'add', '--transport', 'http', 'atlassian', ATLASSIAN_AUTHV2_URL], { shell: false });
+    await execFile(await resolveWindowsBinary('copilot'), ['mcp', 'add', '--transport', 'http', 'atlassian', ATLASSIAN_AUTHV2_URL], { shell: process.platform === 'win32' });
     return {
       status: {
         ...status,

@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { createMainLogger } from '../logging';
-import { GIT_READ_CHANNEL, registerGitIpc } from './git';
+import { GIT_CREATE_DRAFT_CHANNEL, GIT_READ_CHANNEL, registerGitIpc } from './git';
 
 const createTestLogger = () =>
   createMainLogger({
@@ -51,5 +51,32 @@ describe('registerGitIpc', () => {
 
     await expect(handlers.get(GIT_READ_CHANNEL)?.({ sender: { id: 8 } }, { repositoryPath: '/repo', paths: [] })).rejects.toThrow(error);
     expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: GIT_READ_CHANNEL, context: { senderId: 8 }, success: false, error }), 'ipc handler invocation');
+  });
+
+  it('treats Windows absolute repository paths as local paths when creating drafts', async () => {
+    const handlers = new Map<string, (event: { sender: { id: number } }, payload: unknown) => Promise<unknown>>();
+    const logger = createTestLogger();
+    const cloneRepo = vi.fn();
+    const pushBranch = vi.fn();
+    const createDraft = vi.fn(async () => ({ branch: 'spec/draft-abc123' }));
+
+    registerGitIpc({
+      ipcMain: { handle: vi.fn((channel, handler) => handlers.set(channel, handler)) },
+      logger,
+      userDataPath: '/tmp/user-data',
+      createDraft,
+      cloneRepo,
+      pushBranch
+    });
+
+    await expect(
+      handlers.get(GIT_CREATE_DRAFT_CHANNEL)?.(
+        { sender: { id: 9 } },
+        { repositoryPath: 'C:/Users/runneradmin/AppData/Local/Temp/concierge-run6/repo', defaultBranch: 'main' }
+      )
+    ).resolves.toEqual({ branch: 'spec/draft-abc123' });
+    expect(createDraft).toHaveBeenCalledWith('C:/Users/runneradmin/AppData/Local/Temp/concierge-run6/repo', undefined);
+    expect(cloneRepo).not.toHaveBeenCalled();
+    expect(pushBranch).not.toHaveBeenCalled();
   });
 });

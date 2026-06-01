@@ -1,5 +1,6 @@
 import type { IpcMain } from 'electron';
 import { app } from 'electron';
+import path from 'node:path';
 import { readBranchState } from '../data-layer/git/branchState';
 import { checkoutBranch, createDraftBranch } from '../data-layer/git/branchSessions';
 import { ensureClone, pushCurrentBranch, resolveLocalRepoPath } from '../data-layer/git/repoClone';
@@ -46,9 +47,12 @@ export const registerGitIpc = ({
   pushBranch = pushCurrentBranch,
   now = () => performance.now()
 }: RegisterGitIpcOptions): void => {
+  const isAbsoluteRepositoryPath = (repoPath: string): boolean =>
+    path.isAbsolute(repoPath) || path.win32.isAbsolute(repoPath);
+
   const resolveRepoPath = (repoPath: string): string => {
-    // If it looks like an owner/repo identifier (no backslash, no leading slash), resolve it
-    if (repoPath.includes('/') && !repoPath.includes('\\') && !repoPath.startsWith('/')) {
+    // If it looks like an owner/repo identifier, resolve it.
+    if (repoPath.includes('/') && !repoPath.includes('\\') && !isAbsoluteRepositoryPath(repoPath)) {
       return resolveLocalRepoPath(userDataPath, repoPath);
     }
     return repoPath;
@@ -120,7 +124,7 @@ export const registerGitIpc = ({
       // If repositoryPath is already an absolute local path (e.g. test fixture),
       // skip clone (and the subsequent push) and use it directly.
       const rawPath = request.value.repositoryPath;
-      const isLocalPath = rawPath.startsWith('/') || rawPath.includes('\\');
+      const isLocalPath = isAbsoluteRepositoryPath(rawPath);
       const localPath = isLocalPath
         ? rawPath
         : await cloneRepo({
