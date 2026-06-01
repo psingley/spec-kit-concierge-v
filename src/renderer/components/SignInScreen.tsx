@@ -22,7 +22,7 @@ const atlassianSubtitle = (status: AuthProviderStatus): string => {
 };
 
 export const SignInScreen = ({ github, copilot, atlassian, identity, onGitHub, onCopilot, onAtlassian }: SignInScreenProps): React.ReactElement => (
-  <main className="screen signin signin-stage">
+  <main className="screen signin signin-stage" data-testid="sign-in-screen">
     <section className="signin-card" aria-labelledby="signin-heading">
       <div className="signin-mark" data-vd-role="signin-mark" aria-hidden="true">
         <span className="ring" />
