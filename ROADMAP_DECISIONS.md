@@ -658,9 +658,23 @@ Token + port discovery: per-launch token + random port written to
 - Wireframe Visual Feedback Loop — replaced in v1 by "Send to
   Figma" / "Send to Claude Design" buttons on the Review screen.
   Architecture leaves a hook; no implementation in v1.
-- Worktree Isolation — Session tuple stays `(workspace, branch,
-  CLI, model)` in v1. Worktrees + multi-session post-v1 if needed.
-  Collaboration / parallel implementation candidates also post-v1.
+- Worktree Isolation — **AMENDED 2026-06-01 (pulled INTO scope):**
+  originally post-v1, now in scope. Live dogfooding (the app driving
+  spec-kit on itself) surfaced that the single shared working directory
+  is actively unsafe for sessions with uncommitted work: spec-kit's
+  `before_specify` git hook runs `git checkout -b NNN-slug` in the
+  shared dir, and `git checkout` / `git clean -fd` (start-new reset)
+  smear or destroy other sessions' uncommitted spec.md. Resume of a
+  dirty session is unsafe for the same reason. Decision: each session
+  gets its own `git worktree` (isolated working dir, shared object
+  store) so dirty/in-progress state is per-session and cannot smear,
+  and multiple sessions coexist. spec-kit has NO native worktree
+  support (verified) — the app builds the worktree layer on top,
+  using the `GIT_BRANCH_NAME` override (`create-new-feature.sh:306`)
+  to pre-create the worktree for the branch spec-kit will use. Full
+  design in ADR-0016. Session tuple becomes `(workspace, worktree,
+  branch, CLI, model)`. Collaboration / parallel implementation
+  remain post-v1.
 - V-Model, Agent Assign, QA Testing, MemoryLint — not in v1.
 
 ### Slicing strategy (re-sequenced per Round 6)
