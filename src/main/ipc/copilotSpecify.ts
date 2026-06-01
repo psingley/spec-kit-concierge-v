@@ -159,30 +159,109 @@ export type SpecifyRunOutcome = {
   copilotSessionId?: string;
 };
 
-// Best-effort: pull a human-readable string out of one JSONL event for the
-// activity stream. Falls back to the event type so the renderer still shows
-// meaningful progress ("Streaming specify output") rather than raw JSON.
-const readableFromEvent = (event: CopilotJsonEvent): string | undefined => {
-  const text = event.text;
-  if (typeof text === 'string' && text.trim().length > 0) {
-    return text.trim();
-  }
-  const message = event.message;
-  if (typeof message === 'string' && message.trim().length > 0) {
-    return message.trim();
-  }
-  // Assistant turns commonly carry { content: [{ type:'text', text }] } or a
-  // nested message object — surface the first text fragment we can find.
-  if (isRecord(message)) {
-    const nestedText = message.text ?? message.content;
-    if (typeof nestedText === 'string' && nestedText.trim().length > 0) {
-      return nestedText.trim();
+// Pull the first non-empty string from a record at any of the given keys. The
+// returned value is trimmed (used for full messages / labels).
+const firstString = (record: Record<string, unknown>, ...keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value.trim();
     }
   }
-  if (typeof event.type === 'string' && event.type.length > 0) {
-    return event.type;
+  return undefined;
+};
+
+// Like firstString but preserves the raw value verbatim (no trim). Streamed
+// deltas carry significant leading/trailing whitespace at token boundaries, so
+// coalescing them must NOT trim or the reconstructed text loses its spaces.
+const firstRawString = (record: Record<string, unknown>, ...keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string' && value.length > 0) {
+      return value;
+    }
   }
   return undefined;
+};
+
+// Turn a dotted event type ("session.model_change") into a friendly label
+// ("session model change") for the rare unknown-event fallback — never raw JSON.
+const friendlyTypeLabel = (type: string): string => type.replace(/[._]/g, ' ').trim();
+
+// Extract the ACTUAL human-readable content from one parsed JSONL event so the
+// activity stream shows the spec being written — not the bare event TYPE name.
+//
+// copilot's --output-format json events nest their payload under `data` (verified
+// against the SDK schema session-events.schema.json and real events.jsonl runs):
+//   assistant.message        → data.content        (full assistant text)
+//   assistant.message_delta  → data.deltaContent   (incremental text)
+//   assistant.reasoning      → data.content        (reasoning text)
+//   assistant.reasoning_delta→ data.deltaContent   (incremental reasoning)
+//   tool.execution_start     → data.toolName       ("Running <tool>")
+//   tool.execution_complete  → data.success/result ("Finished <tool>")
+//   result                   → terminal            ("Specify complete")
+//   assistant.turn_end       → (no content; suppressed)
+// Only when there is genuinely no text payload do we fall back to a friendly
+// label derived from the event type — and never the raw JSON string.
+export const readableFromEvent = (event: CopilotJsonEvent): string | undefined => {
+  const type = typeof event.type === 'string' ? event.type : undefined;
+  const data = isRecord(event.data) ? event.data : undefined;
+
+  // Reasoning (full + incremental): surface as "thinking: ..." so it reads
+  // distinctly from the spec text itself. Deltas keep raw whitespace.
+  if (type === 'assistant.reasoning' || type === 'assistant.reasoning_delta') {
+    const reasoning = data && (firstRawString(data, 'deltaContent') ?? firstString(data, 'content', 'text'));
+    return reasoning !== undefined ? `thinking: ${reasoning}` : undefined;
+  }
+
+  // Assistant message (full + incremental): forward the text content directly so
+  // the user watches the spec stream in. Incremental deltas keep raw whitespace
+  // so coalescing them reconstructs the spec text faithfully.
+  if (type === 'assistant.message' || type === 'assistant.message_delta' || type === 'assistant.message_start') {
+    if (!data) {
+      return undefined;
+    }
+    return firstRawString(data, 'deltaContent') ?? firstString(data, 'content', 'text');
+  }
+
+  // Tool lifecycle: a readable "Running <tool>" / "Finished <tool>" line.
+  if (type === 'tool.execution_start' && data) {
+    const toolName = firstString(data, 'toolName', 'mcpToolName', 'name');
+    return toolName !== undefined ? `Running ${toolName}` : undefined;
+  }
+  if (type === 'tool.execution_complete' && data) {
+    const toolName = firstString(data, 'toolName', 'mcpToolName', 'name');
+    const succeeded = data.success !== false;
+    const verb = succeeded ? 'Finished' : 'Failed';
+    return toolName !== undefined ? `${verb} ${toolName}` : `${verb} tool`;
+  }
+
+  // Terminal result event: keep a terse "complete" line for the stream. The
+  // authoritative exitCode/usage resolution happens separately in handleLine.
+  if (type === 'result') {
+    return 'Specify complete';
+  }
+
+  // turn_end carries only a turnId — nothing readable; suppress it.
+  if (type === 'assistant.turn_end') {
+    return undefined;
+  }
+
+  // Defensive: some lines may arrive without the `data` wrapper. Surface any
+  // top-level text/content/message we can find before falling back.
+  const flat = firstString(event as Record<string, unknown>, 'text', 'message', 'content');
+  if (flat !== undefined) {
+    return flat;
+  }
+  if (data) {
+    const nested = firstString(data, 'deltaContent', 'content', 'text', 'message');
+    if (nested !== undefined) {
+      return nested;
+    }
+  }
+
+  // Unknown event type with no text payload → a friendly label, never raw JSON.
+  return type !== undefined && type.length > 0 ? friendlyTypeLabel(type) : undefined;
 };
 
 // Spawn copilot in print-mode with --agent flag (Option D — GitHub's documented

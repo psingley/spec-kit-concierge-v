@@ -274,9 +274,11 @@ describe('runSpecifyPrintMode stdout streaming', () => {
       spawnFn
     );
 
-    // Assistant text extracted; tool_use surfaces its event type; no raw JSON leaks.
+    // Assistant text extracted; an unknown type surfaces a friendly label
+    // (underscores → spaces); no raw JSON leaks. (Real tool events are
+    // tool.execution_start/_complete — covered in copilotSpecify.readable.test.ts.)
     expect(lines).toContain('Creating feature directory...');
-    expect(lines).toContain('tool_use');
+    expect(lines).toContain('tool use');
     for (const line of lines) {
       expect(line).not.toMatch(/^\{/);
     }
