@@ -255,7 +255,12 @@ export const buildReviewEvidence = async (
 };
 
 const safeRelativeArtifactPath = (value: string): boolean =>
-  value.length > 0 && !value.startsWith('/') && !value.includes('..') && !value.includes('\\') && !value.includes('\0');
+  value.length > 0 &&
+  !path.isAbsolute(value) &&
+  !path.win32.isAbsolute(value) &&
+  !value.includes('..') &&
+  !value.includes('\\') &&
+  !value.includes('\0');
 
 const assertWithin = (root: string, candidate: string): void => {
   const relative = path.relative(root, candidate);

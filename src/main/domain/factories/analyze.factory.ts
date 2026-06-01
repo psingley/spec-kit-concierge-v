@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { STEP_ARTIFACT_MANIFEST } from '../../hooks/manifest';
 import { commitCandidate, factoryEscape } from './factoryUtils';
 import type { StepContractContext, StepContractResult } from './types';
@@ -7,7 +8,8 @@ const allowedRemediationFiles: ReadonlySet<string> = new Set(STEP_ARTIFACT_MANIF
 const isAllowedRemediationFile = (file: string): boolean =>
   allowedRemediationFiles.has(file.split('/').at(-1) ?? file) &&
   !file.includes('..') &&
-  !file.startsWith('/') &&
+  !path.isAbsolute(file) &&
+  !path.win32.isAbsolute(file) &&
   file.trim() === file;
 
 export const validateAnalyzeArtifacts = async (

@@ -41,6 +41,7 @@ for (const screen of selected) {
         CONCIERGE_TEST_REPOS_ADAPTER: fixture.reposAdapterPath,
         CONCIERGE_TEST_COPILOT_ADAPTER: fixture.copilotAdapterPath,
         CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath,
+        CONCIERGE_TEST_CAPABILITIES_ADAPTER: fixture.capabilitiesAdapterPath,
         CONCIERGE_TEST_ENSURE_LOCAL_ADAPTER: fixture.ensureLocalAdapterPath,
         CONCIERGE_TEST_DRAFT_NOW: draftNowByScreen[screen.name] ?? '',
         CONCIERGE_TEST_ACP_PROMPT_DELAY_MS: specifyDelayByScreen(screen.name) ?? ''

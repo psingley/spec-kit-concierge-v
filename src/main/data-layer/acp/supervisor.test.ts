@@ -16,12 +16,19 @@ import { BoundCLISupervisor } from './supervisor';
 import { verifiedCopilotInitialize } from './capabilities.factory.spec';
 
 const spawnMock = vi.hoisted(() => vi.fn());
+const execFileMock = vi.hoisted(() =>
+  vi.fn((_file: string, _args: string[], callback: (error: Error | null, stdout: string, stderr: string) => void) => {
+    callback(new Error('not found'), '', '');
+  })
+);
 
 vi.mock('node:child_process', () => ({
   default: {
-    spawn: spawnMock
+    spawn: spawnMock,
+    execFile: execFileMock
   },
-  spawn: spawnMock
+  spawn: spawnMock,
+  execFile: execFileMock
 }));
 
 const manifestResult = createAgentManifest(agentsJson);
@@ -206,7 +213,7 @@ describe('BoundCLISupervisor', () => {
 
     expect(spawn).toHaveBeenCalledWith('copilot', ['--allow-all-tools', '--acp'], {
       stdio: ['pipe', 'pipe', 'pipe'],
-      shell: false,
+      shell: process.platform === 'win32',
       env: process.env
     });
     expect(session.capabilities).toMatchObject({
@@ -227,6 +234,22 @@ describe('BoundCLISupervisor', () => {
 
     const spawnEnv = vi.mocked(spawn).mock.calls[0]?.[2]?.env;
     expect(spawnEnv).toBe(process.env);
+  });
+
+  it('uses a shell for the bound CLI on Windows so command shims can launch', async () => {
+    const originalPlatform = process.platform;
+    Object.defineProperty(process, 'platform', { value: 'win32' });
+    try {
+      const { session } = await startSession();
+      expect(spawnMock).toHaveBeenCalledWith('copilot', ['--allow-all-tools', '--acp'], {
+        stdio: ['pipe', 'pipe', 'pipe'],
+        shell: true,
+        env: process.env
+      });
+      await session.dispose();
+    } finally {
+      Object.defineProperty(process, 'platform', { value: originalPlatform });
+    }
   });
 
   it('merges an env override onto the inherited parent env when env is provided', async () => {

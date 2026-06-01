@@ -9,7 +9,7 @@ describe('copilot mcp config fix', () => {
       status: { state: 'not_configured', configPath: '/tmp/mcp-config.json', isLegacyEndpoint: false, tokenFilePresent: false, message: 'Missing' },
       execFile
     });
-    expect(execFile).toHaveBeenCalledWith('copilot', ['mcp', 'add', '--transport', 'http', 'atlassian', ATLASSIAN_AUTHV2_URL], { shell: false });
+    expect(execFile).toHaveBeenCalledWith(expect.stringContaining('copilot'), ['mcp', 'add', '--transport', 'http', 'atlassian', ATLASSIAN_AUTHV2_URL], { shell: process.platform === 'win32' });
     expect(result).toMatchObject({
       writeAttempted: true,
       writeKind: 'configured',

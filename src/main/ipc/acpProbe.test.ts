@@ -1,3 +1,6 @@
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { ACP_PROBE_BOUND_CLI_CHANNEL, registerAcpProbeIpc } from './acpProbe';
 import { verifiedCopilotInitialize } from '../data-layer/acp/capabilities.factory.spec';
@@ -102,6 +105,37 @@ describe('registerAcpProbeIpc', () => {
       capabilities
     );
     expect(dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns capabilities from a test adapter without starting the bound CLI', async () => {
+    const adapterDir = await mkdtemp(path.join(os.tmpdir(), 'concierge-capabilities-'));
+    const adapterPath = path.join(adapterDir, 'capabilities-adapter.json');
+    await writeFile(adapterPath, JSON.stringify(verifiedCopilotInitialize), 'utf8');
+    const handlers = new Map<string, (event: { sender: { id: number } }, ...args: unknown[]) => Promise<unknown>>();
+    const start = vi.fn(async () => ({
+      capabilities,
+      newSession: vi.fn(async () => newSessionResultFromInitialize()),
+      dispose: vi.fn()
+    }));
+    const ipcMain = {
+      handle: vi.fn((channel: string, handler: (event: { sender: { id: number } }, ...args: unknown[]) => Promise<unknown>) => {
+        handlers.set(channel, handler);
+      })
+    };
+    const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn() };
+
+    registerAcpProbeIpc({
+      ipcMain,
+      logger,
+      userDataPath: '/tmp/user-data',
+      capabilitiesAdapterPath: adapterPath,
+      supervisorFactory: async () => ({ start })
+    });
+
+    await expect(handlers.get(ACP_PROBE_BOUND_CLI_CHANNEL)?.({ sender: { id: 7 } })).resolves.toEqual(
+      capabilities
+    );
+    expect(start).not.toHaveBeenCalled();
   });
 
   it('rejects parameters because the proof handler takes no arguments', async () => {

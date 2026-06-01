@@ -18,6 +18,7 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
       CONCIERGE_TEST_REPOS_ADAPTER: fixture.reposAdapterPath,
       CONCIERGE_TEST_COPILOT_ADAPTER: fixture.copilotAdapterPath,
       CONCIERGE_TEST_ACP_ADAPTER: fixture.acpAdapterPath,
+      CONCIERGE_TEST_CAPABILITIES_ADAPTER: fixture.capabilitiesAdapterPath,
       CONCIERGE_TEST_ENSURE_LOCAL_ADAPTER: fixture.ensureLocalAdapterPath
     }
   });
@@ -32,9 +33,17 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     };
     await expectNoSeriousA11yViolations();
 
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    const gitHubSignIn = page
+      .locator('.signin-row')
+      .filter({ has: page.locator('.signin-row-title', { hasText: /^GitHub CLI$/ }) })
+      .getByRole('button', { name: /Sign in/i });
+    await gitHubSignIn.click();
     await expect(page.getByText(/Signed in as a.kim/i)).toBeVisible();
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    await page
+      .locator('.signin-row')
+      .filter({ has: page.locator('.signin-row-title', { hasText: /^GitHub Copilot CLI$/ }) })
+      .getByRole('button', { name: /Sign in/i })
+      .click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
 
     await expectNoSeriousA11yViolations();
@@ -45,9 +54,10 @@ test('fresh user completes Specify with OS-boundary adapters and a real Step Com
     await page.getByLabel('Specify prompt').fill('Build a hello-world feature');
     await page.getByRole('button', { name: /Begin Specify/i }).click();
     await expect(page.getByText(/Specify is generating|Preparing Specify|Sending prompt/i).first()).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature', { timeout: 20_000 });
+    await expect(page.getByTestId('step-specify')).toContainText('complete', { timeout: 20_000 });
+    await page.getByRole('tab', { name: /specify/i }).click();
+    await expect(page.getByTestId('spec-markdown')).toContainText('Hello-world feature');
     await page.screenshot({ path: screenshotPath, fullPage: true });
-    await expect(page.getByTestId('step-specify')).toContainText('complete');
     await expect(page.getByTestId('step-clarify')).toContainText('pending');
     await expectNoSeriousA11yViolations();
 

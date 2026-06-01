@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { invalid, requireExactKeys, requireNumber, requireRecord, requireString, type FactoryResult } from './factoryUtils';
 
 type ErrorName = 'InvalidArtifactsPayload';
@@ -6,7 +7,7 @@ export type ArtifactReadRequest = { repositoryPath: string; artifactPath: string
 export type ArtifactReadResponse = { artifactPath: string; text: string; size: number; mtimeMs: number };
 
 const safeRelativePath = (value: string): boolean =>
-  value.length > 0 && !value.startsWith('/') && !value.includes('..') && !value.includes('\\');
+  value.length > 0 && !path.isAbsolute(value) && !path.win32.isAbsolute(value) && !value.includes('..') && !value.includes('\\');
 
 export const createArtifactReadRequest = (value: unknown): FactoryResult<ArtifactReadRequest, ErrorName> => {
   const root = requireRecord(value, 'InvalidArtifactsPayload', '$');

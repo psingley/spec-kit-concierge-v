@@ -12,8 +12,41 @@ export type BoundaryFixture = {
   reposAdapterPath: string;
   copilotAdapterPath: string;
   acpAdapterPath: string;
+  capabilitiesAdapterPath: string;
   ensureLocalAdapterPath: string;
   repoName: string;
+};
+
+const verifiedCopilotInitialize = {
+  protocolVersion: 1,
+  agentCapabilities: {
+    loadSession: true,
+    mcpCapabilities: { http: true, sse: true },
+    promptCapabilities: { image: true, audio: false, embeddedContext: true },
+    sessionCapabilities: { list: {} }
+  },
+  agentInfo: { name: 'Copilot', title: 'Copilot', version: '1.0.54' },
+  authMethods: [
+    {
+      id: 'copilot-login',
+      name: 'Log in with Copilot CLI',
+      description: 'Run `copilot login` in the terminal',
+      _meta: {
+        'terminal-auth': {
+          command: 'copilot',
+          args: ['login'],
+          label: 'Copilot Login'
+        }
+      }
+    }
+  ]
+};
+
+export const createCapabilitiesAdapterFixture = async (): Promise<{ capabilitiesAdapterPath: string }> => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'concierge-capabilities-'));
+  const capabilitiesAdapterPath = path.join(dir, 'capabilities-adapter.json');
+  await writeFile(capabilitiesAdapterPath, JSON.stringify(verifiedCopilotInitialize, null, 2), 'utf8');
+  return { capabilitiesAdapterPath };
 };
 
 export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
@@ -59,6 +92,7 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   const reposAdapterPath = path.join(adapterDir, 'repos-adapter.json');
   const copilotAdapterPath = path.join(adapterDir, 'copilot-adapter.json');
   const acpAdapterPath = path.join(adapterDir, 'acp-adapter.json');
+  const capabilitiesAdapterPath = path.join(adapterDir, 'capabilities-adapter.json');
   const ensureLocalAdapterPath = path.join(adapterDir, 'ensure-local-adapter.json');
   // Map every fixture repo slug to its real local path so repo:ensureLocal resolves
   // a clean local checkout WITHOUT cloning over the network.
@@ -77,9 +111,19 @@ export const createRun6BoundaryFixture = async (): Promise<BoundaryFixture> => {
   await writeFile(reposAdapterPath, JSON.stringify({ repositories }, null, 2), 'utf8');
   await writeFile(copilotAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
   await writeFile(acpAdapterPath, JSON.stringify({ ok: true }, null, 2), 'utf8');
+  await writeFile(capabilitiesAdapterPath, JSON.stringify(verifiedCopilotInitialize, null, 2), 'utf8');
   await writeFile(ensureLocalAdapterPath, JSON.stringify(ensureLocalMap, null, 2), 'utf8');
 
-  return { repoPath, ghAdapterPath, reposAdapterPath, copilotAdapterPath, acpAdapterPath, ensureLocalAdapterPath, repoName };
+  return {
+    repoPath,
+    ghAdapterPath,
+    reposAdapterPath,
+    copilotAdapterPath,
+    acpAdapterPath,
+    capabilitiesAdapterPath,
+    ensureLocalAdapterPath,
+    repoName
+  };
 };
 
 export const gitLogLastMessage = async (repoPath: string): Promise<string> => {

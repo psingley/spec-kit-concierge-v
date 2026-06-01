@@ -6,6 +6,9 @@ import { useAppSelector } from '../hooks/store';
 import { selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { ReviewStep } from './ReviewStep';
 
+const isAbsoluteArtifactPath = (value: string): boolean =>
+  value.startsWith('/') || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('\\\\');
+
 export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
   const [artifactPath, setArtifactPath] = useState<string | null>(null);
@@ -19,7 +22,7 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const [readReviewEvidenceBody, reviewEvidenceBody] = reviewEvidenceApi.useLazyReadReviewEvidenceBodyQuery();
   const [readTasksDetail, tasksDetail] = tasksDetailApi.useLazyGetTasksDetailQuery();
   const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
-  const isAppOwnedArtifact = artifactPath?.startsWith('/') ?? false;
+  const isAppOwnedArtifact = artifactPath === null ? false : isAbsoluteArtifactPath(artifactPath);
 
   return (
     <ReviewStep
@@ -36,7 +39,7 @@ export const ReviewStepContainer = (): React.ReactElement => {
         if (request !== undefined) {
           if (path.endsWith('tasks.md')) {
             void readTasksDetail({ repositoryPath: request.repositoryPath, artifactPath: path });
-          } else if (path.startsWith('/')) {
+          } else if (isAbsoluteArtifactPath(path)) {
             void readReviewEvidenceBody({ ...request, artifactPath: path });
           } else {
             void readArtifact({ repositoryPath: request.repositoryPath, artifactPath: path });

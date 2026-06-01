@@ -1,5 +1,7 @@
 import { app, type IpcMain } from 'electron';
+import { readFile } from 'node:fs/promises';
 import { loadAgentManifest } from '../data-layer/agents/loader';
+import { createBoundCLICapabilities } from '../data-layer/acp/capabilities';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import type { BoundCLICapabilities, BoundCLINewSessionResult } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
@@ -41,14 +43,25 @@ export type RegisterAcpProbeIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   supervisorFactory?: () => Promise<AcpProbeSupervisor>;
+  capabilitiesAdapterPath?: string;
   now?: () => number;
   userDataPath?: string;
+};
+
+const loadCapabilitiesAdapter = async (adapterPath: string): Promise<BoundCLICapabilities> => {
+  const parsed = createBoundCLICapabilities(JSON.parse(await readFile(adapterPath, 'utf8')));
+  if (!parsed.ok) {
+    throw new Error(parsed.error.message);
+  }
+
+  return parsed.value;
 };
 
 export const registerAcpProbeIpc = ({
   ipcMain,
   logger,
   supervisorFactory,
+  capabilitiesAdapterPath = process.env.CONCIERGE_TEST_CAPABILITIES_ADAPTER,
   now = () => performance.now(),
   userDataPath = app.getPath('userData')
 }: RegisterAcpProbeIpcOptions): void => {
@@ -66,6 +79,16 @@ export const registerAcpProbeIpc = ({
       }
 
       logger.info({ channel: ACP_PROBE_BOUND_CLI_CHANNEL, context }, 'ipc handler invocation');
+      if (capabilitiesAdapterPath !== undefined && capabilitiesAdapterPath.length > 0) {
+        const capabilities = await loadCapabilitiesAdapter(capabilitiesAdapterPath);
+        const latencyMs = Math.round((now() - startedAt) * 1000) / 1000;
+        logger.info(
+          { channel: ACP_PROBE_BOUND_CLI_CHANNEL, context, success: true, latencyMs },
+          'ipc handler invocation'
+        );
+        return capabilities;
+      }
+
       const supervisor =
         supervisorFactory === undefined
           ? await (async () => {
