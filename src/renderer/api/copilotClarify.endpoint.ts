@@ -4,6 +4,7 @@ import { parseRendererCopilotClarifyAck, parseRendererStepStreamEvent, type Rend
 import { activityBusyChanged, recordActivity } from '../slices/activity';
 import { clarifyQuestionMalformed, stepCompleted, stepPending } from '../slices/steps';
 import {
+  clarifyNoQuestionsNeeded,
   clarifyQuestionsReceived,
   clarifyRunFailed,
   clarifyRunStarted,
@@ -102,6 +103,14 @@ export const copilotClarifyApi = api.injectEndpoints({
               queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify complete' }));
               // Genuine terminal: clarify committed. Questions-only "Clarify ready" passes
               // (no commitSha) are intermediate and intentionally keep the listener alive.
+              teardown();
+            } else if (questions.length === 0 && malformedQuestions.length === 0) {
+              // No commitSha and the agent emitted no question tables: it judged the
+              // spec already clear. This IS terminal for a next-run — clear clarifyRunning
+              // (otherwise the spinner hangs forever) and let the user Finish to commit a
+              // clarify:pass with empty answers.
+              queryApi.dispatch(clarifyNoQuestionsNeeded());
+              queryApi.dispatch(activityBusyChanged({ busy: false, status: 'No clarifications needed' }));
               teardown();
             } else {
               queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify ready' }));

@@ -121,6 +121,36 @@ describe('copilot clarify endpoint listener lifecycle (regression: UI freeze on 
     expect(unsubscribe).toHaveBeenCalledTimes(1);
   });
 
+  it('treats a pass with no commitSha and zero questions as a no-questions-needed terminal', async () => {
+    const capture: { listener?: (event: unknown) => void } = {};
+    const unsubscribe = vi.fn();
+    installConcierge(capture, unsubscribe);
+    const store = buildStore();
+
+    await store
+      .dispatch(api.endpoints.runClarify.initiate({ repositoryPath: '/repo', branch: 'spec/x', operation: 'next' }))
+      .unwrap();
+
+    expect(store.getState().session.clarifyRunning).toBe(true);
+
+    capture.listener?.({
+      type: 'done',
+      step: 'clarify',
+      sessionId: 'clarify-1',
+      status: 'pass',
+      summary: { questions: [], answers: [] }
+    });
+
+    const state = store.getState();
+    // clarifyNoQuestionsNeeded -> clears running, sets the flag.
+    expect(state.session.clarifyRunning).toBe(false);
+    expect(state.session.clarifyNoQuestionsNeeded).toBe(true);
+    expect(state.activity.busy).toBe(false);
+    expect(state.activity.currentStatus).toBe('No clarifications needed');
+    // Terminal for a no-questions next-run -> listener torn down.
+    expect(unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
   it('unsubscribes on a fail terminal', async () => {
     const capture: { listener?: (event: unknown) => void } = {};
     const unsubscribe = vi.fn();

@@ -9,6 +9,7 @@ import {
   selectSessionClarifyAnswers,
   selectSessionClarifyAskAnotherRunning,
   selectSessionClarifyCompleting,
+  selectSessionClarifyNoQuestionsNeeded,
   selectSessionClarifyCompletion,
   selectSessionClarifyFailureReason,
   selectSessionClarifyQuestions,
@@ -53,6 +54,7 @@ export const ClarifyStepContainer = (): React.ReactElement => {
       running={useAppSelector(selectSessionClarifyRunning)}
       askAnotherRunning={useAppSelector(selectSessionClarifyAskAnotherRunning)}
       completing={useAppSelector(selectSessionClarifyCompleting)}
+      noQuestionsNeeded={useAppSelector(selectSessionClarifyNoQuestionsNeeded)}
       canFinish={useAppSelector(selectSessionCanFinishClarify)}
       completion={useAppSelector(selectSessionClarifyCompletion)}
       failureReason={useAppSelector(selectSessionClarifyFailureReason)}

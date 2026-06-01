@@ -31,6 +31,7 @@ export const selectSessionClarifyActiveQuestionId = (state: RootState) => state.
 export const selectSessionClarifyRunning = (state: RootState) => state.session.clarifyRunning;
 export const selectSessionClarifyAskAnotherRunning = (state: RootState) => state.session.clarifyAskAnotherRunning;
 export const selectSessionClarifyCompleting = (state: RootState) => state.session.clarifyCompleting;
+export const selectSessionClarifyNoQuestionsNeeded = (state: RootState) => state.session.clarifyNoQuestionsNeeded;
 export const selectSessionClarifyCompletion = (state: RootState) => state.session.clarifyCompletion;
 export const selectSessionClarifyFailureReason = (state: RootState) => state.session.clarifyFailureReason;
 export const selectSessionPassiveStep = (step: PassiveStepName) => (state: RootState) => state.session.passiveSteps[step];
@@ -41,5 +42,9 @@ export const selectSessionCanFinishClarify = (state: RootState): boolean => {
   const allAnswered = questions
     .filter((question) => question.malformed !== true)
     .every((question) => (state.session.clarifyAnswers.entities[question.id]?.selectedChoiceKey ?? '').length > 0);
-  return questions.length > 0 && allAnswered && !hasMalformed && !state.session.clarifyRunning && !state.session.clarifyAskAnotherRunning && !state.session.clarifyCompleting;
+  const answerable = questions.length > 0 && allAnswered && !hasMalformed;
+  return (state.session.clarifyNoQuestionsNeeded || answerable)
+    && !state.session.clarifyRunning
+    && !state.session.clarifyAskAnotherRunning
+    && !state.session.clarifyCompleting;
 };

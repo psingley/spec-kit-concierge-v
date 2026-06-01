@@ -6,7 +6,12 @@ import {
   selectSessionModelId,
   selectSessionState
 } from './session.selectors';
-import sessionReducer, { sessionRestoredFromResume } from './session';
+import sessionReducer, {
+  clarifyNoQuestionsNeeded,
+  clarifyQuestionsReceived,
+  clarifyRunStarted,
+  sessionRestoredFromResume
+} from './session';
 
 describe('session slice', () => {
   it('hydrates specMarkdown + commit on resume so Specify shows complete with evidence', () => {
@@ -43,6 +48,7 @@ describe('session slice', () => {
       clarifyRunning: false,
       clarifyAskAnotherRunning: false,
       clarifyCompleting: false,
+      clarifyNoQuestionsNeeded: false,
       clarifyActiveQuestionId: null,
       clarifyQuestions: { ids: [], entities: {} },
       clarifyAnswers: { ids: [], entities: {} },
@@ -55,6 +61,37 @@ describe('session slice', () => {
         analyze: { step: 'analyze', sessionId: null, running: false, commitSha: null, failureReason: null, artifacts: [], milestones: [] }
       }
     });
+  });
+
+  it('clarifyNoQuestionsNeeded clears running flags and sets the flag', () => {
+    const running = sessionReducer(undefined, clarifyRunStarted({ sessionId: 's1', mode: 'next' }));
+    expect(running.clarifyRunning).toBe(true);
+
+    const state = sessionReducer(running, clarifyNoQuestionsNeeded());
+    expect(state.clarifyRunning).toBe(false);
+    expect(state.clarifyAskAnotherRunning).toBe(false);
+    expect(state.clarifyCompleting).toBe(false);
+    expect(state.clarifyNoQuestionsNeeded).toBe(true);
+  });
+
+  it('clarifyRunStarted (next) resets clarifyNoQuestionsNeeded to false', () => {
+    const flagged = sessionReducer(undefined, clarifyNoQuestionsNeeded());
+    expect(flagged.clarifyNoQuestionsNeeded).toBe(true);
+
+    const state = sessionReducer(flagged, clarifyRunStarted({ sessionId: 's1', mode: 'next' }));
+    expect(state.clarifyNoQuestionsNeeded).toBe(false);
+  });
+
+  it('clarifyQuestionsReceived resets clarifyNoQuestionsNeeded to false', () => {
+    const flagged = sessionReducer(undefined, clarifyNoQuestionsNeeded());
+    const state = sessionReducer(
+      flagged,
+      clarifyQuestionsReceived({
+        questions: [{ id: 'q1', position: 1, text: 'Q?', choices: [{ key: 'A', label: 'Alpha' }] }],
+        replace: true
+      })
+    );
+    expect(state.clarifyNoQuestionsNeeded).toBe(false);
   });
 
   it('exposes base selectors through RootState', () => {

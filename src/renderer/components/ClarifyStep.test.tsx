@@ -22,6 +22,7 @@ const renderStep = (
       running={false}
       askAnotherRunning={false}
       completing={false}
+      noQuestionsNeeded={false}
       canFinish={false}
       completion={null}
       failureReason={null}
@@ -63,5 +64,16 @@ describe('ClarifyStep auto-advance on answer select', () => {
 
     expect(onAnswerChange).toHaveBeenCalledWith('q1', { shortAnswer: 'custom' });
     expect(onActiveQuestionChange).not.toHaveBeenCalled();
+  });
+});
+
+describe('ClarifyStep no-clarifications-needed terminal state', () => {
+  it('renders the no-clarifications message and an enabled Finish, not the spinner', () => {
+    renderStep({ questions: [], activeQuestionId: null, noQuestionsNeeded: true, canFinish: true });
+
+    expect(screen.getByText(/the spec is already clear/i)).toBeTruthy();
+    expect(screen.queryByText('Clarifying...')).toBeNull();
+    const finish = screen.getByRole('button', { name: /finish/i });
+    expect((finish as HTMLButtonElement).disabled).toBe(false);
   });
 });

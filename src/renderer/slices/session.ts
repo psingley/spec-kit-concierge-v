@@ -82,6 +82,7 @@ export type SessionState = {
   clarifyRunning: boolean;
   clarifyAskAnotherRunning: boolean;
   clarifyCompleting: boolean;
+  clarifyNoQuestionsNeeded: boolean;
   clarifyActiveQuestionId: string | null;
   clarifyQuestions: EntityState<ClarifyQuestionRecord, string>;
   clarifyAnswers: EntityState<ClarifyAnswerRecord, string>;
@@ -117,6 +118,7 @@ export const sessionInitialState: SessionState = {
   clarifyRunning: false,
   clarifyAskAnotherRunning: false,
   clarifyCompleting: false,
+  clarifyNoQuestionsNeeded: false,
   clarifyActiveQuestionId: null,
   clarifyQuestions: clarifyQuestionsAdapter.getInitialState(),
   clarifyAnswers: clarifyAnswersAdapter.getInitialState(),
@@ -188,6 +190,7 @@ const sessionSlice = createSlice({
       if (action.payload.mode === 'next') {
         state.clarifyRunning = true;
         state.clarifyCompletion = null;
+        state.clarifyNoQuestionsNeeded = false;
       } else if (action.payload.mode === 'askAnother') {
         state.clarifyAskAnotherRunning = true;
       } else if (action.payload.mode === 'commit') {
@@ -211,6 +214,7 @@ const sessionSlice = createSlice({
       }
       state.clarifyRunning = false;
       state.clarifyAskAnotherRunning = false;
+      state.clarifyNoQuestionsNeeded = false;
       for (const question of incoming) {
         if (question.malformed !== true) {
           clarifyReasksAdapter.removeOne(state.clarifyReasks, question.id);
@@ -244,6 +248,15 @@ const sessionSlice = createSlice({
       state.clarifyAskAnotherRunning = false;
       state.clarifyCompleting = false;
       state.clarifyFailureReason = action.payload.reason;
+    },
+    clarifyNoQuestionsNeeded: (state) => {
+      // The clarify agent judged the spec sufficient and emitted no question
+      // tables. Clear the running flags (otherwise the spinner hangs forever)
+      // and flag the terminal so the UI can offer Finish with empty answers.
+      state.clarifyRunning = false;
+      state.clarifyAskAnotherRunning = false;
+      state.clarifyCompleting = false;
+      state.clarifyNoQuestionsNeeded = true;
     },
     passiveStepRunStarted: (state, action: PayloadAction<{ step: PassiveStepName; sessionId: string; modelId?: string | null }>) => {
       const record = state.passiveSteps[action.payload.step];
@@ -295,6 +308,7 @@ export const {
   clarifyActiveQuestionChanged,
   clarifyRunSucceeded,
   clarifyRunFailed,
+  clarifyNoQuestionsNeeded,
   passiveStepRunStarted,
   passiveStepRunProgressed,
   passiveStepRunSucceeded,

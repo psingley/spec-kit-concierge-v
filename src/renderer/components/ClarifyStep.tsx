@@ -9,6 +9,7 @@ export type ClarifyStepProps = {
   running: boolean;
   askAnotherRunning: boolean;
   completing: boolean;
+  noQuestionsNeeded: boolean;
   canFinish: boolean;
   completion: ClarifyCompletionSummary | null;
   failureReason: string | null;
@@ -27,6 +28,7 @@ export const ClarifyStep = ({
   running,
   askAnotherRunning,
   completing,
+  noQuestionsNeeded,
   canFinish,
   completion,
   failureReason,
@@ -87,6 +89,10 @@ export const ClarifyStep = ({
             <div className="spinner" data-vd-role="spinner" />
             <strong>Clarifying...</strong>
           </div>
+        ) : noQuestionsNeeded ? (
+          <div className="clarify-card empty" role="status" aria-live="polite">
+            <p>No clarifications needed - the spec is already clear. Finish to continue.</p>
+          </div>
         ) : activeQuestion === null ? (
           <div className="clarify-card empty">
             <p>Clarify is ready after Specify completes.</p>
@@ -131,7 +137,7 @@ export const ClarifyStep = ({
 
         <div className="advance-row">
           <span role="status" aria-live="polite">
-            {askAnotherRunning ? 'Asking another question...' : completing ? 'Finishing Clarify...' : canFinish ? 'Ready to finish.' : 'Answer every visible question to finish.'}
+            {askAnotherRunning ? 'Asking another question...' : completing ? 'Finishing Clarify...' : noQuestionsNeeded ? 'No clarifications needed - Finish to continue.' : canFinish ? 'Ready to finish.' : 'Answer every visible question to finish.'}
           </span>
           <button type="button" className="btn primary" disabled={!canFinish} onClick={onFinish}>Finish <Ico.Right size={13} /></button>
         </div>
