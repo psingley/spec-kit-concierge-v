@@ -104,31 +104,63 @@ const segmentMessage = (message: string): Segment[] => {
   return segments;
 };
 
+// A prose line is eligible to hold question text unless it is a table row or
+// separator. The agent's chatter / label boilerplate is stripped *within* the
+// line by stripQuestionChatter (see below) rather than rejected wholesale, so
+// that a line mixing chatter + the real question still yields the question.
 const isQuestionTextLine = (line: string): boolean => {
   const trimmed = line.trim();
   if (trimmed.length === 0) {
     return false;
   }
-  if (isTableRow(trimmed)) {
-    return false;
-  }
-  if (/^(\*\*)?(Recommended|Suggested)\b/i.test(trimmed)) {
-    return false;
-  }
-  if (/^Format\s*:/i.test(trimmed)) {
-    return false;
-  }
-  if (/^You can reply/i.test(trimmed) || /^You can accept/i.test(trimmed)) {
+  if (isTableRow(trimmed) || isTableSeparator(trimmed)) {
     return false;
   }
   return true;
 };
 
+// Removes known agent boilerplate from within a prose line, leaving the real
+// question text. The agent sometimes jams an instruction sentence and/or a bold
+// label onto the same line as the question, e.g.
+//   You can reply with the option letter.**Clarification 1:** When ... authoritative?
+// A line that is purely chatter strips to ''.
+const stripQuestionChatter = (line: string): string => {
+  let result = line.trim();
+
+  // 1) Strip a leading known instruction sentence (up to and including its
+  //    terminating period). Only these specific boilerplate prefixes.
+  const instructionPrefix =
+    /^(?:You can reply\b[^.]*\.|You can accept\b[^.]*\.|Reply with\b[^.]*\.|Format\s*:\s*Short answer\b[^.]*\.)\s*/i;
+  while (instructionPrefix.test(result)) {
+    result = result.replace(instructionPrefix, '').trim();
+  }
+
+  // 2) Strip a leading bold/plain label such as **Clarification 1:** /
+  //    **Clarification:** / **Recommended:** / **Suggested:** when it prefixes
+  //    the question text.
+  const labelPrefix =
+    /^(?:\*\*)?\s*(?:Clarification(?:\s+\d+)?|Recommended|Suggested)\s*:\s*(?:\*\*)?\s*/i;
+  result = result.replace(labelPrefix, '').trim();
+
+  // 3) Strip remaining markdown emphasis and trim.
+  return stripMarkdown(result);
+};
+
 const extractQuestionText = (proseLines: string[]): string => {
-  // The question is the LAST eligible prose line before the table / format marker,
-  // which is where the agent places the actual question after its reasoning.
-  const candidates = proseLines.filter(isQuestionTextLine).map(stripMarkdown);
-  return candidates.length > 0 ? candidates[candidates.length - 1]! : '';
+  // Strip chatter from each eligible prose line first, dropping any line that
+  // strips to empty (pure chatter / a bare Recommended|Suggested label). Then
+  // prefer the last line ending in '?' (the actual question); fall back to the
+  // last non-empty stripped line otherwise.
+  const candidates = proseLines.filter(isQuestionTextLine).map(stripQuestionChatter).filter((line) => line.length > 0);
+  if (candidates.length === 0) {
+    return '';
+  }
+  for (let i = candidates.length - 1; i >= 0; i -= 1) {
+    if (candidates[i]!.endsWith('?')) {
+      return candidates[i]!;
+    }
+  }
+  return candidates[candidates.length - 1]!;
 };
 
 const parseChoices = (segment: Segment): Array<{ key: string; label: string }> => {

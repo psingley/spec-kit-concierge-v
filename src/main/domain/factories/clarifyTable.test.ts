@@ -128,4 +128,75 @@ For companion travelers on a Platinum-tier booking, should the change apply to e
     expect(result.questions).toHaveLength(0);
     expect(result.malformedQuestions).toHaveLength(0);
   });
+
+  it('extracts the question when the agent jams chatter + a bold label onto the question line', () => {
+    const message = `You can reply with the option letter.**Clarification 1:** When git history contains multiple valid \`Concierge-Step: <step>:pass\` trailers for the same step, which proof should Review treat as authoritative?
+
+| Option | Behavior |
+|--------|----------|
+| A | Most recent trailer wins |
+| B | First trailer wins |
+| C | All must agree or fail |
+| D | Highest commit topologically wins |
+| E | Manual review required |
+`;
+
+    const result = parseClarifyTableMessage(message);
+
+    expect(result.malformedQuestions).toHaveLength(0);
+    expect(result.questions).toHaveLength(1);
+    const question = result.questions[0]!;
+    expect(question.text).toBe(
+      'When git history contains multiple valid Concierge-Step: <step>:pass trailers for the same step, which proof should Review treat as authoritative?'
+    );
+    expect(question.choices).toHaveLength(5);
+    expect(question.choices.map((c) => c.key)).toEqual(['A', 'B', 'C', 'D', 'E']);
+  });
+
+  it('strips a bold **Clarification 2:** label prefix from the question text', () => {
+    const message = `**Clarification 2:** Which retry policy applies to transient ledger write failures?
+
+| Option | Description |
+|--------|-------------|
+| A | Exponential backoff |
+| B | Fixed interval |
+`;
+
+    const result = parseClarifyTableMessage(message);
+
+    expect(result.questions).toHaveLength(1);
+    expect(result.questions[0]!.text).toBe('Which retry policy applies to transient ledger write failures?');
+  });
+
+  it('skips a pure-chatter prose line and uses a real question line from elsewhere', () => {
+    const message = `Which fare class should the upgrade target?
+You can reply with the option letter.
+
+| Option | Description |
+|--------|-------------|
+| A | Business |
+| B | First |
+`;
+
+    const result = parseClarifyTableMessage(message);
+
+    expect(result.questions).toHaveLength(1);
+    expect(result.questions[0]!.text).toBe('Which fare class should the upgrade target?');
+  });
+
+  it('flags empty-question-text when only chatter remains after stripping', () => {
+    const message = `You can reply with the option letter.
+
+| Option | Description |
+|--------|-------------|
+| A | Business |
+| B | First |
+`;
+
+    const result = parseClarifyTableMessage(message);
+
+    expect(result.questions).toHaveLength(0);
+    expect(result.malformedQuestions).toHaveLength(1);
+    expect(result.malformedQuestions[0]!.malformationCategory).toBe('empty-question-text');
+  });
 });
