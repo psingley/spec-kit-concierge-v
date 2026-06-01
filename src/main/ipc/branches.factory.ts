@@ -41,8 +41,12 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
     if (!branch.ok) return branch;
     if (!label.ok) return label;
     if (!restoredStates.ok) return restoredStates;
-    if (!branch.value.startsWith('spec/') || branch.value.includes('..')) {
-      return invalid('InvalidBranchesPayload', 'branch must be a safe spec/* ref', '$.sessions[].branch');
+    // Accept legacy spec/* refs and spec-kit's NNNN-slug feature branches
+    // (e.g. 014-remove-faux-controls). Still reject path traversal.
+    const isLegacySpecRef = branch.value.startsWith('spec/');
+    const isSpecKitFeatureBranch = /^\d{3,4}-/.test(branch.value);
+    if ((!isLegacySpecRef && !isSpecKitFeatureBranch) || branch.value.includes('..')) {
+      return invalid('InvalidBranchesPayload', 'branch must be a safe spec/* or NNNN-slug ref', '$.sessions[].branch');
     }
     const restored = {} as Record<StepName, StepState>;
     for (const step of stepNames) {

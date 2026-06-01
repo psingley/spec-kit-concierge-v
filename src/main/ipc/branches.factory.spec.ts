@@ -10,6 +10,10 @@ describe('branches IPC factory', () => {
     expect(createBranchSessionsRequest(request)).toEqual({ ok: true, value: request });
     expect(createBranchSessionsResponse(response)).toEqual({ ok: true, value: response });
   });
+  it('accepts spec-kit NNNN-slug feature branches', () => {
+    const speckitResponse = { sessions: [{ branch: '014-remove-faux-controls', label: '014-remove-faux-controls', restoredStates }] };
+    expect(createBranchSessionsResponse(speckitResponse)).toEqual({ ok: true, value: speckitResponse });
+  });
   it('rejects empty objects', () => {
     expect(createBranchSessionsRequest({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
     expect(createBranchSessionsResponse({})).toMatchObject({ ok: false, error: { name: 'InvalidBranchesPayload' } });
