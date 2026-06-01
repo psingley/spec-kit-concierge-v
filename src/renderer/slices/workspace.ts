@@ -127,6 +127,13 @@ const workspaceSlice = createSlice({
       state.activeStep = 'clarify';
       state.maxReachedStep = 'clarify';
       state.viewedStep = 'specify';
+    },
+    clarifyCompletedInWorkspace: (state) => {
+      state.activeStep = 'plan';
+      state.maxReachedStep = 'plan';
+      // Keep the user on the clarify done view; they click Plan in the stepper
+      // to continue (mirrors specifyCompletedInWorkspace keeping viewedStep).
+      state.viewedStep = 'clarify';
     }
   },
   extraReducers: () => {}
@@ -139,7 +146,8 @@ export const {
   workspaceEntered,
   branchUpdated,
   workspaceStepViewed,
-  specifyCompletedInWorkspace
+  specifyCompletedInWorkspace,
+  clarifyCompletedInWorkspace
 } = workspaceSlice.actions;
 export const workspaceReducer = workspaceSlice.reducer;
 export default workspaceReducer;

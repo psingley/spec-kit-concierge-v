@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ClarifyStep } from './ClarifyStep';
-import type { ClarifyQuestionRecord } from '../slices/session';
+import type { ClarifyCompletionSummary, ClarifyQuestionRecord } from '../slices/session';
 
 const twoQuestions: ClarifyQuestionRecord[] = [
   { id: 'q1', position: 1, text: 'First?', choices: [{ key: 'A', label: 'Alpha' }, { key: 'B', label: 'Beta' }] },
@@ -64,6 +64,40 @@ describe('ClarifyStep auto-advance on answer select', () => {
 
     expect(onAnswerChange).toHaveBeenCalledWith('q1', { shortAnswer: 'custom' });
     expect(onActiveQuestionChange).not.toHaveBeenCalled();
+  });
+});
+
+describe('ClarifyStep completion done-view (regression: re-Finish loop after commit)', () => {
+  const completion: ClarifyCompletionSummary = {
+    artifactPath: 'spec.md',
+    commitSha: 'abcdef1234567890',
+    questions: [{ id: 'q1', text: 'First?', position: 1 }],
+    answers: [{ questionId: 'q1', selectedChoiceKey: 'A', shortAnswer: '' }]
+  };
+
+  it('renders the Clarify complete done-view with the committed evidence when completion is set', () => {
+    renderStep({ completion });
+
+    expect(screen.getByRole('heading', { name: /clarify complete/i })).toBeTruthy();
+    // Short-form commit sha evidence.
+    expect(screen.getByText(/abcdef1/)).toBeTruthy();
+  });
+
+  it('hides the Finish button and the question fieldset when completion is set', () => {
+    renderStep({ completion, canFinish: true });
+
+    expect(screen.queryByRole('button', { name: /finish/i })).toBeNull();
+    // No answer fieldset/radio in the done state.
+    expect(screen.queryByDisplayValue('A')).toBeNull();
+    expect(screen.queryByRole('group', { name: /choose one answer/i })).toBeNull();
+  });
+
+  it('still renders the question form (with Finish) when completion is null and questions are present', () => {
+    renderStep({ completion: null, activeQuestionId: 'q1' });
+
+    expect(screen.queryByText(/clarify complete/i)).toBeNull();
+    expect(screen.getByDisplayValue('A')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /finish/i })).toBeTruthy();
   });
 });
 

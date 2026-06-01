@@ -84,7 +84,16 @@ export const ClarifyStep = ({
           ))}
         </div>
 
-        {running ? (
+        {completion !== null ? (
+          <div className="clarify-card complete" role="status" aria-live="polite">
+            <p className="eyebrow">Step 2 complete</p>
+            <h3>Clarify complete</h3>
+            <p>
+              Committed {completion.artifactPath} at <span className="mono">{completion.commitSha.slice(0, 7)}</span>
+              {completion.answers.length > 0 ? ` (${completion.answers.length} answered).` : '.'}
+            </p>
+          </div>
+        ) : running ? (
           <div className="clarify-card" role="status" aria-live="polite">
             <div className="spinner" data-vd-role="spinner" />
             <strong>Clarifying...</strong>
@@ -135,15 +144,18 @@ export const ClarifyStep = ({
           </div>
         )}
 
-        <div className="advance-row">
-          <span role="status" aria-live="polite">
-            {askAnotherRunning ? 'Asking another question...' : completing ? 'Finishing Clarify...' : noQuestionsNeeded ? 'No clarifications needed - Finish to continue.' : canFinish ? 'Ready to finish.' : 'Answer every visible question to finish.'}
-          </span>
-          <button type="button" className="btn primary" disabled={!canFinish} onClick={onFinish}>Finish <Ico.Right size={13} /></button>
-        </div>
+        {completion === null ? (
+          <div className="advance-row">
+            <span role="status" aria-live="polite">
+              {askAnotherRunning ? 'Asking another question...' : completing ? 'Finishing Clarify...' : noQuestionsNeeded ? 'No clarifications needed - Finish to continue.' : canFinish ? 'Ready to finish.' : 'Answer every visible question to finish.'}
+            </span>
+            <button type="button" className="btn primary" disabled={!canFinish} onClick={onFinish}>Finish <Ico.Right size={13} /></button>
+          </div>
+        ) : (
+          <p className="advance-row" role="status">Clarify complete - select Plan to continue.</p>
+        )}
       </div>
 
-      {completion !== null ? <p role="status">Clarify pass: {completion.artifactPath} at {completion.commitSha}</p> : null}
       {failureReason !== null ? <p role="alert">{failureReason}</p> : null}
     </section>
   );

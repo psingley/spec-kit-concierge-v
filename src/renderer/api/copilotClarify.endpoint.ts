@@ -3,6 +3,7 @@ import { parsingError } from './endpointUtils';
 import { parseRendererCopilotClarifyAck, parseRendererStepStreamEvent, type RendererCopilotClarifyAck } from './copilotClarify.factory';
 import { activityBusyChanged, recordActivity } from '../slices/activity';
 import { clarifyQuestionMalformed, stepCompleted, stepPending } from '../slices/steps';
+import { clarifyCompletedInWorkspace } from '../slices/workspace';
 import {
   clarifyNoQuestionsNeeded,
   clarifyQuestionsReceived,
@@ -100,6 +101,7 @@ export const copilotClarifyApi = api.injectEndpoints({
                 })) ?? []
               }));
               queryApi.dispatch(stepCompleted({ step: 'clarify', commitSha: parsed.value.commitSha, trailer: 'Concierge-Step: clarify:pass' }));
+              queryApi.dispatch(clarifyCompletedInWorkspace());
               queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Clarify complete' }));
               // Genuine terminal: clarify committed. Questions-only "Clarify ready" passes
               // (no commitSha) are intermediate and intentionally keep the listener alive.

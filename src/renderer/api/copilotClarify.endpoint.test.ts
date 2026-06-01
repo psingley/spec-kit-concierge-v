@@ -4,6 +4,7 @@ import { api } from './index';
 import { activityReducer } from '../slices/activity';
 import { sessionReducer } from '../slices/session';
 import { stepsReducer } from '../slices/steps';
+import { workspaceReducer } from '../slices/workspace';
 
 const buildStore = () =>
   configureStore({
@@ -11,7 +12,8 @@ const buildStore = () =>
       [api.reducerPath]: api.reducer,
       activity: activityReducer,
       session: sessionReducer,
-      steps: stepsReducer
+      steps: stepsReducer,
+      workspace: workspaceReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware)
   });
@@ -75,6 +77,9 @@ describe('copilot clarify endpoint listener lifecycle (regression: UI freeze on 
     expect(state.session.clarifyRunning).toBe(false);
     // stepCompleted('clarify')
     expect(state.steps.entities.clarify?.status).toBe('complete');
+    // clarifyCompletedInWorkspace -> stepper advances + Plan unlocks.
+    expect(state.workspace.activeStep).toBe('plan');
+    expect(state.workspace.maxReachedStep).toBe('plan');
     // activityBusyChanged(false)
     expect(state.activity.busy).toBe(false);
     expect(state.activity.currentStatus).toBe('Clarify complete');

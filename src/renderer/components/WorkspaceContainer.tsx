@@ -12,27 +12,31 @@ import { ReviewStepContainer } from './ReviewStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper, stepOrder } from './Stepper';
 import { TitlebarContainer } from './TitlebarContainer';
-import { selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
+import { selectSessionClarifyCompletion, selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 
 export const WorkspaceContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const viewedStep = useAppSelector(selectWorkspaceViewedStep);
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
+  const clarifyCompletion = useAppSelector(selectSessionClarifyCompletion);
   const passiveSteps = useAppSelector(selectSessionPassiveSteps);
   const showActivity = useAppSelector(selectUiShowActivity);
   const activitySide = useAppSelector(selectPreferencesActivitySide);
   const bodyClassName = `workspace-body ${!showActivity || activitySide === 'hidden' ? 'no-activity' : ''}${showActivity && activitySide === 'left' ? ' activity-left' : ''}`;
+  const clarifyComplete = clarifyCompletion !== null;
   const states = stepOrder.reduce((acc, step) => {
     acc[step] = step === 'specify'
       ? (specMarkdown.length > 0 ? 'complete' : 'pending')
       : step === 'clarify' && specMarkdown.length > 0
-        ? 'pending'
-        : step === 'plan' || step === 'tasks' || step === 'analyze'
-          ? (passiveSteps[step].commitSha !== null ? 'complete' : passiveSteps[step].running ? 'pending' : 'not_available')
-          : step === 'review' && passiveSteps.analyze.commitSha !== null
-            ? 'pending'
-          : 'not_available';
+        ? (clarifyComplete ? 'complete' : 'pending')
+        : step === 'plan'
+          ? (passiveSteps.plan.commitSha !== null ? 'complete' : passiveSteps.plan.running || clarifyComplete ? 'pending' : 'not_available')
+          : step === 'tasks' || step === 'analyze'
+            ? (passiveSteps[step].commitSha !== null ? 'complete' : passiveSteps[step].running ? 'pending' : 'not_available')
+            : step === 'review' && passiveSteps.analyze.commitSha !== null
+              ? 'pending'
+            : 'not_available';
     return acc;
   }, {} as Record<StepName, StepState>);
   return (

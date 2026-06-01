@@ -10,7 +10,7 @@ import {
   selectWorkspaceDirty,
   selectWorkspaceState
 } from './workspace.selectors';
-import workspaceReducer, { branchUpdated, repositoryBrowseReset, repositorySelected, workspaceEntered, workspaceInitialState } from './workspace';
+import workspaceReducer, { branchUpdated, clarifyCompletedInWorkspace, repositoryBrowseReset, repositorySelected, workspaceEntered, workspaceInitialState } from './workspace';
 
 describe('workspace slice', () => {
   it('updates the branch when the target repo HEAD changes after a step', () => {
@@ -116,6 +116,18 @@ describe('workspace slice', () => {
 
     expect(next.viewedStep).toBe('review');
     expect(next.activeStep).toBe('review');
+  });
+
+  it('clarifyCompletedInWorkspace advances active/maxReached to plan and keeps the user on the clarify done view', () => {
+    const entered = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({ repo: { id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' }, branch: 'spec/x' })
+    );
+    const next = workspaceReducer(entered, clarifyCompletedInWorkspace());
+
+    expect(next.activeStep).toBe('plan');
+    expect(next.maxReachedStep).toBe('plan');
+    expect(next.viewedStep).toBe('clarify');
   });
 
   it('exposes base selectors through RootState', () => {
