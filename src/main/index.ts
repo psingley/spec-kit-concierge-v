@@ -16,6 +16,7 @@ import { registerGitIpc } from './ipc/git';
 import { registerEnsureLocalRepoIpc } from './ipc/ensureLocalRepo';
 import { registerPreferencesIpc } from './ipc/preferences';
 import { registerReposIpc } from './ipc/repos';
+import { registerStartSessionIpc } from './ipc/startSession';
 import { registerSessionIpc } from './ipc/session';
 import { registerStepsIpc } from './ipc/steps';
 import { registerTasksDetailIpc } from './ipc/tasksDetail';
@@ -60,6 +61,7 @@ app.whenReady().then(async () => {
   registerWorkspaceIpc({ ipcMain, logger });
   registerGitIpc({ ipcMain, logger });
   registerReposIpc({ ipcMain, logger });
+  registerStartSessionIpc({ ipcMain, logger });
   registerEnsureLocalRepoIpc({ ipcMain, logger, documentsRoot: app.getPath('documents') });
   registerBranchesIpc({ ipcMain, logger });
   registerArtifactsIpc({ ipcMain, logger });

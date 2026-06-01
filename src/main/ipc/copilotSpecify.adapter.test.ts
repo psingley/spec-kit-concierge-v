@@ -88,7 +88,8 @@ const run = (
   modelId: string | undefined,
   onLine: ((line: string) => void) | undefined,
   spawnFn: SpawnAdapter,
-  killSpy?: (pid: number) => void
+  killSpy?: (pid: number) => void,
+  branchName?: string
 ) =>
   runSpecifyPrintMode(
     binary,
@@ -100,6 +101,7 @@ const run = (
     spawnFn,
     FAKE_UUID,
     FAKE_LOGDIR,
+    branchName,
     killSpy
   );
 
@@ -189,6 +191,33 @@ describe('runSpecifyPrintMode spawn argv', () => {
 
     const [, , opts] = (spawnFn as ReturnType<typeof vi.fn>).mock.calls[0] as [string, string[], { cwd: string }];
     expect(opts.cwd).toBe('/target/repo');
+  });
+
+  it('sets env.GIT_BRANCH_NAME to the pre-allocated branch so spec-kit reuses it', async () => {
+    const spawnFn = vi.fn(() => makeFakeChild({ stdoutLines: [resultLine(0)] })) as unknown as SpawnAdapter;
+
+    await run('copilot', [], 'my feature', '/target/repo', undefined, undefined, spawnFn, undefined, '003-add-dark-mode');
+
+    const [, , opts] = (spawnFn as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      string[],
+      { env: Record<string, string | undefined> }
+    ];
+    expect(opts.env.GIT_BRANCH_NAME).toBe('003-add-dark-mode');
+  });
+
+  it('does NOT inject GIT_BRANCH_NAME when no branch is provided', async () => {
+    const spawnFn = vi.fn(() => makeFakeChild({ stdoutLines: [resultLine(0)] })) as unknown as SpawnAdapter;
+    const before = process.env.GIT_BRANCH_NAME;
+
+    await run('copilot', [], 'my feature', '/target/repo', undefined, undefined, spawnFn);
+
+    const [, , opts] = (spawnFn as ReturnType<typeof vi.fn>).mock.calls[0] as [
+      string,
+      string[],
+      { env: Record<string, string | undefined> }
+    ];
+    expect(opts.env.GIT_BRANCH_NAME).toBe(before);
   });
 });
 

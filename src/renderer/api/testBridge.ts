@@ -44,7 +44,8 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
       list: vi.fn()
     },
     repo: {
-      ensureLocal: vi.fn()
+      ensureLocal: vi.fn(),
+      startSession: vi.fn()
     },
     branches: {
       sessions: vi.fn()

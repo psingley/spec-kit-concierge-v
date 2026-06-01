@@ -223,6 +223,7 @@ export const runSpecifyPrintMode = (
   spawnFn: SpawnAdapter,
   copilotSessionId: string,
   logDir: string,
+  branchName: string | undefined,
   killProcessTree: KillProcessTree = defaultKillProcessTree
 ): Promise<SpecifyRunOutcome> => {
   const args = [
@@ -235,8 +236,15 @@ export const runSpecifyPrintMode = (
     '-p',
     prompt
   ];
+  // GIT_BRANCH_NAME forces spec-kit's before_specify hook to REUSE the
+  // app-pre-created worktree branch instead of generating a second one
+  // (ADR-0016). Only set when known; otherwise inherit the plain env.
+  const env =
+    branchName !== undefined && branchName.length > 0
+      ? { ...process.env, GIT_BRANCH_NAME: branchName }
+      : process.env;
   return new Promise<SpecifyRunOutcome>((resolve, reject) => {
-    const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false, detached: true });
+    const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false, detached: true, env });
 
     let failureDetail: string | undefined;
     let settled = false;
@@ -381,7 +389,8 @@ async (request) => {
     request.onUpdate,
     spawnFn,
     request.copilotSessionId,
-    request.logDir
+    request.logDir,
+    request.branch
   );
   // Completion binding: copilot's authoritative end-of-turn outcome keyed by our
   // copilot session id (ids/usage only — no PII).

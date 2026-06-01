@@ -3,6 +3,7 @@ import { branchesApi } from '../api/branches.endpoint';
 import { ensureLocalRepoApi } from '../api/ensureLocalRepo.endpoint';
 import { gitApi } from '../api/git.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
+import { startSessionApi } from '../api/startSession.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { stepsRestoredFromSession } from '../slices/steps';
 import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type BranchSession, type RepositorySummary } from '../slices/workspace';
@@ -26,8 +27,8 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     { repositoryPath: localPath ?? '' },
     { skip: localPath === null }
   );
-  const [resetToMain] = gitApi.useResetToMainMutation();
   const [checkoutBranch] = gitApi.useCheckoutBranchMutation();
+  const [startSession] = startSessionApi.useStartSessionMutation();
 
   useEffect(() => {
     if (branchSessions.data !== undefined) {
@@ -52,14 +53,17 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     });
   };
 
-  // "Start a new session": reset to a clean default branch from origin, then hand
-  // off to spec-kit (which creates its OWN branch). The app does NOT pre-create a
-  // spec/draft-* branch here.
+  // "Start a new session": pre-create an isolated git worktree on a freshly
+  // allocated branch (ADR-0016), then enter the workspace pointed at the WORKTREE
+  // path so all downstream git + spec-kit spawns run there. spec-kit reuses the
+  // pre-created branch via GIT_BRANCH_NAME — no destructive shared-dir reset.
   const startNew = (repo: RepositorySummary): void => {
     if (localPath === null) return;
-    void resetToMain({ repositoryPath: localPath, defaultBranch: repo.defaultBranch })
+    void startSession({ clonePath: localPath, defaultBranch: repo.defaultBranch, description: 'new session' })
       .unwrap()
-      .then((result) => dispatch(workspaceEntered({ repo: { ...repo, path: localPath }, branch: result.branch })))
+      .then((result) =>
+        dispatch(workspaceEntered({ repo: { ...repo, path: result.worktreePath }, branch: result.branch }))
+      )
       .catch(() => undefined);
   };
 

@@ -64,7 +64,8 @@ contextBridge.exposeInMainWorld('concierge', {
     list: (request: unknown) => ipcRenderer.invoke('repos:list', request) as Promise<unknown>
   },
   repo: {
-    ensureLocal: (request: unknown) => ipcRenderer.invoke('repo:ensureLocal', request) as Promise<unknown>
+    ensureLocal: (request: unknown) => ipcRenderer.invoke('repo:ensureLocal', request) as Promise<unknown>,
+    startSession: (request: unknown) => ipcRenderer.invoke('repo:startSession', request) as Promise<unknown>
   },
   branches: {
     sessions: (request: unknown) => ipcRenderer.invoke('branches:sessions', request) as Promise<unknown>
