@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { spawn as nodeSpawn } from 'node:child_process';
 import type { SpawnOptions, ChildProcess } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { mkdir } from 'node:fs/promises';
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
@@ -26,11 +28,32 @@ import {
 
 // SpawnAdapter mirrors the subset of node:child_process.spawn used by the
 // print-mode adapter, injected so tests can stub it without mocking the module.
+// `pid` is needed to reap the detached process group on completion.
 export type SpawnAdapter = (
   command: string,
   args: string[],
   options: SpawnOptions
-) => Pick<ChildProcess, 'stdout' | 'stderr' | 'on'>;
+) => Pick<ChildProcess, 'stdout' | 'stderr' | 'on' | 'pid'>;
+
+// Reaps a detached process group by its leader pid. Injected so tests can spy
+// on the negative-pid kill without touching real OS processes. Defaults to a
+// SIGTERM-then-SIGKILL sweep of the whole group (negative pid = group).
+export type KillProcessTree = (pid: number) => void;
+
+const defaultKillProcessTree: KillProcessTree = (pid) => {
+  try {
+    process.kill(-pid, 'SIGTERM');
+  } catch {
+    // Group may already be gone — reaping is best-effort and idempotent.
+  }
+  setTimeout(() => {
+    try {
+      process.kill(-pid, 'SIGKILL');
+    } catch {
+      // Already reaped.
+    }
+  }, 2000).unref?.();
+};
 
 export const COPILOT_SPECIFY_CHANNEL = 'copilot:specify';
 export const COPILOT_SPECIFY_EVENT_CHANNEL = 'copilot:specify:event';
@@ -40,6 +63,11 @@ export type SpecifyAgentAdapter = (
   request: CopilotSpecifyRequest & {
     sessionId: string;
     featureDir: string;
+    // Real RFC-4122 v4 UUID handed to copilot via --session-id (the Concierge
+    // sessionId is not a valid UUID and copilot rejects it — see the handler).
+    copilotSessionId: string;
+    // Per-run directory handed to copilot via --log-dir, keyed by Concierge id.
+    logDir: string;
     // Called with each stdout line emitted by the copilot print-mode process.
     onUpdate?: (line: string) => void;
   }
@@ -106,22 +134,85 @@ const FAILURE_MARKERS = ['Skill not found', 'error:', 'Error:'];
 const containsFailureMarker = (text: string): boolean =>
   FAILURE_MARKERS.some((marker) => text.includes(marker));
 
+// A single parsed JSONL event from copilot's --output-format json stream.
+type CopilotJsonEvent = Record<string, unknown> & { type?: unknown };
+
+// The authoritative terminal event copilot emits at end-of-turn under
+// --output-format json: { type: 'result', sessionId, exitCode, usage, ... }.
+type CopilotResultEvent = CopilotJsonEvent & {
+  type: 'result';
+  sessionId?: string;
+  exitCode?: number;
+  usage?: unknown;
+  error?: unknown;
+};
+
+const isResultEvent = (event: CopilotJsonEvent): event is CopilotResultEvent =>
+  event.type === 'result';
+
+// What runSpecifyPrintMode resolves with so callers can log copilot's
+// authoritative end-of-turn outcome (exitCode/usage) for traceability.
+export type SpecifyRunOutcome = {
+  exitCode: number;
+  usage?: unknown;
+  // copilot's own session id echoed in the result event (should equal ours).
+  copilotSessionId?: string;
+};
+
+// Best-effort: pull a human-readable string out of one JSONL event for the
+// activity stream. Falls back to the event type so the renderer still shows
+// meaningful progress ("Streaming specify output") rather than raw JSON.
+const readableFromEvent = (event: CopilotJsonEvent): string | undefined => {
+  const text = event.text;
+  if (typeof text === 'string' && text.trim().length > 0) {
+    return text.trim();
+  }
+  const message = event.message;
+  if (typeof message === 'string' && message.trim().length > 0) {
+    return message.trim();
+  }
+  // Assistant turns commonly carry { content: [{ type:'text', text }] } or a
+  // nested message object — surface the first text fragment we can find.
+  if (isRecord(message)) {
+    const nestedText = message.text ?? message.content;
+    if (typeof nestedText === 'string' && nestedText.trim().length > 0) {
+      return nestedText.trim();
+    }
+  }
+  if (typeof event.type === 'string' && event.type.length > 0) {
+    return event.type;
+  }
+  return undefined;
+};
+
 // Spawn copilot in print-mode with --agent flag (Option D — GitHub's documented
-// deterministic agent-pinning pattern).
+// deterministic agent-pinning pattern), hardened for the lingering-MCP-tree
+// problem.
 //
-// Argv: copilot --agent speckit.specify [--model <id>] --allow-all-tools -p "<desc>"
+// Argv: copilot --agent speckit.specify [--model <id>] --allow-all-tools
+//         --output-format json --session-id <uuid> --log-dir <perRunDir> -p "<desc>"
 //   --agent speckit.specify  → pins .github/agents/speckit.specify.agent.md by filename
+//   --output-format json     → JSONL stream; the terminal { type:'result' } event
+//                              carries the authoritative { sessionId, exitCode, usage }
+//   --session-id <uuid>      → real RFC-4122 v4 UUID so copilot's session state is
+//                              addressable by our key (Concierge id is NOT a valid UUID)
+//   --log-dir <perRunDir>    → copilot logs land in a dir keyed by the Concierge id
 //   -p "<desc>"              → raw feature description becomes $ARGUMENTS in the agent
 //   cwd = repositoryPath     → agent file resolution is relative to the target repo
 //
-// Live-unverified assumptions (user to smoke-test):
-//   1. Dotted --agent name `speckit.specify` resolves correctly (docs show hyphenated
-//      examples; verify `copilot --agent speckit.specify -p "test"` in the target repo).
-//   2. --output-format json is confirmed in --help (JSONL, one JSON object per line).
-//      Forwarding as raw lines; if JSON, upstream consumers see structured text.
-//   3. copilot -p exits non-zero when the agent workflow fails.
-//   4. spec-kit's agent writes .specify/feature.json identically via --agent as it
-//      does via interactive mode (resolveFeatureDir depends on this).
+// Resolution model:
+//   • The `result` event is authoritative end-of-turn — resolve/reject on it
+//     IMMEDIATELY (exitCode 0 → resolve, else reject) without waiting for 'close'.
+//     'close' is laggy: lingering MCP-server grandchildren inherit the agent's
+//     stdio and don't close it when the turn ends, delaying/blocking 'close'.
+//   • If 'close' fires WITHOUT a result event ever arriving, fall back to the
+//     exit code so we never hang when json output is absent.
+//   • child.on('error') (spawn failure) always rejects.
+//   • Failure-marker scan stays as a secondary signal.
+//
+// Reaping: the child is spawned detached (new process group) so the whole tree
+// shares its PGID; on completion we kill the negative pid to sweep the lingering
+// MCP grandchildren. We do NOT unref() — we manage the child's lifetime here.
 export const runSpecifyPrintMode = (
   binary: string,
   launchArgs: string[],
@@ -129,24 +220,94 @@ export const runSpecifyPrintMode = (
   repositoryPath: string,
   modelId: string | undefined,
   onLine: ((line: string) => void) | undefined,
-  spawnFn: SpawnAdapter
-): Promise<void> => {
+  spawnFn: SpawnAdapter,
+  copilotSessionId: string,
+  logDir: string,
+  killProcessTree: KillProcessTree = defaultKillProcessTree
+): Promise<SpecifyRunOutcome> => {
   const args = [
     '--agent', 'speckit.specify',
     ...(modelId !== undefined ? ['--model', modelId] : []),
     ...launchArgs,
+    '--output-format', 'json',
+    '--session-id', copilotSessionId,
+    '--log-dir', logDir,
     '-p',
     prompt
   ];
-  return new Promise<void>((resolve, reject) => {
-    const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false });
+  return new Promise<SpecifyRunOutcome>((resolve, reject) => {
+    const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false, detached: true });
+
     let failureDetail: string | undefined;
+    let settled = false;
+    let sawResult = false;
+
+    // Reap the whole detached process group exactly once. Idempotent and safe
+    // even if the tree is already gone.
+    let reaped = false;
+    const reap = (): void => {
+      if (reaped) return;
+      reaped = true;
+      if (typeof child.pid === 'number') {
+        killProcessTree(child.pid);
+      }
+    };
+
+    const settle = (action: () => void): void => {
+      if (settled) return;
+      settled = true;
+      reap();
+      action();
+    };
 
     const handleLine = (line: string): void => {
-      if (line.trim().length === 0) return;
-      onLine?.(line);
-      if (containsFailureMarker(line) && failureDetail === undefined) {
-        failureDetail = line.trim();
+      const trimmed = line.trim();
+      if (trimmed.length === 0) return;
+
+      // Secondary signal: keep the human-readable failure-marker scan.
+      if (containsFailureMarker(trimmed) && failureDetail === undefined) {
+        failureDetail = trimmed;
+      }
+
+      // Each stdout line is one JSONL event under --output-format json. Parse
+      // it; surface a readable string to the activity stream; act on `result`.
+      let event: CopilotJsonEvent | undefined;
+      try {
+        const parsed: unknown = JSON.parse(trimmed);
+        if (isRecord(parsed)) {
+          event = parsed as CopilotJsonEvent;
+        }
+      } catch {
+        // Non-JSON line (human-readable progress). Forward verbatim.
+      }
+
+      if (event === undefined) {
+        onLine?.(trimmed);
+        return;
+      }
+
+      const readable = readableFromEvent(event);
+      if (readable !== undefined) {
+        onLine?.(readable);
+      }
+
+      if (isResultEvent(event)) {
+        sawResult = true;
+        const exitCode = typeof event.exitCode === 'number' ? event.exitCode : 0;
+        if (exitCode === 0) {
+          settle(() =>
+            resolve({
+              exitCode,
+              usage: event.usage,
+              copilotSessionId: typeof event.sessionId === 'string' ? event.sessionId : undefined
+            })
+          );
+        } else {
+          const detail =
+            failureDetail ??
+            (typeof event.error === 'string' ? event.error : `copilot result exitCode ${String(exitCode)}`);
+          settle(() => reject(new Error(`Copilot specify failed: ${detail}`)));
+        }
       }
     };
 
@@ -173,25 +334,32 @@ export const runSpecifyPrintMode = (
     });
 
     child.on('close', (code: number | null) => {
-      // Flush any remaining buffered output.
+      // Flush any remaining buffered output (may contain the result event).
       if (stdoutBuf.trim().length > 0) handleLine(stdoutBuf);
       if (stderrBuf.trim().length > 0 && containsFailureMarker(stderrBuf) && failureDetail === undefined) {
         failureDetail = stderrBuf.trim();
       }
+      // If the result event already settled us, this is a no-op (settle guards).
+      // Otherwise fall back to the exit code so we never hang when json output
+      // is absent (sawResult stays false).
+      if (sawResult) {
+        reap();
+        return;
+      }
       if (code !== 0) {
         const detail = failureDetail ?? `copilot exited with code ${String(code)}`;
-        reject(new Error(`Copilot specify failed: ${detail}`));
+        settle(() => reject(new Error(`Copilot specify failed: ${detail}`)));
         return;
       }
       if (failureDetail !== undefined) {
-        reject(new Error(`Copilot specify failed: ${failureDetail}`));
+        settle(() => reject(new Error(`Copilot specify failed: ${failureDetail}`)));
         return;
       }
-      resolve();
+      settle(() => resolve({ exitCode: code ?? 0 }));
     });
 
     child.on('error', (err: Error) => {
-      reject(new Error(`Failed to spawn copilot: ${err.message}`));
+      settle(() => reject(new Error(`Failed to spawn copilot: ${err.message}`)));
     });
   });
 };
@@ -204,14 +372,27 @@ async (request) => {
   if (agent === undefined) {
     throw new Error('Copilot agent manifest entry is missing.');
   }
-  await runSpecifyPrintMode(
+  const outcome = await runSpecifyPrintMode(
     agent.binary,
     agent.launchArgs,
     buildSpecifyPrompt(request.prompt),
     request.repositoryPath,
     request.modelId,
     request.onUpdate,
-    spawnFn
+    spawnFn,
+    request.copilotSessionId,
+    request.logDir
+  );
+  // Completion binding: copilot's authoritative end-of-turn outcome keyed by our
+  // copilot session id (ids/usage only — no PII).
+  logger.info(
+    {
+      channel: COPILOT_SPECIFY_CHANNEL,
+      copilotSessionId: request.copilotSessionId,
+      exitCode: outcome.exitCode,
+      usage: outcome.usage
+    },
+    'specify agent result'
   );
 };
 
@@ -261,6 +442,11 @@ export const registerCopilotSpecifyIpc = ({
     }
 
     const sessionId = `specify-${Date.now().toString(36)}`;
+    // copilot rejects non-UUID --session-id values, so keep the Concierge id
+    // (sessionId) and copilot's session id SEPARATE and map between them. logDir
+    // is keyed by the Concierge id so our logs and copilot's are co-addressable.
+    const copilotSessionId = randomUUID();
+    const logDir = path.join(userDataPath, 'copilot-logs', sessionId);
     const ack = createCopilotSpecifyAck({
       subscriptionId: request.value.subscriptionId,
       sessionId,
@@ -342,10 +528,25 @@ export const registerCopilotSpecifyIpc = ({
           message: 'Sending prompt to Copilot',
           timestamp: new Date().toISOString()
         });
+        // Ensure copilot's per-run --log-dir exists before spawn, then log the
+        // Concierge↔copilot session binding for traceability (ids/paths only — no PII).
+        await mkdir(logDir, { recursive: true });
+        logger.info(
+          {
+            channel: COPILOT_SPECIFY_CHANNEL,
+            conciergeSessionId: sessionId,
+            copilotSessionId,
+            logDir,
+            repositoryPath: request.value.repositoryPath
+          },
+          'specify agent spawn'
+        );
         await agentAdapter({
           ...request.value,
           sessionId,
           featureDir: request.value.repositoryPath,
+          copilotSessionId,
+          logDir,
           onUpdate: (line) => {
             sendEvent({
               type: 'progress',
