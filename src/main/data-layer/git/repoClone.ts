@@ -2,6 +2,7 @@ import { execFile } from 'node:child_process';
 import { access, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { promisify } from 'node:util';
+import { resolveWindowsBinary } from '../auth/execGh';
 import { runGit } from './gitCommand';
 
 const execFileAsync = promisify(execFile);
@@ -68,9 +69,7 @@ export const ensureClone = async ({
 
   // Fresh shallow clone via gh CLI
   await mkdir(parentDir, { recursive: true });
-  await execFileAsync('gh', ['repo', 'clone', repositoryPath, localPath, '--', '--depth=1'], {
-    shell: true
-  });
+  await execFileAsync(await resolveWindowsBinary('gh'), ['repo', 'clone', repositoryPath, localPath, '--', '--depth=1']);
 
   // Configure credential helper for pushes
   await runGit(localPath, ['config', 'credential.helper', '!gh auth git-credential']);
