@@ -44,6 +44,7 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
       ipcMain: harness.ipcMain,
       logger: harness.logger,
       userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook,
       agentAdapter: vi.fn().mockResolvedValue(undefined)
@@ -66,6 +67,7 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
       ipcMain: harness.ipcMain,
       logger: harness.logger,
       userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook: okAfter,
       agentAdapter: vi.fn().mockResolvedValue(undefined)
@@ -98,6 +100,7 @@ describe('registerCopilotSpecifyIpc streaming', () => {
       ipcMain: harness.ipcMain,
       logger: harness.logger,
       userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook: okAfter,
       agentAdapter

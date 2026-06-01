@@ -36,7 +36,11 @@ const setup = (options: {
     logger,
     userDataPath,
     agentAdapter: options.agentAdapter,
-    evaluateReadiness: options.evaluateReadiness
+    evaluateReadiness: options.evaluateReadiness,
+    // Mock the lifecycle hooks so the readiness-gate path under test reaches the
+    // ACP turn without exercising the real git-backed before/after hooks.
+    beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+    afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'sha-gate' } })
   });
   const send = vi.fn();
   const invoke = (): Promise<unknown> =>
