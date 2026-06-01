@@ -28,6 +28,13 @@ import { verifyAgentManifestDrift } from './hooks/driftVerifier';
 import { createMainLogger, type MainLogger } from './logging';
 import { createBackForwardBlocker } from './backForwardBlocker';
 
+// Dev-only: expose a CDP remote-debugging port so the renderer's Redux store
+// can be inspected live during walkthroughs. Gated on CONCIERGE_DEBUG; no effect
+// in production builds.
+if (process.env.CONCIERGE_DEBUG === '1') {
+  app.commandLine.appendSwitch('remote-debugging-port', '9222');
+}
+
 const createWindow = (logger: MainLogger): BrowserWindow => {
   const mainWindow = new BrowserWindow({
     width: 1000,
