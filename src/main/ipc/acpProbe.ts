@@ -1,15 +1,36 @@
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
-import type { BoundCLICapabilities } from '../data-layer/acp/types';
+import type { BoundCLICapabilities, BoundCLINewSessionResult } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
 
 export const ACP_PROBE_BOUND_CLI_CHANNEL = 'acp:probeBoundCLI';
 
 type AcpProbeSession = {
   capabilities: BoundCLICapabilities;
+  newSession(cwd: string, mcpServers: never[]): Promise<BoundCLINewSessionResult>;
   dispose(): Promise<unknown>;
 };
+
+// The ACP `initialize` response does NOT carry availableModels/availableModes;
+// those live on `session/new` (SessionModelState). Run a throwaway session/new
+// during the probe and overlay its lists onto the initialize-derived
+// capabilities so the renderer model picker is populated.
+const mergeSessionState = (
+  capabilities: BoundCLICapabilities,
+  sessionState: BoundCLINewSessionResult
+): BoundCLICapabilities => ({
+  ...capabilities,
+  models: {
+    available: sessionState.availableModels,
+    current: sessionState.currentModelId ?? capabilities.models.current
+  },
+  modes: {
+    available: sessionState.availableModes,
+    current: sessionState.currentModeId
+  },
+  configOptions: sessionState.configOptions
+});
 
 type AcpProbeSupervisor = {
   start(): Promise<AcpProbeSession>;
@@ -57,12 +78,22 @@ export const registerAcpProbeIpc = ({
             })()
           : await supervisorFactory();
       session = await supervisor.start();
+      // session/new requires a real workspace path; userData always exists.
+      const sessionState = await session.newSession(userDataPath, []);
+      const capabilities = mergeSessionState(session.capabilities, sessionState);
       const latencyMs = Math.round((now() - startedAt) * 1000) / 1000;
       logger.info(
-        { channel: ACP_PROBE_BOUND_CLI_CHANNEL, context, success: true, latencyMs },
+        {
+          channel: ACP_PROBE_BOUND_CLI_CHANNEL,
+          context,
+          success: true,
+          latencyMs,
+          modelCount: capabilities.models.available.length,
+          currentModel: capabilities.models.current
+        },
         'ipc handler invocation'
       );
-      return session.capabilities;
+      return capabilities;
     } catch (error) {
       const latencyMs = Math.round((now() - startedAt) * 1000) / 1000;
       logger.error(

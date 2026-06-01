@@ -51,7 +51,7 @@ const requireBoolean = (
 const optionalString = (value: unknown): string | undefined =>
   typeof value === 'string' ? value : undefined;
 
-const parseModels = (value: unknown): { available: BoundCLIModel[]; current?: string } => {
+export const parseModels = (value: unknown): { available: BoundCLIModel[]; current?: string } => {
   if (!isRecord(value)) {
     return { available: [] };
   }
@@ -81,7 +81,7 @@ const parseModels = (value: unknown): { available: BoundCLIModel[]; current?: st
   };
 };
 
-const parseModes = (value: unknown): { available: BoundCLIMode[]; current: string } => {
+export const parseModes = (value: unknown): { available: BoundCLIMode[]; current: string } => {
   if (!isRecord(value)) {
     return { available: [], current: AGENT_MODE_URI };
   }
