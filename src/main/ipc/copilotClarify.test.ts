@@ -108,9 +108,10 @@ describe('registerCopilotClarifyIpc question surfacing (next path)', () => {
 });
 
 describe('registerCopilotClarifyIpc session continuity (default adapter)', () => {
-  // A stub supervisor + session lets us assert the default adapter re-attaches the
-  // SAME ACP session on answer/commit (loadSession) rather than starting fresh, and
-  // that the answer prompt text is well-formed.
+  // A stub supervisor + session lets us assert the default adapter re-uses the
+  // SAME live ACP session on answer/commit by prompting the in-Map supervisor
+  // directly (NOT loadSession, which throws "already loaded" on a live session),
+  // and that the answer prompt text is well-formed.
   const buildStubSupervisor = () => {
     const calls = {
       newSession: 0,
@@ -148,7 +149,7 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
     return { calls, session, supervisorFactory };
   };
 
-  it('re-attaches the prior ACP session on answer and sends a well-formed answer prompt', async () => {
+  it('prompts the live ACP session on answer WITHOUT calling loadSession (regression: "already loaded")', async () => {
     const harness = createHarness();
     const { repositoryPath } = await createRepo('specs/0042-continuity');
     const { calls, supervisorFactory } = buildStubSupervisor();
@@ -168,7 +169,8 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
     expect(calls.loadSession).toHaveLength(0);
     expect(calls.disposed).toBe(0);
 
-    // answer -> loadSession with the prior acp id, no new newSession.
+    // answer -> prompt the SAME live session directly, no new newSession, and crucially
+    // NO loadSession (the live in-Map session is already loaded; loadSession would throw).
     harness.sender.send.mockClear();
     await handler({ sender: harness.sender }, {
       ...basePayload,
@@ -176,14 +178,14 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
       operation: 'answer',
       answers: [{ questionId: 'q1', selectedChoiceKey: 'A', shortAnswer: '' }]
     });
-    await vi.waitFor(() => expect(calls.loadSession.length).toBe(1));
+    await vi.waitFor(() => expect(calls.prompts.length).toBe(2));
+    expect(calls.loadSession).toHaveLength(0);
     expect(calls.newSession).toBe(1);
-    expect(calls.loadSession[0]).toEqual({ sessionId: 'acp-session-1', cwd: repositoryPath });
     const answerPrompt = calls.prompts[calls.prompts.length - 1]!;
     expect(answerPrompt).toContain('Q1: A');
   });
 
-  it('disposes the ACP session only after commit and emits a terminal done', async () => {
+  it('disposes the ACP session only after commit WITHOUT loadSession and emits a terminal done', async () => {
     const harness = createHarness();
     const { repositoryPath } = await createRepo('specs/0043-commit');
     const { calls, supervisorFactory } = buildStubSupervisor();
@@ -207,10 +209,10 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
       operation: 'commit',
       answers: [{ questionId: 'q1', selectedChoiceKey: 'B', shortAnswer: '' }]
     });
-    // Commit re-attaches (loadSession) then disposes the session. The featureDir is
-    // not a git repo here, so afterClarifyHook fails -> terminal done/fail (no hang).
+    // Commit prompts the live session (no loadSession) then disposes it. The featureDir
+    // is not a git repo here, so afterClarifyHook fails -> terminal done/fail (no hang).
     await vi.waitFor(() => expect(calls.disposed).toBe(1));
-    expect(calls.loadSession).toHaveLength(1);
+    expect(calls.loadSession).toHaveLength(0);
     const done = harness.sender.send.mock.calls.find((call) => call[1].event.type === 'done')?.[1].event;
     expect(done).toBeDefined();
     expect(['pass', 'fail']).toContain(done.status);

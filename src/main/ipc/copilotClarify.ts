@@ -42,10 +42,10 @@ export type RegisterCopilotClarifyIpcOptions = {
 
 // The conciergeSessionId is minted fresh per IPC call, so it cannot key continuity
 // across next -> answer -> commit. The repositoryPath is stable for the lifetime of
-// a Clarify conversation, so we key the persisted ACP session by it. The copilot CLI
-// persists the underlying session in ~/.copilot/session-state, so loadSession can
-// re-attach it on later operations; we keep the supervisor instance alive too so the
-// stdio pipe survives between IPC calls and is only disposed on commit (terminal).
+// a Clarify conversation, so we key the live ACP session by it. We keep the supervisor
+// instance alive in this Map so the stdio pipe + loaded ACP session survive between IPC
+// calls; later operations prompt that live session directly and it is only disposed on
+// commit (terminal). The live Map is the single continuity mechanism.
 type PersistedClarifySession = {
   acpSessionId: string;
   repositoryPath: string;
@@ -108,8 +108,10 @@ const defaultAgentAdapter =
     };
 
     if (isContinuation && existing !== undefined) {
-      // Re-attach the persisted conversation so the answer reaches the asking session.
-      await existing.session.loadSession(existing.acpSessionId, existing.repositoryPath);
+      // The supervisor is kept alive in activeSessions across turns, so the ACP session
+      // is already loaded — prompt it directly. Calling loadSession here would throw
+      // "Session <id> is already loaded". The live in-Map supervisor IS the re-attach
+      // mechanism (one continuity mechanism, not two).
       const prompt =
         request.operation === 'answer' || request.operation === 'commit'
           ? buildAnswerPrompt(request.answers)

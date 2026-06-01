@@ -40,6 +40,19 @@ export const ClarifyStep = ({
   const activeQuestion = questions.find((question) => question.id === activeQuestionId) ?? questions[0] ?? null;
   const inFlight = running || askAnotherRunning || completing;
 
+  // Selecting a concrete multiple-choice answer auto-advances to the next question.
+  // A radio onChange always carries a multiple-choice key (the free-text "Other"/short
+  // answer is the textarea, not a radio), so any choice select on a non-last question
+  // should advance. The last question never advances.
+  const selectChoice = (questionId: string, choiceKey: string): void => {
+    onAnswerChange(questionId, { selectedChoiceKey: choiceKey });
+    const index = questions.findIndex((question) => question.id === questionId);
+    const next = index >= 0 ? questions[index + 1] : undefined;
+    if (next !== undefined) {
+      onActiveQuestionChange(next.id);
+    }
+  };
+
   return (
     <section className="clarify-step" aria-labelledby="clarify-heading">
       <div className="section-heading">
@@ -101,7 +114,7 @@ export const ClarifyStep = ({
                     name={activeQuestion.id}
                     value={choice.key}
                     checked={answers[activeQuestion.id]?.selectedChoiceKey === choice.key}
-                    onChange={() => onAnswerChange(activeQuestion.id, { selectedChoiceKey: choice.key })}
+                    onChange={() => selectChoice(activeQuestion.id, choice.key)}
                   />
                   <span>{choice.key}. {choice.label}</span>
                 </label>
