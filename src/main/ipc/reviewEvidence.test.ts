@@ -34,12 +34,13 @@ describe('registerReviewEvidenceIpc', () => {
       ipcMain: ipcMain as unknown as Pick<IpcMain, 'handle'>,
       logger,
       userDataPath: '/user',
-      now: () => 10
+      now: () => 10,
+      resolveFeatureDir: async () => '/repo/specs/0009'
     });
 
     await expect(handlers.get(REVIEW_EVIDENCE_CHANNEL)?.(
       { sender: { id: 1 } },
-      { repositoryPath: '/repo', featureDir: '/repo/specs/0009' }
+      { repositoryPath: '/repo' }
     )).resolves.toMatchObject({ featureDir: '/repo/specs/0009' });
     expect(buildReviewEvidence).toHaveBeenCalledWith({ repositoryPath: '/repo', featureDir: '/repo/specs/0009', userDataPath: '/user' });
   });
@@ -57,7 +58,8 @@ describe('registerReviewEvidenceIpc', () => {
       ipcMain: ipcMain as unknown as Pick<IpcMain, 'handle'>,
       logger,
       userDataPath: '/user',
-      now: () => 10
+      now: () => 10,
+      resolveFeatureDir: async () => '/repo/specs/0009'
     });
 
     await expect(handlers.get(REVIEW_EVIDENCE_CHANNEL)?.(
@@ -65,7 +67,6 @@ describe('registerReviewEvidenceIpc', () => {
       {
         mode: 'body',
         repositoryPath: '/repo',
-        featureDir: '/repo/specs/0009',
         artifactPath: '/user/evidence/0009/analyze/analyze-report.md'
       }
     )).resolves.toMatchObject({ text: '# Analyze' });

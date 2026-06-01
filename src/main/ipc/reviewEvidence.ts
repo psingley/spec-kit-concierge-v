@@ -1,4 +1,5 @@
 import type { IpcMain } from 'electron';
+import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import { buildReviewEvidence, readReviewEvidenceBody } from '../domain/reviewEvidence';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -11,13 +12,15 @@ export type RegisterReviewEvidenceIpcOptions = {
   logger: Pick<MainLogger, 'info' | 'error'>;
   userDataPath: string;
   now?: () => number;
+  resolveFeatureDir?: (repositoryPath: string) => Promise<string>;
 };
 
 export const registerReviewEvidenceIpc = ({
   ipcMain,
   logger,
   userDataPath,
-  now = () => performance.now()
+  now = () => performance.now(),
+  resolveFeatureDir: resolveDir = resolveFeatureDir
 }: RegisterReviewEvidenceIpcOptions): void => {
   ipcMain.handle(REVIEW_EVIDENCE_CHANNEL, async (event, ...args: unknown[]): Promise<ReviewEvidenceResponse> => {
     const startedAt = now();
@@ -25,11 +28,14 @@ export const registerReviewEvidenceIpc = ({
     try {
       const request = createReviewEvidenceRequest(assertOnePayload(REVIEW_EVIDENCE_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
+      // feature.json is the single source of truth for the feature dir; resolve it
+      // server-side so the renderer never derives it (e.g. from the branch name).
+      const featureDir = await resolveDir(request.value.repositoryPath);
       const response = createReviewEvidenceResponse(request.value.mode === 'body'
-        ? await readReviewEvidenceBody({ ...request.value, userDataPath })
+        ? await readReviewEvidenceBody({ ...request.value, featureDir, userDataPath })
         : await buildReviewEvidence({
           repositoryPath: request.value.repositoryPath,
-          featureDir: request.value.featureDir,
+          featureDir,
           userDataPath
         }));
       if (!response.ok) throw toError(response.error.message);

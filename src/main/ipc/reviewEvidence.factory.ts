@@ -6,13 +6,11 @@ type ErrorName = 'InvalidReviewEvidencePayload';
 export type ReviewEvidenceRequest = {
   mode?: 'summary';
   repositoryPath: string;
-  featureDir: string;
 };
 
 export type ReviewEvidenceBodyRequest = {
   mode: 'body';
   repositoryPath: string;
-  featureDir: string;
   artifactPath: string;
 };
 
@@ -23,22 +21,22 @@ export type ReviewEvidenceResponse = ReviewEvidenceSummary | ReviewEvidenceBody;
 const safeAbsolutePath = (value: string): boolean => value.startsWith('/') && !value.includes('\0');
 const safeArtifactPath = (value: string): boolean => value.length > 0 && !value.includes('\0');
 
+// featureDir is no longer accepted from the renderer: it is the single source of
+// truth from .specify/feature.json and is resolved server-side in the handler.
 export const createReviewEvidenceRequest = (value: unknown): FactoryResult<ReviewEvidenceRequestPayload, ErrorName> => {
   const root = requireRecord(value, 'InvalidReviewEvidencePayload', '$');
   if (!root.ok) return root;
   const mode = root.value.mode === 'body' ? 'body' : 'summary';
   const expectedKeys = mode === 'body'
-    ? ['mode', 'repositoryPath', 'featureDir', 'artifactPath']
+    ? ['mode', 'repositoryPath', 'artifactPath']
     : Object.prototype.hasOwnProperty.call(root.value, 'mode')
-      ? ['mode', 'repositoryPath', 'featureDir']
-      : ['repositoryPath', 'featureDir'];
+      ? ['mode', 'repositoryPath']
+      : ['repositoryPath'];
   const keys = requireExactKeys(root.value, expectedKeys, 'InvalidReviewEvidencePayload', '$');
   if (!keys.ok) return keys;
   const repositoryPath = requireString(root.value.repositoryPath, 'InvalidReviewEvidencePayload', '$.repositoryPath');
-  const featureDir = requireString(root.value.featureDir, 'InvalidReviewEvidencePayload', '$.featureDir');
   if (!repositoryPath.ok) return repositoryPath;
-  if (!featureDir.ok) return featureDir;
-  if (!safeAbsolutePath(repositoryPath.value) || !safeAbsolutePath(featureDir.value)) {
+  if (!safeAbsolutePath(repositoryPath.value)) {
     return invalid('InvalidReviewEvidencePayload', 'paths must be absolute and safe', '$');
   }
   if (mode === 'body') {
@@ -47,9 +45,9 @@ export const createReviewEvidenceRequest = (value: unknown): FactoryResult<Revie
     if (!safeArtifactPath(artifactPath.value)) {
       return invalid('InvalidReviewEvidencePayload', 'artifactPath must be safe', '$.artifactPath');
     }
-    return { ok: true, value: { mode, repositoryPath: repositoryPath.value, featureDir: featureDir.value, artifactPath: artifactPath.value } };
+    return { ok: true, value: { mode, repositoryPath: repositoryPath.value, artifactPath: artifactPath.value } };
   }
-  return { ok: true, value: { mode, repositoryPath: repositoryPath.value, featureDir: featureDir.value } };
+  return { ok: true, value: { mode, repositoryPath: repositoryPath.value } };
 };
 
 export const createReviewEvidenceResponse = (value: ReviewEvidenceResponse): FactoryResult<ReviewEvidenceResponse, ErrorName> => ({

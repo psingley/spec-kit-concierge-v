@@ -1,6 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
-import path from 'node:path';
 import type { IpcMain } from 'electron';
+import { resolveArtifactReadPath, resolveFeatureDir } from '../data-layer/specify/featureDir';
 import { parseTaskDetails } from '../domain/tasksDetail';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -12,12 +12,14 @@ export type RegisterTasksDetailIpcOptions = {
   ipcMain: Pick<IpcMain, 'handle'>;
   logger: Pick<MainLogger, 'info' | 'error'>;
   now?: () => number;
+  resolveFeatureDir?: (repositoryPath: string) => Promise<string>;
 };
 
 export const registerTasksDetailIpc = ({
   ipcMain,
   logger,
-  now = () => performance.now()
+  now = () => performance.now(),
+  resolveFeatureDir: resolveDir = resolveFeatureDir
 }: RegisterTasksDetailIpcOptions): void => {
   ipcMain.handle(TASKS_DETAIL_CHANNEL, async (event, ...args: unknown[]): Promise<TasksDetailResponse> => {
     const startedAt = now();
@@ -25,7 +27,7 @@ export const registerTasksDetailIpc = ({
     try {
       const request = createTasksDetailRequest(assertOnePayload(TASKS_DETAIL_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
-      const absolutePath = path.join(request.value.repositoryPath, request.value.artifactPath);
+      const absolutePath = await resolveArtifactReadPath(request.value.repositoryPath, request.value.artifactPath, resolveDir);
       const metadata = await stat(absolutePath);
       if (metadata.size > 512 * 1024) {
         throw new Error('Artifact is too large to read.');

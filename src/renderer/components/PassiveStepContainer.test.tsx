@@ -12,14 +12,15 @@ import { workspaceEntered } from '../slices/workspace';
 const repo = { id: 'r1', name: 'concierge', owner: 'org', path: '/work/wt', defaultBranch: 'main' };
 
 describe('PassiveStepContainer artifact reads', () => {
-  it('reads artifacts from the resolved feature dir, not the worktree root', async () => {
+  it('passes the worktree root + a bare artifact name; the IPC resolves the feature dir', async () => {
     installConciergeBridge();
     const read = window.concierge.artifacts!.read as Mock;
     read.mockResolvedValue({ artifactPath: 'plan.md', text: '# Plan', size: 6, mtimeMs: 1 });
 
     const store = createProductStore();
-    // spec/<slug> branch -> feature dir is <repo.path>/specs/<slug>.
-    store.dispatch(workspaceEntered({ repo, branch: 'spec/my-feature' }));
+    // NNN-slug worktree branch (not spec/...) — the renderer must NOT derive the
+    // feature dir from it; the IPC resolves it from .specify/feature.json.
+    store.dispatch(workspaceEntered({ repo, branch: '014-remove-faux-traffic-lights' }));
     store.dispatch(passiveStepRunSucceeded({
       step: 'plan',
       commitSha: 'plan-sha',
@@ -36,7 +37,7 @@ describe('PassiveStepContainer artifact reads', () => {
 
     await waitFor(() => {
       expect(read).toHaveBeenCalledWith(
-        expect.objectContaining({ repositoryPath: '/work/wt/specs/my-feature', artifactPath: 'plan.md' })
+        expect.objectContaining({ repositoryPath: '/work/wt', artifactPath: 'plan.md' })
       );
     });
   });

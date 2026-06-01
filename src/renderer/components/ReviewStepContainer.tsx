@@ -3,24 +3,17 @@ import { artifactsApi } from '../api/artifacts.endpoint';
 import { reviewEvidenceApi } from '../api/reviewEvidence.endpoint';
 import { tasksDetailApi } from '../api/tasksDetail.endpoint';
 import { useAppSelector } from '../hooks/store';
-import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
+import { selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { ReviewStep } from './ReviewStep';
-
-const featureDirFromBranch = (repositoryPath: string, branch: string | null): string => {
-  if (branch?.startsWith('spec/') === true) {
-    return `${repositoryPath}/specs/${branch.slice('spec/'.length)}`;
-  }
-  return repositoryPath;
-};
 
 export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
-  const branch = useAppSelector(selectWorkspaceBranch);
   const [artifactPath, setArtifactPath] = useState<string | null>(null);
+  // The IPC resolves the feature dir from .specify/feature.json; the renderer only
+  // supplies the worktree root.
   const request = useMemo(() => repo === null ? undefined : {
-    repositoryPath: repo.path,
-    featureDir: featureDirFromBranch(repo.path, branch)
-  }, [branch, repo]);
+    repositoryPath: repo.path
+  }, [repo]);
   const evidence = reviewEvidenceApi.useGetReviewEvidenceQuery(request!, { skip: request === undefined });
   const [readArtifact, artifact] = artifactsApi.useLazyReadArtifactQuery();
   const [readReviewEvidenceBody, reviewEvidenceBody] = reviewEvidenceApi.useLazyReadReviewEvidenceBodyQuery();
@@ -42,11 +35,11 @@ export const ReviewStepContainer = (): React.ReactElement => {
         setArtifactPath(path);
         if (request !== undefined) {
           if (path.endsWith('tasks.md')) {
-            void readTasksDetail({ repositoryPath: request.featureDir, artifactPath: path });
+            void readTasksDetail({ repositoryPath: request.repositoryPath, artifactPath: path });
           } else if (path.startsWith('/')) {
             void readReviewEvidenceBody({ ...request, artifactPath: path });
           } else {
-            void readArtifact({ repositoryPath: request.featureDir, artifactPath: path });
+            void readArtifact({ repositoryPath: request.repositoryPath, artifactPath: path });
           }
         }
       }}

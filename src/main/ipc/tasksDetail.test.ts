@@ -53,6 +53,21 @@ describe('registerTasksDetailIpc', () => {
     expect(logger.info).toHaveBeenCalledWith(expect.objectContaining({ channel: TASKS_DETAIL_CHANNEL, success: true }), 'ipc handler invocation');
   });
 
+  it('resolves a bare tasks.md against the feature dir from feature.json', async () => {
+    const handle = vi.fn();
+    const logger = { info: vi.fn(), error: vi.fn() };
+    const resolveFeatureDir = vi.fn(async () => '/repo/specs/0012-feature');
+
+    registerTasksDetailIpc({ ipcMain: { handle }, logger, now: () => 10, resolveFeatureDir });
+    const handler = handle.mock.calls[0]?.[1] as (event: unknown, payload: unknown) => Promise<unknown>;
+
+    await handler({ sender: { id: 7 } }, { repositoryPath: '/repo', artifactPath: 'tasks.md' });
+
+    expect(resolveFeatureDir).toHaveBeenCalledWith('/repo');
+    expect(mockedStat).toHaveBeenCalledWith('/repo/specs/0012-feature/tasks.md');
+    expect(mockedReadFile).toHaveBeenCalledWith('/repo/specs/0012-feature/tasks.md', 'utf8');
+  });
+
   it('rejects files larger than the artifact guard', async () => {
     mockedStat.mockResolvedValue({ size: 512 * 1024 + 1, mtimeMs: 1 } as never);
     const handle = vi.fn();

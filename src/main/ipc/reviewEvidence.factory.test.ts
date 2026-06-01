@@ -2,13 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { createReviewEvidenceRequest } from './reviewEvidence.factory';
 
 describe('review evidence IPC factory', () => {
-  it('accepts only absolute repository and feature paths', () => {
-    expect(createReviewEvidenceRequest({ repositoryPath: '/repo', featureDir: '/repo/specs/0009' })).toMatchObject({
+  it('accepts an absolute repository path without a renderer-supplied feature dir', () => {
+    expect(createReviewEvidenceRequest({ repositoryPath: '/repo' })).toMatchObject({
       ok: true,
-      value: { mode: 'summary', repositoryPath: '/repo', featureDir: '/repo/specs/0009' }
+      value: { mode: 'summary', repositoryPath: '/repo' }
     });
 
-    expect(createReviewEvidenceRequest({ repositoryPath: '/repo', featureDir: 'specs/0009' })).toMatchObject({
+    expect(createReviewEvidenceRequest({ repositoryPath: 'repo' })).toMatchObject({
+      ok: false
+    });
+  });
+
+  it('rejects a renderer-supplied feature dir (resolved server-side from feature.json)', () => {
+    expect(createReviewEvidenceRequest({ repositoryPath: '/repo', featureDir: '/repo/specs/0009' })).toMatchObject({
       ok: false
     });
   });
@@ -17,7 +23,6 @@ describe('review evidence IPC factory', () => {
     expect(createReviewEvidenceRequest({
       mode: 'body',
       repositoryPath: '/repo',
-      featureDir: '/repo/specs/0009',
       artifactPath: '/user/evidence/0009/analyze-report.md'
     })).toMatchObject({
       ok: true,

@@ -32,3 +32,27 @@ export const resolveFeatureDir = async (repositoryPath: string): Promise<string>
   }
   return path.join(repositoryPath, parsed.feature_directory);
 };
+
+// Resolve the absolute on-disk path for an artifact read. The renderer passes the
+// worktree root + a BARE artifact name (e.g. plan.md); the real file lives under
+// the feature dir from feature.json. Cases:
+//   - bare name (no specs/ segment)   -> <featureDir>/<name> via resolveFeatureDir
+//   - already repo-relative (specs/)  -> <repositoryPath>/<artifactPath> (no double prefix)
+//   - feature.json missing/unreadable -> fall back to <repositoryPath>/<artifactPath>
+// (Absolute / app-owned paths never reach this IPC — the request factory rejects
+// leading-slash artifactPaths, so they flow through review:evidence instead.)
+export const resolveArtifactReadPath = async (
+  repositoryPath: string,
+  artifactPath: string,
+  resolveDir: (repositoryPath: string) => Promise<string> = resolveFeatureDir
+): Promise<string> => {
+  if (artifactPath.split('/').includes('specs')) {
+    return path.join(repositoryPath, artifactPath);
+  }
+  try {
+    const featureDir = await resolveDir(repositoryPath);
+    return path.join(featureDir, artifactPath);
+  } catch {
+    return path.join(repositoryPath, artifactPath);
+  }
+};

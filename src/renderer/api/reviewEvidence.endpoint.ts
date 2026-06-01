@@ -4,7 +4,7 @@ import { parseRendererReviewEvidence, parseRendererReviewEvidenceBody, type Revi
 
 export const reviewEvidenceApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getReviewEvidence: builder.query<ReviewEvidence, { repositoryPath: string; featureDir: string }>({
+    getReviewEvidence: builder.query<ReviewEvidence, { repositoryPath: string }>({
       async queryFn(arg, _queryApi, _extraOptions, baseQuery) {
         const response = await baseQuery({ channel: 'review:evidence', payload: arg });
         if (response.error !== undefined) return { error: response.error };
@@ -13,7 +13,7 @@ export const reviewEvidenceApi = api.injectEndpoints({
       },
       providesTags: ['Step', 'Transcript']
     }),
-    readReviewEvidenceBody: builder.query<ReviewEvidenceBody, { repositoryPath: string; featureDir: string; artifactPath: string }>({
+    readReviewEvidenceBody: builder.query<ReviewEvidenceBody, { repositoryPath: string; artifactPath: string }>({
       async queryFn(arg, _queryApi, _extraOptions, baseQuery) {
         const response = await baseQuery({ channel: 'review:evidence', payload: { ...arg, mode: 'body' } });
         if (response.error !== undefined) return { error: response.error };
