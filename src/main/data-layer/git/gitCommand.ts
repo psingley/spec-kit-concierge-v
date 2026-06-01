@@ -76,6 +76,22 @@ const messageFilePath = async (repositoryPath: string): Promise<string> => {
   return path.join(resolvedGitDir, 'CONCIERGE_STEP_MESSAGE');
 };
 
+// `git diff --cached --quiet` exits 0 when nothing is staged and 1 when there
+// are staged changes. runGit throws GitCommandError on any non-zero exit, so a
+// clean resolve means "nothing staged" and a status-1 throw means "staged".
+// Any other failure is a genuine git error and is re-thrown.
+const hasStagedChanges = async (repositoryPath: string): Promise<boolean> => {
+  try {
+    await runGit(repositoryPath, ['diff', '--cached', '--quiet']);
+    return false;
+  } catch (error) {
+    if (error instanceof GitCommandError && error.status === 1) {
+      return true;
+    }
+    throw error;
+  }
+};
+
 export const commitWithTrailer = async (
   repositoryPath: string,
   candidate: ConciergeStepCommit
@@ -88,8 +104,33 @@ export const commitWithTrailer = async (
     await runGit(repositoryPath, ['add', '--', ...candidate.files]);
   }
 
-  const filePath = await messageFilePath(repositoryPath);
   const trailer = `Concierge-Step: ${candidate.step}:${candidate.status}`;
+
+  // Idempotency: an agent (e.g. Copilot) may have already committed the
+  // artifacts WITH the Concierge-Step trailer before this after-hook runs,
+  // leaving nothing staged. The analyze allow-empty path legitimately commits
+  // with nothing staged, so it must skip this short-circuit.
+  if (candidate.allowEmptyCommit !== true && !(await hasStagedChanges(repositoryPath))) {
+    const headSha = await runGit(repositoryPath, ['rev-parse', 'HEAD']);
+    const headMessage = await runGit(repositoryPath, ['log', '-1', '--format=%B']);
+    const headTrailer = parseConciergeStepTrailer(headMessage, { commitSha: headSha });
+
+    if (
+      headTrailer.found &&
+      headTrailer.step === candidate.step &&
+      headTrailer.status === candidate.status
+    ) {
+      return { commitSha: headSha, trailer };
+    }
+
+    throw new GitCommandError(
+      `nothing to commit for step ${candidate.step} and HEAD has no matching Concierge-Step trailer`,
+      ['git', 'commit'],
+      undefined
+    );
+  }
+
+  const filePath = await messageFilePath(repositoryPath);
   await writeFile(filePath, `${candidate.message}\n`, 'utf8');
   await runGit(repositoryPath, [
     'interpret-trailers',
