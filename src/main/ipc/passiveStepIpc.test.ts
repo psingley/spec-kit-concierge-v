@@ -12,6 +12,18 @@ const payload = {
   modelId: 'gpt-5.5'
 };
 
+// spec-kit records the real feature dir in .specify/feature.json (relative to the
+// repo root). The passive-step handler resolves it, so fixtures need a manifest.
+// Returns { repositoryPath, featureDir } — pass repositoryPath as the payload and
+// place artifacts under featureDir.
+const createRepo = async (featureRel = 'specs/0008-ai-passive-steps'): Promise<{ repositoryPath: string; featureDir: string }> => {
+  const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-passive-repo-'));
+  await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+  await mkdir(path.join(repositoryPath, featureRel), { recursive: true });
+  await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
+  return { repositoryPath, featureDir: path.join(repositoryPath, featureRel) };
+};
+
 const createHarness = () => {
   const handlers = new Map<string, (event: { sender: { id: number; send: ReturnType<typeof vi.fn> } }, payload: unknown) => Promise<unknown>>();
   const ipcMain = {
@@ -27,6 +39,7 @@ const createHarness = () => {
 describe('registerPassiveStepIpc', () => {
   it('runs before hook, agent adapter, after hook, and emits one terminal pass event', async () => {
     const harness = createHarness();
+    const { repositoryPath, featureDir } = await createRepo();
     const beforeHook = vi.fn().mockResolvedValue({ ok: true });
     const agentAdapter = vi.fn().mockResolvedValue(undefined);
     const afterHook = vi.fn().mockResolvedValue({
@@ -46,11 +59,11 @@ describe('registerPassiveStepIpc', () => {
       agentAdapter
     });
 
-    const ack = await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, payload);
+    const ack = await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, { ...payload, repositoryPath });
 
     expect(ack).toMatchObject({ subscriptionId: 'sub-1', step: 'plan', accepted: true });
     await vi.waitFor(() => expect(afterHook).toHaveBeenCalledTimes(1));
-    expect(beforeHook).toHaveBeenCalledWith(expect.objectContaining({ featureDir: payload.repositoryPath, sessionId: expect.stringMatching(/^plan-/) }));
+    expect(beforeHook).toHaveBeenCalledWith(expect.objectContaining({ featureDir, sessionId: expect.stringMatching(/^plan-/) }));
     expect(agentAdapter).toHaveBeenCalledWith(expect.objectContaining({ step: 'plan', modelId: 'gpt-5.5' }));
     await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:plan:event', expect.objectContaining({
       subscriptionId: 'sub-1',
@@ -62,7 +75,7 @@ describe('registerPassiveStepIpc', () => {
 
   it('discovers present optional plan artifacts for the pass summary without requiring missing optionals', async () => {
     const harness = createHarness();
-    const featureDir = await mkdtemp(path.join(os.tmpdir(), 'concierge-plan-summary-'));
+    const { repositoryPath, featureDir } = await createRepo();
     await mkdir(path.join(featureDir, 'contracts'));
     await writeFile(path.join(featureDir, 'data-model.md'), '# Data model');
     await writeFile(path.join(featureDir, 'contracts', 'clarify-api.md'), '# Contract');
@@ -79,7 +92,7 @@ describe('registerPassiveStepIpc', () => {
       agentAdapter: vi.fn().mockResolvedValue(undefined)
     });
 
-    await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, { ...payload, repositoryPath: featureDir });
+    await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, { ...payload, repositoryPath });
 
     await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:plan:event', expect.objectContaining({
       event: expect.objectContaining({ type: 'done', step: 'plan', status: 'pass' })
@@ -96,6 +109,7 @@ describe('registerPassiveStepIpc', () => {
 
   it('propagates errors as one terminal fail event and skips duplicate terminal sends', async () => {
     const harness = createHarness();
+    const { repositoryPath } = await createRepo();
 
     registerPassiveStepIpc({
       step: 'tasks',
@@ -109,7 +123,7 @@ describe('registerPassiveStepIpc', () => {
       agentAdapter: vi.fn().mockRejectedValue(new Error('agent failed'))
     });
 
-    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, payload);
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
 
     await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
       event: expect.objectContaining({ type: 'done', step: 'tasks', status: 'fail', reason: 'agent failed' })
@@ -148,7 +162,7 @@ describe('registerPassiveStepIpc', () => {
   it('captures analyze terminal report evidence after the analyze commit exists', async () => {
     const harness = createHarness();
     const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-analyze-evidence-'));
-    const featureDir = await mkdtemp(path.join(os.tmpdir(), '0009-review-evidence-'));
+    const { repositoryPath, featureDir } = await createRepo('specs/0009-review-evidence');
 
     registerPassiveStepIpc({
       step: 'analyze',
@@ -166,7 +180,7 @@ describe('registerPassiveStepIpc', () => {
       })
     });
 
-    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, { ...payload, repositoryPath: featureDir });
+    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, { ...payload, repositoryPath });
 
     await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:analyze:event', expect.objectContaining({
       event: expect.objectContaining({ type: 'done', step: 'analyze', status: 'pass', commitSha: 'analyze-sha' })
@@ -178,6 +192,7 @@ describe('registerPassiveStepIpc', () => {
 
   it('forwards fine-grained ACP updates as progress events so stream silence resets live', async () => {
     const harness = createHarness();
+    const { repositoryPath } = await createRepo();
 
     registerPassiveStepIpc({
       step: 'analyze',
@@ -194,7 +209,7 @@ describe('registerPassiveStepIpc', () => {
       })
     });
 
-    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, payload);
+    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, { ...payload, repositoryPath });
 
     await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:analyze:event', expect.objectContaining({
       event: expect.objectContaining({
@@ -204,5 +219,54 @@ describe('registerPassiveStepIpc', () => {
         raw: { sessionId: 's1', update: { sessionUpdate: 'tool_call_update', toolCallId: 't1' } }
       })
     })));
+  });
+
+  it('resolves the feature dir from .specify/feature.json (not the repo root) for the hook context', async () => {
+    const harness = createHarness();
+    const { repositoryPath, featureDir } = await createRepo('specs/0012-clarify-bug');
+    const beforeHook = vi.fn().mockResolvedValue({ ok: true });
+
+    registerPassiveStepIpc({
+      step: 'plan',
+      channel: 'copilot:plan',
+      eventChannel: 'copilot:plan:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook,
+      afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'abc123' } }),
+      agentAdapter: vi.fn().mockResolvedValue(undefined)
+    });
+
+    await harness.handlers.get('copilot:plan')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(beforeHook).toHaveBeenCalledTimes(1));
+    expect(beforeHook).toHaveBeenCalledWith(expect.objectContaining({ repositoryPath, featureDir }));
+    expect(featureDir).not.toBe(repositoryPath);
+  });
+
+  it('emits a terminal fail (does not hang) when .specify/feature.json is missing', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-passive-nofj-'));
+    const agentAdapter = vi.fn();
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn(),
+      agentAdapter
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'tasks', status: 'fail', reason: expect.stringContaining('.specify/feature.json') })
+    })));
+    expect(agentAdapter).not.toHaveBeenCalled();
   });
 });

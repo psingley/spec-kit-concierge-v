@@ -10,6 +10,7 @@ import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
 import { runGit } from '../data-layer/git/gitCommand';
+import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
@@ -485,29 +486,6 @@ async (request) => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
-
-// Spec Kit writes the spec to the feature directory recorded in .specify/feature.json
-// (key feature_directory, relative to the repo root), not the repo root itself.
-const resolveFeatureDir = async (repositoryPath: string): Promise<string> => {
-  const fs = await import('node:fs/promises');
-  const manifestPath = path.join(repositoryPath, '.specify', 'feature.json');
-  let raw: string;
-  try {
-    raw = await fs.readFile(manifestPath, 'utf8');
-  } catch {
-    throw new Error('spec-kit feature directory not found (.specify/feature.json missing)');
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error('spec-kit feature directory unreadable (.specify/feature.json is malformed JSON)');
-  }
-  if (!isRecord(parsed) || typeof parsed.feature_directory !== 'string' || parsed.feature_directory.trim().length === 0) {
-    throw new Error('spec-kit feature directory missing (.specify/feature.json has no feature_directory)');
-  }
-  return path.join(repositoryPath, parsed.feature_directory);
-};
 
 export const registerCopilotSpecifyIpc = ({
   ipcMain,

@@ -3,6 +3,7 @@ import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, type StepName } from 
 import { captureAnalyzeReport } from '../domain/evidence/analyzeReport';
 import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
+import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -168,7 +169,7 @@ export const registerPassiveStepIpc = ({
         if (controller.signal.aborted) {
           throw new Error('aborted');
         }
-        const featureDir = request.repositoryPath;
+        const featureDir = await resolveFeatureDir(request.repositoryPath);
         const hookContext = {
           repositoryPath: request.repositoryPath,
           featureDir,

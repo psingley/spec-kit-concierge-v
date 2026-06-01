@@ -5,6 +5,7 @@ import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { appendClarifyMalformation } from '../data-layer/clarifyMalformationLog';
 import { validateClarifyArtifacts } from '../domain/factories';
+import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import { beforeClarifyHook } from '../hooks/beforeClarify.hook';
 import { afterClarifyHook } from '../hooks/afterClarify.hook';
 import type { MainLogger } from '../logging';
@@ -125,7 +126,7 @@ export const registerCopilotClarifyIpc = ({
     };
     const run = async (): Promise<void> => {
       try {
-        const featureDir = request.value.repositoryPath;
+        const featureDir = await resolveFeatureDir(request.value.repositoryPath);
         if (request.value.operation === 'next') {
           const before = await beforeClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
           if (!before.ok) throw new Error(before.escapeHatchReason);
