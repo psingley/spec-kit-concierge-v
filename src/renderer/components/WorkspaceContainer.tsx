@@ -4,7 +4,6 @@ import { useStepFromUrl } from '../hooks/useStepFromUrl';
 import type { StepName, StepState } from '../slices/steps';
 import { stepOrder } from '../slices/steps';
 import { workspaceStepViewed } from '../slices/workspace';
-import { ActivityPillContainer } from './ActivityPillContainer';
 import { selectUiShowActivity } from '../slices/ui.selectors';
 import { ActivityRailContainer } from './ActivityRailContainer';
 import { ClarifyStepContainer } from './ClarifyStepContainer';
@@ -13,7 +12,6 @@ import { PassiveStepContainer } from './PassiveStepContainer';
 import { ReviewStepContainer } from './ReviewStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
 import { Stepper } from './Stepper';
-import { TitlebarContainer } from './TitlebarContainer';
 import { selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 
@@ -39,7 +37,6 @@ export const WorkspaceContainer = (): React.ReactElement => {
   }, {} as Record<StepName, StepState>);
   return (
     <div className="workspace">
-      <TitlebarContainer />
       <div className={bodyClassName}>
         {showActivity && activitySide === 'left' ? <ActivityRailContainer /> : null}
         <main className="workspace-main">
@@ -51,7 +48,6 @@ export const WorkspaceContainer = (): React.ReactElement => {
         {showActivity && activitySide !== 'left' && activitySide !== 'hidden' ? <ActivityRailContainer /> : null}
       </div>
       <ModalHost />
-      <ActivityPillContainer />
     </div>
   );
 };

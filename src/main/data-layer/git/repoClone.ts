@@ -53,6 +53,11 @@ export const ensureClone = async ({
   repositoryPath,
   defaultBranch = 'main'
 }: EnsureCloneOptions): Promise<string> => {
+  // Absolute paths are pre-existing local repos (e.g. test fixtures) — use directly.
+  if (path.isAbsolute(repositoryPath)) {
+    return repositoryPath;
+  }
+
   const localPath = resolveLocalRepoPath(userDataPath, repositoryPath);
   const parentDir = path.dirname(localPath);
 

@@ -1,3 +1,4 @@
+import path from 'node:path';
 import type { IpcMain } from 'electron';
 import { app } from 'electron';
 import { readBranchState } from '../data-layer/git/branchState';
@@ -116,10 +117,12 @@ export const registerGitIpc = ({
       const request = createGitCreateDraftRequest(assertOnePayload(GIT_CREATE_DRAFT_CHANNEL, args));
       if (!request.ok) throw toError(request.error.message);
 
-      // Resolve owner/repo → local path, clone if needed
+      // Resolve owner/repo → local path, clone if needed.
+      // Absolute paths are pre-existing local repos (test fixtures) — skip clone and push.
+      const repoPath = request.value.repositoryPath;
       const localPath = await cloneRepo({
         userDataPath,
-        repositoryPath: request.value.repositoryPath,
+        repositoryPath: repoPath,
         defaultBranch: request.value.defaultBranch
       });
 
@@ -128,8 +131,10 @@ export const registerGitIpc = ({
       const response = createGitCreateDraftResponse(await createDraft(localPath, draftNow));
       if (!response.ok) throw toError(response.error.message);
 
-      // Push the draft branch to origin
-      await pushBranch(localPath);
+      // Push the draft branch to origin (skipped for local filesystem paths)
+      if (!path.isAbsolute(repoPath)) {
+        await pushBranch(localPath);
+      }
 
       logger.info({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;

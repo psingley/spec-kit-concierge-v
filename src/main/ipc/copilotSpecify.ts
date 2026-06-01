@@ -97,8 +97,11 @@ export const registerCopilotSpecifyIpc = ({
         terminalSent = true;
         sendEvent(streamEvent);
       };
-      // Resolve owner/repo to local absolute path
-      const repositoryPath = resolveLocalRepoPath(userDataPath, request.value.repositoryPath);
+      // Resolve owner/repo to local absolute path.
+      // Absolute paths (e.g. test fixture repos) are used directly.
+      const repositoryPath = path.isAbsolute(request.value.repositoryPath)
+        ? request.value.repositoryPath
+        : resolveLocalRepoPath(userDataPath, request.value.repositoryPath);
       const featureDir = repositoryPath;
       const artifactPath = 'spec.md';
       try {
@@ -145,7 +148,7 @@ export const registerCopilotSpecifyIpc = ({
           throw new Error(reason);
         }
         const specMarkdown = await import('node:fs/promises').then((fs) =>
-          fs.readFile(path.join(request.value.repositoryPath, artifactPath), 'utf8')
+          fs.readFile(path.join(repositoryPath, artifactPath), 'utf8')
         );
         terminal({
           type: 'done',

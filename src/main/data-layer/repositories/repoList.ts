@@ -25,7 +25,7 @@ const isRepositorySummary = (value: unknown): value is RepositorySummary => {
 
 export const listRepositories = async (
   owner: 'collette-travel' = 'collette-travel',
-  adapterPath = process.env.CONCIERGE_TEST_GH_ADAPTER
+  adapterPath = process.env.CONCIERGE_TEST_REPOS_ADAPTER
 ): Promise<RepositorySummary[]> => {
   const config = await readTestAdapterConfig(adapterPath);
   if (Array.isArray(config?.repositories)) {

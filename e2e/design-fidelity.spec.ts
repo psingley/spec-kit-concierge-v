@@ -60,8 +60,11 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('full-window repo-browse', async () => {
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
-    await page.getByRole('button', { name: /Sign in/i }).first().click();
+    const signInScreen = page.locator('[data-testid="sign-in-screen"]');
+    await signInScreen.getByRole('button', { name: /Sign in/i }).first().click();
+    // Wait for GitHub to be connected before clicking Copilot
+    await expect(page.getByText(/Signed in as/i)).toBeVisible({ timeout: 8000 });
+    await signInScreen.getByRole('button', { name: /Sign in/i }).first().click();
     await expect(page.getByRole('heading', { name: /Pick a repository/i })).toBeVisible();
     await screenshot('full-window-repo-browse');
   });
@@ -82,11 +85,11 @@ test.describe.serial('Run 6.5 design fidelity screenshots', () => {
   });
 
   test('surface Titlebar', async () => {
-    await screenshot('surface-titlebar', page.locator('.titlebar'));
+    await screenshot('surface-titlebar', page.locator('.titlebar').first());
   });
 
   test('surface Titlebar dropdown', async () => {
-    await page.getByRole('button', { name: /collette-travel\/concierge-api/i }).click();
+    await page.getByRole('button', { name: /collette-travel\/concierge-api/i }).first().click();
     await screenshot('surface-titlebar-dropdown', page.getByRole('dialog', { name: /Repository/i }));
     await page.keyboard.press('Escape');
   });
