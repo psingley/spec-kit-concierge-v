@@ -2,7 +2,7 @@ import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import type { IpcMain } from 'electron';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createArtifactReadRequest, createArtifactReadResponse, type ArtifactReadResponse } from './artifacts.factory';
 
 export const ARTIFACTS_READ_CHANNEL = 'artifacts:read';
@@ -39,7 +39,7 @@ export const registerArtifactsIpc = ({
       logger.info({ channel: ARTIFACTS_READ_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: ARTIFACTS_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: ARTIFACTS_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

@@ -8,7 +8,7 @@ import { validateClarifyArtifacts } from '../domain/factories';
 import { beforeClarifyHook } from '../hooks/beforeClarify.hook';
 import { afterClarifyHook } from '../hooks/afterClarify.hook';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createCopilotClarifyAck,
   createCopilotClarifyRequest,
@@ -148,7 +148,7 @@ export const registerCopilotClarifyIpc = ({
         logger.info({ channel: COPILOT_CLARIFY_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       } catch (error) {
         sendEvent({ type: 'done', step: 'clarify', sessionId, status: 'fail', reason: error instanceof Error ? error.message : String(error) });
-        logger.error({ channel: COPILOT_CLARIFY_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+        logHandlerError(logger, { channel: COPILOT_CLARIFY_CHANNEL, context, startedAt, now }, error);
       }
     };
     void run();

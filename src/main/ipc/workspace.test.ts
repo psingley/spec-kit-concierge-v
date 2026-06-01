@@ -47,7 +47,7 @@ describe('registerWorkspaceIpc', () => {
 
     await expect(handlers.get(WORKSPACE_READ_CHANNEL)?.({ sender: { id: 8 } }, { repositoryPath: '/repo' })).rejects.toThrow(error);
     expect(errorLog).toHaveBeenCalledWith(
-      expect.objectContaining({ channel: WORKSPACE_READ_CHANNEL, context: { senderId: 8 }, success: false, error }),
+      expect.objectContaining({ channel: WORKSPACE_READ_CHANNEL, context: { senderId: 8 }, success: false, err: error, errorDetail: expect.objectContaining({ message: error.message }) }),
       'ipc handler invocation'
     );
   });

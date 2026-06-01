@@ -5,7 +5,7 @@ import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createStepStreamEvent, type PassiveStepSummary, type StepStreamEvent } from './stepStreamEvent.factory';
 
 export type PassiveStepName = Extract<StepName, 'plan' | 'tasks' | 'analyze'>;
@@ -216,7 +216,7 @@ export const registerPassiveStepIpc = ({
         logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       } catch (error) {
         terminal({ type: 'done', step, sessionId, status: 'fail', reason: error instanceof Error ? error.message : String(error) });
-        logger.error({ channel, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+        logHandlerError(logger, { channel, context, startedAt, now }, error);
       }
     };
 

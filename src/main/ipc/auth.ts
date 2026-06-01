@@ -2,7 +2,7 @@ import type { IpcMain } from 'electron';
 import { loginCopilot, loginGitHub, readCopilotAuthStatus, readGitHubAuthStatus, type LoginResult } from '../data-layer/auth/cliAuth';
 import { checkCopilotMcpConfig, fixCopilotMcpConfig } from '../data-layer/mcp-config/copilotMcp';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, loginDetail, toError } from './handlerUtils';
 import {
   createAuthLoginRequest,
   createAuthLoginResponse,
@@ -78,7 +78,7 @@ export const registerAuthIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: AUTH_STATUS_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: AUTH_STATUS_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
@@ -100,10 +100,13 @@ export const registerAuthIpc = ({
         if (!response.ok) {
           throw toError(response.error.message);
         }
-        logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+        logger.info(
+          { channel, context, success: true, latencyMs: latencyMs(startedAt, now), ...loginDetail(response.value) },
+          'ipc handler invocation'
+        );
         return response.value;
       } catch (error) {
-        logger.error({ channel, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+        logHandlerError(logger, { channel, context, startedAt, now }, error);
         throw error;
       }
     });

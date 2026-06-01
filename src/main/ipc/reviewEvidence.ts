@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 import { buildReviewEvidence, readReviewEvidenceBody } from '../domain/reviewEvidence';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createReviewEvidenceRequest, createReviewEvidenceResponse, type ReviewEvidenceResponse } from './reviewEvidence.factory';
 
 export const REVIEW_EVIDENCE_CHANNEL = 'review:evidence';
@@ -36,7 +36,7 @@ export const registerReviewEvidenceIpc = ({
       logger.info({ channel: REVIEW_EVIDENCE_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: REVIEW_EVIDENCE_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: REVIEW_EVIDENCE_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

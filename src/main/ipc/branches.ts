@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 import { listBranchSessions } from '../data-layer/git/branchSessions';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createBranchSessionsRequest, createBranchSessionsResponse, type BranchSessionsResponse } from './branches.factory';
 
 export const BRANCH_SESSIONS_CHANNEL = 'branches:sessions';
@@ -30,7 +30,7 @@ export const registerBranchesIpc = ({
       logger.info({ channel: BRANCH_SESSIONS_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: BRANCH_SESSIONS_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: BRANCH_SESSIONS_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

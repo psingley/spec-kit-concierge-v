@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 import { listRepositories } from '../data-layer/repositories/repoList';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createReposListRequest, createReposListResponse, type ReposListResponse } from './repos.factory';
 
 export const REPOS_LIST_CHANNEL = 'repos:list';
@@ -30,7 +30,7 @@ export const registerReposIpc = ({
       logger.info({ channel: REPOS_LIST_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: REPOS_LIST_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: REPOS_LIST_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

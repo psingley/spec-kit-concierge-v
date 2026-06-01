@@ -3,6 +3,7 @@ import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import type { BoundCLICapabilities } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
+import { logHandlerError } from './handlerUtils';
 
 export const ACP_PROBE_BOUND_CLI_CHANNEL = 'acp:probeBoundCLI';
 
@@ -64,11 +65,7 @@ export const registerAcpProbeIpc = ({
       );
       return session.capabilities;
     } catch (error) {
-      const latencyMs = Math.round((now() - startedAt) * 1000) / 1000;
-      logger.error(
-        { channel: ACP_PROBE_BOUND_CLI_CHANNEL, context, success: false, latencyMs, error },
-        'ipc handler invocation'
-      );
+      logHandlerError(logger, { channel: ACP_PROBE_BOUND_CLI_CHANNEL, context, startedAt, now }, error);
       throw error;
     } finally {
       await session?.dispose();

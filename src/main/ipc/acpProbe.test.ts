@@ -157,7 +157,8 @@ describe('registerAcpProbeIpc', () => {
       expect.objectContaining({
         channel: ACP_PROBE_BOUND_CLI_CHANNEL,
         success: false,
-        error
+        err: error,
+        errorDetail: expect.objectContaining({ message: error.message })
       }),
       'ipc handler invocation'
     );

@@ -45,6 +45,6 @@ describe('registerStepsIpc', () => {
     });
 
     await expect(handlers.get(STEPS_READ_CHANNEL)?.({ sender: { id: 8 } }, { commits: [] })).rejects.toThrow(error);
-    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: STEPS_READ_CHANNEL, context: { senderId: 8 }, success: false, error }), 'ipc handler invocation');
+    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: STEPS_READ_CHANNEL, context: { senderId: 8 }, success: false, err: error, errorDetail: expect.objectContaining({ message: error.message }) }), 'ipc handler invocation');
   });
 });

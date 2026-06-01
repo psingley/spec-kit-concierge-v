@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 import { parseConciergeStepTrailer } from '../data-layer/git/trailers';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createStepsReadRequest,
   createStepsReadResponse,
@@ -62,7 +62,7 @@ export const registerStepsIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: STEPS_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: STEPS_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

@@ -3,7 +3,7 @@ import { readBranchState } from '../data-layer/git/branchState';
 import { checkoutBranch, createDraftBranch } from '../data-layer/git/branchSessions';
 import { readUncommittedPaths } from '../data-layer/git/uncommittedPaths';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createGitCheckoutRequest,
   createGitCheckoutResponse,
@@ -70,7 +70,7 @@ export const registerGitIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: GIT_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: GIT_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
@@ -86,7 +86,7 @@ export const registerGitIpc = ({
       logger.info({ channel: GIT_CHECKOUT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: GIT_CHECKOUT_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: GIT_CHECKOUT_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
@@ -104,7 +104,7 @@ export const registerGitIpc = ({
       logger.info({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: GIT_CREATE_DRAFT_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: GIT_CREATE_DRAFT_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

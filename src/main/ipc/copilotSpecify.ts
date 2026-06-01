@@ -5,7 +5,7 @@ import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createCopilotSpecifyAck,
   createCopilotSpecifyRequest,
@@ -162,7 +162,7 @@ export const registerCopilotSpecifyIpc = ({
           status: 'fail',
           reason: error instanceof Error ? error.message : String(error)
         });
-        logger.error({ channel: COPILOT_SPECIFY_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+        logHandlerError(logger, { channel: COPILOT_SPECIFY_CHANNEL, context, startedAt, now }, error);
       }
     };
 

@@ -6,7 +6,7 @@ import type {
   BoundCLISessionSummary
 } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createSessionCreateRequest,
   createSessionCreateResponse,
@@ -80,7 +80,7 @@ export const registerSessionIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: SESSION_LIST_ACP_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: SESSION_LIST_ACP_CHANNEL, context, startedAt, now }, error);
       throw error;
     } finally {
       await session?.dispose();
@@ -107,7 +107,7 @@ export const registerSessionIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: SESSION_CREATE_ACP_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: SESSION_CREATE_ACP_CHANNEL, context, startedAt, now }, error);
       throw error;
     } finally {
       await session?.dispose();

@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createWorkspaceReadRequest,
   createWorkspaceReadResponse,
@@ -56,7 +56,7 @@ export const registerWorkspaceIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: WORKSPACE_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: WORKSPACE_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

@@ -53,6 +53,6 @@ describe('registerActivityIpc', () => {
     });
 
     await expect(handlers.get(ACTIVITY_READ_CHANNEL)?.({ sender: { id: 8 } }, { limit: 10 })).rejects.toThrow(error);
-    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: ACTIVITY_READ_CHANNEL, context: { senderId: 8 }, success: false, error }), 'ipc handler invocation');
+    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: ACTIVITY_READ_CHANNEL, context: { senderId: 8 }, success: false, err: error, errorDetail: expect.objectContaining({ message: error.message }) }), 'ipc handler invocation');
   });
 });

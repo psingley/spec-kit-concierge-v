@@ -64,6 +64,6 @@ describe('registerSessionIpc', () => {
     });
 
     await expect(handlers.get(channel)?.({ sender: { id: 8 } }, payload)).rejects.toThrow(error);
-    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel, context: { senderId: 8 }, success: false, error }), 'ipc handler invocation');
+    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel, context: { senderId: 8 }, success: false, err: error, errorDetail: expect.objectContaining({ message: error.message }) }), 'ipc handler invocation');
   });
 });

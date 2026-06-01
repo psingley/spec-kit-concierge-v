@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { app, type IpcMain } from 'electron';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createActivityReadRequest,
   createActivityReadResponse,
@@ -85,7 +85,7 @@ export const registerActivityIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: ACTIVITY_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: ACTIVITY_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

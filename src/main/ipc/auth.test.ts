@@ -48,6 +48,6 @@ describe('registerAuthIpc', () => {
     });
 
     await expect(handlers.get(AUTH_STATUS_CHANNEL)?.({ sender: { id: 8 } }, { providers: ['copilot'] })).rejects.toThrow(error);
-    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: AUTH_STATUS_CHANNEL, context: { senderId: 8 }, success: false, error }), 'ipc handler invocation');
+    expect(errorLog).toHaveBeenCalledWith(expect.objectContaining({ channel: AUTH_STATUS_CHANNEL, context: { senderId: 8 }, success: false, err: error, errorDetail: expect.objectContaining({ message: error.message }) }), 'ipc handler invocation');
   });
 });

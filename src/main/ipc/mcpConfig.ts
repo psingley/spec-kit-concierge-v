@@ -2,7 +2,7 @@ import type { IpcMain } from 'electron';
 import { checkCopilotMcpConfig, fixCopilotMcpConfig } from '../data-layer/mcp-config/copilotMcp';
 import type { McpConfigFixResult, McpConfigStatus } from '../data-layer/mcp-config/types';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createMcpConfigCheckResponse, createMcpConfigFixRequest, createMcpConfigFixResponse } from './mcpConfig.factory';
 
 export const MCP_CONFIG_CHECK_CHANNEL = 'mcp:config:check';
@@ -30,10 +30,10 @@ export const registerMcpConfigIpc = ({
       assertOnePayload(MCP_CONFIG_CHECK_CHANNEL, args);
       const response = createMcpConfigCheckResponse(await checkMcpConfig());
       if (!response.ok) throw toError(response.error.message);
-      logger.info({ channel: MCP_CONFIG_CHECK_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+      logger.info({ channel: MCP_CONFIG_CHECK_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now), state: response.value.state }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: MCP_CONFIG_CHECK_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: MCP_CONFIG_CHECK_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
@@ -46,10 +46,21 @@ export const registerMcpConfigIpc = ({
       if (!request.ok) throw toError(request.error.message);
       const result = createMcpConfigFixResponse(await fixMcpConfig(await checkMcpConfig()));
       if (!result.ok) throw toError(result.error.message);
-      logger.info({ channel: MCP_CONFIG_FIX_CHANNEL, context, reason: request.value.reason, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+      logger.info(
+        {
+          channel: MCP_CONFIG_FIX_CHANNEL,
+          context,
+          reason: request.value.reason,
+          success: true,
+          latencyMs: latencyMs(startedAt, now),
+          writeKind: result.value.writeKind,
+          writeAttempted: result.value.writeAttempted
+        },
+        'ipc handler invocation'
+      );
       return result.value;
     } catch (error) {
-      logger.error({ channel: MCP_CONFIG_FIX_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: MCP_CONFIG_FIX_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

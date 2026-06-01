@@ -3,7 +3,7 @@ import path from 'node:path';
 import type { IpcMain } from 'electron';
 import { parseTaskDetails } from '../domain/tasksDetail';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import { createTasksDetailRequest, createTasksDetailResponse, type TasksDetailResponse } from './tasksDetail.factory';
 
 export const TASKS_DETAIL_CHANNEL = 'tasks:detail';
@@ -37,7 +37,7 @@ export const registerTasksDetailIpc = ({
       logger.info({ channel: TASKS_DETAIL_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return response.value;
     } catch (error) {
-      logger.error({ channel: TASKS_DETAIL_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: TASKS_DETAIL_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { app, type IpcMain } from 'electron';
 import { safeWrite } from '../data-layer/fs/safeWrite';
 import type { MainLogger } from '../logging';
-import { assertOnePayload, getSenderContext, latencyMs, toError } from './handlerUtils';
+import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
   createPreferencesPayload,
   createPreferencesReadRequest,
@@ -79,7 +79,7 @@ export const registerPreferencesIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: PREFERENCES_READ_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: PREFERENCES_READ_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
@@ -101,7 +101,7 @@ export const registerPreferencesIpc = ({
 
       return response.value;
     } catch (error) {
-      logger.error({ channel: PREFERENCES_WRITE_CHANNEL, context, success: false, latencyMs: latencyMs(startedAt, now), error }, 'ipc handler invocation');
+      logHandlerError(logger, { channel: PREFERENCES_WRITE_CHANNEL, context, startedAt, now }, error);
       throw error;
     }
   });
