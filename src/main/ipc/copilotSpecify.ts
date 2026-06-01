@@ -10,6 +10,7 @@ import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
 import { runGit } from '../data-layer/git/gitCommand';
+import { ensureBranch as ensureBranchDefault } from '../data-layer/git/ensureBranch';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -88,6 +89,9 @@ export type RegisterCopilotSpecifyIpcOptions = {
   beforeHook?: StepHook;
   afterHook?: StepHook;
   branchReader?: (repositoryPath: string) => Promise<string>;
+  // Post-specify reconciliation: guarantee the worktree ends on a real branch
+  // (Bug 25) when spec-kit's LLM-executed git.feature hook left it detached.
+  ensureBranch?: (repositoryPath: string, branchName: string) => Promise<string>;
   now?: () => number;
 };
 
@@ -500,6 +504,7 @@ export const registerCopilotSpecifyIpc = ({
   // equivalent to `git -C <worktreePath> branch --show-current`; it returns the
   // real spec-kit-named branch (empty only on a still-detached HEAD).
   branchReader = (repositoryPath) => runGit(repositoryPath, ['branch', '--show-current']),
+  ensureBranch = ensureBranchDefault,
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
@@ -648,7 +653,17 @@ export const registerCopilotSpecifyIpc = ({
         const specMarkdown = await import('node:fs/promises').then((fs) =>
           fs.readFile(path.join(featureDir, artifactPath), 'utf8')
         );
-        const branch = await branchReader(request.value.repositoryPath).catch(() => undefined);
+        // Read the branch spec-kit's after-hook named. EMPTY (or a throw) means
+        // the worktree is on a DETACHED HEAD — spec-kit's LLM-executed
+        // before_specify git.feature hook (git checkout -b NNN-slug) sometimes
+        // doesn't run (Bug 25). Reconcile by deriving the feature branch name
+        // from the resolved feature dir basename and creating+switching the
+        // worktree onto it, so the done event always carries a real branch and
+        // downstream steps (which gate on branch !== null) unblock.
+        let branch = await branchReader(request.value.repositoryPath).catch(() => undefined);
+        if (branch !== undefined && branch.length === 0) {
+          branch = await ensureBranch(request.value.repositoryPath, path.basename(featureDir));
+        }
         terminal({
           type: 'done',
           step: 'specify',

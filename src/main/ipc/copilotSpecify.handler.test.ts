@@ -81,6 +81,72 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
   });
 });
 
+describe('registerCopilotSpecifyIpc branch reconciliation (Bug 25)', () => {
+  const setupFeatureRepo = async (slug: string) => {
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-branch-'));
+    const featureRel = `specs/${slug}`;
+    await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+    await mkdir(path.join(repositoryPath, featureRel), { recursive: true });
+    await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
+    await writeFile(path.join(repositoryPath, featureRel, 'spec.md'), '# spec', 'utf8');
+    return { repositoryPath, featureRel };
+  };
+
+  it('reconciles a detached worktree: ensureBranch is called and the done event carries a non-empty branch', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await setupFeatureRepo('0012-detached');
+    // branchReader returns empty -> detached HEAD.
+    const branchReader = vi.fn().mockResolvedValue('');
+    const ensureBranch = vi.fn().mockResolvedValue('0012-detached');
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook: okAfter,
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      branchReader,
+      ensureBranch
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'specify', status: 'pass', branch: '0012-detached' })
+    })));
+    // The feature branch name is derived from the feature dir basename.
+    expect(ensureBranch).toHaveBeenCalledWith(repositoryPath, '0012-detached');
+  });
+
+  it('no-ops when already on a branch: ensureBranch is not called and the branch flows through unchanged', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await setupFeatureRepo('0012-onbranch');
+    const branchReader = vi.fn().mockResolvedValue('0012-onbranch');
+    const ensureBranch = vi.fn();
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook: okAfter,
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      branchReader,
+      ensureBranch
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'specify', status: 'pass', branch: '0012-onbranch' })
+    })));
+    expect(ensureBranch).not.toHaveBeenCalled();
+  });
+});
+
 describe('registerCopilotSpecifyIpc streaming', () => {
   it('forwards agent stdout lines to the activity stream as progress events', async () => {
     const harness = createHarness();
