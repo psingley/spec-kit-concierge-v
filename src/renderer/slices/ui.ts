@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
 
 export type ToastEntry = {
   id: string;
@@ -47,9 +47,11 @@ const uiSlice = createSlice({
     menuOpened: (state, action: PayloadAction<string | null>) => {
       state.openMenu = action.payload;
     },
-    toastShown: (state, action: PayloadAction<Omit<ToastEntry, 'id'>>) => {
-      const id = `toast-${Date.now()}-${state.toasts.length}`;
-      state.toasts.push({ id, ...action.payload });
+    toastShown: {
+      prepare: (payload: Omit<ToastEntry, 'id'>) => ({ payload: { id: nanoid(), ...payload } }),
+      reducer: (state, action: PayloadAction<ToastEntry>) => {
+        state.toasts.push(action.payload);
+      }
     },
     toastDismissed: (state, action: PayloadAction<string>) => {
       state.toasts = state.toasts.filter((t) => t.id !== action.payload);
