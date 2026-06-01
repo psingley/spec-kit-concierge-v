@@ -11,10 +11,16 @@ const execFileAsync = promisify(execFile);
  * Always `{userDataPath}/repos/{owner}/{name}`.
  */
 export const resolveLocalRepoPath = (userDataPath: string, repositoryPath: string): string => {
-  const [owner, name] = repositoryPath.split('/');
-  if (!owner || !name) {
+  const parts = repositoryPath.split('/');
+  if (
+    parts.length !== 2 ||
+    parts[0] === '' ||
+    parts[1] === '' ||
+    parts.some((part) => part === '.' || part === '..' || part.includes('..') || part.includes('\\'))
+  ) {
     throw new Error(`Invalid repositoryPath: "${repositoryPath}". Expected "owner/name".`);
   }
+  const [owner, name] = parts as [string, string];
   return path.join(userDataPath, 'repos', owner, name);
 };
 
