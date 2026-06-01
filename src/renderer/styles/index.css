@@ -1265,6 +1265,12 @@ small {
   background: var(--accent);
 }
 
+/* In-progress (dirty/recoverable, ADR-0008 `pending`): half-filled amber pip,
+   visually distinct from both empty (--surface-2) and done (--accent). */
+.rb-branch-pips .pip.in-progress {
+  background: linear-gradient(to right, var(--warn) 0 50%, var(--surface-2) 50% 100%);
+}
+
 .rb-branch-time {
   font-size: 10.5px;
   color: var(--text-faint);

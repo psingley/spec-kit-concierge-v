@@ -119,4 +119,39 @@ describe('RepoBrowseScreen visual contract', () => {
     expect(screen.getByText('1 prior session')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'spec/runtime-sessionClarifyrecent' })).toBeInTheDocument();
   });
+
+  it('renders a distinct pip visual per step state (complete / pending / not_available)', () => {
+    const sessions: BranchSession[] = [
+      {
+        branch: 'spec/three-state',
+        label: 'Three state',
+        // specify complete, clarify pending (dirty/in-progress), the rest not_available.
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+      }
+    ];
+
+    const { container } = render(
+      <RepoBrowseScreen
+        repositories={repositories}
+        sessions={sessions}
+        selectedRepo={repositories[1]!}
+        loading={false}
+        error={false}
+        onSelectRepo={vi.fn()}
+        onResume={vi.fn()}
+        onStartNew={vi.fn()}
+        onBackToRepos={vi.fn()}
+      />
+    );
+
+    const pips = Array.from(container.querySelectorAll('.rb-branch-pips .pip'));
+    expect(pips).toHaveLength(6);
+    // stepOrder: specify, clarify, plan, analyze, tasks, review
+    expect(pips[0]?.className).toContain('done');
+    expect(pips[0]?.className).not.toContain('in-progress');
+    expect(pips[1]?.className).toContain('in-progress');
+    expect(pips[1]?.className).not.toContain('done');
+    expect(pips[2]?.className).toBe('pip');
+    expect(pips[3]?.className).toBe('pip');
+  });
 });

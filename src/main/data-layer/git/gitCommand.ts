@@ -125,9 +125,14 @@ export type ConciergeStepHistoryRecord = {
 };
 
 export const readConciergeStepHistory = async (
-  repositoryPath: string
+  repositoryPath: string,
+  revisionRange?: string
 ): Promise<ConciergeStepHistoryRecord[]> => {
-  const output = await runGit(repositoryPath, ['log', '--format=%H%x00%B%x1e']);
+  const logArgs = ['log', '--format=%H%x00%B%x1e'];
+  if (revisionRange !== undefined && revisionRange.length > 0) {
+    logArgs.push(revisionRange);
+  }
+  const output = await runGit(repositoryPath, logArgs);
   return output
     .split('\x1e')
     .map((entry) => entry.trim())

@@ -35,6 +35,13 @@ type PresentedSession = {
   branch: string;
   step: StepName;
   timestamp: string;
+  restoredStates: BranchSession['restoredStates'];
+};
+
+const pipClassName = (state: BranchSession['restoredStates'][StepName]): string => {
+  if (state === 'complete') return 'pip done';
+  if (state === 'pending') return 'pip in-progress';
+  return 'pip';
 };
 
 const stateRank: Record<BranchSession['restoredStates'][StepName], number> = {
@@ -53,7 +60,8 @@ const presentedSessionsFor = (sessions: BranchSession[]): PresentedSession[] =>
   sessions.map((session) => ({
     branch: session.branch,
     step: sessionStep(session),
-    timestamp: 'recent'
+    timestamp: 'recent',
+    restoredStates: session.restoredStates
   }));
 
 export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, error, cloning = false, cloneError = false, localReady = true, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
@@ -122,31 +130,28 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
           <section aria-label="Branch sessions" className="session-picker">
             <div className="rb-branches-h">{presentedSessions.length} prior {presentedSessions.length === 1 ? 'session' : 'sessions'}</div>
             <div className="rb-branch-list">
-              {presentedSessions.map((session) => {
-                const stepIndex = stepOrder.indexOf(session.step);
-                return (
-                  <button
-                    key={session.branch}
-                    type="button"
-                    aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
-                    className="rb-branch-card session-row"
-                    onClick={() => onResume(selectedRepo, session.branch)}
-                  >
-                    <span className="rb-branch-glyph" />
-                    <span className="rb-branch-card-main">
-                      <span className="rb-branch-name mono">{session.branch}</span>
-                      <span className="rb-branch-meta">
-                        <span className="rb-branch-step">{stepLabels[session.step]}</span>
-                        <span className="rb-branch-pips" aria-hidden="true">
-                          {stepOrder.map((step, index) => <span key={step} className={`pip ${index <= stepIndex ? 'done' : ''}`} />)}
-                        </span>
+              {presentedSessions.map((session) => (
+                <button
+                  key={session.branch}
+                  type="button"
+                  aria-label={`${session.branch}${stepLabels[session.step]}${session.timestamp}`}
+                  className="rb-branch-card session-row"
+                  onClick={() => onResume(selectedRepo, session.branch)}
+                >
+                  <span className="rb-branch-glyph" />
+                  <span className="rb-branch-card-main">
+                    <span className="rb-branch-name mono">{session.branch}</span>
+                    <span className="rb-branch-meta">
+                      <span className="rb-branch-step">{stepLabels[session.step]}</span>
+                      <span className="rb-branch-pips" aria-hidden="true">
+                        {stepOrder.map((step) => <span key={step} className={pipClassName(session.restoredStates[step])} />)}
                       </span>
                     </span>
-                    <span className="rb-branch-time">{session.timestamp}</span>
-                    <Ico.Right size={11} />
-                  </button>
-                );
-              })}
+                  </span>
+                  <span className="rb-branch-time">{session.timestamp}</span>
+                  <Ico.Right size={11} />
+                </button>
+              ))}
             </div>
             <button type="button" aria-label="Start a new sessionfrom main" className="rb-new-session-cta" onClick={() => onStartNew(selectedRepo)}>
               <Ico.Plus size={12} />
