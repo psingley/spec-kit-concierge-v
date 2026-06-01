@@ -172,12 +172,25 @@ small {
 
 /* ============ App Shell ============ */
 
+.app-root {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-rows: var(--titlebar-h) 1fr;
+  overflow: hidden;
+}
+
+.app-outlet {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .app-shell,
 .workspace {
   height: 100%;
   width: 100%;
   display: grid;
-  grid-template-rows: var(--titlebar-h) 1fr;
+  grid-template-rows: 1fr;
   background: var(--bg);
   overflow: hidden;
 }
@@ -213,10 +226,12 @@ small {
 }
 
 .screen {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
   display: grid;
   place-items: center;
   padding: 30px;
+  overflow: auto;
   background:
     linear-gradient(90deg, rgb(58 126 154 / 0.08), transparent 38%),
     radial-gradient(circle at 20% 15%, rgb(143 210 232 / 0.08), transparent 22rem),
@@ -2664,4 +2679,64 @@ button.ev-row {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Toasts */
+.toasts-container {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(400px, calc(100vw - 32px));
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: var(--shadow-2);
+}
+
+.toast--error {
+  border-color: rgb(255 129 111 / 0.42);
+  background: color-mix(in srgb, var(--bad-bg) 56%, var(--surface-2));
+}
+
+.toast--warn {
+  border-color: rgb(246 196 95 / 0.42);
+  background: color-mix(in srgb, var(--warn-bg) 56%, var(--surface-2));
+}
+
+.toast--info {
+  border-color: rgb(138 184 255 / 0.42);
+  background: color-mix(in srgb, var(--info-bg) 56%, var(--surface-2));
+}
+
+.toast__message {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.toast__dismiss {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.toast__dismiss:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
 }

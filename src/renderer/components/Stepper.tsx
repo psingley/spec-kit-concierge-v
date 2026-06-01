@@ -1,15 +1,12 @@
 import React from 'react';
 import type { StepName, StepState } from '../slices/steps';
+import { stepOrder } from '../slices/steps';
 
 export type StepperProps = {
   states: Record<StepName, StepState>;
   viewedStep: StepName;
   onSelectStep: (step: StepName) => void;
 };
-
-// Intentional design deviation: the fetched prototype swaps Tasks and Analyze,
-// but constitution v1.0.4 and ROADMAP_DECISIONS govern the shipped step order.
-export const stepOrder: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
 
 const labels: Record<StepName, string> = {
   specify: 'Specify',

@@ -33,6 +33,10 @@ export type ClarifyQuestionMalformedPayload = {
 
 export const stepNames = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'] as const;
 
+// Intentional design deviation: the fetched prototype swaps Tasks and Analyze,
+// but constitution v1.0.4 and ROADMAP_DECISIONS govern the shipped step order.
+export const stepOrder: StepName[] = [...stepNames];
+
 const isStepName = (value: string): value is StepName =>
   (stepNames as readonly string[]).includes(value);
 

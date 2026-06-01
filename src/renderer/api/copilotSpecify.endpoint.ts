@@ -5,6 +5,7 @@ import { activityBusyChanged, recordActivity } from '../slices/activity';
 import { branchUpdated, specifyCompletedInWorkspace } from '../slices/workspace';
 import { stepCompleted, stepPending } from '../slices/steps';
 import { specifyRunFailed, specifyRunProgressed, specifyRunStarted, specifyRunSucceeded } from '../slices/session';
+import { toastShown } from '../slices/ui';
 
 export type RunSpecifyArgs = {
   repositoryPath: string;
@@ -52,19 +53,26 @@ export const copilotSpecifyApi = api.injectEndpoints({
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Specify complete' }));
             teardown();
           } else {
-            queryApi.dispatch(specifyRunFailed({ reason: parsed.value.reason ?? 'Specify failed' }));
+            const message = parsed.value.reason ?? 'Specify failed';
+            queryApi.dispatch(specifyRunFailed({ reason: message }));
             queryApi.dispatch(activityBusyChanged({ busy: false, status: 'Specify failed' }));
+            queryApi.dispatch(toastShown({ level: 'error', message: `Specify failed: ${message}` }));
             teardown();
           }
         });
         const response = await baseQuery({ channel: 'copilot:specify', payload: { ...arg, subscriptionId, modelId: arg.modelId ?? undefined } });
         if (response.error !== undefined) {
           teardown();
+          const message = response.error.data?.message ?? 'Specify IPC call failed';
+          console.error('[copilot:specify]', message, response.error);
+          queryApi.dispatch(toastShown({ level: 'error', message: `Specify failed: ${message}` }));
           return { error: response.error };
         }
         const parsed = parseRendererCopilotSpecifyAck(response.data);
         if (!parsed.ok) {
           teardown();
+          console.error('[copilot:specify] ack parse failed', parsed.error);
+          queryApi.dispatch(toastShown({ level: 'error', message: `Specify failed: ${parsed.error.message}` }));
           return { error: parsingError(parsed.error) };
         }
         queryApi.dispatch(specifyRunStarted({ sessionId: parsed.value.sessionId, modelId: arg.modelId }));

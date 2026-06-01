@@ -1,5 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router';
 import { act, render, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { AppStore } from '../store';
@@ -23,7 +24,9 @@ const renderWorkspace = () => {
   const store = createProductStore();
   const utils = render(
     <Provider store={store}>
-      <WorkspaceContainer />
+      <MemoryRouter initialEntries={['/workspace']}>
+        <WorkspaceContainer />
+      </MemoryRouter>
     </Provider>
   );
   const dispatch = (action: Parameters<AppStore['dispatch']>[0]): void => {

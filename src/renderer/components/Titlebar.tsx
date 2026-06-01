@@ -139,7 +139,7 @@ const MenuWrap = ({
                 <Ico.Search size={12} />
                 <input aria-label="Filter repos" placeholder="Filter repos…" readOnly />
               </div>
-              <div className="tb-menu-scroll">
+              <div className="tb-menu-scroll" tabIndex={0} role="region" aria-label="Repository list">
                 {repositoriesError ? (
                   <div className="tb-menu-empty">Could not load repositories</div>
                 ) : repositories.length === 0 ? (

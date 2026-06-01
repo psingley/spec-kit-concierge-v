@@ -1,7 +1,20 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { Provider } from 'react-redux';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SpecifyStep } from './SpecifyStep';
+import { SpecifyStepContainer } from './SpecifyStepContainer';
+import { createProductStore } from '../store';
+import { specifyPromptChanged } from '../slices/session';
+import { workspaceEntered } from '../slices/workspace';
+
+const runSpecify = vi.fn();
+
+vi.mock('../api/copilotSpecify.endpoint', () => ({
+  copilotSpecifyApi: {
+    useRunSpecifyMutation: () => [runSpecify]
+  }
+}));
 
 const renderComplete = (requireScroll: boolean) => {
   const onBegin = vi.fn();
@@ -84,5 +97,39 @@ describe('SpecifyStep CTA routing', () => {
 
     expect(onBegin).toHaveBeenCalledTimes(1);
     expect(onAdvanceToClarify).not.toHaveBeenCalled();
+  });
+});
+
+describe('SpecifyStepContainer branch-null sessions', () => {
+  beforeEach(() => {
+    runSpecify.mockReset();
+  });
+
+  it('begins specify with the repo default branch when the entered worktree session has branch=null', () => {
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge',
+      defaultBranch: 'main'
+    };
+    store.dispatch(workspaceEntered({ repo, branch: null }));
+    store.dispatch(specifyPromptChanged('Build the router'));
+
+    render(
+      <Provider store={store}>
+        <SpecifyStepContainer />
+      </Provider>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /begin specify/i }));
+
+    expect(runSpecify).toHaveBeenCalledWith({
+      repositoryPath: '/work/concierge',
+      branch: 'main',
+      prompt: 'Build the router',
+      modelId: null
+    });
   });
 });

@@ -113,7 +113,15 @@ export const SpecifyStep = ({
               <div className="bar" style={{ width: `${scrollProgress}%` }} />
             </div>
             {mode === 'preview' ? (
-              <div ref={reviewRef} className="md-scroll" data-testid="spec-review-scroll" onScroll={updateScrollProgress}>
+              <div
+                ref={reviewRef}
+                className="md-scroll"
+                data-testid="spec-review-scroll"
+                tabIndex={0}
+                role="region"
+                aria-label="Specification review"
+                onScroll={updateScrollProgress}
+              >
                 <div className="md-preview">
                   <Markdown text={specMarkdown} />
                 </div>

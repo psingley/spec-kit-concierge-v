@@ -114,7 +114,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
         ) : null}
         {loading ? <p>Loading repositories...</p> : null}
         {selectedRepo === null ? (
-          <div className="rb-list repo-list">
+          <div className="rb-list repo-list" tabIndex={0} role="region" aria-label="Repository list">
             {error ? (
               <div className="rb-empty">Could not load repositories.</div>
             ) : !loading && repositories.length === 0 ? (
@@ -136,7 +136,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
         ) : (
           <section aria-label="Branch sessions" className="session-picker">
             <div className="rb-branches-h">{presentedSessions.length} prior {presentedSessions.length === 1 ? 'session' : 'sessions'}</div>
-            <div className="rb-branch-list">
+            <div className="rb-branch-list" tabIndex={0} role="region" aria-label="Branch sessions list">
               {presentedSessions.map((session) => (
                 <button
                   key={session.sessionId}

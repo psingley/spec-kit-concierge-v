@@ -13,11 +13,15 @@ vi.mock('react-redux', () => ({
 }));
 
 vi.mock('./store', () => ({
-  store: { dispatch }
+  store: { dispatch, wireRouter: vi.fn() }
 }));
 
 vi.mock('./App', () => ({
   App: () => null
+}));
+
+vi.mock('./router', () => ({
+  createAppRouter: () => ({})
 }));
 
 vi.mock('./api', () => ({

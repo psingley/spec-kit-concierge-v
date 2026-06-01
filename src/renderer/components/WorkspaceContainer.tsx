@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
+import { useStepFromUrl } from '../hooks/useStepFromUrl';
 import type { StepName, StepState } from '../slices/steps';
+import { stepOrder } from '../slices/steps';
 import { workspaceStepViewed } from '../slices/workspace';
-import { selectWorkspaceViewedStep } from '../slices/workspace.selectors';
 import { selectUiShowActivity } from '../slices/ui.selectors';
 import { ActivityRailContainer } from './ActivityRailContainer';
 import { ClarifyStepContainer } from './ClarifyStepContainer';
@@ -10,14 +11,13 @@ import { ModalHost } from './ModalHost';
 import { PassiveStepContainer } from './PassiveStepContainer';
 import { ReviewStepContainer } from './ReviewStepContainer';
 import { SpecifyStepContainer } from './SpecifyStepContainer';
-import { Stepper, stepOrder } from './Stepper';
-import { TitlebarContainer } from './TitlebarContainer';
+import { Stepper } from './Stepper';
 import { selectSessionClarifyCompletion, selectSessionPassiveSteps, selectSessionSpecMarkdown } from '../slices/session.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 
 export const WorkspaceContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const viewedStep = useAppSelector(selectWorkspaceViewedStep);
+  const viewedStep = useStepFromUrl();
   const specMarkdown = useAppSelector(selectSessionSpecMarkdown);
   const clarifyCompletion = useAppSelector(selectSessionClarifyCompletion);
   const passiveSteps = useAppSelector(selectSessionPassiveSteps);
@@ -43,7 +43,6 @@ export const WorkspaceContainer = (): React.ReactElement => {
   }, {} as Record<StepName, StepState>);
   return (
     <div className="workspace">
-      <TitlebarContainer />
       <div className={bodyClassName}>
         {showActivity && activitySide === 'left' ? <ActivityRailContainer /> : null}
         <main className="workspace-main">

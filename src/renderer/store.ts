@@ -10,11 +10,14 @@ import { uiReducer } from './slices/ui';
 import { workspaceReducer } from './slices/workspace';
 import { setupAcpStreamSubscriptionListener } from './listeners/acpStreamSubscription.listener';
 import { setupActivityLoggerListener } from './listeners/activityLogger.listener';
+import { setupNavigationListener } from './listeners/navigation.listener';
 import { setupPreferencesPersistenceListener } from './listeners/preferencesPersistence.listener';
 import { setupSessionLifecycleListener } from './listeners/sessionLifecycle.listener';
 import { setupStepLifecycleListener } from './listeners/stepLifecycle.listener';
 import { setupTranscriptCaptureListener } from './listeners/transcriptCapture.listener';
 import { setupWorkspaceChangeListener } from './listeners/workspaceChange.listener';
+import type { AppStartListening } from './listeners/types';
+import type { createMemoryRouter } from 'react-router';
 import { mcpConfigCheckRequested, setupMcpConfigCheckerListener } from './listeners/mcpConfigChecker.listener';
 
 const reducer = {
@@ -42,10 +45,16 @@ export const createProductStore = () => {
   setupWorkspaceChangeListener(startListening);
   setupMcpConfigCheckerListener(startListening);
 
-  const productStore = configureStore({
+  const store = configureStore({
     reducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().prepend(listenerMiddleware.middleware).concat(api.middleware)
+  });
+
+  const productStore = Object.assign(store, {
+    wireRouter: (router: ReturnType<typeof createMemoryRouter>) => {
+      setupNavigationListener(startListening as unknown as AppStartListening, router);
+    }
   });
   productStore.dispatch(mcpConfigCheckRequested({ reason: 'startup' }));
   return productStore;

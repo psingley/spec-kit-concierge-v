@@ -9,3 +9,4 @@ export const selectUiShowCustomize = (state: RootState) => state.ui.showCustomiz
 export const selectUiShowAbout = (state: RootState) => state.ui.showAbout;
 export const selectUiShowRequest = (state: RootState) => state.ui.showRequest;
 export const selectUiOpenMenu = (state: RootState) => state.ui.openMenu;
+export const selectUiToasts = (state: RootState) => state.ui.toasts;
