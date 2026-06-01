@@ -54,6 +54,14 @@ type PersistedClarifySession = {
 
 const activeSessions = new Map<string, PersistedClarifySession>();
 
+// The in-flight marker is written by the before-hook on `next` and removed by the
+// after-hook on `commit` — different IPC calls with different per-call sessionIds.
+// Keying the marker by the per-call sessionId meant the commit op removed a marker
+// path that was never written (ENOENT -> spurious "Clarify failed" after a real
+// commit). We mint ONE stable marker sessionId per conversation (keyed by the stable
+// repositoryPath, like activeSessions) so the write and remove target the same path.
+const markerSessions = new Map<string, string>();
+
 const accumulateAgentMessage = (text: string, update: BoundCLIPromptUpdate): string => {
   const inner = update.update;
   if (inner.sessionUpdate !== 'agent_message_chunk') {
@@ -205,17 +213,26 @@ export const registerCopilotClarifyIpc = ({
       }
       event.sender.send(COPILOT_CLARIFY_EVENT_CHANNEL, { subscriptionId: request.value.subscriptionId, event: parsed.value });
     };
+    // Stable across the whole conversation: the before-hook (next) and after-hook
+    // (commit) must write/remove the in-flight marker under the SAME id. Mint on the
+    // first op (next) and reuse for continuation ops, keyed by the stable repositoryPath.
+    const repoKey = request.value.repositoryPath;
+    const markerSessionId = markerSessions.get(repoKey) ?? sessionId;
+    if (!markerSessions.has(repoKey)) {
+      markerSessions.set(repoKey, markerSessionId);
+    }
     const run = async (): Promise<void> => {
       try {
         const featureDir = await resolveFeatureDir(request.value.repositoryPath);
         if (request.value.operation === 'next') {
-          const before = await beforeClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
+          const before = await beforeClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId: markerSessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
           if (!before.ok) throw new Error(before.escapeHatchReason);
         }
         sendEvent({ type: 'progress', step: 'clarify', sessionId, level: 'info', message: 'Running Clarify', timestamp: new Date().toISOString() });
         const { message } = await adapter({ ...request.value, sessionId, featureDir });
         if (request.value.operation === 'commit') {
-          const after = await afterClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
+          const after = await afterClarifyHook({ repositoryPath: request.value.repositoryPath, featureDir, sessionId: markerSessionId, userDataPath, authStatus: { githubLoggedIn: true, copilotLoggedIn: true } });
+          markerSessions.delete(repoKey);
           if (!after.ok || after.commit?.commitSha === undefined) throw new Error(after.ok ? 'missing commit sha' : after.escapeHatchReason);
           sendEvent({
             type: 'done',
