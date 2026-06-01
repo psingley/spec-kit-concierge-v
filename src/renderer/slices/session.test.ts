@@ -6,9 +6,26 @@ import {
   selectSessionModelId,
   selectSessionState
 } from './session.selectors';
-import sessionReducer from './session';
+import sessionReducer, { sessionRestoredFromResume } from './session';
 
 describe('session slice', () => {
+  it('hydrates specMarkdown + commit on resume so Specify shows complete with evidence', () => {
+    const state = sessionReducer(
+      undefined,
+      sessionRestoredFromResume({ specMarkdown: '# Spec\n\nbody', commitSha: 'abc1234' })
+    );
+    expect(state.specMarkdown).toBe('# Spec\n\nbody');
+    expect(state.commitSha).toBe('abc1234');
+    expect(state.specifyStarted).toBe(true);
+  });
+
+  it('resume hydration with an empty spec leaves Specify pending (no fake started flag)', () => {
+    const state = sessionReducer(undefined, sessionRestoredFromResume({ specMarkdown: '', commitSha: null }));
+    expect(state.specMarkdown).toBe('');
+    expect(state.commitSha).toBeNull();
+    expect(state.specifyStarted).toBe(false);
+  });
+
   it('initializes to the Run 4 locked state', () => {
     expect(sessionReducer(undefined, { type: 'test/init' })).toEqual({
       activeSessionId: null,

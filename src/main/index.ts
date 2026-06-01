@@ -17,6 +17,7 @@ import { registerEnsureLocalRepoIpc } from './ipc/ensureLocalRepo';
 import { registerPreferencesIpc } from './ipc/preferences';
 import { registerReposIpc } from './ipc/repos';
 import { registerStartSessionIpc } from './ipc/startSession';
+import { registerResumeSessionIpc } from './ipc/resumeSession';
 import { registerSessionIpc } from './ipc/session';
 import { registerStepsIpc } from './ipc/steps';
 import { registerTasksDetailIpc } from './ipc/tasksDetail';
@@ -62,6 +63,7 @@ app.whenReady().then(async () => {
   registerGitIpc({ ipcMain, logger });
   registerReposIpc({ ipcMain, logger });
   registerStartSessionIpc({ ipcMain, logger });
+  registerResumeSessionIpc({ ipcMain, logger });
   registerEnsureLocalRepoIpc({ ipcMain, logger, documentsRoot: app.getPath('documents') });
   registerBranchesIpc({ ipcMain, logger });
   registerArtifactsIpc({ ipcMain, logger });

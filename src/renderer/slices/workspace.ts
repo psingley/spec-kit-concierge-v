@@ -1,6 +1,16 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { StepName } from './steps';
 
+const STEP_ORDER: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
+
+// Where a resumed session should land: the FIRST step that is not complete.
+// (e.g. specify complete + clarify pending -> 'clarify'.) When every step is
+// complete the session is finished, so land on 'review'.
+const firstIncompleteStep = (restoredStates: BranchSession['restoredStates']): StepName => {
+  const incomplete = STEP_ORDER.find((step) => restoredStates[step] !== 'complete');
+  return incomplete ?? 'review';
+};
+
 export type WorkspaceAgentSummary = {
   id: string;
   displayName: string;
@@ -94,9 +104,17 @@ const workspaceSlice = createSlice({
       state.selectedRepo = action.payload.repo;
       state.activeRepoPath = action.payload.repo.path;
       state.branch = action.payload.branch;
-      state.activeStep = 'specify';
-      state.viewedStep = 'specify';
-      state.maxReachedStep = action.payload.restoredStates?.clarify === 'pending' || action.payload.restoredStates?.specify === 'complete' ? 'clarify' : 'specify';
+      // Resume (restoredStates present) lands on the first incomplete step so the
+      // user sees prior steps complete with their evidence. Start-new (no
+      // restoredStates — a detached, not-yet-named session) keeps the original
+      // 'specify' landing.
+      const landed: StepName =
+        action.payload.restoredStates !== undefined ? firstIncompleteStep(action.payload.restoredStates) : 'specify';
+      state.activeStep = landed;
+      state.viewedStep = landed;
+      // maxReachedStep must be at least the landed step so the Stepper lets the
+      // user move back through completed steps.
+      state.maxReachedStep = landed;
       state.sessionEntered = true;
     },
     branchUpdated: (state, action: PayloadAction<{ branch: string }>) => {

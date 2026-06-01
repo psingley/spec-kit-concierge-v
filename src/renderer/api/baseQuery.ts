@@ -23,6 +23,7 @@ export type IpcQueryArgs = {
     | 'repos:list'
     | 'repo:ensureLocal'
     | 'repo:startSession'
+    | 'repo:resumeSession'
     | 'branches:sessions'
     | 'artifacts:read'
     | 'tasks:detail'
@@ -108,6 +109,8 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.repo!.ensureLocal(args.payload) };
       case 'repo:startSession':
         return { data: await window.concierge.repo!.startSession!(args.payload) };
+      case 'repo:resumeSession':
+        return { data: await window.concierge.repo!.resumeSession!(args.payload) };
       case 'branches:sessions':
         return { data: await window.concierge.branches!.sessions(args.payload) };
       case 'artifacts:read':

@@ -76,6 +76,48 @@ describe('workspace slice', () => {
     expect(next.maxReachedStep).toBe('clarify');
   });
 
+  it('resume lands viewedStep/activeStep on the first incomplete step (specify complete -> clarify)', () => {
+    const next = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({
+        repo: { id: 'r1', name: 'concierge-api', owner: 'collette-travel', path: '/work/concierge-api', defaultBranch: 'main' },
+        branch: 'spec/runtime-session',
+        restoredStates: { specify: 'complete', clarify: 'pending', plan: 'not_available', tasks: 'not_available', analyze: 'not_available', review: 'not_available' }
+      })
+    );
+
+    expect(next.viewedStep).toBe('clarify');
+    expect(next.activeStep).toBe('clarify');
+  });
+
+  it('start-new (no restoredStates, detached branch=null) still lands on specify', () => {
+    const next = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({
+        repo: { id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' },
+        branch: null
+      })
+    );
+
+    expect(next.viewedStep).toBe('specify');
+    expect(next.activeStep).toBe('specify');
+    expect(next.maxReachedStep).toBe('specify');
+  });
+
+  it('resume with all steps complete lands on review', () => {
+    const next = workspaceReducer(
+      workspaceInitialState,
+      workspaceEntered({
+        repo: { id: 'r1', name: 'repo', owner: 'org', path: '/work/repo', defaultBranch: 'main' },
+        branch: '014-done',
+        restoredStates: { specify: 'complete', clarify: 'complete', plan: 'complete', tasks: 'complete', analyze: 'complete', review: 'complete' }
+      })
+    );
+
+    expect(next.viewedStep).toBe('review');
+    expect(next.activeStep).toBe('review');
+  });
+
   it('exposes base selectors through RootState', () => {
     const state = createProductStore().getState();
 

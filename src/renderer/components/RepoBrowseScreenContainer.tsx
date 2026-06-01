@@ -3,7 +3,9 @@ import { branchesApi } from '../api/branches.endpoint';
 import { ensureLocalRepoApi } from '../api/ensureLocalRepo.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { startSessionApi } from '../api/startSession.endpoint';
+import { resumeSessionApi } from '../api/resumeSession.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
+import { sessionRestoredFromResume } from '../slices/session';
 import { stepsRestoredFromSession } from '../slices/steps';
 import { branchSessionsLoaded, repositoryBrowseReset, repositorySelected, workspaceEntered, type BranchSession, type RepositorySummary } from '../slices/workspace';
 import { selectWorkspaceSelectedRepo, selectWorkspaceSessions } from '../slices/workspace.selectors';
@@ -27,6 +29,7 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
     { skip: localPath === null }
   );
   const [startSession] = startSessionApi.useStartSessionMutation();
+  const [resumeSession] = resumeSessionApi.useResumeSessionMutation();
 
   useEffect(() => {
     if (branchSessions.data !== undefined) {
@@ -49,7 +52,19 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
   // worktree path and restore step-state from the session's recovered states.
   const resume = (repo: RepositorySummary, session: BranchSession): void => {
     dispatch(stepsRestoredFromSession({ states: session.restoredStates }));
-    dispatch(workspaceEntered({ repo: { ...repo, path: session.worktreePath }, branch: session.branch, restoredStates: session.restoredStates }));
+    // Hydrate the LIVE session slice with the worktree's committed spec.md FIRST,
+    // then enter the workspace. WorkspaceContainer derives Specify (complete +
+    // evidence) from this slice, so without it a completed Specify would render as
+    // the empty prompt. We await the read so the workspace mounts with hydrated
+    // state (no flash of empty Specify). The read is graceful — an in-flight
+    // session returns an empty spec and we still enter, landing on Specify.
+    void resumeSession({ worktreePath: session.worktreePath })
+      .unwrap()
+      .then((result) => dispatch(sessionRestoredFromResume({ specMarkdown: result.specMarkdown, commitSha: result.specCommitSha })))
+      .catch(() => undefined)
+      .finally(() =>
+        dispatch(workspaceEntered({ repo: { ...repo, path: session.worktreePath }, branch: session.branch, restoredStates: session.restoredStates }))
+      );
   };
 
   // "Start a new session": create an isolated DETACHED git worktree (ADR-0016),

@@ -51,6 +51,7 @@ type ConciergePreloadBridge = {
   repo?: {
     ensureLocal: (request: unknown) => Promise<unknown>;
     startSession?: (request: unknown) => Promise<unknown>;
+    resumeSession?: (request: unknown) => Promise<unknown>;
   };
   branches?: {
     sessions: (request: unknown) => Promise<unknown>;

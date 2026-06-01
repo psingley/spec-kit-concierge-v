@@ -159,6 +159,21 @@ const sessionSlice = createSlice({
       state.commitSha = action.payload.commitSha;
       state.failureReason = null;
     },
+    sessionRestoredFromResume: (
+      state,
+      action: PayloadAction<{ specMarkdown: string; commitSha: string | null }>
+    ) => {
+      // Resume hydration (ADR-0016): the live session slice starts empty, so a
+      // completed Specify would otherwise render as the empty prompt. Seed the
+      // committed spec content + commit so WorkspaceContainer derives Specify as
+      // complete with its evidence. A blank spec (in-flight session) leaves
+      // Specify pending — no fake "started" flag is set.
+      state.specMarkdown = action.payload.specMarkdown;
+      state.commitSha = action.payload.commitSha;
+      if (action.payload.specMarkdown.length > 0) {
+        state.specifyStarted = true;
+      }
+    },
     specifyRunFailed: (state, action: PayloadAction<{ reason: string }>) => {
       state.specifyRunning = false;
       state.specifyStarted = true;
@@ -271,6 +286,7 @@ export const {
   specifyRunStarted,
   specifyRunProgressed,
   specifyRunSucceeded,
+  sessionRestoredFromResume,
   specifyRunFailed,
   specifyScrollProgressChanged,
   clarifyRunStarted,
