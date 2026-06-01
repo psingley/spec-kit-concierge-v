@@ -37,6 +37,9 @@ const setup = (options: {
     userDataPath,
     agentAdapter: options.agentAdapter,
     evaluateReadiness: options.evaluateReadiness,
+    // Stub the pre-spawn dry-run allocator so the readiness-gate path reaches the
+    // ACP turn without shelling out to create-new-feature.sh.
+    allocateFeatureBranchName: vi.fn().mockResolvedValue('001-build-it'),
     // Mock the lifecycle hooks so the readiness-gate path under test reaches the
     // ACP turn without exercising the real git-backed before/after hooks.
     beforeHook: vi.fn().mockResolvedValue({ ok: true }),

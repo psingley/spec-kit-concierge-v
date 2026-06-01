@@ -1,6 +1,6 @@
 import type { IpcMain } from 'electron';
 import { describe, expect, it, vi } from 'vitest';
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, writeFile, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { registerCopilotSpecifyIpc } from './copilotSpecify';
@@ -27,6 +27,11 @@ const createHarness = () => {
 const okBefore = vi.fn().mockResolvedValue({ ok: true });
 const okAfter = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'sha-123' } });
 
+// Stub the pre-spawn dry-run allocator to return the branch name whose
+// `specs/<branch>` matches the feature.json the test seeds, so the pinned dir and
+// the agent-written feature.json AGREE (the consistency assertion passes).
+const allocateTo = (branch: string) => vi.fn().mockResolvedValue(branch);
+
 describe('registerCopilotSpecifyIpc featureDir resolution', () => {
   it('resolves the feature directory from .specify/feature.json and reads spec.md from there (not repo root)', async () => {
     const harness = createHarness();
@@ -47,7 +52,8 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
       evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook,
-      agentAdapter: vi.fn().mockResolvedValue(undefined)
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      allocateFeatureBranchName: allocateTo('0012-remove-fake-traffic-lights')
     });
 
     await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
@@ -70,7 +76,8 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
       evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook: okAfter,
-      agentAdapter: vi.fn().mockResolvedValue(undefined)
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      allocateFeatureBranchName: allocateTo('0012-missing')
     });
 
     await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
@@ -103,7 +110,8 @@ describe('registerCopilotSpecifyIpc streaming', () => {
       evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook: okAfter,
-      agentAdapter
+      agentAdapter,
+      allocateFeatureBranchName: allocateTo('0012-x')
     });
 
     await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
@@ -143,7 +151,8 @@ describe('registerCopilotSpecifyIpc session correlation', () => {
       evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
       beforeHook: okBefore,
       afterHook: okAfter,
-      agentAdapter
+      agentAdapter,
+      allocateFeatureBranchName: allocateTo('0012-corr')
     });
 
     await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
@@ -169,5 +178,113 @@ describe('registerCopilotSpecifyIpc session correlation', () => {
       }),
       'specify agent spawn'
     );
+  });
+});
+
+describe('registerCopilotSpecifyIpc pinned feature directory (Bug 24)', () => {
+  it('pre-computes featureRel via allocateBranchName, pins it on the adapter, and uses the PINNED dir post-run (not whatever feature.json says)', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-pin-'));
+    const featureRel = 'specs/012-remove-faux-traffic-lights';
+    await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+    await mkdir(path.join(repositoryPath, featureRel), { recursive: true });
+    // feature.json AGREES with the pin → the consistency assertion passes.
+    await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
+    await writeFile(path.join(repositoryPath, featureRel, 'spec.md'), '# Pinned spec', 'utf8');
+
+    const allocate = vi.fn().mockResolvedValue('012-remove-faux-traffic-lights');
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'sha-pin' } });
+    const agentAdapter = vi.fn().mockResolvedValue(undefined);
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook,
+      agentAdapter,
+      allocateFeatureBranchName: allocate
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'specify', status: 'pass', specMarkdown: '# Pinned spec', commitSha: 'sha-pin' })
+    })));
+
+    // allocator is called with the repo + the user's feature description (prompt).
+    expect(allocate).toHaveBeenCalledWith(repositoryPath, basePayload.prompt);
+    // The adapter is pinned with the repo-relative feature dir.
+    const call = agentAdapter.mock.calls[0]?.[0] as { specifyFeatureDirectory: string };
+    expect(call.specifyFeatureDirectory).toBe(featureRel);
+    // The after-hook validates against the PINNED dir (absolute), not a re-scan.
+    expect(afterHook).toHaveBeenCalledWith(expect.objectContaining({ featureDir: path.join(repositoryPath, featureRel) }));
+  });
+
+  it('FAILS the step (no silent rewrite) when feature.json DISAGREES with the pinned dir', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-disagree-'));
+    const pinnedRel = 'specs/012-remove-faux-traffic-lights';
+    const wrongRel = 'specs/0011-mcp-atlassian-auth';
+    await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+    await mkdir(path.join(repositoryPath, pinnedRel), { recursive: true });
+    // The agent ignored the env and wrote feature.json pointing at a DIFFERENT feature.
+    const featureJsonPath = path.join(repositoryPath, '.specify', 'feature.json');
+    await writeFile(featureJsonPath, JSON.stringify({ feature_directory: wrongRel }), 'utf8');
+
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'sha-x' } });
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook,
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      allocateFeatureBranchName: allocateTo('012-remove-faux-traffic-lights')
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({
+        type: 'done',
+        step: 'specify',
+        status: 'fail',
+        reason: expect.stringContaining('SPECIFY_FEATURE_DIRECTORY')
+      })
+    })));
+    // The after-hook (commit) never ran — we failed BEFORE committing.
+    expect(afterHook).not.toHaveBeenCalled();
+    // No silent self-heal: feature.json on disk is unchanged.
+    const onDisk = JSON.parse(await readFile(featureJsonPath, 'utf8')) as { feature_directory: string };
+    expect(onDisk.feature_directory).toBe(wrongRel);
+  });
+
+  it('FAILS the step cleanly when allocateBranchName throws (no fallback to the scan)', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-allocfail-'));
+
+    const agentAdapter = vi.fn().mockResolvedValue(undefined);
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook: okAfter,
+      agentAdapter,
+      allocateFeatureBranchName: vi.fn().mockRejectedValue(new Error('create-new-feature.sh exploded'))
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'specify', status: 'fail', reason: expect.stringContaining('create-new-feature.sh exploded') })
+    })));
+    // The agent never spawned — we failed BEFORE the spawn (no scan-based fallback).
+    expect(agentAdapter).not.toHaveBeenCalled();
   });
 });
