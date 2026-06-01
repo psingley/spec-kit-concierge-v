@@ -1,11 +1,12 @@
 import path from 'node:path';
+import { spawn as nodeSpawn } from 'node:child_process';
+import type { SpawnOptions, ChildProcess } from 'node:child_process';
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
-import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
@@ -22,6 +23,14 @@ import {
   type SpecifyReadinessReport
 } from './specifyReadiness';
 
+// SpawnAdapter mirrors the subset of node:child_process.spawn used by the
+// print-mode adapter, injected so tests can stub it without mocking the module.
+export type SpawnAdapter = (
+  command: string,
+  args: string[],
+  options: SpawnOptions
+) => Pick<ChildProcess, 'stdout' | 'stderr' | 'on'>;
+
 export const COPILOT_SPECIFY_CHANNEL = 'copilot:specify';
 export const COPILOT_SPECIFY_EVENT_CHANNEL = 'copilot:specify:event';
 export const SPECIFY_READINESS_CHANNEL = 'specify:readiness';
@@ -30,7 +39,8 @@ export type SpecifyAgentAdapter = (
   request: CopilotSpecifyRequest & {
     sessionId: string;
     featureDir: string;
-    onUpdate?: (update: BoundCLIPromptUpdate) => void;
+    // Called with each stdout line emitted by the copilot print-mode process.
+    onUpdate?: (line: string) => void;
   }
 ) => Promise<void>;
 
@@ -81,30 +91,126 @@ const defaultEvaluateReadiness =
       createSpecifyReadinessAdapters({ capabilitiesProbe: probeCapabilities(logger, userDataPath) })
     );
 
-// Spec Kit's /speckit.specify command owns the workflow and the output location.
-// The user's feature description is passed as the slash command's $ARGUMENTS input.
+// The feature description is passed verbatim as the -p prompt arg.
+// The agent is pinned deterministically via --agent speckit.specify (GitHub's
+// documented headless mechanism) — NOT via a slash command in the prompt text.
+// $ARGUMENTS in the agent file receives the raw description directly.
 export const buildSpecifyPrompt = (featureDescription: string): string =>
-  `/speckit.specify ${featureDescription}`;
+  featureDescription;
+
+// Known stdout/stderr markers that indicate a hard failure from the copilot CLI.
+const FAILURE_MARKERS = ['Skill not found', 'error:', 'Error:'];
+
+const containsFailureMarker = (text: string): boolean =>
+  FAILURE_MARKERS.some((marker) => text.includes(marker));
+
+// Spawn copilot in print-mode with --agent flag (Option D — GitHub's documented
+// deterministic agent-pinning pattern).
+//
+// Argv: copilot --agent speckit.specify [--model <id>] --allow-all-tools -p "<desc>"
+//   --agent speckit.specify  → pins .github/agents/speckit.specify.agent.md by filename
+//   -p "<desc>"              → raw feature description becomes $ARGUMENTS in the agent
+//   cwd = repositoryPath     → agent file resolution is relative to the target repo
+//
+// Live-unverified assumptions (user to smoke-test):
+//   1. Dotted --agent name `speckit.specify` resolves correctly (docs show hyphenated
+//      examples; verify `copilot --agent speckit.specify -p "test"` in the target repo).
+//   2. --output-format json is confirmed in --help (JSONL, one JSON object per line).
+//      Forwarding as raw lines; if JSON, upstream consumers see structured text.
+//   3. copilot -p exits non-zero when the agent workflow fails.
+//   4. spec-kit's agent writes .specify/feature.json identically via --agent as it
+//      does via interactive mode (resolveFeatureDir depends on this).
+export const runSpecifyPrintMode = (
+  binary: string,
+  launchArgs: string[],
+  prompt: string,
+  repositoryPath: string,
+  modelId: string | undefined,
+  onLine: ((line: string) => void) | undefined,
+  spawnFn: SpawnAdapter
+): Promise<void> => {
+  const args = [
+    '--agent', 'speckit.specify',
+    ...(modelId !== undefined ? ['--model', modelId] : []),
+    ...launchArgs,
+    '-p',
+    prompt
+  ];
+  return new Promise<void>((resolve, reject) => {
+    const child = spawnFn(binary, args, { cwd: repositoryPath, shell: false });
+    let failureDetail: string | undefined;
+
+    const handleLine = (line: string): void => {
+      if (line.trim().length === 0) return;
+      onLine?.(line);
+      if (containsFailureMarker(line) && failureDetail === undefined) {
+        failureDetail = line.trim();
+      }
+    };
+
+    // Buffer partial lines across chunks for both stdout and stderr.
+    let stdoutBuf = '';
+    let stderrBuf = '';
+
+    child.stdout?.on('data', (chunk: Buffer | string) => {
+      stdoutBuf += String(chunk);
+      const lines = stdoutBuf.split('\n');
+      stdoutBuf = lines.pop() ?? '';
+      for (const line of lines) handleLine(line);
+    });
+
+    child.stderr?.on('data', (chunk: Buffer | string) => {
+      stderrBuf += String(chunk);
+      const lines = stderrBuf.split('\n');
+      stderrBuf = lines.pop() ?? '';
+      for (const line of lines) {
+        if (containsFailureMarker(line) && failureDetail === undefined) {
+          failureDetail = line.trim();
+        }
+      }
+    });
+
+    child.on('close', (code: number | null) => {
+      // Flush any remaining buffered output.
+      if (stdoutBuf.trim().length > 0) handleLine(stdoutBuf);
+      if (stderrBuf.trim().length > 0 && containsFailureMarker(stderrBuf) && failureDetail === undefined) {
+        failureDetail = stderrBuf.trim();
+      }
+      if (code !== 0) {
+        const detail = failureDetail ?? `copilot exited with code ${String(code)}`;
+        reject(new Error(`Copilot specify failed: ${detail}`));
+        return;
+      }
+      if (failureDetail !== undefined) {
+        reject(new Error(`Copilot specify failed: ${failureDetail}`));
+        return;
+      }
+      resolve();
+    });
+
+    child.on('error', (err: Error) => {
+      reject(new Error(`Failed to spawn copilot: ${err.message}`));
+    });
+  });
+};
 
 const defaultAgentAdapter =
-  (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): SpecifyAgentAdapter =>
+  (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string, spawnFn: SpawnAdapter = nodeSpawn): SpecifyAgentAdapter =>
 async (request) => {
   const manifest = await loadAgentManifest(logger);
   const agent = manifest.agents.copilot;
   if (agent === undefined) {
     throw new Error('Copilot agent manifest entry is missing.');
   }
-  const supervisor = new BoundCLISupervisor({ agent, logger, userDataPath });
-  const session = await supervisor.start();
-  try {
-    const created = await session.newSession(request.repositoryPath, [], { step: 'specify' });
-    if (request.modelId !== undefined) {
-      await session.setModel(created.sessionId, request.modelId);
-    }
-    await session.prompt(created.sessionId, buildSpecifyPrompt(request.prompt), request.onUpdate);
-  } finally {
-    await session.dispose();
-  }
+  await runSpecifyPrintMode(
+    agent.binary,
+    agent.launchArgs,
+    buildSpecifyPrompt(request.prompt),
+    request.repositoryPath,
+    request.modelId,
+    request.onUpdate,
+    spawnFn
+  );
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -237,15 +343,14 @@ export const registerCopilotSpecifyIpc = ({
           ...request.value,
           sessionId,
           featureDir: request.value.repositoryPath,
-          onUpdate: (update) => {
+          onUpdate: (line) => {
             sendEvent({
               type: 'progress',
               step: 'specify',
               sessionId,
               level: 'info',
-              message: 'Streaming specify output',
-              timestamp: new Date().toISOString(),
-              raw: update
+              message: line,
+              timestamp: new Date().toISOString()
             });
           }
         });

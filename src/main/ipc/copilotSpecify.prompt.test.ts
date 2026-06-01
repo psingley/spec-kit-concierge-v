@@ -2,10 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { buildSpecifyPrompt } from './copilotSpecify';
 
 describe('buildSpecifyPrompt', () => {
-  it('invokes the /speckit.specify slash command carrying the user feature description', () => {
-    const prompt = buildSpecifyPrompt('Remove the fake traffic lights from the dashboard');
+  it('returns the raw feature description with no slash-command prefix', () => {
+    const desc = 'Remove the fake traffic lights from the dashboard';
+    const prompt = buildSpecifyPrompt(desc);
 
-    expect(prompt.startsWith('/speckit.specify')).toBe(true);
-    expect(prompt).toContain('Remove the fake traffic lights from the dashboard');
+    // Agent is pinned via --agent speckit.specify flag; -p receives only the
+    // raw user description so it becomes $ARGUMENTS in the agent file.
+    expect(prompt).toBe(desc);
+    expect(prompt).not.toContain('/speckit.specify');
   });
 });

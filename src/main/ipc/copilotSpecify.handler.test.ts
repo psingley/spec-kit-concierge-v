@@ -82,7 +82,7 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
 });
 
 describe('registerCopilotSpecifyIpc streaming', () => {
-  it('forwards agent onUpdate frames to the activity stream as progress events', async () => {
+  it('forwards agent stdout lines to the activity stream as progress events', async () => {
     const harness = createHarness();
     const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-stream-'));
     const featureRel = 'specs/0012-x';
@@ -91,9 +91,9 @@ describe('registerCopilotSpecifyIpc streaming', () => {
     await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
     await writeFile(path.join(repositoryPath, featureRel, 'spec.md'), '# spec', 'utf8');
 
-    const agentAdapter = vi.fn(async (request) => {
-      request.onUpdate?.({ sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'working...' } } });
-      request.onUpdate?.({ sessionId: 's1', update: { sessionUpdate: 'tool_call', toolCallId: 't1', title: 'read spec template' } });
+    const agentAdapter = vi.fn(async (request: { onUpdate?: (line: string) => void }) => {
+      request.onUpdate?.('Creating feature directory...');
+      request.onUpdate?.('Writing spec.md to specs/0012-x/spec.md');
     });
 
     registerCopilotSpecifyIpc({
@@ -112,8 +112,7 @@ describe('registerCopilotSpecifyIpc streaming', () => {
       event: expect.objectContaining({
         type: 'progress',
         step: 'specify',
-        message: 'Streaming specify output',
-        raw: { sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'working...' } } }
+        message: 'Creating feature directory...'
       })
     })));
     expect(agentAdapter).toHaveBeenCalledWith(expect.objectContaining({ onUpdate: expect.any(Function) }));
