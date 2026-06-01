@@ -1,5 +1,6 @@
 import React from 'react';
 import { api } from '../api';
+import { repositoriesApi } from '../api/repositories.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { selectAuthAtlassianStatus, selectAuthCopilotStatus, selectAuthGithubStatus, selectAuthIdentity } from '../slices/auth.selectors';
 import { preferencesUpdated } from '../slices/preferences';
@@ -19,6 +20,7 @@ export const TitlebarContainer = (): React.ReactElement => {
   const { data: capabilities } = api.endpoints.getBoundCLICapabilities.useQuery();
   const models = capabilities?.models.available ?? [];
   const model = selectedModel ?? capabilities?.models.current ?? models[0]?.id ?? null;
+  const repos = repositoriesApi.useListReposQuery();
   return (
     <Titlebar
       repo={useAppSelector(selectWorkspaceSelectedRepo)}
@@ -29,6 +31,8 @@ export const TitlebarContainer = (): React.ReactElement => {
       atlassian={useAppSelector(selectAuthAtlassianStatus)}
       model={model}
       models={models}
+      repositories={repos.data?.repositories ?? []}
+      repositoriesError={repos.isError}
       modelDisabled={stepRunning}
       showDraftBranch={specifyRunning || specMarkdown.trim().length > 0}
       onCustomize={() => dispatch(modalOpened('showCustomize'))}

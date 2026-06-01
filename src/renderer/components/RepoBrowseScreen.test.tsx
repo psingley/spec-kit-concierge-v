@@ -10,13 +10,14 @@ const repositories: RepositorySummary[] = [
 ];
 
 describe('RepoBrowseScreen visual contract', () => {
-  it('renders the design repo-picker rows as button actions', () => {
+  it('renders the live signed-in repositories as button actions', () => {
     render(
       <RepoBrowseScreen
         repositories={repositories}
         sessions={[]}
         selectedRepo={null}
         loading={false}
+        error={false}
         onSelectRepo={vi.fn()}
         onResume={vi.fn()}
         onStartNew={vi.fn()}
@@ -25,13 +26,48 @@ describe('RepoBrowseScreen visual contract', () => {
     );
 
     expect(screen.getByRole('heading', { name: 'Pick a repository' })).toBeInTheDocument();
-    expect(screen.getByText('Choose a Collette-travel repo to scope spec-kit to.')).toBeInTheDocument();
-    expect(screen.getByText('All repos')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'concierge-api4 sessions2h ago' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'itinerary-servicenewmain' })).toBeInTheDocument();
+    expect(screen.getByText('Choose a repository to scope spec-kit to.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /concierge-api/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /itinerary-service/ })).toBeInTheDocument();
   });
 
-  it('renders the selected repo branch picker as resumable session buttons', () => {
+  it('shows an honest empty state when the account has no repositories', () => {
+    render(
+      <RepoBrowseScreen
+        repositories={[]}
+        sessions={[]}
+        selectedRepo={null}
+        loading={false}
+        error={false}
+        onSelectRepo={vi.fn()}
+        onResume={vi.fn()}
+        onStartNew={vi.fn()}
+        onBackToRepos={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('No repositories found for the signed-in account.')).toBeInTheDocument();
+  });
+
+  it('shows an honest error state when the repository query fails', () => {
+    render(
+      <RepoBrowseScreen
+        repositories={[]}
+        sessions={[]}
+        selectedRepo={null}
+        loading={false}
+        error
+        onSelectRepo={vi.fn()}
+        onResume={vi.fn()}
+        onStartNew={vi.fn()}
+        onBackToRepos={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Could not load repositories.')).toBeInTheDocument();
+  });
+
+  it('renders the selected repo branch picker without fabricated sessions', () => {
     const onResume = vi.fn();
     const onStartNew = vi.fn();
     const onBackToRepos = vi.fn();
@@ -41,6 +77,7 @@ describe('RepoBrowseScreen visual contract', () => {
         sessions={[]}
         selectedRepo={repositories[0]!}
         loading={false}
+        error={false}
         onSelectRepo={vi.fn()}
         onResume={onResume}
         onStartNew={onStartNew}
@@ -51,8 +88,8 @@ describe('RepoBrowseScreen visual contract', () => {
     expect(screen.getByRole('button', { name: '← All repos' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'concierge-api' })).toBeInTheDocument();
     expect(screen.getByText('Resume a prior session or start fresh from main.')).toBeInTheDocument();
-    expect(screen.getByText('4 prior sessions')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'spec/0042-self-serve-flight-changePlan2h ago' })).toBeInTheDocument();
+    expect(screen.getByText('0 prior sessions')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'spec/0042-self-serve-flight-changePlan2h ago' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Start a new sessionfrom main' })).toBeInTheDocument();
   });
 
@@ -71,6 +108,7 @@ describe('RepoBrowseScreen visual contract', () => {
         sessions={sessions}
         selectedRepo={repositories[1]!}
         loading={false}
+        error={false}
         onSelectRepo={vi.fn()}
         onResume={vi.fn()}
         onStartNew={vi.fn()}

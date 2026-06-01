@@ -35,6 +35,7 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
       sessions={sessions}
       selectedRepo={selectedRepo}
       loading={repos.isLoading}
+      error={repos.isError}
       onSelectRepo={(repo) => dispatch(repositorySelected(repo))}
       onResume={resume}
       onStartNew={(repo) => void createDraftBranch({ repo })}

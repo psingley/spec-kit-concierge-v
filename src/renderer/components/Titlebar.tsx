@@ -13,6 +13,8 @@ export type TitlebarProps = {
   atlassian: AuthProviderStatus;
   model: string | null;
   models: CopilotModelOption[];
+  repositories?: RepositorySummary[];
+  repositoriesError?: boolean;
   modelDisabled?: boolean;
   showDraftBranch?: boolean;
   onCustomize: () => void;
@@ -40,37 +42,12 @@ const modelTag = (model: CopilotModelOption): string => model.enablement ?? mode
 const getModelOption = (model: string | null, models: CopilotModelOption[]): CopilotModelOption =>
   models.find((entry) => entry.id === model) ?? models[0] ?? FALLBACK_MODEL;
 
-const REPO_MENU_RECENT = [
-  { name: 'concierge-api', branches: '4', meta: '2h ago' },
-  { name: 'concierge-web', branches: '2', meta: 'yesterday' },
-  { name: 'concierge-mobile', branches: '1', meta: '3d ago' },
-  { name: 'booking-engine', branches: '', meta: '1w ago' }
-] as const;
-
-const REPO_MENU_ALL = [
-  { name: 'itinerary-service', branches: 'main' },
-  { name: 'pricing-rules', branches: '' },
-  { name: 'guest-profile-svc', branches: '' },
-  { name: 'supplier-sync', branches: '' },
-  { name: 'loyalty-ledger', branches: '' },
-  { name: 'ops-dashboard', branches: '' },
-  { name: 'concierge-shared-ui', branches: '' },
-  { name: 'incident-bot', branches: '' },
-  { name: 'voucher-redeem', branches: '' },
-  { name: 'data-warehouse-etl', branches: '' }
-] as const;
-
-const RepoMenuRow = ({ name, branches, meta, active = false }: { name: string; branches?: string; meta?: string; active?: boolean }): React.ReactElement => {
-  const ariaLabel = `${name}${branches ?? ''}${meta ?? ''}`;
-  return (
-    <button type="button" aria-label={ariaLabel} className={`tb-menu-row repo-menu-row ${active ? 'is-active' : ''}`}>
-      <Ico.Folder size={12} />
-      <span className="tb-menu-row-name">{name}</span>
-      {branches ? <span className="tb-menu-row-pill">{branches}</span> : null}
-      {meta ? <span className="tb-menu-row-meta">{meta}</span> : null}
-    </button>
-  );
-};
+const RepoMenuRow = ({ name, active = false }: { name: string; active?: boolean }): React.ReactElement => (
+  <button type="button" aria-label={name} className={`tb-menu-row repo-menu-row ${active ? 'is-active' : ''}`}>
+    <Ico.Folder size={12} />
+    <span className="tb-menu-row-name">{name}</span>
+  </button>
+);
 
 const MenuWrap = ({
   id,
@@ -90,6 +67,10 @@ const MenuWrap = ({
   github,
   copilot,
   atlassian,
+  repositories = [],
+  repositoriesError = false,
+  activeRepoName = null,
+  accountLabel = 'this account',
   children
 }: {
   id: Exclude<OpenMenu, null>;
@@ -109,6 +90,10 @@ const MenuWrap = ({
   github: AuthProviderStatus;
   copilot: AuthProviderStatus;
   atlassian: AuthProviderStatus;
+  repositories?: RepositorySummary[];
+  repositoriesError?: boolean;
+  activeRepoName?: string | null;
+  accountLabel?: string;
   children: React.ReactNode;
 }): React.ReactElement => {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -156,14 +141,18 @@ const MenuWrap = ({
                 <input aria-label="Filter repos" placeholder="Filter repos…" readOnly />
               </div>
               <div className="tb-menu-scroll">
-                <div className="tb-menu-group"><Ico.Clock size={10} />Recent</div>
-                {REPO_MENU_RECENT.map((entry) => (
-                  <RepoMenuRow key={entry.name} name={entry.name} branches={entry.branches} meta={entry.meta} active={entry.name === 'concierge-api'} />
-                ))}
-                <div className="tb-menu-group">All repos</div>
-                {REPO_MENU_ALL.map((entry) => (
-                  <RepoMenuRow key={entry.name} name={entry.name} branches={entry.branches} />
-                ))}
+                {repositoriesError ? (
+                  <div className="tb-menu-empty">Could not load repositories</div>
+                ) : repositories.length === 0 ? (
+                  <div className="tb-menu-empty">No repositories found for {accountLabel}</div>
+                ) : (
+                  <>
+                    <div className="tb-menu-group">All repos</div>
+                    {repositories.map((entry) => (
+                      <RepoMenuRow key={entry.id} name={entry.name} active={entry.name === activeRepoName} />
+                    ))}
+                  </>
+                )}
               </div>
             </>
           ) : null}
@@ -230,10 +219,11 @@ const AuthChipChildren = ({ authSummary }: { authSummary: string }): React.React
   </>
 );
 
-export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, models, modelDisabled = false, showDraftBranch = false, onCustomize, onAbout, onRequest, onModelSelect, activityPill = null }: TitlebarProps): React.ReactElement => {
+export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, model, models, repositories = [], repositoriesError = false, modelDisabled = false, showDraftBranch = false, onCustomize, onAbout, onRequest, onModelSelect, activityPill = null }: TitlebarProps): React.ReactElement => {
   const [open, setOpen] = useState<OpenMenu>(null);
   const activeRepo = branch === null ? null : repo;
-  const repoOwner = activeRepo?.owner ?? 'collette-travel';
+  const accountLabel = identity?.login ?? 'this account';
+  const repoOwner = activeRepo?.owner ?? accountLabel;
   const repoName = activeRepo?.name ?? 'pick repo';
   const repoLabel = `${repoOwner}/${repoName}`;
   const branchLabel = showDraftBranch && branch !== null ? branch : activeRepo?.defaultBranch ?? 'main';
@@ -254,7 +244,7 @@ export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, m
         <MenuWrap id="auth" open={open} setOpen={setOpen} label="Authentication" buttonClassName={`tb-chip auth-chip status-${allOk ? 'ok' : 'partial'}`} onCustomize={onCustomize} onAbout={onAbout} onRequest={onRequest} onModelSelect={onModelSelect} modelOptions={models} selectedModel={modelOption} modelDisabled={modelDisabled} github={github} copilot={copilot} atlassian={atlassian}>
           <AuthChipChildren authSummary={authSummary} />
         </MenuWrap>
-        <MenuWrap id="repository" open={open} setOpen={setOpen} label="Repository" buttonClassName="tb-chip repo" buttonAriaLabel={repoLabel} onCustomize={onCustomize} onAbout={onAbout} onRequest={onRequest} onModelSelect={onModelSelect} modelOptions={models} selectedModel={modelOption} modelDisabled={modelDisabled} github={github} copilot={copilot} atlassian={atlassian}>
+        <MenuWrap id="repository" open={open} setOpen={setOpen} label="Repository" buttonClassName="tb-chip repo" buttonAriaLabel={repoLabel} onCustomize={onCustomize} onAbout={onAbout} onRequest={onRequest} onModelSelect={onModelSelect} modelOptions={models} selectedModel={modelOption} modelDisabled={modelDisabled} github={github} copilot={copilot} atlassian={atlassian} repositories={repositories} repositoriesError={repositoriesError} activeRepoName={activeRepo?.name ?? null} accountLabel={accountLabel}>
           <span className="tb-chip-prefix mono">{repoOwner}</span>
           <span className="tb-chip-slash">/</span>
           <span className="tb-chip-name mono">{repoName}</span>

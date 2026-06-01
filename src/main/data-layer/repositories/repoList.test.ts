@@ -65,6 +65,22 @@ describe('parseGhRepositories', () => {
   it('drops malformed rows without inventing repository names', () => {
     expect(parseGhRepositories([{ id: 'bad' }], 'collette-travel')).toEqual([]);
   });
+
+  it('falls back to main when an empty repo reports an empty-string default branch name', () => {
+    expect(
+      parseGhRepositories([row('astro-poc', { defaultBranchRef: { name: '' } })], 'collette-travel')[0]
+    ).toMatchObject({ name: 'astro-poc', defaultBranch: 'main' });
+  });
+
+  it('falls back to main when the default branch ref is null', () => {
+    expect(
+      parseGhRepositories([row('JSnotebooks', { defaultBranchRef: null })], 'collette-travel')[0]
+    ).toMatchObject({ name: 'JSnotebooks', defaultBranch: 'main' });
+  });
+
+  it('drops rows whose name is an empty string', () => {
+    expect(parseGhRepositories([row('', { name: '' })], 'collette-travel')).toEqual([]);
+  });
 });
 
 describe('listRepositories', () => {
@@ -115,6 +131,27 @@ describe('listRepositories', () => {
     ]);
   });
 
+  it('omits the owner positional so gh lists the signed-in account when owner is undefined', async () => {
+    const invocations: string[] = [];
+    const execFile: ExecFileAdapter = async (command, args) => {
+      invocations.push(`${command} ${args.join(' ')}`);
+      return { stdout: JSON.stringify([row('spec-kit-concierge-v', { owner: { login: 'psingley' } })]), stderr: '' };
+    };
+
+    await expect(listRepositories(undefined, '', execFile)).resolves.toMatchObject([
+      { name: 'spec-kit-concierge-v', owner: 'psingley', path: 'psingley/spec-kit-concierge-v' }
+    ]);
+    expect(invocations).toEqual([
+      'gh repo list --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+    ]);
+  });
+
+  it('returns an empty list (not fixtures) when the signed-in account has no visible repositories', async () => {
+    const execFile: ExecFileAdapter = async () => ({ stdout: '[]', stderr: '' });
+
+    await expect(listRepositories(undefined, '', execFile)).resolves.toEqual([]);
+  });
+
   it('surfaces gh failures instead of returning placeholder repositories', async () => {
     const execFile: ExecFileAdapter = async () => {
       throw Object.assign(new Error('gh failed'), { stderr: 'HTTP 403: Resource not accessible by integration' });
@@ -122,6 +159,16 @@ describe('listRepositories', () => {
 
     await expect(listRepositories('collette-travel', '', execFile)).rejects.toThrow(
       'GitHub CLI could not list repositories for collette-travel.'
+    );
+  });
+
+  it('surfaces gh failures for the signed-in account when no owner is supplied', async () => {
+    const execFile: ExecFileAdapter = async () => {
+      throw Object.assign(new Error('gh failed'), { stderr: 'not logged in' });
+    };
+
+    await expect(listRepositories(undefined, '', execFile)).rejects.toThrow(
+      'GitHub CLI could not list repositories for the signed-in account.'
     );
   });
 });

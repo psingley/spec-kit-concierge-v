@@ -8,27 +8,12 @@ export type RepoBrowseScreenProps = {
   sessions: BranchSession[];
   selectedRepo: RepositorySummary | null;
   loading: boolean;
+  error: boolean;
   onSelectRepo: (repo: RepositorySummary) => void;
   onResume: (repo: RepositorySummary, branch: string) => void;
   onStartNew: (repo: RepositorySummary) => void;
   onBackToRepos: () => void;
 };
-
-type RepoPresentation = {
-  count: string;
-  meta: string;
-  recent: boolean;
-};
-
-const repoPresentation: Record<string, RepoPresentation> = {
-  'concierge-api': { count: '4 sessions', meta: '2h ago', recent: true },
-  'concierge-web': { count: '2 sessions', meta: 'yesterday', recent: true },
-  'concierge-mobile': { count: '1 session', meta: '3d ago', recent: true },
-  'booking-engine': { count: '1 session', meta: '1w ago', recent: true }
-};
-
-const presentationFor = (repo: RepositorySummary): RepoPresentation =>
-  repoPresentation[repo.name] ?? { count: 'new', meta: repo.defaultBranch, recent: false };
 
 const stepOrder: StepName[] = ['specify', 'clarify', 'plan', 'analyze', 'tasks', 'review'];
 const stepLabels: Record<StepName, string> = {
@@ -46,15 +31,6 @@ type PresentedSession = {
   timestamp: string;
 };
 
-const visualSessionsByRepo: Record<string, PresentedSession[]> = {
-  'concierge-api': [
-    { branch: 'spec/0042-self-serve-flight-change', step: 'plan', timestamp: '2h ago' },
-    { branch: 'spec/0039-loyalty-tier-refund-rules', step: 'review', timestamp: '3d ago' },
-    { branch: 'spec/0037-companion-pnr-merge', step: 'tasks', timestamp: '1w ago' },
-    { branch: 'spec/0033-rate-card-renewals', step: 'clarify', timestamp: '2w ago' }
-  ]
-};
-
 const stateRank: Record<BranchSession['restoredStates'][StepName], number> = {
   not_available: 0,
   pending: 1,
@@ -67,41 +43,31 @@ const sessionStep = (session: BranchSession): StepName => {
   return stepOrder.reduce<StepName>((latest, step) => (stateRank[session.restoredStates[step]] >= stateRank[session.restoredStates[latest]] ? step : latest), 'specify');
 };
 
-const presentedSessionsFor = (repo: RepositorySummary, sessions: BranchSession[]): PresentedSession[] => {
-  if (sessions.length > 0) {
-    return sessions.map((session) => ({
-      branch: session.branch,
-      step: sessionStep(session),
-      timestamp: 'recent'
-    }));
-  }
-  return visualSessionsByRepo[repo.name] ?? [];
-};
+const presentedSessionsFor = (sessions: BranchSession[]): PresentedSession[] =>
+  sessions.map((session) => ({
+    branch: session.branch,
+    step: sessionStep(session),
+    timestamp: 'recent'
+  }));
 
-export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
+export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading, error, onSelectRepo, onResume, onStartNew, onBackToRepos }: RepoBrowseScreenProps): React.ReactElement => {
   const [query, setQuery] = useState('');
   const filtered = useMemo(() => repositories.filter((repo) => repo.name.toLowerCase().includes(query.toLowerCase())), [query, repositories]);
-  const recent = filtered.filter((repo) => presentationFor(repo).recent);
-  const others = filtered.filter((repo) => !presentationFor(repo).recent);
-  const presentedSessions = selectedRepo === null ? [] : presentedSessionsFor(selectedRepo, sessions);
-  const renderRepo = (repo: RepositorySummary): React.ReactElement => {
-    const presentation = presentationFor(repo);
-    return (
-      <button
-        key={repo.id}
-        type="button"
-        aria-label={`${repo.name}${presentation.count}${presentation.meta}`}
-        className={`rb-repo repo-card ${presentation.recent ? 'is-recent' : ''}`}
-        onClick={() => onSelectRepo(repo)}
-      >
-        <Ico.Folder size={13} />
-        <span className="rb-repo-name">{repo.name}</span>
-        <span className={`rb-repo-count ${presentation.count === 'new' ? 'rb-repo-count-new' : ''}`}>{presentation.count}</span>
-        <span className="rb-repo-meta">{presentation.meta}</span>
-        <Ico.Right size={11} />
-      </button>
-    );
-  };
+  const presentedSessions = selectedRepo === null ? [] : presentedSessionsFor(sessions);
+  const renderRepo = (repo: RepositorySummary): React.ReactElement => (
+    <button
+      key={repo.id}
+      type="button"
+      aria-label={`${repo.name} ${repo.defaultBranch}`}
+      className="rb-repo repo-card"
+      onClick={() => onSelectRepo(repo)}
+    >
+      <Ico.Folder size={13} />
+      <span className="rb-repo-name">{repo.name}</span>
+      <span className="rb-repo-meta">{repo.defaultBranch}</span>
+      <Ico.Right size={11} />
+    </button>
+  );
   return (
     <main className="screen repo-browser" aria-labelledby="repo-heading">
       <section className="rb-card hero-card">
@@ -118,7 +84,7 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
           </div>
         ) : null}
         <h1 id="repo-heading" className="rb-h">{selectedRepo === null ? 'Pick a repository' : selectedRepo.name}</h1>
-        <p className="rb-sub">{selectedRepo === null ? 'Choose a Collette-travel repo to scope spec-kit to.' : 'Resume a prior session or start fresh from main.'}</p>
+        <p className="rb-sub">{selectedRepo === null ? 'Choose a repository to scope spec-kit to.' : 'Resume a prior session or start fresh from main.'}</p>
         {selectedRepo === null ? (
           <label className="rb-search">
             <Ico.Search />
@@ -128,15 +94,17 @@ export const RepoBrowseScreen = ({ repositories, sessions, selectedRepo, loading
         {loading ? <p>Loading repositories...</p> : null}
         {selectedRepo === null ? (
           <div className="rb-list repo-list">
-            {filtered.length === 0 ? <div className="rb-empty">No repos match "{query}"</div> : null}
-            {query === '' && recent.length > 0 ? (
+            {error ? (
+              <div className="rb-empty">Could not load repositories.</div>
+            ) : !loading && repositories.length === 0 ? (
+              <div className="rb-empty">No repositories found for the signed-in account.</div>
+            ) : (
               <>
-                <div className="rb-group-h"><Ico.Clock /> Recent</div>
-                {recent.map(renderRepo)}
-                <div className="rb-group-h">All repos</div>
-                {others.map(renderRepo)}
+                {filtered.length === 0 && repositories.length > 0 ? <div className="rb-empty">No repos match "{query}"</div> : null}
+                {filtered.length > 0 ? <div className="rb-group-h">All repos</div> : null}
+                {filtered.map(renderRepo)}
               </>
-            ) : filtered.map(renderRepo)}
+            )}
           </div>
         ) : (
           <section aria-label="Branch sessions" className="session-picker">

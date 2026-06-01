@@ -49,12 +49,14 @@ export const parseGhRepositories = (rows: unknown, fallbackOwner: string): Repos
     }
     const record = row as GhRepositoryRow;
     const name = typeof record.name === 'string' ? record.name : undefined;
-    if (name === undefined) {
+    if (name === undefined || name === '') {
       return [];
     }
 
-    const owner = typeof record.owner?.login === 'string' ? record.owner.login : fallbackOwner;
-    const defaultBranch = typeof record.defaultBranchRef?.name === 'string' ? record.defaultBranchRef.name : 'main';
+    const ownerLogin = record.owner?.login;
+    const owner = typeof ownerLogin === 'string' && ownerLogin.length > 0 ? ownerLogin : fallbackOwner;
+    const branchName = record.defaultBranchRef?.name;
+    const defaultBranch = typeof branchName === 'string' && branchName.length > 0 ? branchName : 'main';
     return [
       {
         id: typeof record.id === 'string' ? record.id : `${owner}/${name}`,
@@ -71,7 +73,7 @@ export const parseGhRepositories = (rows: unknown, fallbackOwner: string): Repos
 };
 
 export const listRepositories = async (
-  owner: 'collette-travel' = 'collette-travel',
+  owner?: string,
   adapterPath = process.env.CONCIERGE_TEST_REPOS_ADAPTER,
   execFileAdapter: ExecFileAdapter = defaultExecFile
 ): Promise<RepositorySummary[]> => {
@@ -80,12 +82,17 @@ export const listRepositories = async (
     return config.repositories.filter(isRepositorySummary);
   }
 
+  // When no owner is supplied, `gh repo list` lists every repository the signed-in
+  // account can see (personal repos plus any org memberships). When an owner is
+  // supplied, it filters to that owner.
+  const ownerArgs = owner === undefined ? [] : [owner];
+  const target = owner ?? 'the signed-in account';
   try {
-    const { stdout } = await execFileAdapter('gh', ['repo', 'list', owner, '--limit', '1000', '--json', GH_REPOSITORY_FIELDS], {
+    const { stdout } = await execFileAdapter('gh', ['repo', 'list', ...ownerArgs, '--limit', '1000', '--json', GH_REPOSITORY_FIELDS], {
       shell: false
     });
-    return parseGhRepositories(JSON.parse(stdout), owner);
+    return parseGhRepositories(JSON.parse(stdout), owner ?? '');
   } catch (error) {
-    throw new Error(`GitHub CLI could not list repositories for ${owner}.`, { cause: error });
+    throw new Error(`GitHub CLI could not list repositories for ${target}.`, { cause: error });
   }
 };

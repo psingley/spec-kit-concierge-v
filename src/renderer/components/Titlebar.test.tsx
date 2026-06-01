@@ -3,13 +3,18 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Titlebar } from './Titlebar';
 
-const renderTitlebar = () =>
+const liveRepos = [
+  { id: 'repo-1', owner: 'psingley', name: 'spec-kit-concierge-v', path: '/work/spec-kit-concierge-v', defaultBranch: 'main', language: 'TypeScript' },
+  { id: 'repo-2', owner: 'collette-travel', name: 'itinerary-service', path: '/work/itinerary-service', defaultBranch: 'main', language: 'Go' }
+];
+
+const renderTitlebar = (overrides: Partial<React.ComponentProps<typeof Titlebar>> = {}) =>
   render(
     <div>
       <Titlebar
-        repo={{ id: 'repo-1', owner: 'collette-travel', name: 'booking-engine', path: '/work/booking-engine', defaultBranch: 'main', language: 'TypeScript' }}
+        repo={{ id: 'repo-1', owner: 'psingley', name: 'spec-kit-concierge-v', path: '/work/spec-kit-concierge-v', defaultBranch: 'main', language: 'TypeScript' }}
         branch="spec/demo"
-        identity={{ login: 'a.kim', displayName: 'Anika Kim' }}
+        identity={{ login: 'psingley', displayName: 'P Singley' }}
         github="ok"
         copilot="starting"
         atlassian="error"
@@ -18,10 +23,13 @@ const renderTitlebar = () =>
           { id: 'claude-sonnet-4-5', name: 'Claude Sonnet 4.5', enablement: 'default' },
           { id: 'gpt-5-codex', name: 'GPT-5 Codex', cost: 'premium' }
         ]}
+        repositories={liveRepos}
+        repositoriesError={false}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={vi.fn()}
+        {...overrides}
       />
       <button type="button">Outside target</button>
     </div>
@@ -78,18 +86,37 @@ describe('Titlebar dropdowns', () => {
     expect(screen.getByRole('button', { name: 'spec/draft-abcd1234' })).toBeInTheDocument();
   });
 
-  it('closes an open menu when the user clicks outside', () => {
+  it('lists the live signed-in repositories and closes the menu on outside click', () => {
     renderTitlebar();
 
-    fireEvent.click(screen.getByRole('button', { name: 'collette-travel/booking-engine' }));
-    expect(screen.getByRole('dialog', { name: /repository/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'concierge-api42h ago' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'itinerary-servicemain' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'psingley/spec-kit-concierge-v' }));
+    const menu = screen.getByRole('dialog', { name: /repository/i });
+    expect(menu).toBeInTheDocument();
+    expect(within(menu).getByRole('button', { name: 'spec-kit-concierge-v' })).toBeInTheDocument();
+    expect(within(menu).getByRole('button', { name: 'itinerary-service' })).toBeInTheDocument();
     expect(screen.getByText('All repos')).toBeInTheDocument();
 
     fireEvent.mouseDown(screen.getByRole('button', { name: /outside target/i }));
 
     expect(screen.queryByRole('dialog', { name: /repository/i })).not.toBeInTheDocument();
+  });
+
+  it('shows an honest empty state when the signed-in account has no repositories', () => {
+    renderTitlebar({ repositories: [] });
+
+    fireEvent.click(screen.getByRole('button', { name: 'psingley/spec-kit-concierge-v' }));
+    const menu = screen.getByRole('dialog', { name: /repository/i });
+    expect(within(menu).getByText('No repositories found for psingley')).toBeInTheDocument();
+    expect(within(menu).queryByRole('button', { name: 'booking-engine' })).not.toBeInTheDocument();
+    expect(within(menu).queryByRole('button', { name: 'itinerary-service' })).not.toBeInTheDocument();
+  });
+
+  it('shows an honest error state when the repository query fails', () => {
+    renderTitlebar({ repositories: [], repositoriesError: true });
+
+    fireEvent.click(screen.getByRole('button', { name: 'psingley/spec-kit-concierge-v' }));
+    const menu = screen.getByRole('dialog', { name: /repository/i });
+    expect(within(menu).getByText('Could not load repositories')).toBeInTheDocument();
   });
 
   it('traps tab focus inside an open menu and closes on escape', () => {
@@ -112,7 +139,7 @@ describe('Titlebar dropdowns', () => {
   it('renders live auth status rows instead of static connected copy', () => {
     renderTitlebar();
 
-    fireEvent.click(screen.getByRole('button', { name: 'a.kim' }));
+    fireEvent.click(screen.getByRole('button', { name: 'psingley' }));
 
     const menu = screen.getByRole('menu', { name: /authentication/i });
     expect(within(menu).getByRole('menuitem', { name: 'GitHub connected' })).toBeInTheDocument();

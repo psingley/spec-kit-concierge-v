@@ -16,10 +16,7 @@
         "value": "a.kim"
       },
       {
-        "value": "collette-travel/pick repo"
-      },
-      {
-        "value": "collette-travel"
+        "value": "a.kim/pick repo"
       },
       {
         "value": "/"
@@ -37,49 +34,25 @@
         "value": "Pick a repository"
       },
       {
-        "value": "Choose a Collette-travel repo to scope spec-kit to."
+        "value": "Choose a repository to scope spec-kit to."
       },
       {
         "value": "concierge-api"
       },
       {
-        "value": "4 sessions"
-      },
-      {
-        "value": "2h ago"
-      },
-      {
         "value": "concierge-web"
-      },
-      {
-        "value": "2 sessions"
-      },
-      {
-        "value": "yesterday"
       },
       {
         "value": "concierge-mobile"
       },
       {
-        "value": "1 session"
-      },
-      {
-        "value": "3d ago"
-      },
-      {
         "value": "booking-engine"
-      },
-      {
-        "value": "1w ago"
       },
       {
         "value": "All repos"
       },
       {
         "value": "itinerary-service"
-      },
-      {
-        "value": "new"
       },
       {
         "value": "main"
@@ -126,7 +99,7 @@
       },
       {
         "role": "button",
-        "name": "collette-travel/pick repo",
+        "name": "a.kim/pick repo",
         "count": 1
       },
       {
@@ -136,27 +109,17 @@
       },
       {
         "role": "button",
-        "name": "concierge-api4 sessions2h ago",
+        "name": "concierge-apimain",
         "count": 1
       },
       {
         "role": "button",
-        "name": "concierge-web2 sessionsyesterday",
+        "name": "concierge-mobiledevelop",
         "count": 1
       },
       {
         "role": "button",
-        "name": "concierge-mobile1 session3d ago",
-        "count": 1
-      },
-      {
-        "role": "button",
-        "name": "booking-engine1 session1w ago",
-        "count": 1
-      },
-      {
-        "role": "button",
-        "name": "itinerary-servicenewmain",
+        "name": "itinerary-servicemain",
         "count": 1
       }
     ],

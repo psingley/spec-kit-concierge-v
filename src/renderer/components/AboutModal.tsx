@@ -1,7 +1,7 @@
 import React from 'react';
 import { Ico } from './Icons';
 
-export const AboutModal = ({ open, onClose, repo }: { open: boolean; onClose: () => void; repo: string; branch: string }): React.ReactElement | null =>
+export const AboutModal = ({ open, onClose, repo, account }: { open: boolean; onClose: () => void; repo: string; branch: string; account: string | null }): React.ReactElement | null =>
   open ? (
     <div className="modal-veil" data-vd-role="modal-veil" onClick={onClose}>
       <div role="dialog" aria-modal="true" aria-label="About Concierge" className="modal about-modal" data-vd-role="modal-veil" onClick={(event) => event.stopPropagation()}>
@@ -11,10 +11,10 @@ export const AboutModal = ({ open, onClose, repo }: { open: boolean; onClose: ()
           <button type="button" className="icon-btn" aria-label="Dismiss" onClick={onClose}><Ico.X size={13} /></button>
         </div>
         <div className="modal-body">
-          <div className="about-tagline">An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow, tuned for the Collette-travel concierge team.</div>
+          <div className="about-tagline">An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow.</div>
           <div className="kv about-kv">
             <div className="k">Version</div><div className="v">2.0.0 (2026.05.20)</div>
-            <div className="k">Org</div><div className="v">collette-travel</div>
+            {account !== null ? <><div className="k">Account</div><div className="v">{account}</div></> : null}
             <div className="k">Repo</div><div className="v">{repo || '—'}</div>
             <div className="k">Branch</div><div className="v">—</div>
             <div className="k">Copilot model</div><div className="v">claude-sonnet-4-5</div>

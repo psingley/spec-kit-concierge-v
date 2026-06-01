@@ -39,4 +39,20 @@ describe('registerReposIpc', () => {
       'ipc handler invocation'
     );
   });
+
+  it('treats an empty payload as a request for the signed-in account and passes no owner', async () => {
+    const handlers = new Map<string, (event: { sender: { id: number } }, payload: unknown) => Promise<unknown>>();
+    const logger = { info: vi.fn(), error: vi.fn() };
+    const listRepos = vi.fn(async () => []);
+
+    registerReposIpc({
+      ipcMain: { handle: vi.fn((channel, handler) => handlers.set(channel, handler)) },
+      logger,
+      listRepos,
+      now: () => 1
+    });
+
+    await expect(handlers.get(REPOS_LIST_CHANNEL)?.({ sender: { id: 7 } }, {})).resolves.toEqual({ repositories: [] });
+    expect(listRepos).toHaveBeenCalledWith(undefined);
+  });
 });

@@ -13,7 +13,7 @@
         "value": "Spec-kit Concierge"
       },
       {
-        "value": "An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow, tuned for the Collette-travel concierge team."
+        "value": "An Electron wrapper around GitHub Copilot CLI driving the spec-kit workflow."
       },
       {
         "value": "Version"
@@ -22,10 +22,10 @@
         "value": "2.0.0 (2026.05.20)"
       },
       {
-        "value": "Org"
+        "value": "Account"
       },
       {
-        "value": "collette-travel"
+        "value": "a.kim"
       },
       {
         "value": "Repo"
