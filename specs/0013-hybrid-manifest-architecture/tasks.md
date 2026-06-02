@@ -127,16 +127,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T053 [US3] Add RED doctor tool catalog factory tests proving exactly six read-only tools and exactly six guarded tools from FR-020/FR-021 are accepted and every other tool is rejected in `src/main/domain/doctor/doctorTools.factory.test.ts`
-- [ ] T054 [US3] Implement doctor tool catalog factories and rejection reasons in `src/main/domain/doctor/doctorTools.factory.ts`
-- [ ] T055 [US3] Add RED read-only doctor tool tests for bounded outputs from `readFeatureJson`, `readManifest`, `gitStatusDiff`, `readTrailers`, `readArtifacts`, and `readTranscript` in `src/main/data-layer/doctor/readOnlyTools.test.ts`
-- [ ] T056 [US3] Implement read-only doctor tools without exposing secrets or raw unrelated file contents in `src/main/data-layer/doctor/readOnlyTools.ts`
-- [ ] T057 [US3] Add RED guarded doctor tool tests for re-read disk truth, precondition validation, anomaly-id idempotency, doctor-invocation structured logging, audit append, reconciliation return, and delegation to deterministic guarded actions for all six guarded tools in `src/main/data-layer/doctor/guardedTools.test.ts`
-- [ ] T058 [US3] Implement guarded doctor tools and doctor-invocation structured logging for `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep` by routing through deterministic guarded recovery actions in `src/main/data-layer/doctor/guardedTools.ts`
-- [ ] T059 [US3] Add RED doctor budget tests for two attempts per step, unsafe request rejection, budget exhaustion anomaly recording, and escalation to needs-attention state in `src/main/data-layer/doctor/doctorHarness.test.ts`
-- [ ] T060 [US3] Implement bounded doctor harness, per-step budgets, tool invocation records, and escalation results in `src/main/data-layer/doctor/doctorHarness.ts`
-- [ ] T061 [US3] Add RED deterministic-core-without-doctor tests proving reconciliation, failed markers, and each safe recovery catalog class still work when doctor is disabled in `src/main/domain/reconciliation/sessionReconciler.test.ts`
-- [ ] T062 [US3] Keep doctor optional and off the happy path through reconciler and recovery options in `src/main/domain/reconciliation/sessionReconciler.ts`
+- [X] T053 [US3] Add RED doctor tool catalog factory tests proving exactly six read-only tools and exactly six guarded tools from FR-020/FR-021 are accepted and every other tool is rejected in `src/main/domain/doctor/doctorTools.factory.test.ts`
+- [X] T054 [US3] Implement doctor tool catalog factories and rejection reasons in `src/main/domain/doctor/doctorTools.factory.ts`
+- [X] T055 [US3] Add RED read-only doctor tool tests for bounded outputs from `readFeatureJson`, `readManifest`, `gitStatusDiff`, `readTrailers`, `readArtifacts`, and `readTranscript` in `src/main/data-layer/doctor/readOnlyTools.test.ts`
+- [X] T056 [US3] Implement read-only doctor tools without exposing secrets or raw unrelated file contents in `src/main/data-layer/doctor/readOnlyTools.ts`
+- [X] T057 [US3] Add RED guarded doctor tool tests for re-read disk truth, precondition validation, anomaly-id idempotency, doctor-invocation structured logging, audit append, reconciliation return, and delegation to deterministic guarded actions for all six guarded tools in `src/main/data-layer/doctor/guardedTools.test.ts`
+- [X] T058 [US3] Implement guarded doctor tools and doctor-invocation structured logging for `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep` by routing through deterministic guarded recovery actions in `src/main/data-layer/doctor/guardedTools.ts`
+- [X] T059 [US3] Add RED doctor budget tests for two attempts per step, unsafe request rejection, budget exhaustion anomaly recording, and escalation to needs-attention state in `src/main/data-layer/doctor/doctorHarness.test.ts`
+- [X] T060 [US3] Implement bounded doctor harness, per-step budgets, tool invocation records, and escalation results in `src/main/data-layer/doctor/doctorHarness.ts`
+- [X] T061 [US3] Add RED deterministic-core-without-doctor tests proving reconciliation, failed markers, and each safe recovery catalog class still work when doctor is disabled in `src/main/domain/reconciliation/sessionReconciler.test.ts`
+- [X] T062 [US3] Keep doctor optional and off the happy path through reconciler and recovery options in `src/main/domain/reconciliation/sessionReconciler.ts`
 
 ### Implementation for User Story 3
 

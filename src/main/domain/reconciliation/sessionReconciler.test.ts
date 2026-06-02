@@ -222,4 +222,29 @@ describe('reconcileSessionStep', () => {
     expect(needsAttention).toMatchObject({ status: 'needs-attention', canCommit: false, canNudge: true });
     expect(noStrandedArtifacts).toMatchObject({ status: 'needs-attention', canCommit: false, canNudge: true });
   });
+
+  it('keeps deterministic reconciliation on the happy path when doctor history is absent or irrelevant', () => {
+    const withDoctorHistory = reconcileSessionStep(baseRequest({
+      manifest: manifest({
+        doctorInvocations: [{
+          invocationId: 'doctor-1',
+          step: 'specify',
+          attemptNumber: 1,
+          tool: 'readManifest',
+          argumentsHash: 'sha256:1',
+          startedAt: timestamp,
+          endedAt: timestamp,
+          result: 'returned'
+        }]
+      })
+    }));
+    const withoutDoctorHistory = reconcileSessionStep(baseRequest());
+
+    expect(withDoctorHistory).toMatchObject({
+      status: 'pass',
+      canCommit: false,
+      canNudge: false
+    });
+    expect(withDoctorHistory).toEqual(withoutDoctorHistory);
+  });
 });
