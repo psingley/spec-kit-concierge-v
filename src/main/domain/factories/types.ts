@@ -34,6 +34,7 @@ export type StepContractContext = {
   hasArtifactDelta?: (files: readonly string[]) => Promise<boolean>;
   modelId?: string;
   contextFilePath?: string;
+  additionalCommitFiles?: readonly string[];
   remediationFiles?: readonly string[];
   now?: () => Date;
   logger?: Pick<MainLogger, 'warn'>;

@@ -73,6 +73,43 @@ describe('registerCopilotSpecifyIpc featureDir resolution', () => {
     expect(afterHook).toHaveBeenCalledWith(expect.objectContaining({ featureDir: path.join(repositoryPath, writtenFeatureRel) }));
   });
 
+  it('passes feature.json as an additional Specify commit file when reconciliation found a stale committed value', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-commit-fj-'));
+    const featureRel = 'specs/0016-smoke-flow-ticketing';
+    await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+    await mkdir(path.join(repositoryPath, featureRel), { recursive: true });
+    await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
+    await writeFile(path.join(repositoryPath, featureRel, 'spec.md'), '# new spec', 'utf8');
+
+    const reconcileFeatureJson = vi.fn().mockResolvedValue({
+      featureDirectory: featureRel,
+      previousFeatureDirectory: featureRel,
+      committedFeatureDirectory: 'specs/0015-send-jira-button',
+      changed: true,
+      commitRequired: true
+    });
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'sha-123' } });
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook,
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      reconcileFeatureJson
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(afterHook).toHaveBeenCalledWith(expect.objectContaining({
+      featureDir: path.join(repositoryPath, featureRel),
+      additionalCommitFiles: ['.specify/feature.json']
+    })));
+  });
+
   it('resolves the feature directory from .specify/feature.json and reads spec.md from there (not repo root)', async () => {
     const harness = createHarness();
     const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-repo-'));
