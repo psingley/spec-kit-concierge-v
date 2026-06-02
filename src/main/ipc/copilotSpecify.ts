@@ -126,12 +126,16 @@ const defaultEvaluateReadiness =
       createSpecifyReadinessAdapters({ capabilitiesProbe: probeCapabilities(logger, userDataPath) })
     );
 
-// The feature description is passed verbatim as the -p prompt arg.
-// The agent is pinned deterministically via --agent speckit.specify (GitHub's
-// documented headless mechanism) — NOT via a slash command in the prompt text.
-// $ARGUMENTS in the agent file receives the raw description directly.
+// The agent is pinned via --agent speckit.specify, but pinning the agent alone
+// is NOT enough to make it behave like a real /speckit.specify invocation: with
+// a bare description in -p (e.g. "remove the fake traffic lights"), the model
+// reads an imperative code-change request and — with --allow-all-tools — edits
+// source/test/design files directly instead of writing a spec. We mirror how the
+// command is actually driven interactively ("run speckit.specify with this
+// specification: <request>") so the model frames the input as a specification to
+// spec, not a task to implement. $ARGUMENTS in the agent file receives this body.
 export const buildSpecifyPrompt = (featureDescription: string): string =>
-  featureDescription;
+  `Run /speckit.specify with this specification:\n\n${featureDescription}`;
 
 // Known stdout/stderr markers that indicate a hard failure from the copilot CLI.
 const FAILURE_MARKERS = ['Skill not found', 'error:', 'Error:'];

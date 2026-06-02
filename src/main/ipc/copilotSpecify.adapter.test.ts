@@ -15,17 +15,22 @@ const FAKE_LOGDIR = '/tmp/user/copilot-logs/specify-abc';
 // ---------------------------------------------------------------------------
 
 describe('buildSpecifyPrompt', () => {
-  it('returns the raw feature description — no slash-command prefix', () => {
-    const prompt = buildSpecifyPrompt('Add dark mode to the dashboard');
+  it('frames the description as a /speckit.specify invocation', () => {
+    const desc = 'Add dark mode to the dashboard';
+    const prompt = buildSpecifyPrompt(desc);
 
-    // Agent is pinned via --agent flag; -p receives only the user description.
-    expect(prompt).toBe('Add dark mode to the dashboard');
-    expect(prompt).not.toContain('/speckit.specify');
+    // Pinning --agent alone lets the model treat an imperative description as a
+    // code task; we mirror the interactive invocation so it specs, not implements.
+    expect(prompt).toContain('/speckit.specify');
+    expect(prompt).toContain('specification:');
+    expect(prompt).toContain(desc);
   });
 
-  it('passes the description through unchanged', () => {
+  it('embeds the raw description verbatim within the framing', () => {
     const desc = 'Remove the fake traffic lights';
-    expect(buildSpecifyPrompt(desc)).toBe(desc);
+    const prompt = buildSpecifyPrompt(desc);
+    expect(prompt.endsWith(desc)).toBe(true);
+    expect(prompt).toContain('/speckit.specify');
   });
 });
 
