@@ -5,6 +5,7 @@ import {
   selectUiArtifactViewerOrigin,
   selectUiArtifactViewerPath,
   selectUiShowArtifactViewer,
+  selectUiShowJiraSubmission,
   selectUiSidebarOpen,
   selectUiState,
   selectUiTheme,
@@ -23,6 +24,7 @@ describe('ui slice', () => {
       showAbout: false,
       showRequest: false,
       showArtifactViewer: false,
+      showJiraSubmission: false,
       artifactViewerPath: null,
       artifactViewerOrigin: null,
       openMenu: null,
@@ -38,6 +40,7 @@ describe('ui slice', () => {
     expect(selectUiSidebarOpen(state)).toBe(true);
     expect(selectUiActiveView(state)).toBeNull();
     expect(selectUiShowArtifactViewer(state)).toBe(false);
+    expect(selectUiShowJiraSubmission(state)).toBe(false);
     expect(selectUiArtifactViewerPath(state)).toBeNull();
     expect(selectUiArtifactViewerOrigin(state)).toBeNull();
     expect(selectUiToasts(state)).toEqual([]);

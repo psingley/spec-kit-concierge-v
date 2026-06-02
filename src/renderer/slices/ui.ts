@@ -15,6 +15,7 @@ export type UiState = {
   showAbout: boolean;
   showRequest: boolean;
   showArtifactViewer: boolean;
+  showJiraSubmission: boolean;
   artifactViewerPath: string | null;
   artifactViewerOrigin: 'passive' | 'review' | null;
   openMenu: string | null;
@@ -30,6 +31,7 @@ export const uiInitialState: UiState = {
   showAbout: false,
   showRequest: false,
   showArtifactViewer: false,
+  showJiraSubmission: false,
   artifactViewerPath: null,
   artifactViewerOrigin: null,
   openMenu: null,
@@ -46,10 +48,10 @@ const uiSlice = createSlice({
     activityVisibilitySet: (state, action: PayloadAction<boolean>) => {
       state.showActivity = action.payload;
     },
-    modalOpened: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest'>) => {
+    modalOpened: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showJiraSubmission'>) => {
       state[action.payload] = true;
     },
-    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showArtifactViewer'>) => {
+    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showArtifactViewer' | 'showJiraSubmission'>) => {
       state[action.payload] = false;
       if (action.payload === 'showArtifactViewer') {
         state.artifactViewerPath = null;

@@ -3,6 +3,7 @@ import { api } from './api';
 import { activityReducer } from './slices/activity';
 import { authReducer } from './slices/auth';
 import { copilotReducer } from './slices/copilot';
+import { jiraReducer } from './slices/jira';
 import { preferencesReducer } from './slices/preferences';
 import { sessionReducer } from './slices/session';
 import { stepsReducer } from './slices/steps';
@@ -29,6 +30,7 @@ const reducer = {
   session: sessionReducer,
   activity: activityReducer,
   copilot: copilotReducer,
+  jira: jiraReducer,
   [api.reducerPath]: api.reducer
 };
 

@@ -9,6 +9,9 @@ export type ReviewStepProps = {
   nudgeControl?: React.ReactNode;
   auditSummary?: string[];
   onArtifactOpen: (path: string) => void;
+  jiraAvailable?: boolean;
+  jiraDisabledReason?: string;
+  onSendToJira?: () => void;
 };
 
 export const ReviewStep = ({
@@ -17,7 +20,10 @@ export const ReviewStep = ({
   error,
   nudgeControl,
   auditSummary = [],
-  onArtifactOpen
+  onArtifactOpen,
+  jiraAvailable = false,
+  jiraDisabledReason,
+  onSendToJira
 }: ReviewStepProps): React.ReactElement => {
   const taskArtifact = evidence?.artifacts.find((artifact) => artifact.path.endsWith('tasks.md'));
 
@@ -92,6 +98,17 @@ export const ReviewStep = ({
               </button>
             ) : <span>none</span>}
           </div>
+          <button
+            type="button"
+            className="btn primary review-jira-button"
+            disabled={!jiraAvailable}
+            onClick={() => onSendToJira?.()}
+          >
+            <Ico.Send size={13} />Send to JIRA
+          </button>
+          {!jiraAvailable && jiraDisabledReason !== undefined ? (
+            <p className="meta">{jiraDisabledReason}</p>
+          ) : null}
         </section>
       </div>
     </section>

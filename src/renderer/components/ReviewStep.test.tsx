@@ -27,4 +27,35 @@ describe('ReviewStep presentation', () => {
     expect(container.querySelector('.modal-backdrop')).not.toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: /Task details/i })).not.toBeInTheDocument();
   });
+
+  it('renders Send to JIRA enabled only when Atlassian auth and tasks.md are present', () => {
+    const onSendToJira = vi.fn();
+    const { rerender } = render(
+      <ReviewStep
+        evidence={evidence}
+        loading={false}
+        onArtifactOpen={vi.fn()}
+        jiraAvailable={false}
+        jiraDisabledReason="Atlassian auth required"
+        onSendToJira={onSendToJira}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: /Send to JIRA/i })).toBeDisabled();
+    expect(screen.getByText('Atlassian auth required')).toBeVisible();
+
+    rerender(
+      <ReviewStep
+        evidence={evidence}
+        loading={false}
+        onArtifactOpen={vi.fn()}
+        jiraAvailable
+        onSendToJira={onSendToJira}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /Send to JIRA/i }));
+
+    expect(onSendToJira).toHaveBeenCalledTimes(1);
+  });
 });

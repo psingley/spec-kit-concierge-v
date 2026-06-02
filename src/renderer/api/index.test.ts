@@ -31,6 +31,8 @@ describe('renderer API slice', () => {
       'getTasksDetail',
       'getReviewEvidence',
       'readReviewEvidenceBody',
+      'dryRunJiraSubmission',
+      'submitJiraSubmission',
       'runSpecify',
       'runClarify',
       'runPassiveStep',
@@ -80,7 +82,7 @@ describe('renderer API slice', () => {
     });
   });
 
-  it('declares the eight tag types exactly once', () => {
+  it('declares tag types exactly once', () => {
     expect(RUN2_TAG_TYPES).toEqual([
       'Workspace',
       'StepState',
@@ -89,9 +91,10 @@ describe('renderer API slice', () => {
       'Session',
       'Step',
       'Transcript',
-      'Preferences'
+      'Preferences',
+      'JiraSubmission'
     ]);
-    expect(new Set(RUN2_TAG_TYPES).size).toBe(8);
+    expect(new Set(RUN2_TAG_TYPES).size).toBe(9);
   });
 
   it('dispatches getBoundCLICapabilities through the ACP preload bridge and validates the response first', async () => {
