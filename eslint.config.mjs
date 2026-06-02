@@ -28,7 +28,8 @@ export default tseslint.config(
       '.agents/',
       '.github/',
       'playwright-report/',
-      'test-results/'
+      'test-results/',
+      '*.min.js'
     ]
   },
   js.configs.recommended,

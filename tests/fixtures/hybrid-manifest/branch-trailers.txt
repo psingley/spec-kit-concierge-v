@@ -1,0 +1,24 @@
+# Hybrid manifest branch trailer fixture
+commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Concierge-Step: specify:pass
+Artifact-Snapshot: 24113e2c829839c1a62528675dd2532602f15ed08addd9c82473ecb953499503
+
+commit bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+Concierge-Step: specify:pass
+Artifact-Snapshot: 24113e2c829839c1a62528675dd2532602f15ed08addd9c82473ecb953499503
+Fixture-Case: duplicate-valid-trailer
+
+commit cccccccccccccccccccccccccccccccccccccccc
+Concierge-Step: tasks:pass
+Artifact-Snapshot: 105a46462aa384368e9632b6b6ba50b7e7d46896df2e6c47feef7b8cd014a015
+Fixture-Case: trailer-content-mismatch
+
+commit dddddddddddddddddddddddddddddddddddddddd
+Concierge-Step: plan:pass
+Artifact-Snapshot: 6f9db3bbf653566da89a41481b1078d34b1ffbee0b39e1ef68a53cd34288688d
+Fixture-Case: out-of-order-valid-trailer
+
+commit eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+Concierge-Step: review:pass
+Artifact-Snapshot: 170b257253bbb5e79a27d01cb4d2f683880b96cf2362591b0b3ecb14004656e7
+Fixture-Case: matching-current-artifact-snapshot

@@ -1,0 +1,950 @@
+{
+  "valid": {
+    "schema": "concierge.sessionManifest.v1",
+    "sessionId": "11111111-1111-4111-8111-111111111111",
+    "featureDir": "specs/0013-hybrid-manifest-architecture",
+    "branch": "build/manifest-architecture-dogfood",
+    "createdAt": "2026-06-02T00:00:00.000Z",
+    "updatedAt": "2026-06-02T00:12:00.000Z",
+    "currentStep": "plan",
+    "attempts": [
+      {
+        "attemptId": "attempt-specify-0",
+        "step": "specify",
+        "status": "pass",
+        "startedAt": "2026-06-02T00:01:00.000Z",
+        "endedAt": "2026-06-02T00:02:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "f7db98bc095189f1f7e88e4ce9001207266caefd",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:01:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "76e2a920ec82f55e7cb99dfeef875c8549e2570e",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:02:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "specify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+              "required": true,
+              "present": true,
+              "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+          "capturedAt": "2026-06-02T00:01:00.000Z"
+        },
+        "completionEvidence": {
+          "commitSha": "8246d0730b66a49b7a9383eff32e62b695ace129",
+          "trailer": "Concierge-Step: specify:pass",
+          "artifactSnapshot": {
+            "step": "specify",
+            "featureDir": "specs/0013-hybrid-manifest-architecture",
+            "paths": [
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+                "required": true,
+                "present": true,
+                "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+                "sizeBytes": 1000,
+                "mtimeMs": 1780372800000
+              },
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+                "required": false,
+                "present": true,
+                "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+                "sizeBytes": 1001,
+                "mtimeMs": 1780372800001
+              }
+            ],
+            "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+            "capturedAt": "2026-06-02T00:01:00.000Z"
+          },
+          "adoptedFromHistory": false
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.specify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-specify-0",
+            "messageId": "msg-specify-0",
+            "turnId": "turn-specify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/specify.jsonl",
+          "sha256": "437e9e6093b025a4291a73731ee5c5d3f14be7930a47fc1d380d1947d1b90982",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "specify success",
+          "rawEventChecksum": "74c3f328d3f83031a651138c762d03ad2ac329d8c47a4565d494f4fbc7ebf5f0"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      },
+      {
+        "attemptId": "attempt-clarify-0",
+        "step": "clarify",
+        "status": "pass",
+        "startedAt": "2026-06-02T00:03:00.000Z",
+        "endedAt": "2026-06-02T00:04:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "6774055abb6f47ea1c02f4d511b84dca9d5afe9b",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:03:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "4e69d80f86d252d57c320019aec005ba324599a5",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:04:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "clarify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify.md",
+              "required": true,
+              "present": true,
+              "sha256": "9b51443523ebf26983510c9d595b62d75336ca90e6ef4dc451fb314dad8592b3",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cfbe8f8c158dbddeff032b36cd498305be6039db14f36e34fe4aed6c7e2b00dc",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "05c00236461a32713b426005ca52b51a9b505dffbb839c8358376979c619cef4",
+          "capturedAt": "2026-06-02T00:03:00.000Z"
+        },
+        "completionEvidence": {
+          "commitSha": "398e360d796e2a8f721db62be9740aa96cbe947b",
+          "trailer": "Concierge-Step: clarify:pass",
+          "artifactSnapshot": {
+            "step": "clarify",
+            "featureDir": "specs/0013-hybrid-manifest-architecture",
+            "paths": [
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/clarify.md",
+                "required": true,
+                "present": true,
+                "sha256": "9b51443523ebf26983510c9d595b62d75336ca90e6ef4dc451fb314dad8592b3",
+                "sizeBytes": 1000,
+                "mtimeMs": 1780372800000
+              },
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/clarify-1.md",
+                "required": false,
+                "present": true,
+                "sha256": "cfbe8f8c158dbddeff032b36cd498305be6039db14f36e34fe4aed6c7e2b00dc",
+                "sizeBytes": 1001,
+                "mtimeMs": 1780372800001
+              }
+            ],
+            "snapshotHash": "05c00236461a32713b426005ca52b51a9b505dffbb839c8358376979c619cef4",
+            "capturedAt": "2026-06-02T00:03:00.000Z"
+          },
+          "adoptedFromHistory": false
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.clarify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-clarify-0",
+            "messageId": "msg-clarify-0",
+            "turnId": "turn-clarify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/clarify.jsonl",
+          "sha256": "3178cfb1bd1b43cb7e3accfb9f25c8530dfc325fd1a318e129b5cb9c0a3c7f8d",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "clarify success",
+          "rawEventChecksum": "1c5a6dc877f26e37ca8a24a85f5946e9a80767396d6e870ef4e56ee582a4aae6"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      },
+      {
+        "attemptId": "attempt-plan-0",
+        "step": "plan",
+        "status": "running",
+        "startedAt": "2026-06-02T00:05:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "77e2d15fc6fdf9432f82deb229078a66abb61780",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:05:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "db8688c49a509ed5ee86e39a99fbcd20609a9ec6",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:06:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "plan",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/plan.md",
+              "required": true,
+              "present": true,
+              "sha256": "d661a9da0a69ff392e7becbc532f68cf508276e1b62b11a3b240ded1bb3a4221",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/plan-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "a23ee81636d1338d4623d96e88aea3696b344d73cb6fbf279702991135aeaccd",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "6fe5b03a5f380a00a763d58a4c54311334b5faa4399a9febabf3a89153f251c0",
+          "capturedAt": "2026-06-02T00:05:00.000Z"
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.plan",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-plan-0",
+            "messageId": "msg-plan-0",
+            "turnId": "turn-plan-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/plan.jsonl",
+          "sha256": "d8b85868f0fc5d56ec22186bf2d7cb2ad54adcef5b3f86275628d0cdcb1e77b9",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "plan success",
+          "rawEventChecksum": "e811ab5a22ef8b780335c417ba69fd10f8f87f457a603ddf5f362581c074c510"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      }
+    ],
+    "anomalies": [],
+    "interventions": [],
+    "doctorInvocations": [],
+    "nudgeRequests": [],
+    "audit": [
+      {
+        "auditId": "audit-manifest-created",
+        "at": "2026-06-02T00:00:00.000Z",
+        "event": "manifest-created",
+        "step": "specify",
+        "message": "Created session manifest fixture"
+      },
+      {
+        "auditId": "audit-attempt-appended",
+        "at": "2026-06-02T00:01:00.000Z",
+        "event": "attempt-appended",
+        "step": "specify",
+        "message": "Appended specify attempt"
+      }
+    ]
+  },
+  "incomplete": {
+    "schema": "concierge.sessionManifest.v1",
+    "sessionId": "22222222-2222-4222-8222-222222222222",
+    "featureDir": "specs/0013-hybrid-manifest-architecture",
+    "branch": "build/manifest-architecture-dogfood",
+    "createdAt": "2026-06-02T00:00:00.000Z",
+    "updatedAt": "2026-06-02T00:12:00.000Z",
+    "currentStep": "tasks",
+    "attempts": [
+      {
+        "attemptId": "attempt-specify-0",
+        "step": "specify",
+        "status": "pass",
+        "startedAt": "2026-06-02T00:01:00.000Z",
+        "endedAt": "2026-06-02T00:02:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "f7db98bc095189f1f7e88e4ce9001207266caefd",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:01:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "76e2a920ec82f55e7cb99dfeef875c8549e2570e",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:02:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "specify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+              "required": true,
+              "present": true,
+              "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+          "capturedAt": "2026-06-02T00:01:00.000Z"
+        },
+        "completionEvidence": {
+          "commitSha": "8246d0730b66a49b7a9383eff32e62b695ace129",
+          "trailer": "Concierge-Step: specify:pass",
+          "artifactSnapshot": {
+            "step": "specify",
+            "featureDir": "specs/0013-hybrid-manifest-architecture",
+            "paths": [
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+                "required": true,
+                "present": true,
+                "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+                "sizeBytes": 1000,
+                "mtimeMs": 1780372800000
+              },
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+                "required": false,
+                "present": true,
+                "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+                "sizeBytes": 1001,
+                "mtimeMs": 1780372800001
+              }
+            ],
+            "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+            "capturedAt": "2026-06-02T00:01:00.000Z"
+          },
+          "adoptedFromHistory": false
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.specify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-specify-0",
+            "messageId": "msg-specify-0",
+            "turnId": "turn-specify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/specify.jsonl",
+          "sha256": "437e9e6093b025a4291a73731ee5c5d3f14be7930a47fc1d380d1947d1b90982",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "specify success",
+          "rawEventChecksum": "74c3f328d3f83031a651138c762d03ad2ac329d8c47a4565d494f4fbc7ebf5f0"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      },
+      {
+        "attemptId": "attempt-clarify-0",
+        "step": "clarify",
+        "status": "interrupted",
+        "startedAt": "2026-06-02T00:03:00.000Z",
+        "endedAt": "2026-06-02T00:04:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "6774055abb6f47ea1c02f4d511b84dca9d5afe9b",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:03:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "4e69d80f86d252d57c320019aec005ba324599a5",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:04:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "clarify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify.md",
+              "required": true,
+              "present": true,
+              "sha256": "9b51443523ebf26983510c9d595b62d75336ca90e6ef4dc451fb314dad8592b3",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cfbe8f8c158dbddeff032b36cd498305be6039db14f36e34fe4aed6c7e2b00dc",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "05c00236461a32713b426005ca52b51a9b505dffbb839c8358376979c619cef4",
+          "capturedAt": "2026-06-02T00:03:00.000Z"
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.clarify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-clarify-0",
+            "messageId": "msg-clarify-0",
+            "turnId": "turn-clarify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/clarify.jsonl",
+          "sha256": "3178cfb1bd1b43cb7e3accfb9f25c8530dfc325fd1a318e129b5cb9c0a3c7f8d",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 1,
+          "resultKind": "interrupted",
+          "summary": "clarify interrupted",
+          "rawEventChecksum": "1c5a6dc877f26e37ca8a24a85f5946e9a80767396d6e870ef4e56ee582a4aae6"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      }
+    ],
+    "anomalies": [],
+    "interventions": [],
+    "doctorInvocations": [],
+    "nudgeRequests": [],
+    "audit": [
+      {
+        "auditId": "audit-manifest-created",
+        "at": "2026-06-02T00:00:00.000Z",
+        "event": "manifest-created",
+        "step": "specify",
+        "message": "Created session manifest fixture"
+      },
+      {
+        "auditId": "audit-attempt-appended",
+        "at": "2026-06-02T00:01:00.000Z",
+        "event": "attempt-appended",
+        "step": "specify",
+        "message": "Appended specify attempt"
+      }
+    ]
+  },
+  "invalidShape": {
+    "schema": "concierge.sessionManifest.v1",
+    "sessionId": "11111111-1111-4111-8111-111111111111",
+    "featureDir": "specs/0013-hybrid-manifest-architecture",
+    "branch": "build/manifest-architecture-dogfood",
+    "createdAt": "2026-06-02T00:00:00.000Z",
+    "updatedAt": "2026-06-02T00:12:00.000Z",
+    "currentStep": "plan",
+    "attempts": {
+      "not": "an array"
+    },
+    "anomalies": [],
+    "interventions": [],
+    "doctorInvocations": [],
+    "nudgeRequests": [],
+    "audit": [
+      {
+        "auditId": "audit-manifest-created",
+        "at": "2026-06-02T00:00:00.000Z",
+        "event": "manifest-created",
+        "step": "specify",
+        "message": "Created session manifest fixture"
+      },
+      {
+        "auditId": "audit-attempt-appended",
+        "at": "2026-06-02T00:01:00.000Z",
+        "event": "attempt-appended",
+        "step": "specify",
+        "message": "Appended specify attempt"
+      }
+    ]
+  },
+  "unknownSchema": {
+    "schema": "concierge.sessionManifest.v99",
+    "sessionId": "11111111-1111-4111-8111-111111111111",
+    "featureDir": "specs/0013-hybrid-manifest-architecture",
+    "branch": "build/manifest-architecture-dogfood",
+    "createdAt": "2026-06-02T00:00:00.000Z",
+    "updatedAt": "2026-06-02T00:12:00.000Z",
+    "currentStep": "plan",
+    "attempts": [
+      {
+        "attemptId": "attempt-specify-0",
+        "step": "specify",
+        "status": "pass",
+        "startedAt": "2026-06-02T00:01:00.000Z",
+        "endedAt": "2026-06-02T00:02:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "f7db98bc095189f1f7e88e4ce9001207266caefd",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:01:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "76e2a920ec82f55e7cb99dfeef875c8549e2570e",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:02:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "specify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+              "required": true,
+              "present": true,
+              "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+          "capturedAt": "2026-06-02T00:01:00.000Z"
+        },
+        "completionEvidence": {
+          "commitSha": "8246d0730b66a49b7a9383eff32e62b695ace129",
+          "trailer": "Concierge-Step: specify:pass",
+          "artifactSnapshot": {
+            "step": "specify",
+            "featureDir": "specs/0013-hybrid-manifest-architecture",
+            "paths": [
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify.md",
+                "required": true,
+                "present": true,
+                "sha256": "37e87bf3121e371276c4d5ba05b86f5d8f1952e3e294d61a0322e8cad317b604",
+                "sizeBytes": 1000,
+                "mtimeMs": 1780372800000
+              },
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/specify-1.md",
+                "required": false,
+                "present": true,
+                "sha256": "cff2bcb98b0519023aebea44e9ac20243deda6838217a596d0047775ceb5214a",
+                "sizeBytes": 1001,
+                "mtimeMs": 1780372800001
+              }
+            ],
+            "snapshotHash": "e6508a27999280d5f3600c36061020669d9ee80608d4beef9fea3b19424eaad2",
+            "capturedAt": "2026-06-02T00:01:00.000Z"
+          },
+          "adoptedFromHistory": false
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.specify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-specify-0",
+            "messageId": "msg-specify-0",
+            "turnId": "turn-specify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/specify.jsonl",
+          "sha256": "437e9e6093b025a4291a73731ee5c5d3f14be7930a47fc1d380d1947d1b90982",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "specify success",
+          "rawEventChecksum": "74c3f328d3f83031a651138c762d03ad2ac329d8c47a4565d494f4fbc7ebf5f0"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      },
+      {
+        "attemptId": "attempt-clarify-0",
+        "step": "clarify",
+        "status": "pass",
+        "startedAt": "2026-06-02T00:03:00.000Z",
+        "endedAt": "2026-06-02T00:04:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "6774055abb6f47ea1c02f4d511b84dca9d5afe9b",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:03:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "4e69d80f86d252d57c320019aec005ba324599a5",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:04:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "clarify",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify.md",
+              "required": true,
+              "present": true,
+              "sha256": "9b51443523ebf26983510c9d595b62d75336ca90e6ef4dc451fb314dad8592b3",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/clarify-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "cfbe8f8c158dbddeff032b36cd498305be6039db14f36e34fe4aed6c7e2b00dc",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "05c00236461a32713b426005ca52b51a9b505dffbb839c8358376979c619cef4",
+          "capturedAt": "2026-06-02T00:03:00.000Z"
+        },
+        "completionEvidence": {
+          "commitSha": "398e360d796e2a8f721db62be9740aa96cbe947b",
+          "trailer": "Concierge-Step: clarify:pass",
+          "artifactSnapshot": {
+            "step": "clarify",
+            "featureDir": "specs/0013-hybrid-manifest-architecture",
+            "paths": [
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/clarify.md",
+                "required": true,
+                "present": true,
+                "sha256": "9b51443523ebf26983510c9d595b62d75336ca90e6ef4dc451fb314dad8592b3",
+                "sizeBytes": 1000,
+                "mtimeMs": 1780372800000
+              },
+              {
+                "path": "specs/0013-hybrid-manifest-architecture/clarify-1.md",
+                "required": false,
+                "present": true,
+                "sha256": "cfbe8f8c158dbddeff032b36cd498305be6039db14f36e34fe4aed6c7e2b00dc",
+                "sizeBytes": 1001,
+                "mtimeMs": 1780372800001
+              }
+            ],
+            "snapshotHash": "05c00236461a32713b426005ca52b51a9b505dffbb839c8358376979c619cef4",
+            "capturedAt": "2026-06-02T00:03:00.000Z"
+          },
+          "adoptedFromHistory": false
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.clarify",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-clarify-0",
+            "messageId": "msg-clarify-0",
+            "turnId": "turn-clarify-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/clarify.jsonl",
+          "sha256": "3178cfb1bd1b43cb7e3accfb9f25c8530dfc325fd1a318e129b5cb9c0a3c7f8d",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "clarify success",
+          "rawEventChecksum": "1c5a6dc877f26e37ca8a24a85f5946e9a80767396d6e870ef4e56ee582a4aae6"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      },
+      {
+        "attemptId": "attempt-plan-0",
+        "step": "plan",
+        "status": "running",
+        "startedAt": "2026-06-02T00:05:00.000Z",
+        "branchBefore": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "77e2d15fc6fdf9432f82deb229078a66abb61780",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:05:00.000Z"
+        },
+        "branchAfter": {
+          "branch": "build/manifest-architecture-dogfood",
+          "headSha": "db8688c49a509ed5ee86e39a99fbcd20609a9ec6",
+          "statusPorcelain": "",
+          "trackedChanges": [],
+          "timestamp": "2026-06-02T00:06:00.000Z"
+        },
+        "ownedPathSnapshot": {
+          "step": "plan",
+          "featureDir": "specs/0013-hybrid-manifest-architecture",
+          "paths": [
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/plan.md",
+              "required": true,
+              "present": true,
+              "sha256": "d661a9da0a69ff392e7becbc532f68cf508276e1b62b11a3b240ded1bb3a4221",
+              "sizeBytes": 1000,
+              "mtimeMs": 1780372800000
+            },
+            {
+              "path": "specs/0013-hybrid-manifest-architecture/plan-1.md",
+              "required": false,
+              "present": true,
+              "sha256": "a23ee81636d1338d4623d96e88aea3696b344d73cb6fbf279702991135aeaccd",
+              "sizeBytes": 1001,
+              "mtimeMs": 1780372800001
+            }
+          ],
+          "snapshotHash": "6fe5b03a5f380a00a763d58a4c54311334b5faa4399a9febabf3a89153f251c0",
+          "capturedAt": "2026-06-02T00:05:00.000Z"
+        },
+        "spawnRecipe": {
+          "command": "copilot",
+          "args": [
+            "-p",
+            "--agent",
+            "speckit.plan",
+            "--output-format",
+            "json",
+            "--session-id",
+            "11111111-1111-4111-8111-111111111111",
+            "--log-dir",
+            ".concierge/logs"
+          ],
+          "cwd": "/repo/spec-kit-concierge-v",
+          "environmentKeys": [
+            "PATH",
+            "HOME"
+          ]
+        },
+        "assistant": [
+          {
+            "assistantSessionId": "asst-plan-0",
+            "messageId": "msg-plan-0",
+            "turnId": "turn-plan-0",
+            "source": "print-json-event"
+          }
+        ],
+        "logReference": {
+          "path": ".concierge/logs/plan.jsonl",
+          "sha256": "d8b85868f0fc5d56ec22186bf2d7cb2ad54adcef5b3f86275628d0cdcb1e77b9",
+          "sizeBytes": 512
+        },
+        "terminalResult": {
+          "exitCode": 0,
+          "resultKind": "success",
+          "summary": "plan success",
+          "rawEventChecksum": "e811ab5a22ef8b780335c417ba69fd10f8f87f457a603ddf5f362581c074c510"
+        },
+        "anomalyIds": [],
+        "interventionIds": []
+      }
+    ],
+    "anomalies": [],
+    "interventions": [],
+    "doctorInvocations": [],
+    "nudgeRequests": [],
+    "audit": [
+      {
+        "auditId": "audit-manifest-created",
+        "at": "2026-06-02T00:00:00.000Z",
+        "event": "manifest-created",
+        "step": "specify",
+        "message": "Created session manifest fixture"
+      },
+      {
+        "auditId": "audit-attempt-appended",
+        "at": "2026-06-02T00:01:00.000Z",
+        "event": "attempt-appended",
+        "step": "specify",
+        "message": "Appended specify attempt"
+      }
+    ]
+  }
+}

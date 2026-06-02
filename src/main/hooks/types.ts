@@ -1,5 +1,8 @@
 import type { ConciergeStepCommit, StepContractResult } from '../domain/factories/types';
 import type { commitWithTrailer as defaultCommitWithTrailer } from '../data-layer/git/gitCommand';
+import type { CommitWithTrailerResult } from '../data-layer/git/gitCommand';
+import type { BranchStateSnapshot, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
+import type { ReconciliationResult } from '../domain/manifest/types';
 import type { StepName } from './manifest';
 import type { AuthStatusSlot, McpConfigSlot } from './prerequisites';
 
@@ -59,8 +62,34 @@ export type StepHookContext = {
   removeInFlightMarker?: (sessionId: string, step: StepName) => Promise<void>;
   validateArtifacts?: (featureDir: string, context: StepHookContext) => Promise<StepContractResult>;
   commitWithTrailer?: typeof defaultCommitWithTrailer;
+  reconcileAfterHook?: (
+    phase: AfterHookReconcilePhase,
+    request: AfterHookReconcileRequest
+  ) => Promise<ReconciliationResult>;
+  captureBranchState?: (context: StepHookContext) => Promise<BranchStateSnapshot>;
+  captureOwnedPathSnapshot?: (
+    step: StepName,
+    context: StepHookContext,
+    branchBefore: BranchStateSnapshot
+  ) => Promise<StepOwnedArtifactSnapshot>;
+  stepStartSnapshotSink?: (snapshot: StepStartSnapshot) => void | Promise<void>;
   activitySink?: (event: StepLifecycleEvent) => void | Promise<void>;
   now?: () => Date;
+};
+
+export type StepStartSnapshot = {
+  step: StepName;
+  branchBefore: BranchStateSnapshot;
+  ownedPathSnapshot: StepOwnedArtifactSnapshot;
+};
+
+export type AfterHookReconcilePhase = 'pre-commit' | 'post-commit';
+
+export type AfterHookReconcileRequest = {
+  step: StepName;
+  context: StepHookContext;
+  commitCandidate: ConciergeStepCommit;
+  commitResult?: CommitWithTrailerResult;
 };
 
 export type StepHookResult =
@@ -71,6 +100,7 @@ export type StepHookResult =
       lifecycleAction?: 'pending' | 'complete';
       commit?: ConciergeStepCommit & { commitSha?: string };
       event?: StepLifecycleEvent;
+      stepStartSnapshot?: StepStartSnapshot;
     }
   | {
       ok: false;

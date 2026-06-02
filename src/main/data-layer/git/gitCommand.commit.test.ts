@@ -89,6 +89,80 @@ describe('commitWithTrailer idempotency', () => {
     });
   }, gitFixtureTimeoutMs);
 
+  it('adopts an older matching artifact-snapshot completion commit when HEAD moved on', async () => {
+    await withTempDir(async (directory) => {
+      await createRepository(directory);
+
+      await writeFile(path.join(directory, 'spec.md'), 'spec contents');
+      await git(directory, ['add', '--', 'spec.md']);
+      await git(directory, [
+        'commit',
+        '-m',
+        `feat: specify\n\nConcierge-Step: specify:pass\nArtifact-Snapshot: ${'a'.repeat(64)}`
+      ]);
+      const expectedSha = await runGit(directory, ['rev-parse', 'HEAD']);
+      await git(directory, ['commit', '--allow-empty', '-m', 'chore: later unrelated']);
+      const commitsBefore = await countCommits(directory);
+
+      const result = await commitWithTrailer(directory, {
+        step: 'specify',
+        status: 'pass',
+        files: ['spec.md'],
+        message: 'feat: specify',
+        artifactSnapshotHash: 'a'.repeat(64)
+      } as ConciergeStepCommit);
+
+      expect(result).toEqual({
+        commitSha: expectedSha,
+        trailer: 'Concierge-Step: specify:pass',
+        artifactSnapshotHash: 'a'.repeat(64),
+        adoptedFromHistory: true
+      });
+      expect(await countCommits(directory)).toBe(commitsBefore);
+    });
+  }, gitFixtureTimeoutMs);
+
+  it('rejects artifact-snapshot trailer mismatches instead of adopting completion history', async () => {
+    await withTempDir(async (directory) => {
+      await createRepository(directory);
+      await writeFile(path.join(directory, 'spec.md'), 'spec contents');
+      await git(directory, ['add', '--', 'spec.md']);
+      await git(directory, [
+        'commit',
+        '-m',
+        `feat: specify\n\nConcierge-Step: specify:pass\nArtifact-Snapshot: ${'b'.repeat(64)}`
+      ]);
+
+      await expect(commitWithTrailer(directory, {
+        step: 'specify',
+        status: 'pass',
+        files: ['spec.md'],
+        message: 'feat: specify',
+        artifactSnapshotHash: 'a'.repeat(64)
+      } as ConciergeStepCommit)).rejects.toBeInstanceOf(GitCommandError);
+    });
+  }, gitFixtureTimeoutMs);
+
+  it('writes exactly one Concierge-Step trailer and an artifact snapshot trailer on new commits', async () => {
+    await withTempDir(async (directory) => {
+      await createRepository(directory);
+      await writeFile(path.join(directory, 'spec.md'), 'spec contents');
+
+      await commitWithTrailer(directory, {
+        step: 'specify',
+        status: 'pass',
+        files: ['spec.md'],
+        message: 'feat: specify',
+        artifactSnapshotHash: 'c'.repeat(64)
+      } as ConciergeStepCommit);
+
+      const message = await runGit(directory, ['log', '-1', '--format=%B']);
+      expect(message.match(/^Concierge-Step:/gm)).toHaveLength(1);
+      expect(message).toContain('Concierge-Step: specify:pass');
+      expect(message).toContain(`Artifact-Snapshot: ${'c'.repeat(64)}`);
+    });
+  }, gitFixtureTimeoutMs);
+
   it('throws when nothing is staged and HEAD has no matching Concierge-Step trailer', async () => {
     await withTempDir(async (directory) => {
       await createRepository(directory);

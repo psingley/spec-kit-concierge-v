@@ -1,5 +1,7 @@
 import { createMainLogger } from '../logging';
 import { commitWithTrailer as defaultCommitWithTrailer, runGit } from '../data-layer/git/gitCommand';
+import { createStepOwnedArtifactSnapshot } from '../domain/factories/artifactSnapshot.factory';
+import type { BranchStateSnapshot, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
 import {
   validateAnalyzeArtifacts,
   validateClarifyArtifacts,
@@ -9,9 +11,9 @@ import {
   validateTasksArtifacts
 } from '../domain/factories';
 import { writeInFlightMarker as defaultWriteInFlightMarker, removeInFlightMarker as defaultRemoveInFlightMarker } from './inFlightMarker';
-import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, type StepName } from './manifest';
+import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, ownedArtifactsForStep, type StepName } from './manifest';
 import { checkStepPrerequisites } from './prerequisiteGate';
-import { lifecycleEvent, type StepHookContext, type StepHookResult } from './types';
+import { lifecycleEvent, type StepHookContext, type StepHookResult, type StepStartSnapshot } from './types';
 import path from 'node:path';
 
 const validators = {
@@ -22,6 +24,68 @@ const validators = {
   analyze: validateAnalyzeArtifacts,
   review: validateReviewArtifacts
 } as const;
+
+const parseTrackedChanges = (statusPorcelain: string): string[] =>
+  statusPorcelain
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^(?:..|.)\s+/, '').trim())
+    .filter(Boolean)
+    .map((changedPath) => (changedPath.includes(' -> ') ? changedPath.split(' -> ').at(-1) ?? changedPath : changedPath));
+
+const captureBranchState = async (context: StepHookContext): Promise<BranchStateSnapshot> => {
+  const [branch, headSha, statusPorcelain] = await Promise.all([
+    runGit(context.repositoryPath, ['rev-parse', '--abbrev-ref', 'HEAD']),
+    runGit(context.repositoryPath, ['rev-parse', 'HEAD']),
+    runGit(context.repositoryPath, ['status', '--porcelain'])
+  ]);
+
+  return {
+    branch,
+    headSha,
+    statusPorcelain,
+    trackedChanges: parseTrackedChanges(statusPorcelain),
+    timestamp: (context.now?.() ?? new Date()).toISOString()
+  };
+};
+
+const captureOwnedPathSnapshot = async (
+  step: StepName,
+  context: StepHookContext
+): Promise<StepOwnedArtifactSnapshot> => {
+  const snapshot = await createStepOwnedArtifactSnapshot({
+    step,
+    featureDir: context.featureDir,
+    capturedAt: (context.now?.() ?? new Date()).toISOString(),
+    ownedArtifacts: ownedArtifactsForStep(step, context.contextFilePath),
+    allowMissingRequired: true
+  });
+
+  if (!snapshot.ok) {
+    throw new Error(`${snapshot.error.name}: ${snapshot.error.message} at ${snapshot.error.path}`);
+  }
+
+  return snapshot.value;
+};
+
+const captureStepStartSnapshot = async (
+  step: StepName,
+  context: StepHookContext
+): Promise<StepStartSnapshot | undefined> => {
+  if (
+    context.captureBranchState === undefined &&
+    context.captureOwnedPathSnapshot === undefined &&
+    context.stepStartSnapshotSink === undefined
+  ) {
+    return undefined;
+  }
+
+  const branchBefore = await (context.captureBranchState ?? captureBranchState)(context);
+  const ownedPathSnapshot = await (context.captureOwnedPathSnapshot ?? captureOwnedPathSnapshot)(step, context, branchBefore);
+  const snapshot = { step, branchBefore, ownedPathSnapshot };
+  await context.stepStartSnapshotSink?.(snapshot);
+
+  return snapshot;
+};
 
 export const runBeforeHook = async (
   step: StepName,
@@ -42,6 +106,8 @@ export const runBeforeHook = async (
       return { ok: false, phase: 'before', step, escapeHatchReason: gate.escapeHatchReason };
     }
 
+    const stepStartSnapshot = await captureStepStartSnapshot(step, context);
+
     const writeMarker = context.writeInFlightMarker ?? ((sessionId, markerStep) =>
       defaultWriteInFlightMarker({
         userDataPath: context.userDataPath,
@@ -60,7 +126,7 @@ export const runBeforeHook = async (
       'step before hook end'
     );
 
-    return { ok: true, phase: 'before', step, lifecycleAction: 'pending', event: pending };
+    return { ok: true, phase: 'before', step, lifecycleAction: 'pending', event: pending, ...(stepStartSnapshot === undefined ? {} : { stepStartSnapshot }) };
   } catch (error) {
     logger.error({ ...lifecycleEvent('step-before-hook-end', step, context), error }, 'step before hook error');
     return { ok: false, phase: 'before', step, escapeHatchReason: 'hook-failed', error };
@@ -117,7 +183,45 @@ export const runAfterHook = async (
     }
 
     const commitWriter = context.commitWithTrailer ?? defaultCommitWithTrailer;
+    const preCommitReconciliation = await context.reconcileAfterHook?.('pre-commit', {
+      step,
+      context,
+      commitCandidate: result.commit
+    });
+    if (
+      preCommitReconciliation !== undefined &&
+      preCommitReconciliation.status !== 'pass' &&
+      !preCommitReconciliation.canCommit
+    ) {
+      return {
+        ok: false,
+        phase: 'after',
+        step,
+        escapeHatchReason: 'factory-rejected',
+        failureReason: 'pre-commit reconciliation blocked completion'
+      };
+    }
+
     const commit = await commitWriter(context.repositoryPath, result.commit);
+    const postCommitReconciliation = await context.reconcileAfterHook?.('post-commit', {
+      step,
+      context,
+      commitCandidate: result.commit,
+      commitResult: commit
+    });
+    if (
+      postCommitReconciliation !== undefined &&
+      postCommitReconciliation.status !== 'pass'
+    ) {
+      return {
+        ok: false,
+        phase: 'after',
+        step,
+        escapeHatchReason: 'factory-rejected',
+        failureReason: 'post-commit reconciliation did not verify completion'
+      };
+    }
+
     const trailer = `Concierge-Step: ${result.commit.step}:${result.commit.status}`;
     const commitEvent = lifecycleEvent('step-commit-written', step, context, { trailer });
     logger.info(commitEvent, 'step commit written');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STEP_ARTIFACT_MANIFEST, STEP_NAMES, expectedArtifactsForStep, isStepName } from './manifest';
+import { STEP_ARTIFACT_MANIFEST, STEP_NAMES, expectedArtifactsForStep, ownedArtifactsForStep, isStepName } from './manifest';
 
 describe('hook manifest', () => {
   it('declares the supported step names in lifecycle order', () => {
@@ -38,5 +38,32 @@ describe('hook manifest', () => {
     expect(STEP_ARTIFACT_MANIFEST.analyze.allowEmptyCommit).toBe(true);
     expect(artifacts).toEqual(['spec.md', 'plan.md', 'tasks.md']);
     expect(artifacts).not.toContain('analyze.md');
+  });
+
+  it('declares required, optional, and context-exception ownership for every step', () => {
+    for (const step of STEP_NAMES) {
+      expect(ownedArtifactsForStep(step, 'CONTEXT.md')).toEqual(
+        expect.arrayContaining(
+          expectedArtifactsForStep(step, 'CONTEXT.md').map((artifact) =>
+            expect.objectContaining({ path: artifact, required: expect.any(Boolean) })
+          )
+        )
+      );
+    }
+
+    expect(ownedArtifactsForStep('specify')).toEqual([
+      { path: 'spec.md', required: true },
+      { path: 'checklists/requirements.md', required: false }
+    ]);
+    expect(ownedArtifactsForStep('plan', 'CONTEXT.md')).toContainEqual({
+      path: 'CONTEXT.md',
+      required: false,
+      contextFileException: true
+    });
+    expect(ownedArtifactsForStep('analyze')).toEqual([
+      { path: 'spec.md', required: false, remediation: true },
+      { path: 'plan.md', required: false, remediation: true },
+      { path: 'tasks.md', required: false, remediation: true }
+    ]);
   });
 });

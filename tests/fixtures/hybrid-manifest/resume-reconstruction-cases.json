@@ -1,0 +1,1708 @@
+{
+  "denominator": {
+    "total": 100,
+    "reconstructionTargetPercent": 99
+  },
+  "cases": [
+    {
+      "caseId": "resume-001",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-002",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-003",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-004",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-005",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-006",
+      "currentStep": "review",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-007",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-008",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-009",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-010",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-011",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-012",
+      "currentStep": "review",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-013",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-014",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-015",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-016",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-017",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-018",
+      "currentStep": "review",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-019",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-020",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-021",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-022",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-023",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-024",
+      "currentStep": "review",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-025",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": false,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-026",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-027",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-028",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-029",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-030",
+      "currentStep": "review",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-031",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-032",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-033",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-034",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-035",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-036",
+      "currentStep": "review",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-037",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-038",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-039",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-040",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-041",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-042",
+      "currentStep": "review",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-043",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-044",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-045",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-046",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-047",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-048",
+      "currentStep": "review",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-049",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-050",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-051",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-052",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-053",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": false,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-054",
+      "currentStep": "review",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-055",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-056",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-057",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-058",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-059",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-060",
+      "currentStep": "review",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-061",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-062",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-063",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-064",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-065",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-066",
+      "currentStep": "review",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-067",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-068",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-069",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-070",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-071",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-072",
+      "currentStep": "review",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-073",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-074",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-075",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-076",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-077",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-078",
+      "currentStep": "review",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-079",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-080",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-081",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": false,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-082",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-083",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-084",
+      "currentStep": "review",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-085",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-086",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-087",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-088",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-089",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-090",
+      "currentStep": "review",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-091",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-092",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-093",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-094",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "pass",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "pass",
+      "hasMatchingTrailer": true,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-095",
+      "currentStep": "analyze",
+      "expectedTerminalStatus": "failed",
+      "expectedCurrentStep": "analyze",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-096",
+      "currentStep": "review",
+      "expectedTerminalStatus": "killed",
+      "expectedCurrentStep": "review",
+      "manifestAttemptStatus": "killed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-097",
+      "currentStep": "specify",
+      "expectedTerminalStatus": "interrupted",
+      "expectedCurrentStep": "specify",
+      "manifestAttemptStatus": "interrupted",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-098",
+      "currentStep": "clarify",
+      "expectedTerminalStatus": "terminal-stuck",
+      "expectedCurrentStep": "clarify",
+      "manifestAttemptStatus": "failed",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": true,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-099",
+      "currentStep": "plan",
+      "expectedTerminalStatus": "pending",
+      "expectedCurrentStep": "plan",
+      "manifestAttemptStatus": "pending",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    },
+    {
+      "caseId": "resume-100",
+      "currentStep": "tasks",
+      "expectedTerminalStatus": "running",
+      "expectedCurrentStep": "tasks",
+      "manifestAttemptStatus": "running",
+      "hasMatchingTrailer": false,
+      "hasRequiredArtifacts": true,
+      "hasFailedMarker": false,
+      "rendererStateAvailable": false,
+      "expectedSourceOfTruth": [
+        "manifest",
+        "trailers",
+        "artifacts",
+        "failed-markers"
+      ]
+    }
+  ]
+}

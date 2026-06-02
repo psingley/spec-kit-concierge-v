@@ -20,12 +20,12 @@
 
 **Purpose**: Lock architecture exceptions, fixtures, and test surfaces before source work begins.
 
-- [ ] T001 Create ADR, early project guidance, and workflow validation updates for the Run 13 constitution-approved print-mode exception, constitution amendment metadata, dogfood branch exception, TDD RED-output evidence rule, and ACP step-execution retirement in `docs/adr/0017-hybrid-manifest-print-mode.md`, `.github/copilot-instructions.md`, `.specify/scripts/bash/check-prerequisites.sh`, and `.specify/scripts/bash/common.sh`
-- [ ] T002 [P] Create session manifest v1 fixture set for valid, incomplete, invalid-shape, unknown-schema, and max-size performance manifests in `tests/fixtures/hybrid-manifest/session-manifest.v1.json` and `tests/fixtures/hybrid-manifest/session-manifest.max.json`; max fixture includes six steps, three attempts per step, 30 anomalies, 30 interventions, 12 doctor invocations, and 60 artifact snapshot entries
-- [ ] T003 [P] Create branch trailer history fixture set covering duplicate, out-of-order, and matching artifact-snapshot trailers in `tests/fixtures/hybrid-manifest/branch-trailers.txt`
-- [ ] T004 [P] Create transcript and print-mode terminal-event fixture set covering success, failure, missing JSON, invalid JSON, killed, interrupted, watchdog-silence, and parseable assistant identity events with `assistantSessionId`, `messageId`, and `turnId` in `tests/fixtures/hybrid-manifest/terminal-events.jsonl`
-- [ ] T005 [P] Create deterministic recovery catalog fixture set covering exactly 20 safe and unsafe classes from `contracts/recovery-catalog.md`, doctor exhaustion, nudge eligibility, and terminal-stuck sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`; the fixture denominator must support the SC-004 90% automatic-safe-recovery assertion without invoking the doctor
-- [ ] T005a [P] Create 100-case interrupted and restarted resume reconstruction fixture corpus with expected current step and terminal status outcomes in `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`; the fixture denominator must support the SC-002 99% reconstruction assertion without transient renderer state
+- [X] T001 Create ADR, early project guidance, and workflow validation updates for the Run 13 constitution-approved print-mode exception, constitution amendment metadata, dogfood branch exception, TDD RED-output evidence rule, and ACP step-execution retirement in `docs/adr/0017-hybrid-manifest-print-mode.md`, `.github/copilot-instructions.md`, `.specify/scripts/bash/check-prerequisites.sh`, and `.specify/scripts/bash/common.sh`
+- [X] T002 [P] Create session manifest v1 fixture set for valid, incomplete, invalid-shape, unknown-schema, and max-size performance manifests in `tests/fixtures/hybrid-manifest/session-manifest.v1.json` and `tests/fixtures/hybrid-manifest/session-manifest.max.json`; max fixture includes six steps, three attempts per step, 30 anomalies, 30 interventions, 12 doctor invocations, and 60 artifact snapshot entries
+- [X] T003 [P] Create branch trailer history fixture set covering duplicate, out-of-order, and matching artifact-snapshot trailers in `tests/fixtures/hybrid-manifest/branch-trailers.txt`
+- [X] T004 [P] Create transcript and print-mode terminal-event fixture set covering success, failure, missing JSON, invalid JSON, killed, interrupted, watchdog-silence, and parseable assistant identity events with `assistantSessionId`, `messageId`, and `turnId` in `tests/fixtures/hybrid-manifest/terminal-events.jsonl`
+- [X] T005 [P] Create deterministic recovery catalog fixture set covering exactly 20 safe and unsafe classes from `contracts/recovery-catalog.md`, doctor exhaustion, nudge eligibility, and terminal-stuck sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`; the fixture denominator must support the SC-004 90% automatic-safe-recovery assertion without invoking the doctor
+- [X] T005a [P] Create 100-case interrupted and restarted resume reconstruction fixture corpus with expected current step and terminal status outcomes in `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`; the fixture denominator must support the SC-002 99% reconstruction assertion without transient renderer state
 
 ---
 
@@ -35,11 +35,11 @@
 
 **Critical**: No user story work can begin until this phase is complete.
 
-- [ ] T006 Create canonical Run 13 step, status, anomaly, intervention, doctor-tool, and nudge result types in `src/main/domain/manifest/types.ts`
-- [ ] T007 Create strict factory helper primitives for unknown-key rejection, non-empty strings, ISO timestamps, canonical steps, and typed named errors in `src/main/domain/manifest/factoryUtils.ts`
-- [ ] T008 [P] Create renderer-facing manifest, renderer-status projection, audit-trail, and localhost HTTP API shared types without Electron or Node imports in `src/renderer/api/sessionManifest.types.ts`
-- [ ] T009 [P] Create main IPC channel constants and localhost HTTP route constants for manifest read, reconcile, audit trail, doctor status, and nudge requests in `src/main/ipc/sessionManifest.channels.ts` and `src/main/http/sessionManifest.routes.ts`
-- [ ] T010 [P] Export Run 13 feature flags and no-runtime-dependency guidance for tests in `src/main/domain/manifest/run13Policy.ts`
+- [X] T006 Create canonical Run 13 step, status, anomaly, intervention, doctor-tool, and nudge result types in `src/main/domain/manifest/types.ts`
+- [X] T007 Create strict factory helper primitives for unknown-key rejection, non-empty strings, ISO timestamps, canonical steps, and typed named errors in `src/main/domain/manifest/factoryUtils.ts`
+- [X] T008 [P] Create renderer-facing manifest, renderer-status projection, audit-trail, and localhost HTTP API shared types without Electron or Node imports in `src/renderer/api/sessionManifest.types.ts`
+- [X] T009 [P] Create main IPC channel constants and localhost HTTP route constants for manifest read, reconcile, audit trail, doctor status, and nudge requests in `src/main/ipc/sessionManifest.channels.ts` and `src/main/http/sessionManifest.routes.ts`
+- [X] T010 [P] Export Run 13 feature flags and no-runtime-dependency guidance for tests in `src/main/domain/manifest/run13Policy.ts`
 
 **Checkpoint**: Foundation ready. Begin FR-030 milestone 1.
 
@@ -53,31 +53,31 @@
 
 ### Tests for User Story 1
 
-- [ ] T011 [US1] Add RED session manifest factory floor tests for happy path, empty object, null, undefined, hostile status, incomplete plausible input, and extra-key rejection in `src/main/domain/manifest/sessionManifest.factory.test.ts`
-- [ ] T012 [US1] Implement session manifest factories and typed schema v1 parsing in `src/main/domain/manifest/sessionManifest.factory.ts`
-- [ ] T013 [US1] Add RED append-only attempt reducer tests for `pending -> running -> pass|failed|killed|interrupted`, supersession links, terminal immutability, and audit record redaction in `src/main/domain/manifest/sessionManifestReducer.test.ts`
-- [ ] T014 [US1] Implement append-only attempt reducers, anomaly reducers, intervention reducers, and audit redaction in `src/main/domain/manifest/sessionManifestReducer.ts`
-- [ ] T015 [US1] Add RED atomic read/write tests for temp-file write, file fsync, rename, directory fsync when supported, short-write rejection, and visible parse errors in `src/main/data-layer/manifest/sessionManifestStore.test.ts`
-- [ ] T016 [US1] Implement `sessionManifestStore` atomic read/write, create/load, append attempt, append anomaly, append intervention, and audit APIs in `src/main/data-layer/manifest/sessionManifestStore.ts`
-- [ ] T017 [US1] Add RED structured logging tests for milestone-1 manifest-store events only: `session-manifest-read`, `session-manifest-write`, `manifest-anomaly-recorded`, and `manifest-intervention-recorded` in `src/main/data-layer/manifest/sessionManifestStore.logging.test.ts` and `src/main/logging/hybridManifest.logging.test.ts`
-- [ ] T018 [US1] Implement milestone-1 structured manifest-store logging through `createMainLogger` in `src/main/data-layer/manifest/sessionManifestStore.ts` and `src/main/logging/hybridManifest.logging.ts`
+- [X] T011 [US1] Add RED session manifest factory floor tests for happy path, empty object, null, undefined, hostile status, incomplete plausible input, and extra-key rejection in `src/main/domain/manifest/sessionManifest.factory.test.ts`
+- [X] T012 [US1] Implement session manifest factories and typed schema v1 parsing in `src/main/domain/manifest/sessionManifest.factory.ts`
+- [X] T013 [US1] Add RED append-only attempt reducer tests for `pending -> running -> pass|failed|killed|interrupted`, supersession links, terminal immutability, and audit record redaction in `src/main/domain/manifest/sessionManifestReducer.test.ts`
+- [X] T014 [US1] Implement append-only attempt reducers, anomaly reducers, intervention reducers, and audit redaction in `src/main/domain/manifest/sessionManifestReducer.ts`
+- [X] T015 [US1] Add RED atomic read/write tests for temp-file write, file fsync, rename, directory fsync when supported, short-write rejection, and visible parse errors in `src/main/data-layer/manifest/sessionManifestStore.test.ts`
+- [X] T016 [US1] Implement `sessionManifestStore` atomic read/write, create/load, append attempt, append anomaly, append intervention, and audit APIs in `src/main/data-layer/manifest/sessionManifestStore.ts`
+- [X] T017 [US1] Add RED structured logging tests for milestone-1 manifest-store events only: `session-manifest-read`, `session-manifest-write`, `manifest-anomaly-recorded`, and `manifest-intervention-recorded` in `src/main/data-layer/manifest/sessionManifestStore.logging.test.ts` and `src/main/logging/hybridManifest.logging.test.ts`
+- [X] T018 [US1] Implement milestone-1 structured manifest-store logging through `createMainLogger` in `src/main/data-layer/manifest/sessionManifestStore.ts` and `src/main/logging/hybridManifest.logging.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T019 [US1] Add RED step contract ownership tests for required artifacts, optional artifacts, context-file exceptions, and step-owned path sets for specify, clarify, plan, tasks, analyze, and review in `src/main/hooks/manifest.test.ts`
-- [ ] T020 [US1] Harden `STEP_ARTIFACT_MANIFEST` with step-owned path sets and context-file exceptions in `src/main/hooks/manifest.ts`
-- [ ] T021 [US1] Add RED artifact snapshot factory tests for path scope validation, missing required artifact blocking, optional artifact evidence, stable `snapshotHash`, and content metadata hashing in `src/main/domain/factories/artifactSnapshot.factory.test.ts`
-- [ ] T022 [US1] Implement step-owned artifact snapshot factories and hashing in `src/main/domain/factories/artifactSnapshot.factory.ts`
-- [ ] T023 [US1] Add RED step-start snapshot tests proving before hooks capture branch state and owned-path snapshots before any step agent execution in `src/main/hooks/hookHelpers.test.ts`
-- [ ] T024 [US1] Wire step-start owned-path snapshot capture into before-hook helpers in `src/main/hooks/hookHelpers.ts`
-- [ ] T025 [US1] Add RED branch-history completion evidence tests for matching artifact snapshot adoption, duplicate trailer avoidance, out-of-order valid commit adoption, and trailer/content mismatch rejection in `src/main/data-layer/git/stepCompletionHistory.test.ts`
-- [ ] T026 [US1] Implement branch-history completion evidence search through the existing git command path in `src/main/data-layer/git/stepCompletionHistory.ts`
-- [ ] T027 [US1] Add RED `commitWithTrailer` idempotency tests requiring artifact-snapshot comparison before new commit creation and exactly one `Concierge-Step: <step>:pass` trailer in `src/main/data-layer/git/gitCommand.commit.test.ts`
-- [ ] T028 [US1] Replace head-only `commitWithTrailer` idempotency with branch-history artifact-snapshot adoption in `src/main/data-layer/git/gitCommand.ts`
-- [ ] T029 [US1] Add RED `sessionReconciler` completion-gate tests for pass, missing artifact, stale manifest attempt, missing trailer, mismatched snapshot, unresolved blocking anomaly, and failed marker inputs in `src/main/domain/reconciliation/sessionReconciler.test.ts`
-- [ ] T030 [US1] Implement pure `sessionReconciler` completion, pending, running, failed, killed, interrupted, and terminal-stuck decisions in `src/main/domain/reconciliation/sessionReconciler.ts`
-- [ ] T031 [US1] Add RED pre-commit and post-commit reconciliation integration tests around after-hook commit writes in `src/main/hooks/hookHelpers.test.ts`
-- [ ] T032 [US1] Route after-hook completion through pre-commit and post-commit reconciliation in `src/main/hooks/hookHelpers.ts`
+- [X] T019 [US1] Add RED step contract ownership tests for required artifacts, optional artifacts, context-file exceptions, and step-owned path sets for specify, clarify, plan, tasks, analyze, and review in `src/main/hooks/manifest.test.ts`
+- [X] T020 [US1] Harden `STEP_ARTIFACT_MANIFEST` with step-owned path sets and context-file exceptions in `src/main/hooks/manifest.ts`
+- [X] T021 [US1] Add RED artifact snapshot factory tests for path scope validation, missing required artifact blocking, optional artifact evidence, stable `snapshotHash`, and content metadata hashing in `src/main/domain/factories/artifactSnapshot.factory.test.ts`
+- [X] T022 [US1] Implement step-owned artifact snapshot factories and hashing in `src/main/domain/factories/artifactSnapshot.factory.ts`
+- [X] T023 [US1] Add RED step-start snapshot tests proving before hooks capture branch state and owned-path snapshots before any step agent execution in `src/main/hooks/hookHelpers.test.ts`
+- [X] T024 [US1] Wire step-start owned-path snapshot capture into before-hook helpers in `src/main/hooks/hookHelpers.ts`
+- [X] T025 [US1] Add RED branch-history completion evidence tests for matching artifact snapshot adoption, duplicate trailer avoidance, out-of-order valid commit adoption, and trailer/content mismatch rejection in `src/main/data-layer/git/stepCompletionHistory.test.ts`
+- [X] T026 [US1] Implement branch-history completion evidence search through the existing git command path in `src/main/data-layer/git/stepCompletionHistory.ts`
+- [X] T027 [US1] Add RED `commitWithTrailer` idempotency tests requiring artifact-snapshot comparison before new commit creation and exactly one `Concierge-Step: <step>:pass` trailer in `src/main/data-layer/git/gitCommand.commit.test.ts`
+- [X] T028 [US1] Replace head-only `commitWithTrailer` idempotency with branch-history artifact-snapshot adoption in `src/main/data-layer/git/gitCommand.ts`
+- [X] T029 [US1] Add RED `sessionReconciler` completion-gate tests for pass, missing artifact, stale manifest attempt, missing trailer, mismatched snapshot, unresolved blocking anomaly, and failed marker inputs in `src/main/domain/reconciliation/sessionReconciler.test.ts`
+- [X] T030 [US1] Implement pure `sessionReconciler` completion, pending, running, failed, killed, interrupted, and terminal-stuck decisions in `src/main/domain/reconciliation/sessionReconciler.ts`
+- [X] T031 [US1] Add RED pre-commit and post-commit reconciliation integration tests around after-hook commit writes in `src/main/hooks/hookHelpers.test.ts`
+- [X] T032 [US1] Route after-hook completion through pre-commit and post-commit reconciliation in `src/main/hooks/hookHelpers.ts`
 - [ ] T033 [US1] Add RED resume reconstruction tests proving branch sessions derive progress from manifest, trailers, artifacts, and failed markers instead of renderer memory and assert the 100-case SC-002 fixture corpus reaches at least 99% correct current-step plus terminal-status reconstruction in `src/main/data-layer/git/branchSessions.test.ts`
 - [ ] T034 [US1] Integrate manifest-backed reconciliation into branch session reconstruction in `src/main/data-layer/git/branchSessions.ts`
 

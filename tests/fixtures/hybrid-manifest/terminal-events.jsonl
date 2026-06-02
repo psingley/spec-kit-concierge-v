@@ -1,0 +1,8 @@
+{"scenario":"success","direction":"agent->client","type":"result","step":"specify","exitCode":0,"resultKind":"success","assistantSessionId":"asst-specify-success","messageId":"msg-specify-success","turnId":"turn-specify-success"}
+{"scenario":"failure","direction":"agent->client","type":"result","step":"clarify","exitCode":1,"resultKind":"failure","summary":"Clarify rejected malformed answers"}
+{"scenario":"missing-json","direction":"agent->client","type":"stdout","step":"plan","textChecksum":"8efe19fb74c2c53b728ceaa455f3fb6be38b00bc7b4e01134974ad9212e7cd0b"}
+{"scenario":"invalid-json","direction":"agent->client","type":"malformed","step":"tasks","rawChecksum":"92072df399cb74703f8e86f450d552bc0bb01eeeb98a90985a1b7772c8fd0016"}
+{"scenario":"killed","direction":"agent->client","type":"result","step":"analyze","exitCode":137,"signal":"SIGKILL","resultKind":"killed"}
+{"scenario":"interrupted","direction":"agent->client","type":"result","step":"review","exitCode":130,"signal":"SIGINT","resultKind":"interrupted"}
+{"scenario":"watchdog-silence","direction":"client->agent","type":"watchdog","step":"review","silenceMs":1200000,"resultKind":"missing"}
+{"scenario":"assistant-identity","direction":"agent->client","type":"assistantIdentity","step":"clarify","assistantSessionId":"asst-clarify-resume","messageId":"msg-clarify-resume","turnId":"turn-clarify-resume"}

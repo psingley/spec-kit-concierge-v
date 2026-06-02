@@ -5,6 +5,7 @@ import { promisify } from 'node:util';
 import type { ConciergeStepCommit } from '../../domain/factories/types';
 import { isStepName, type StepName } from '../../hooks/manifest';
 import { resolveGitBinary } from './gitBinary';
+import { findMatchingStepCompletion } from './stepCompletionHistory';
 import { parseConciergeStepTrailer } from './trailers';
 
 const execFileAsync = promisify(execFile);
@@ -66,6 +67,8 @@ export const runGit = async (repositoryPath: string, args: string[]): Promise<st
 export type CommitWithTrailerResult = {
   commitSha: string;
   trailer: string;
+  artifactSnapshotHash?: string;
+  adoptedFromHistory?: boolean;
 };
 
 const messageFilePath = async (repositoryPath: string): Promise<string> => {
@@ -92,6 +95,27 @@ const hasStagedChanges = async (repositoryPath: string): Promise<boolean> => {
   }
 };
 
+const headHasMatchingTrailer = async (
+  repositoryPath: string,
+  candidate: ConciergeStepCommit
+): Promise<CommitWithTrailerResult | undefined> => {
+  const trailer = `Concierge-Step: ${candidate.step}:${candidate.status}`;
+  const headSha = await runGit(repositoryPath, ['rev-parse', 'HEAD']);
+  const headMessage = await runGit(repositoryPath, ['log', '-1', '--format=%B']);
+  const headTrailer = parseConciergeStepTrailer(headMessage, { commitSha: headSha });
+
+  if (
+    headTrailer.found &&
+    headTrailer.step === candidate.step &&
+    headTrailer.status === candidate.status &&
+    candidate.artifactSnapshotHash === undefined
+  ) {
+    return { commitSha: headSha, trailer };
+  }
+
+  return undefined;
+};
+
 export const commitWithTrailer = async (
   repositoryPath: string,
   candidate: ConciergeStepCommit
@@ -111,16 +135,27 @@ export const commitWithTrailer = async (
   // leaving nothing staged. The analyze allow-empty path legitimately commits
   // with nothing staged, so it must skip this short-circuit.
   if (candidate.allowEmptyCommit !== true && !(await hasStagedChanges(repositoryPath))) {
-    const headSha = await runGit(repositoryPath, ['rev-parse', 'HEAD']);
-    const headMessage = await runGit(repositoryPath, ['log', '-1', '--format=%B']);
-    const headTrailer = parseConciergeStepTrailer(headMessage, { commitSha: headSha });
+    if (candidate.artifactSnapshotHash !== undefined) {
+      const matchingCompletion = await findMatchingStepCompletion(repositoryPath, {
+        step: candidate.step,
+        status: candidate.status,
+        artifactSnapshotHash: candidate.artifactSnapshotHash,
+        runGit
+      });
 
-    if (
-      headTrailer.found &&
-      headTrailer.step === candidate.step &&
-      headTrailer.status === candidate.status
-    ) {
-      return { commitSha: headSha, trailer };
+      if (matchingCompletion !== undefined) {
+        return {
+          commitSha: matchingCompletion.commitSha,
+          trailer,
+          artifactSnapshotHash: matchingCompletion.artifactSnapshotHash,
+          adoptedFromHistory: true
+        };
+      }
+    } else {
+      const headMatch = await headHasMatchingTrailer(repositoryPath, candidate);
+      if (headMatch !== undefined) {
+        return headMatch;
+      }
     }
 
     throw new GitCommandError(
@@ -141,6 +176,17 @@ export const commitWithTrailer = async (
     trailer,
     filePath
   ]);
+  if (candidate.artifactSnapshotHash !== undefined) {
+    await runGit(repositoryPath, [
+      'interpret-trailers',
+      '--in-place',
+      '--if-exists',
+      'replace',
+      '--trailer',
+      `Artifact-Snapshot: ${candidate.artifactSnapshotHash}`,
+      filePath
+    ]);
+  }
 
   const commitArgs = ['commit', '-F', filePath];
   if (candidate.allowEmptyCommit === true) {
@@ -155,7 +201,11 @@ export const commitWithTrailer = async (
 
   const commitSha = await runGit(repositoryPath, ['rev-parse', 'HEAD']);
 
-  return { commitSha, trailer };
+  return {
+    commitSha,
+    trailer,
+    ...(candidate.artifactSnapshotHash === undefined ? {} : { artifactSnapshotHash: candidate.artifactSnapshotHash })
+  };
 };
 
 export type ConciergeStepHistoryRecord = {

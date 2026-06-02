@@ -97,4 +97,6 @@ Run 13 conventions:
 - Nudge appears only for terminal-stuck sessions after deterministic recovery and doctor paths fail or are unavailable.
 - Failed, remediated, and nudged sessions must expose bounded audit inspection without raw transcripts, secrets, or unrelated file contents.
 - Run 13 verification includes visible RED output before each paired GREEN task, `npm run test:coverage`, and the existing typecheck, lint, unit, and E2E gates.
+- Workflow validation keeps the Run 13 exception narrow: `.specify/scripts/bash/check-prerequisites.sh` may accept `build/manifest-architecture-dogfood` only when `.specify/feature.json` resolves to `specs/0013-hybrid-manifest-architecture`; all other branches keep the normal numbered feature-branch rule.
+- ACP is retired only for Run 13 step-agent execution. Bound CLI integrations remain ACP by default; step completion still requires deterministic reconciliation and hook-owned trailers.
 <!-- SPECKIT END -->

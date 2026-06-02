@@ -8,6 +8,7 @@ export type ConciergeStepCommit = {
   files: string[];
   message: string;
   allowEmptyCommit?: boolean;
+  artifactSnapshotHash?: string;
 };
 
 export type StepContractResult =

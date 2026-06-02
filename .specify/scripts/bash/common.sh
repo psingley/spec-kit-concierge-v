@@ -206,6 +206,20 @@ feature_json_matches_feature_dir() {
     [[ "$norm_json" == "$norm_active" ]]
 }
 
+# Run 13 dogfood exception: implementation may remain on the build branch while
+# .specify/feature.json points at the numbered Hybrid Manifest spec directory.
+run13_dogfood_branch_exception_applies() {
+    local repo_root="$1"
+    local current_branch="$2"
+    local active_feature_dir="$3"
+    local has_git_repo="$4"
+
+    [[ "$has_git_repo" == "true" ]] || return 1
+    [[ "$current_branch" == "build/manifest-architecture-dogfood" ]] || return 1
+    [[ "$(basename "$active_feature_dir")" == "0013-hybrid-manifest-architecture" ]] || return 1
+    feature_json_matches_feature_dir "$repo_root" "$active_feature_dir"
+}
+
 # Find feature directory by numeric prefix instead of exact branch match
 # This allows multiple branches to work on the same spec (e.g., 004-fix-bug, 004-add-feature)
 find_feature_dir_by_prefix() {
@@ -642,4 +656,3 @@ except Exception:
     printf '%s' "$content"
     return 0
 }
-

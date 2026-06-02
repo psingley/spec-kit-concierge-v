@@ -1,0 +1,550 @@
+{
+  "denominator": {
+    "total": 20,
+    "safe": 10,
+    "unsafe": 10,
+    "automaticSafeRecoveryTargetPercent": 90
+  },
+  "scenarios": [
+    {
+      "scenarioId": "recovery-01",
+      "class": "relocate-step-owned-artifact",
+      "safe": true,
+      "step": "specify",
+      "anomalyId": "anomaly-recovery-01",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-01",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/specify.md"
+        ],
+        "snapshotHash": "18e4cc31c284e9c4605f346d12b92286da375077ffa43fa9777219c7a633eeea"
+      }
+    },
+    {
+      "scenarioId": "recovery-02",
+      "class": "adopt-valid-completion",
+      "safe": true,
+      "step": "clarify",
+      "anomalyId": "anomaly-recovery-02",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-02",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/clarify-1.md"
+        ],
+        "snapshotHash": "08b3c780e7f73ea67313c3ebf95eb7480c2263d5a7ae77439041ca408ba6aa90"
+      }
+    },
+    {
+      "scenarioId": "recovery-03",
+      "class": "refresh-failed-marker",
+      "safe": true,
+      "step": "plan",
+      "anomalyId": "anomaly-recovery-03",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-03",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/plan-2.md"
+        ],
+        "snapshotHash": "ab43252a8b3f2313c37a82dda230f26da1e1bde2e48b452cf17702f887706161"
+      }
+    },
+    {
+      "scenarioId": "recovery-04",
+      "class": "revert-proven-unrelated-file",
+      "safe": true,
+      "step": "tasks",
+      "anomalyId": "anomaly-recovery-04",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-04",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/tasks-3.md"
+        ],
+        "snapshotHash": "479ccf33f217a56220f9b995c5075eec92e2fdd4fee3b0e251ae6f250520ab89"
+      }
+    },
+    {
+      "scenarioId": "recovery-05",
+      "class": "cancel-observed-active-step",
+      "safe": true,
+      "step": "analyze",
+      "anomalyId": "anomaly-recovery-05",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-05",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/analyze-4.md"
+        ],
+        "snapshotHash": "3d6d2bf6328545d2d0b68498b72d5ac41217df861872660249aef88dd4df4817"
+      }
+    },
+    {
+      "scenarioId": "recovery-06",
+      "class": "restart-with-pinned-context",
+      "safe": true,
+      "step": "review",
+      "anomalyId": "anomaly-recovery-06",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-06",
+        "ambiguity": false,
+        "userConfirmed": true
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/review-5.md"
+        ],
+        "snapshotHash": "4fa626a318d61833c5a9cedce899ee86447c8abd4bff85e4547b08d87f9f5ce5"
+      }
+    },
+    {
+      "scenarioId": "recovery-07",
+      "class": "relocate-step-owned-artifact",
+      "safe": true,
+      "step": "specify",
+      "anomalyId": "anomaly-recovery-07",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-07",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/specify-6.md"
+        ],
+        "snapshotHash": "d208602ed4a4b02f0d8767a4221bceb10482b6fa61125d7c0aad69c59efb1cff"
+      }
+    },
+    {
+      "scenarioId": "recovery-08",
+      "class": "adopt-valid-completion",
+      "safe": true,
+      "step": "clarify",
+      "anomalyId": "anomaly-recovery-08",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-08",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/clarify-7.md"
+        ],
+        "snapshotHash": "2928005d1ca08642deeccf6ac6f33b30664d964764c523dc210e89bf4c300af1"
+      }
+    },
+    {
+      "scenarioId": "recovery-09",
+      "class": "refresh-failed-marker",
+      "safe": true,
+      "step": "plan",
+      "anomalyId": "anomaly-recovery-09",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "applied",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": true
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-09",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/plan-8.md"
+        ],
+        "snapshotHash": "f64565d8a574f4a71574fb036777a03be606a3bb3f6b875111ea8a57a5a8adc4"
+      }
+    },
+    {
+      "scenarioId": "recovery-10",
+      "class": "revert-proven-unrelated-file",
+      "safe": true,
+      "step": "tasks",
+      "anomalyId": "anomaly-recovery-10",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-10",
+        "ambiguity": false,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/tasks-9.md"
+        ],
+        "snapshotHash": "efe1e909f6ff84a423f333634dac391262c08f63784e30df87b26a6cf99dba3e"
+      }
+    },
+    {
+      "scenarioId": "recovery-11",
+      "class": "ambiguous-artifact-destinations",
+      "safe": false,
+      "step": "analyze",
+      "anomalyId": "anomaly-recovery-11",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": true,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-11",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/analyze-10.md"
+        ],
+        "snapshotHash": "c7624738e0e5e888ad54a062fb1daef63258258ce2a44dce8bd00a71cc631f3c"
+      }
+    },
+    {
+      "scenarioId": "recovery-12",
+      "class": "unrelated-change-no-restore-point",
+      "safe": false,
+      "step": "review",
+      "anomalyId": "anomaly-recovery-12",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-12",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/review-11.md"
+        ],
+        "snapshotHash": "f775bf17615bdb96beb187f06f97a1f777ecabeae017ae9f95ffdb9b6b18c783"
+      }
+    },
+    {
+      "scenarioId": "recovery-13",
+      "class": "missing-required-artifact-no-source",
+      "safe": false,
+      "step": "specify",
+      "anomalyId": "anomaly-recovery-13",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": true,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-13",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/specify-12.md"
+        ],
+        "snapshotHash": "ef4ac18c0ccf7af4d04a9cc87a3efe9819b13fa251dc3fe7e442adcfdc6ecf7e"
+      }
+    },
+    {
+      "scenarioId": "recovery-14",
+      "class": "branch-changed-after-preconditions",
+      "safe": false,
+      "step": "clarify",
+      "anomalyId": "anomaly-recovery-14",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-14",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/clarify-13.md"
+        ],
+        "snapshotHash": "4a4c16425bb6f400955bdc303e1f275185d2d96ee552e70bdb28cc9bc2983bba"
+      }
+    },
+    {
+      "scenarioId": "recovery-15",
+      "class": "doctor-request-outside-catalog",
+      "safe": false,
+      "step": "plan",
+      "anomalyId": "anomaly-recovery-15",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": true,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-15",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/plan-14.md"
+        ],
+        "snapshotHash": "02e45314a329eac80b809d5649303bdba5c9b4de08be143c1eaccac8635526a3"
+      }
+    },
+    {
+      "scenarioId": "recovery-16",
+      "class": "silent-restart-without-approval",
+      "safe": false,
+      "step": "tasks",
+      "anomalyId": "anomaly-recovery-16",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-16",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/tasks-15.md"
+        ],
+        "snapshotHash": "b9e3262754eaa77f55dbfb2aebc47da35a796a1b72cff5fce25149cb2deb1984"
+      }
+    },
+    {
+      "scenarioId": "recovery-17",
+      "class": "direct-completion-without-evidence",
+      "safe": false,
+      "step": "analyze",
+      "anomalyId": "anomaly-recovery-17",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": true,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-17",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/analyze-16.md"
+        ],
+        "snapshotHash": "7d45ba3ada8d08fdb75deabe837f7201beb11317b08507de13eb5f2171ef89ab"
+      }
+    },
+    {
+      "scenarioId": "recovery-18",
+      "class": "ambiguous-artifact-destinations",
+      "safe": false,
+      "step": "review",
+      "anomalyId": "anomaly-recovery-18",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-18",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/review-17.md"
+        ],
+        "snapshotHash": "add463c7777c7afcf3356176fc3dc6dbc5aef9137f6acf1a9db1803dd17f29b8"
+      }
+    },
+    {
+      "scenarioId": "recovery-19",
+      "class": "unrelated-change-no-restore-point",
+      "safe": false,
+      "step": "specify",
+      "anomalyId": "anomaly-recovery-19",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": true,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-19",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/specify-18.md"
+        ],
+        "snapshotHash": "897be72df7bfe1565f13b2814adb25a5bd9f1bda8b97be5f0f31ee5de326f2e5"
+      }
+    },
+    {
+      "scenarioId": "recovery-20",
+      "class": "missing-required-artifact-no-source",
+      "safe": false,
+      "step": "clarify",
+      "anomalyId": "anomaly-recovery-20",
+      "requiresDoctor": false,
+      "expected": {
+        "result": "escalated",
+        "doctorInvoked": false,
+        "falseCompletion": false,
+        "autoRecoverable": false
+      },
+      "preconditions": {
+        "featureDir": "specs/0013-hybrid-manifest-architecture",
+        "branch": "build/manifest-architecture-dogfood",
+        "idempotencyKey": "recovery-20",
+        "ambiguity": true,
+        "userConfirmed": false
+      },
+      "evidence": {
+        "paths": [
+          "specs/0013-hybrid-manifest-architecture/clarify-19.md"
+        ],
+        "snapshotHash": "bebba2b34c4629dc4462c79070280dbdf3699ebb53a337518bad31eab916010e"
+      }
+    }
+  ]
+}

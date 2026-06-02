@@ -10,6 +10,13 @@ export type StepArtifactManifestEntry = {
   allowEmptyCommit?: true;
 };
 
+export type StepOwnedArtifact = {
+  path: string;
+  required: boolean;
+  remediation?: true;
+  contextFileException?: true;
+};
+
 export const STEP_ARTIFACT_MANIFEST = {
   specify: {
     requiredFiles: ['spec.md'],
@@ -59,4 +66,27 @@ export const expectedArtifactsForStep = (
   }
 
   return files;
+};
+
+export const ownedArtifactsForStep = (
+  step: StepName,
+  contextFilePath?: string
+): StepOwnedArtifact[] => {
+  const manifest = STEP_ARTIFACT_MANIFEST[step];
+  const artifacts: StepOwnedArtifact[] = [
+    ...manifest.requiredFiles.map((artifactPath) => ({ path: artifactPath, required: true })),
+    ...manifest.optionalFiles.map((artifactPath) => ({ path: artifactPath, required: false })),
+    ...((step === 'analyze' ? STEP_ARTIFACT_MANIFEST.analyze.remediationFiles : []) ?? [])
+      .map((artifactPath) => ({ path: artifactPath, required: false, remediation: true as const }))
+  ];
+
+  if (step === 'plan' && contextFilePath !== undefined) {
+    artifacts.push({
+      path: contextFilePath,
+      required: false,
+      contextFileException: true
+    });
+  }
+
+  return artifacts;
 };
