@@ -19,7 +19,7 @@ export type RendererJiraSubmissionEvent =
   | { type: 'progress'; nodeId: string; message: string; timestamp: string }
   | ({ type: 'result'; timestamp: string } & JiraSubmissionResult)
   | { type: 'done'; status: 'pass'; issues: RendererJiraSubmissionIssue[]; timestamp: string }
-  | { type: 'done'; status: 'fail'; reason: string; issues: RendererJiraSubmissionIssue[]; timestamp: string };
+  | { type: 'done'; status: 'fail'; reason: string; issues: RendererJiraSubmissionIssue[]; remainingNodeIds: string[]; timestamp: string };
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === 'string');
@@ -141,7 +141,20 @@ export const parseRendererJiraSubmissionEvent = (
     if (root.value.status === 'fail') {
       const reason = requireString(root.value.reason, 'InvalidJiraSubmission', '$.reason');
       if (!reason.ok) return reason;
-      return { ok: true, value: { type, status: 'fail', reason: reason.value, issues: root.value.issues, timestamp: timestamp.value } };
+      if (!isStringArray(root.value.remainingNodeIds)) {
+        return { ok: false, error: { name: 'InvalidJiraSubmission', message: 'remainingNodeIds must be strings', path: '$.remainingNodeIds' } };
+      }
+      return {
+        ok: true,
+        value: {
+          type,
+          status: 'fail',
+          reason: reason.value,
+          issues: root.value.issues,
+          remainingNodeIds: root.value.remainingNodeIds,
+          timestamp: timestamp.value
+        }
+      };
     }
   }
   return { ok: false, error: { name: 'InvalidJiraSubmission', message: 'unsupported event', path: '$.type' } };

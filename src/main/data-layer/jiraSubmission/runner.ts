@@ -18,7 +18,7 @@ export type JiraSubmissionLoopIssue = {
 
 export type JiraSubmissionLoopResult =
   | { status: 'pass'; issues: JiraSubmissionLoopIssue[] }
-  | { status: 'fail'; reason: string; failedNodeId: string; issues: JiraSubmissionLoopIssue[] };
+  | { status: 'fail'; reason: string; failedNodeId: string; issues: JiraSubmissionLoopIssue[]; remainingNodeIds: string[] };
 
 export type JiraSubmissionLoopOptions = {
   plan: JiraSubmissionPlan;
@@ -30,9 +30,16 @@ export type JiraSubmissionLoopOptions = {
 
 type StateRecord = {
   status: string;
-  live_key: string | null;
-  live_url: string | null;
-  payload_hash: string;
+  key: string | null;
+  url: string | null;
+  payloadHash: string;
+  idempotencyLabel: string;
+};
+
+type AcceptedRecord = {
+  status: 'verified' | 'duplicate';
+  key: string;
+  url: string;
 };
 
 const safeIssueKey = (projectKey: string, value: string | null): value is string =>
@@ -40,6 +47,14 @@ const safeIssueKey = (projectKey: string, value: string | null): value is string
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const stringAlias = (record: Record<string, unknown>, keys: string[]): string | null => {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'string') return value;
+  }
+  return null;
+};
 
 const readStateRecord = async (stateDir: string, nodeId: string): Promise<StateRecord> => {
   const raw = await readFile(path.join(stateDir, `${nodeId}.json`), 'utf8');
@@ -49,9 +64,10 @@ const readStateRecord = async (stateDir: string, nodeId: string): Promise<StateR
   }
   return {
     status: typeof parsed.status === 'string' ? parsed.status : '',
-    live_key: typeof parsed.live_key === 'string' ? parsed.live_key : null,
-    live_url: typeof parsed.live_url === 'string' ? parsed.live_url : null,
-    payload_hash: typeof parsed.payload_hash === 'string' ? parsed.payload_hash : ''
+    key: stringAlias(parsed, ['issue_key', 'live_key', 'issueKey']),
+    url: stringAlias(parsed, ['issue_url', 'live_url', 'issueUrl']),
+    payloadHash: stringAlias(parsed, ['payload_hash', 'payloadHash']) ?? '',
+    idempotencyLabel: stringAlias(parsed, ['idempotency_label', 'idempotencyLabel']) ?? ''
   };
 };
 
@@ -81,6 +97,43 @@ const terminalPassStatus = (status: string): 'verified' | 'duplicate' | null => 
   return null;
 };
 
+const canonicalIdempotencyLabel = (projectKey: string, payloadHash: string): string =>
+  `${projectKey}-idem-${payloadHash.slice(0, 12)}`;
+
+const deriveIssueUrl = (siteUrl: string | undefined, issueKey: string): string => {
+  if (siteUrl === undefined || siteUrl.trim().length === 0) return '';
+  return `${siteUrl.replace(/\/+$/, '')}/browse/${issueKey}`;
+};
+
+const acceptedRecord = (
+  record: StateRecord,
+  projectKey: string,
+  payloadHash: string,
+  siteUrl: string | undefined
+): { ok: true; record: AcceptedRecord } | { ok: false; reason: string } => {
+  if (record.payloadHash !== payloadHash) {
+    return { ok: false, reason: 'payload_hash_mismatch' };
+  }
+  if (record.idempotencyLabel !== canonicalIdempotencyLabel(projectKey, payloadHash)) {
+    return { ok: false, reason: 'idempotency_label_mismatch' };
+  }
+  const status = terminalPassStatus(record.status);
+  if (status === null) {
+    return { ok: false, reason: record.status || 'unverified_state_record' };
+  }
+  if (!safeIssueKey(projectKey, record.key)) {
+    return { ok: false, reason: 'unfetchable_issue_key' };
+  }
+  return {
+    ok: true,
+    record: {
+      status,
+      key: record.key,
+      url: record.url !== null && record.url.length > 0 ? record.url : deriveIssueUrl(siteUrl, record.key)
+    }
+  };
+};
+
 export const runJiraSubmissionLoop = async ({
   plan,
   runCreateTurn,
@@ -91,9 +144,45 @@ export const runJiraSubmissionLoop = async ({
   const keysByNode = new Map<string, string>();
   const issues: JiraSubmissionLoopIssue[] = [];
 
+  const remainingAfter = (failedNodeId: string): string[] => {
+    const index = plan.nodes.findIndex((candidate) => candidate.id === failedNodeId);
+    return index < 0 ? [] : plan.nodes.slice(index + 1).map((candidate) => candidate.id);
+  };
+
+  const fail = (nodeId: string, reason: string): JiraSubmissionLoopResult => ({
+    status: 'fail',
+    reason,
+    failedNodeId: nodeId,
+    issues,
+    remainingNodeIds: remainingAfter(nodeId)
+  });
+
+  const acceptIssue = (
+    nodeId: string,
+    record: AcceptedRecord,
+    resultStatus: 'verified' | 'duplicate'
+  ): void => {
+    keysByNode.set(nodeId, record.key);
+    const issue = { nodeId, key: record.key, url: record.url };
+    issues.push(issue);
+    onResult?.({ nodeId, status: resultStatus, issueKey: issue.key, issueUrl: issue.url, timestamp: now() });
+  };
+
   for (const node of plan.nodes) {
     const parentKey = node.parentId === null ? null : keysByNode.get(node.parentId) ?? null;
     const { payload, payloadHash } = materializePayload(node, parentKey);
+
+    try {
+      const existingRecord = await readStateRecord(plan.stateDir, node.id);
+      const existingAccepted = acceptedRecord(existingRecord, payload.project_key, payloadHash, plan.siteUrl);
+      if (existingAccepted.ok) {
+        acceptIssue(node.id, existingAccepted.record, 'duplicate');
+        continue;
+      }
+    } catch {
+      // Missing or malformed pre-existing records are not adoptable; the create turn owns recovery.
+    }
+
     onProgress?.({ nodeId: node.id, message: `Creating ${node.issueType}: ${node.summary}`, timestamp: now() });
     await runCreateTurn({ node, payload, payloadHash });
 
@@ -103,27 +192,16 @@ export const runJiraSubmissionLoop = async ({
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
-      return { status: 'fail', reason, failedNodeId: node.id, issues };
+      return fail(node.id, reason);
     }
 
-    if (record.payload_hash !== payloadHash) {
+    const accepted = acceptedRecord(record, payload.project_key, payloadHash, plan.siteUrl);
+    if (!accepted.ok) {
       onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
-      return { status: 'fail', reason: 'payload_hash_mismatch', failedNodeId: node.id, issues };
-    }
-    const status = terminalPassStatus(record.status);
-    if (status === null) {
-      onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
-      return { status: 'fail', reason: record.status || 'unverified_state_record', failedNodeId: node.id, issues };
-    }
-    if (!safeIssueKey(payload.project_key, record.live_key) || record.live_url === null || record.live_url.length === 0) {
-      onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
-      return { status: 'fail', reason: 'unfetchable_issue_key', failedNodeId: node.id, issues };
+      return fail(node.id, accepted.reason);
     }
 
-    keysByNode.set(node.id, record.live_key);
-    const issue = { nodeId: node.id, key: record.live_key, url: record.live_url };
-    issues.push(issue);
-    onResult?.({ nodeId: node.id, status, issueKey: issue.key, issueUrl: issue.url, timestamp: now() });
+    acceptIssue(node.id, accepted.record, accepted.record.status);
   }
 
   return { status: 'pass', issues };

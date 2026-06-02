@@ -36,12 +36,13 @@ describe('jira submission IPC factory', () => {
     expect(createJiraSubmissionEvent({ type: 'progress', nodeId: 'n1', message: 'Creating', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(createJiraSubmissionEvent({ type: 'result', nodeId: 'n1', status: 'verified', issueKey: 'SKC-1', issueUrl: 'https://x/browse/SKC-1', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(createJiraSubmissionEvent({ type: 'done', status: 'pass', issues: [], timestamp: 'now' })).toMatchObject({ ok: true });
-    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], timestamp: 'now' })).toMatchObject({ ok: true });
+    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], remainingNodeIds: ['n2'], timestamp: 'now' })).toMatchObject({ ok: true });
   });
 
   it('rejects malformed stream events', () => {
     expect(createJiraSubmissionEvent(null)).toMatchObject({ ok: false });
     expect(createJiraSubmissionEvent({ type: 'progress', nodeId: 'n1' })).toMatchObject({ ok: false });
     expect(createJiraSubmissionEvent({ type: 'done', status: 'maybe', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
+    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
   });
 });

@@ -24,17 +24,38 @@ const quotedValue = (line: string): string | undefined => {
   return value.replace(/^["']|["']$/g, '');
 };
 
+const stripInlineComment = (value: string): string =>
+  value.replace(/\s+#.*$/, '').trim();
+
+const scalarValue = (line: string): string | undefined => {
+  const value = quotedValue(line);
+  if (value === undefined) return undefined;
+  const stripped = stripInlineComment(value);
+  return stripped.length > 0 ? stripped : undefined;
+};
+
+const findTopLevelScalar = (lines: string[], keys: string[]): string | undefined => {
+  for (const line of lines) {
+    if (/^\s*#/.test(line) || /^\s/.test(line)) continue;
+    const key = keys.find((candidate) => new RegExp(`^${candidate}:\\s*`).test(line));
+    if (key !== undefined) return scalarValue(line);
+  }
+  return undefined;
+};
+
 const readJiraConfig = async (repositoryPath: string): Promise<JiraSubmissionConfig> => {
   try {
     const raw = await readFile(path.join(repositoryPath, '.specify', 'extensions', 'concierge-jira', 'jira-config.yml'), 'utf8');
     const lines = raw.split(/\r?\n/);
     const keyLineIndex = lines.findIndex((line) => /^\s*project:\s*$/.test(line));
     const projectKey = keyLineIndex >= 0
-      ? quotedValue(lines.slice(keyLineIndex + 1).find((line) => /^\s+key:\s*/.test(line)) ?? '')
+      ? scalarValue(lines.slice(keyLineIndex + 1).find((line) => /^\s+key:\s*/.test(line)) ?? '')
       : undefined;
+    const siteUrl = findTopLevelScalar(lines, ['site_url', 'siteUrl', 'base_url', 'baseUrl']);
     return {
-      projectKey: projectKey?.replace(/\s+#.*$/, '') || defaultConfig.projectKey,
-      baseLabels: defaultConfig.baseLabels
+      projectKey: projectKey || defaultConfig.projectKey,
+      baseLabels: defaultConfig.baseLabels,
+      ...(siteUrl !== undefined ? { siteUrl } : {})
     };
   } catch {
     return defaultConfig;
@@ -77,7 +98,12 @@ export const createBoundCliJiraCreateTurn = ({
       'Run the customized concierge-jira create-issue contract for exactly one JIRA issue.',
       'Use the repository protocol at docs/jira-submission-protocol.md and the extension config at .specify/extensions/concierge-jira/.',
       'You are the bounded CLI agent. The app has already rendered the payload and owns ordering.',
-      'Make exactly one createJiraIssue MCP call unless the protocol requires duplicate/orphan recovery before create.',
+      'Create exactly one logical Jira issue for this node; duplicate/orphan recovery and transient retries are allowed only as required by the protocol.',
+      'Before creating, search Jira by the rendered idempotency label and adopt exactly one verified orphan if found.',
+      'On transient Jira failures (429, 5xx, network errors, timeout, no response), retry with protocol backoff for up to five total attempts.',
+      'After ambiguous transient failures, run the JQL orphan search by idempotency label before retrying create.',
+      'Only write status:"verified" after read-back verification confirms the issue key exists and matches the rendered payload/idempotency label.',
+      'If retries are exhausted, write the terminal failure state record required by the protocol and stop.',
       'Do not edit app source. Do not invoke the retired file-ticket LLM filer. Do not call sync-status.',
       'Write the required atomic disk state record at payload.state_dir/<idempotency_id>.json.',
       '',

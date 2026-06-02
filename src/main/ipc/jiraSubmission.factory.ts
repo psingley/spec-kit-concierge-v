@@ -36,7 +36,7 @@ export type JiraSubmissionEvent =
   | { type: 'progress'; nodeId: string; message: string; timestamp: string }
   | { type: 'result'; nodeId: string; status: 'verified' | 'duplicate' | 'failed'; issueKey?: string; issueUrl?: string; timestamp: string }
   | { type: 'done'; status: 'pass'; issues: JiraSubmissionIssue[]; timestamp: string }
-  | { type: 'done'; status: 'fail'; reason: string; issues: JiraSubmissionIssue[]; timestamp: string };
+  | { type: 'done'; status: 'fail'; reason: string; issues: JiraSubmissionIssue[]; remainingNodeIds: string[]; timestamp: string };
 
 const safeAbsolutePath = (value: string): boolean =>
   (path.isAbsolute(value) || path.win32.isAbsolute(value)) && !value.includes('\0');
@@ -98,6 +98,9 @@ const isIssueArray = (value: unknown): value is JiraSubmissionIssue[] =>
     return typeof record.nodeId === 'string' && typeof record.key === 'string' && typeof record.url === 'string';
   });
 
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string');
+
 export const createJiraSubmissionEvent = (value: unknown): FactoryResult<JiraSubmissionEvent, ErrorName> => {
   const root = requireRecord(value, 'InvalidJiraSubmissionEvent', '$');
   if (!root.ok) return root;
@@ -139,7 +142,7 @@ export const createJiraSubmissionEvent = (value: unknown): FactoryResult<JiraSub
     };
   }
   if (type === 'done') {
-    const allowed = ['type', 'status', 'reason', 'issues', 'timestamp'];
+    const allowed = ['type', 'status', 'reason', 'issues', 'remainingNodeIds', 'timestamp'];
     if (Object.keys(root.value).some((key) => !allowed.includes(key))) {
       return invalid('InvalidJiraSubmissionEvent', 'payload contains unexpected key', '$');
     }
@@ -154,7 +157,20 @@ export const createJiraSubmissionEvent = (value: unknown): FactoryResult<JiraSub
     if (root.value.status === 'fail') {
       const reason = requireString(root.value.reason, 'InvalidJiraSubmissionEvent', '$.reason');
       if (!reason.ok) return reason;
-      return { ok: true, value: { type, status: 'fail', reason: reason.value, issues: root.value.issues, timestamp: timestamp.value } };
+      if (!isStringArray(root.value.remainingNodeIds)) {
+        return invalid('InvalidJiraSubmissionEvent', 'remainingNodeIds must be strings', '$.remainingNodeIds');
+      }
+      return {
+        ok: true,
+        value: {
+          type,
+          status: 'fail',
+          reason: reason.value,
+          issues: root.value.issues,
+          remainingNodeIds: root.value.remainingNodeIds,
+          timestamp: timestamp.value
+        }
+      };
     }
   }
   return invalid('InvalidJiraSubmissionEvent', 'unsupported JIRA submission event', '$.type');

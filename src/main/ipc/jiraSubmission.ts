@@ -80,11 +80,18 @@ export const registerJiraSubmissionIpc = ({
         if (result.status === 'pass') {
           sendEvent({ type: 'done', status: 'pass', issues: result.issues, timestamp: timestamp() });
         } else {
-          sendEvent({ type: 'done', status: 'fail', reason: result.reason, issues: result.issues, timestamp: timestamp() });
+          sendEvent({
+            type: 'done',
+            status: 'fail',
+            reason: result.reason,
+            issues: result.issues,
+            remainingNodeIds: result.remainingNodeIds,
+            timestamp: timestamp()
+          });
         }
       }).catch((error: unknown) => {
         const reason = error instanceof Error ? error.message : String(error);
-        sendEvent({ type: 'done', status: 'fail', reason, issues: [], timestamp: timestamp() });
+        sendEvent({ type: 'done', status: 'fail', reason, issues: [], remainingNodeIds: [], timestamp: timestamp() });
       });
       logger.info({ channel: JIRA_SUBMIT_CHANNEL, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
       return { subscriptionId: request.value.subscriptionId, accepted: true, featureDir: artifacts.featureDirRelative };

@@ -5,6 +5,7 @@ import {
   jiraSubmissionFailed,
   jiraSubmissionResultRecorded,
   jiraSubmissionStarted,
+  jiraSubmissionSucceeded,
   jiraInitialState
 } from './jira';
 
@@ -32,8 +33,15 @@ describe('jira slice', () => {
     }));
     expect(state.issues).toEqual([{ key: 'SKC-1', url: 'https://collette.atlassian.net/browse/SKC-1' }]);
 
-    state = jiraReducer(state, jiraSubmissionFailed({ message: 'verify_mismatch' }));
+    state = jiraReducer(state, jiraSubmissionFailed({ message: 'verify_mismatch', remaining: ['n2', 'n3'] }));
     expect(state.submitting).toBe(false);
     expect(state.error).toBe('verify_mismatch');
+    expect(state.remaining).toEqual(['n2', 'n3']);
+
+    state = jiraReducer(state, jiraSubmissionStarted());
+    expect(state.remaining).toEqual([]);
+
+    state = jiraReducer(state, jiraSubmissionSucceeded({ issues: [] }));
+    expect(state.remaining).toEqual([]);
   });
 });

@@ -35,6 +35,7 @@ export type JiraSubmissionNode = {
 export type JiraSubmissionPlan = {
   featureSlug: string;
   stateDir: string;
+  siteUrl?: string;
   nodes: JiraSubmissionNode[];
   warnings: string[];
 };
@@ -252,5 +253,5 @@ export const buildJiraSubmissionPlan = ({
     }
   }
 
-  return { featureSlug, stateDir, nodes, warnings };
+  return { featureSlug, stateDir, siteUrl: config.siteUrl, nodes, warnings };
 };

@@ -60,7 +60,7 @@ export const jiraSubmissionApi = api.injectEndpoints({
             if (parsed.value.status === 'pass') {
               queryApi.dispatch(jiraSubmissionSucceeded({ issues: parsed.value.issues.map((issue) => ({ key: issue.key, url: issue.url })) }));
             } else {
-              queryApi.dispatch(jiraSubmissionFailed({ message: parsed.value.reason }));
+              queryApi.dispatch(jiraSubmissionFailed({ message: parsed.value.reason, remaining: parsed.value.remainingNodeIds }));
               queryApi.dispatch(toastShown({ level: 'error', message: `JIRA submission failed: ${parsed.value.reason}` }));
             }
             teardown();
