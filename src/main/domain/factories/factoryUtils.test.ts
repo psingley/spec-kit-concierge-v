@@ -77,6 +77,19 @@ describe('factoryUtils', () => {
     expect(specify.files).toEqual(['specs/0012-remove-faux-controls/spec.md']);
   });
 
+  it('appends repo-root-relative additional commit files without feature-dir prefixing', () => {
+    const specify = commitCandidate('specify', ['spec.md'], {
+      repositoryPath: '/repo',
+      featureDir: '/repo/specs/0012-remove-faux-controls',
+      additionalCommitFiles: ['.specify/feature.json']
+    });
+
+    expect(specify.files).toEqual([
+      'specs/0012-remove-faux-controls/spec.md',
+      '.specify/feature.json'
+    ]);
+  });
+
   it('keeps bare commit files when featureDir equals repositoryPath (no regression)', () => {
     const tasks = commitCandidate('tasks', ['tasks.md'], {
       repositoryPath: '/repo',

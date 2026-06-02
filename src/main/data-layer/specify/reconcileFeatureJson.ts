@@ -28,7 +28,9 @@ export type ReconcileSpecifyFeatureJsonRequest = {
 export type ReconcileSpecifyFeatureJsonResult = {
   featureDirectory?: string;
   previousFeatureDirectory?: string;
+  committedFeatureDirectory?: string;
   changed: boolean;
+  commitRequired?: boolean;
 };
 
 const normalizeGitPath = (value: string): string => value.replace(/\\/g, '/');
@@ -110,6 +112,51 @@ const readFeatureJson = async (repositoryPath: string): Promise<{ raw?: string; 
   } catch {
     return { value: {} };
   }
+};
+
+const readCommittedFeatureDirectory = async (
+  repositoryPath: string,
+  runGit: typeof defaultRunGit
+): Promise<string | undefined> => {
+  try {
+    const raw = await runGit(repositoryPath, ['show', 'HEAD:.specify/feature.json']);
+    const parsed = JSON.parse(raw) as unknown;
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+      return undefined;
+    }
+    const featureDirectory = (parsed as FeatureJson).feature_directory;
+    return typeof featureDirectory === 'string' ? featureDirectory : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+export type DecideSpecifyFeatureJsonReconciliationRequest = {
+  featureDirectory?: string;
+  workingTreeFeatureDirectory?: string;
+  committedFeatureDirectory?: string;
+};
+
+export type DecideSpecifyFeatureJsonReconciliationResult = {
+  changed: boolean;
+  writeWorkingTree: boolean;
+  commitRequired: boolean;
+};
+
+export const decideSpecifyFeatureJsonReconciliation = (
+  request: DecideSpecifyFeatureJsonReconciliationRequest
+): DecideSpecifyFeatureJsonReconciliationResult => {
+  if (request.featureDirectory === undefined) {
+    return { changed: false, writeWorkingTree: false, commitRequired: false };
+  }
+
+  const writeWorkingTree = request.featureDirectory !== request.workingTreeFeatureDirectory;
+  const commitRequired = request.featureDirectory !== request.committedFeatureDirectory;
+  return {
+    changed: writeWorkingTree || commitRequired,
+    writeWorkingTree,
+    commitRequired
+  };
 };
 
 const changedPathsFromPorcelain = (statusPorcelain: string): string[] =>
@@ -195,6 +242,7 @@ export const reconcileSpecifyFeatureJson = async (
   const previousFeatureDirectory = typeof manifest.value.feature_directory === 'string'
     ? manifest.value.feature_directory
     : undefined;
+  const committedFeatureDirectory = await readCommittedFeatureDirectory(request.repositoryPath, runGit);
   const changedPaths = await withMtimes(
     request.repositoryPath,
     await readChangedSpecPaths(request.repositoryPath, runGit, request.logger, request.baseRef)
@@ -207,33 +255,59 @@ export const reconcileSpecifyFeatureJson = async (
 
   if (featureDirectory === undefined) {
     request.logger.info({ repositoryPath: request.repositoryPath }, 'feature.json reconciliation no feature directory discovered');
-    return { previousFeatureDirectory, changed: false };
+    return { previousFeatureDirectory, committedFeatureDirectory, changed: false };
   }
 
-  if (featureDirectory === previousFeatureDirectory) {
+  const reconciliation = decideSpecifyFeatureJsonReconciliation({
+    featureDirectory,
+    workingTreeFeatureDirectory: previousFeatureDirectory,
+    committedFeatureDirectory
+  });
+
+  if (!reconciliation.changed) {
     request.logger.info(
-      { repositoryPath: request.repositoryPath, featureDirectory },
+      { repositoryPath: request.repositoryPath, featureDirectory, committedFeatureDirectory },
       'feature.json reconciliation already current'
     );
-    return { featureDirectory, previousFeatureDirectory, changed: false };
+    return {
+      featureDirectory,
+      previousFeatureDirectory,
+      committedFeatureDirectory,
+      changed: false,
+      commitRequired: false
+    };
   }
 
-  const nextManifest = {
-    ...manifest.value,
-    feature_directory: featureDirectory
-  };
-  await safeWrite(
-    {
-      targetPath: manifestPath,
-      contents: `${JSON.stringify(nextManifest, null, 2)}\n`,
-      stepContext: { stepId: 'specify', label: 'feature.json reconciliation' }
-    },
-    request.logger
-  );
+  if (reconciliation.writeWorkingTree) {
+    const nextManifest = {
+      ...manifest.value,
+      feature_directory: featureDirectory
+    };
+    await safeWrite(
+      {
+        targetPath: manifestPath,
+        contents: `${JSON.stringify(nextManifest, null, 2)}\n`,
+        stepContext: { stepId: 'specify', label: 'feature.json reconciliation' }
+      },
+      request.logger
+    );
+  }
   request.logger.info(
-    { repositoryPath: request.repositoryPath, previousFeatureDirectory, featureDirectory },
+    {
+      repositoryPath: request.repositoryPath,
+      previousFeatureDirectory,
+      committedFeatureDirectory,
+      featureDirectory,
+      commitRequired: reconciliation.commitRequired
+    },
     'feature.json reconciled to specify-written directory'
   );
 
-  return { featureDirectory, previousFeatureDirectory, changed: true };
+  return {
+    featureDirectory,
+    previousFeatureDirectory,
+    committedFeatureDirectory,
+    changed: true,
+    commitRequired: reconciliation.commitRequired
+  };
 };

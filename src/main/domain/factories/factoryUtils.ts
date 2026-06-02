@@ -138,7 +138,7 @@ export const commitCandidate = (
   return {
     step,
     status: 'pass',
-    files: resolvedFiles,
+    files: [...resolvedFiles, ...(context.additionalCommitFiles ?? [])],
     message: `Concierge ${step} step`,
     ...(step === 'analyze' ? { allowEmptyCommit: true } : {})
   };

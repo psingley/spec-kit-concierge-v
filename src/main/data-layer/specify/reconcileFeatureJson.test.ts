@@ -4,9 +4,11 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import { describe, expect, it, vi } from 'vitest';
 import { withTempDir } from '../../../test/tempDir';
+import { commitWithTrailer } from '../git/gitCommand';
 import { resolveFeatureDir } from './featureDir';
 import {
   decideSpecifyFeatureDirectory,
+  decideSpecifyFeatureJsonReconciliation,
   reconcileSpecifyFeatureJson
 } from './reconcileFeatureJson';
 
@@ -15,6 +17,11 @@ const gitFixtureTimeoutMs = 60_000;
 
 const git = async (repositoryPath: string, args: string[]): Promise<void> => {
   await execFileAsync('git', args, { cwd: repositoryPath });
+};
+
+const gitOutput = async (repositoryPath: string, args: string[]): Promise<string> => {
+  const { stdout } = await execFileAsync('git', args, { cwd: repositoryPath });
+  return stdout.trim();
 };
 
 const createRepository = async (directory: string): Promise<void> => {
@@ -35,6 +42,12 @@ const createRepository = async (directory: string): Promise<void> => {
 
 const readFeatureJson = async (repositoryPath: string): Promise<Record<string, unknown>> =>
   JSON.parse(await readFile(path.join(repositoryPath, '.specify', 'feature.json'), 'utf8')) as Record<string, unknown>;
+
+const readCommittedFeatureDirectory = async (repositoryPath: string): Promise<string | undefined> => {
+  const raw = await gitOutput(repositoryPath, ['show', 'HEAD:.specify/feature.json']);
+  const parsed = JSON.parse(raw) as { feature_directory?: unknown };
+  return typeof parsed.feature_directory === 'string' ? parsed.feature_directory : undefined;
+};
 
 describe('decideSpecifyFeatureDirectory', () => {
   it('selects the spec.md directory that Specify actually changed instead of the stale inherited feature.json value', () => {
@@ -65,7 +78,119 @@ describe('decideSpecifyFeatureDirectory', () => {
   });
 });
 
+describe('decideSpecifyFeatureJsonReconciliation', () => {
+  it('requires a commit when the working tree is correct but the committed feature directory is stale', () => {
+    expect(
+      decideSpecifyFeatureJsonReconciliation({
+        featureDirectory: 'specs/0016-smoke-flow-ticketing',
+        workingTreeFeatureDirectory: 'specs/0016-smoke-flow-ticketing',
+        committedFeatureDirectory: 'specs/0015-send-jira-button'
+      })
+    ).toEqual({ changed: true, writeWorkingTree: false, commitRequired: true });
+  });
+
+  it('requires only a working-tree rewrite when the committed feature directory is already correct', () => {
+    expect(
+      decideSpecifyFeatureJsonReconciliation({
+        featureDirectory: 'specs/0016-smoke-flow-ticketing',
+        workingTreeFeatureDirectory: 'specs/0015-send-jira-button',
+        committedFeatureDirectory: 'specs/0016-smoke-flow-ticketing'
+      })
+    ).toEqual({ changed: true, writeWorkingTree: true, commitRequired: false });
+  });
+});
+
 describe('reconcileSpecifyFeatureJson', () => {
+  it('marks feature.json changed when the working tree is current but the committed value is stale', async () => {
+    await withTempDir(async (repositoryPath) => {
+      await createRepository(repositoryPath);
+      const writtenFeatureRel = 'specs/0016-smoke-flow-ticketing';
+      await mkdir(path.join(repositoryPath, writtenFeatureRel), { recursive: true });
+      await writeFile(path.join(repositoryPath, writtenFeatureRel, 'spec.md'), '# new spec\n', 'utf8');
+      await writeFile(
+        path.join(repositoryPath, '.specify', 'feature.json'),
+        `${JSON.stringify({ feature_directory: writtenFeatureRel, keep: true }, null, 2)}\n`,
+        'utf8'
+      );
+
+      const result = await reconcileSpecifyFeatureJson({
+        repositoryPath,
+        logger: { info: vi.fn(), warn: vi.fn() }
+      });
+
+      expect(result).toEqual({
+        featureDirectory: writtenFeatureRel,
+        previousFeatureDirectory: writtenFeatureRel,
+        committedFeatureDirectory: 'specs/0015-send-jira-button',
+        changed: true,
+        commitRequired: true
+      });
+    });
+  }, gitFixtureTimeoutMs);
+
+  it('commits the reconciled feature.json when the working tree is current but HEAD is stale', async () => {
+    await withTempDir(async (repositoryPath) => {
+      await createRepository(repositoryPath);
+      const writtenFeatureRel = 'specs/0016-smoke-flow-ticketing';
+      await mkdir(path.join(repositoryPath, writtenFeatureRel), { recursive: true });
+      await writeFile(path.join(repositoryPath, writtenFeatureRel, 'spec.md'), '# new spec\n', 'utf8');
+      await writeFile(
+        path.join(repositoryPath, '.specify', 'feature.json'),
+        `${JSON.stringify({ feature_directory: writtenFeatureRel, keep: true }, null, 2)}\n`,
+        'utf8'
+      );
+
+      const reconcileResult = await reconcileSpecifyFeatureJson({
+        repositoryPath,
+        logger: { info: vi.fn(), warn: vi.fn() }
+      });
+      await commitWithTrailer(repositoryPath, {
+        step: 'specify',
+        status: 'pass',
+        files: [
+          path.join(writtenFeatureRel, 'spec.md'),
+          ...(reconcileResult.changed ? ['.specify/feature.json'] : [])
+        ],
+        message: 'Concierge specify step'
+      });
+
+      await expect(readCommittedFeatureDirectory(repositoryPath)).resolves.toBe(writtenFeatureRel);
+    });
+  }, gitFixtureTimeoutMs);
+
+  it('keeps the reconciled feature.json durable after a later git checkout resets the worktree', async () => {
+    await withTempDir(async (repositoryPath) => {
+      await createRepository(repositoryPath);
+      const writtenFeatureRel = 'specs/0016-smoke-flow-ticketing';
+      await mkdir(path.join(repositoryPath, writtenFeatureRel), { recursive: true });
+      await writeFile(path.join(repositoryPath, writtenFeatureRel, 'spec.md'), '# new spec\n', 'utf8');
+      await writeFile(
+        path.join(repositoryPath, '.specify', 'feature.json'),
+        `${JSON.stringify({ feature_directory: writtenFeatureRel, keep: true }, null, 2)}\n`,
+        'utf8'
+      );
+
+      const reconcileResult = await reconcileSpecifyFeatureJson({
+        repositoryPath,
+        logger: { info: vi.fn(), warn: vi.fn() }
+      });
+      await commitWithTrailer(repositoryPath, {
+        step: 'specify',
+        status: 'pass',
+        files: [
+          path.join(writtenFeatureRel, 'spec.md'),
+          ...(reconcileResult.changed ? ['.specify/feature.json'] : [])
+        ],
+        message: 'Concierge specify step'
+      });
+      await git(repositoryPath, ['checkout', '--', '.']);
+
+      await expect(readFeatureJson(repositoryPath)).resolves.toMatchObject({
+        feature_directory: writtenFeatureRel
+      });
+    });
+  }, gitFixtureTimeoutMs);
+
   it('rewrites stale feature.json to the new spec.md directory and resolveFeatureDir then returns that directory', async () => {
     await withTempDir(async (repositoryPath) => {
       await createRepository(repositoryPath);
@@ -80,7 +205,9 @@ describe('reconcileSpecifyFeatureJson', () => {
       expect(result).toEqual({
         featureDirectory: 'specs/0016-smoke-flow-ticketing',
         previousFeatureDirectory: 'specs/0015-send-jira-button',
-        changed: true
+        committedFeatureDirectory: 'specs/0015-send-jira-button',
+        changed: true,
+        commitRequired: true
       });
       await expect(resolveFeatureDir(repositoryPath)).resolves.toBe(
         path.join(repositoryPath, 'specs', '0016-smoke-flow-ticketing')
@@ -112,7 +239,9 @@ describe('reconcileSpecifyFeatureJson', () => {
       expect(result).toEqual({
         featureDirectory: 'specs/0015-send-jira-button',
         previousFeatureDirectory: 'specs/0015-send-jira-button',
-        changed: false
+        committedFeatureDirectory: 'specs/0015-send-jira-button',
+        changed: false,
+        commitRequired: false
       });
       expect(after.mtimeMs).toBe(before.mtimeMs);
     });

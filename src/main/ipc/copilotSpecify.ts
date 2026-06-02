@@ -640,7 +640,7 @@ export const registerCopilotSpecifyIpc = ({
             });
           }
         });
-        await reconcileFeatureJson({
+        const featureJsonReconciliation = await reconcileFeatureJson({
           repositoryPath: request.value.repositoryPath,
           logger,
           branchName: request.value.branch,
@@ -654,6 +654,9 @@ export const registerCopilotSpecifyIpc = ({
           featureDir,
           sessionId,
           userDataPath,
+          ...(featureJsonReconciliation.commitRequired === true
+            ? { additionalCommitFiles: ['.specify/feature.json'] }
+            : {}),
           authStatus: { githubLoggedIn: true, copilotLoggedIn: true }
         });
         if (!after.ok || after.commit?.commitSha === undefined) {
