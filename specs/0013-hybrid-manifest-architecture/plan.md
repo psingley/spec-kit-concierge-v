@@ -17,7 +17,7 @@ The build order is fixed by FR-030 and preserved exactly:
 3. Branch-history `commitStep` idempotency.
 4. `sessionReconciler`.
 5. Dirty-diff gates plus failed markers with stranded-artifact detail.
-6. Guarded `relocateArtifact`.
+6. Guarded `relocateArtifact` backed by the deterministic recovery catalog.
 7. Watchdog/transcript classifier.
 8. Bounded 12-tool doctor harness.
 9. Doctor agent instructions.
@@ -32,13 +32,13 @@ The build order is fixed by FR-030 and preserved exactly:
 
 **Storage**: Worktree-local `.concierge/session-manifest.json` is the authoritative session manifest. Existing git history and `Concierge-Step:` trailers remain durable completion evidence. Feature artifacts remain under `specs/0013-hybrid-manifest-architecture/`. Failed markers remain under `.specify/concierge/failed-steps/` and gain stranded-artifact detail. App logs and doctor audit records use existing `userData` logging/audit patterns where evidence is app-owned rather than feature-owned.
 
-**Testing**: Vitest for unit/integration tests, React Testing Library for renderer smart/dumb behavior, Playwright/Electron for nudge/facilitator flows, existing npm scripts: `npm run typecheck`, `npm run lint`, `npm run test`, and targeted `npm run e2e` where UI flows change.
+**Testing**: Vitest for unit/integration tests, React Testing Library for renderer smart/dumb behavior, Playwright/Electron for nudge/facilitator flows, HTTP contract tests for external-agent parity, existing npm scripts: `npm run typecheck`, `npm run lint`, `npm run test`, `npm run test:coverage`, and targeted `npm run e2e` where UI flows change.
 
 **Target Platform**: Electron desktop app with Windows shipping target and macOS developer support.
 
 **Project Type**: Desktop application with main/preload/renderer split and IPC trust boundaries.
 
-**Performance Goals**: Manifest reads/writes and reconciliation should remain small-file operations suitable for every session start, branch switch, step start, step completion, and nudge request. Doctor harness is invoked only after deterministic recovery cannot resolve an anomaly and is limited to two attempts per step.
+**Performance Goals**: Manifest read plus reconciliation over the largest Run 13 fixture must complete in 500 ms or less on local developer hardware. The largest fixture is `tests/fixtures/hybrid-manifest/session-manifest.max.json` with six steps, three attempts per step, 30 anomalies, 30 interventions, 12 doctor invocations, and 60 artifact snapshot entries. Audit-trail inspection for failed, remediated, and nudged sessions must expose a bounded user-visible view within 30 seconds. Doctor harness is invoked only after deterministic recovery cannot resolve an anomaly and is limited to two attempts per step.
 
 **Constraints**: Deterministic code is the only writer of manifest state, commits, trailers, failed markers, completion status, and guarded mutations. Step execution uses `copilot -p --agent speckit.<step> --output-format json --session-id <uuid> --log-dir <dir>`. ACP is retired as the step execution transport for this architecture. Doctor tools are exactly the six read-only and six guarded tools from FR-020 and FR-021. Mutating doctor tools must re-read disk truth, validate preconditions, be idempotent by anomaly id, append audit records, and return to reconciliation. Preserve existing resume reconstruction, maximum reached step advancement, navigation-loop prevention, graceful failed-step resume, branch-null routing gates, and Windows-conditional behavior.
 
@@ -52,23 +52,23 @@ The build order is fixed by FR-030 and preserved exactly:
 |-----------|-------------|---------------|
 | I. Layered Architecture | PASS | Manifest, git, filesystem, child process execution, doctor tools, and reconciliation live in main/data-layer/domain/effect modules. Renderer reaches state and nudge actions only through typed IPC and RTK Query. |
 | II. Disk Is Truth | PASS | Manifest, branch trailers, artifacts, failed markers, and audit records are durable disk/git facts. Renderer state stays derived and non-authoritative. |
-| III. ACP-Only Bound CLI | JUSTIFIED VIOLATION | FR-009 and FR-010 explicitly replace ACP step execution with Copilot print-mode. The plan confines the exception to step-agent execution and records a required constitution/ADR follow-up before implementation tasks begin. |
+| III. Bound CLI and Step Execution Transport | PASS WITH CONSTITUTION EXCEPTION | FR-009 and FR-010 use the Run 13 constitution-approved print-mode exception for step-agent execution only. Bound CLI integrations remain ACP by default, and deterministic reconciliation remains the only completion authority. |
 | IV. Factory-First Data Transformation | PASS | Manifest, step attempts, anomalies, interventions, doctor tool payloads, failed markers, nudge results, and renderer API payloads require factories at disk/IPC/preload boundaries. |
 | V. Scoped Functional Programming | PASS | Pure reconciliation/classification/contract logic is separated from effectful filesystem, git, child-process, and IPC adapters. |
 | VI. State Management | PASS | RTK Query owns IPC reads/mutations and listener middleware coordinates recovery/nudge effects. No ninth Redux slice is planned. |
 | VII. Step Lifecycle and Recovery | PASS WITH CHANGE | Hooks remain lifecycle owners, but their execution path delegates to manifest-backed reconciliation and print-mode step invocation rather than ACP sessions. Step Commit and failed-marker writes remain deterministic hook/facilitator responsibilities. |
 | VIII. Step Contracts | PASS | Existing contract factories are hardened with step-owned snapshots and artifact snapshot identities used by reconciliation and idempotency. |
-| IX. Driveable by External Agents | PASS | Nudge and facilitator actions are planned as typed capabilities that can later be exposed through the existing localhost API parity model. |
+| IX. Driveable by External Agents | PASS | Manifest read, reconcile, audit trail, doctor status, and nudge are implemented through the same validated IPC/data-layer path and exposed through the localhost HTTP API with typed request/response contracts. |
 | X. MCP Posture | PASS | Doctor and step agents may use the Bound CLI's MCP configuration indirectly; Concierge still does not speak to MCP services directly. |
 | XI. External-Service Submission | PASS | This feature does not change JIRA outer-loop ownership. |
 | XII/XIII. Smart/Dumb + Effects | PASS | Renderer nudge button and status surfaces are smart-container driven; presentational components stay props-only; side effects stay in RTK Query/listeners. |
 | XIV. Accessibility | PASS | Nudge affordance, doctor/escalation notices, failed-state markers, and recovery results must be keyboard-accessible and announced via status/alert regions. |
 | XV. Structured Observability | PASS | Manifest writes, reconciliation decisions, anomalies, interventions, doctor tool invocations, classifier results, and nudge actions emit structured logs/audit entries without PII or raw tokens. |
-| XVI. Spec-kit Discipline | PASS | Phase 0/1 artifacts are generated before tasks; implementation must use vertical tracer bullets and preserve the FR-030 milestone order. |
+| XVI. Spec-kit Discipline | PASS WITH DOGFOOD BRANCH EXCEPTION | Phase 0/1 artifacts are generated before tasks; implementation must use vertical tracer bullets and preserve the FR-030 milestone order. This dogfood lane remains on `build/manifest-architecture-dogfood` while `.specify/feature.json` points at the numbered `specs/0013-hybrid-manifest-architecture` feature directory. |
 
 ### Constitution impact
 
-The ACP-only principle conflicts with FR-009 and FR-010. The implementation plan must include an early documentation/ADR task that scopes the print-mode exception and updates permanent project guidance before source changes rely on it. This is not optional feature behavior; it is part of the user-approved architecture seed.
+FR-009 and FR-010 rely on the Run 13 constitution exception for print-mode step execution. The implementation plan includes an early documentation/ADR/guidance task that records the exception before source changes rely on it. This is not optional feature behavior; it is part of the user-approved architecture seed.
 
 ## Project Structure
 
@@ -83,8 +83,11 @@ specs/0013-hybrid-manifest-architecture/
 ├── contracts/
 │   ├── doctor-tools.md
 │   ├── facilitator-nudge.md
+│   ├── http-api.md
 │   ├── manifest-schema.md
-│   └── reconciliation.md
+│   ├── reconciliation.md
+│   ├── recovery-catalog.md
+│   └── renderer-status-mapping.md
 └── tasks.md                  # created later by /speckit.tasks
 ```
 
@@ -94,8 +97,9 @@ specs/0013-hybrid-manifest-architecture/
 src/main/
 ├── data-layer/
 │   ├── manifest/             # new sessionManifestStore atomic read/write helpers
+│   ├── agents/               # new typed Copilot print-mode process adapter
 │   ├── doctor/               # new bounded doctor harness tool adapters
-│   ├── recovery/             # new guarded relocate/revert/rerun/cancel actions
+│   ├── recovery/             # new guarded relocate/revert/restart/cancel actions
 │   ├── git/
 │   │   ├── gitCommand.ts     # existing git shell-out path; extend branch-history idempotency
 │   │   ├── branchState.ts    # existing branch-state facts reused by reconciler
@@ -111,12 +115,16 @@ src/main/
 │   ├── hookHelpers.ts        # route before/after hooks through manifest/reconciler
 │   ├── manifest.ts           # strengthen step artifact ownership metadata
 │   └── *.hook.ts             # preserve lifecycle entry points
-├── ipc/
-│   ├── copilotPassiveAgent.ts # replace ACP step execution with print-mode adapter
-│   ├── passiveStepIpc.ts      # reconcile before/after execution and failed-marker handling
-│   ├── sessionManifest.ts     # new read/reconcile/nudge IPC handlers
-│   └── *.factory.ts           # trust-boundary factories
-└── logging.ts
+	├── ipc/
+	│   ├── copilotPassiveAgent.ts # orchestrates IPC/facilitator flow through data-layer print-mode adapter
+	│   ├── passiveStepIpc.ts      # reconcile before/after execution and failed-marker handling
+	│   ├── sessionManifest.ts     # new read/reconcile/nudge IPC handlers
+	│   └── *.factory.ts           # trust-boundary factories
+	├── http/
+	│   ├── sessionManifest.ts     # localhost HTTP parity handlers
+	│   ├── sessionManifest.routes.ts
+	│   └── sessionManifest.factory.ts
+	└── logging.ts
 
 src/preload/
 └── index.ts                  # expose typed manifest/reconcile/nudge bridge entries
@@ -169,6 +177,7 @@ Design artifacts are complete:
 - `contracts/reconciliation.md` defines reconciliation inputs, completion gates, branch-history idempotency, dirty-diff gates, failed-marker writes, and classifier output.
 - `contracts/doctor-tools.md` defines the exact six read-only and six guarded doctor tools, budgets, preconditions, idempotency, audit semantics, and forbidden actions.
 - `contracts/facilitator-nudge.md` defines facilitator integration, print-mode invocation, terminal-stuck criteria, nudge visibility, `reconcileBranchToIntendedShape`, and human escalation outputs.
+- `contracts/http-api.md` defines localhost HTTP parity for manifest read, reconcile, audit trail, doctor status, and nudge.
 - `quickstart.md` defines implementation order and verification entry points.
 
 ## Implementation Approach
@@ -193,9 +202,9 @@ Build a pure reconciler that reads manifest attempts, branch trailers, artifact 
 
 Add deterministic dirty-diff gates that distinguish step-owned changes from unrelated, ambiguous, or unsafe edits. Block completion on unsafe diffs and write failed markers with stranded artifact detail so resume and Review can surface exact recovery context.
 
-### Milestone 6: Guarded `relocateArtifact`
+### Milestone 6: Guarded `relocateArtifact` and deterministic recovery catalog
 
-Implement guarded relocation for unambiguous misplaced step artifacts. The tool re-reads disk truth, validates source/destination ownership and ambiguity, writes an intervention audit record, remains idempotent by anomaly id, and returns to reconciliation.
+Implement the deterministic recovery orchestrator and guarded recovery actions for the safe recovery catalog before doctor escalation under the Run 13 constitution exception. `relocateArtifact` is the first filesystem mutation and re-reads disk truth, validates source/destination ownership, rejects ambiguity, appends an intervention audit record, and returns control to reconciliation. The same orchestrator also covers valid completion adoption, failed-marker refresh, proven unrelated-file revert, observed active-step cancellation, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request. The orchestrator never silently re-runs a step, marks completion directly, or writes completion trailers outside hook ownership.
 
 ### Milestone 7: Watchdog/transcript classifier
 
@@ -211,7 +220,9 @@ Create doctor instructions that state the doctor is advisory/intermediary only, 
 
 ### Milestone 10: Facilitator integration
 
-Integrate print-mode step execution and doctor escalation into the passive step/facilitator path. The facilitator records spawn recipes, assistant/session/message identifiers, log references/checksums, terminal results, anomalies, and interventions into the manifest and invokes reconciliation at every authority boundary.
+Integrate print-mode step execution and doctor escalation into the passive step/facilitator path. The child-process transport lives in a dedicated main data-layer adapter; IPC only validates requests and orchestrates the shared facilitator path. The facilitator records spawn recipes, assistant/session/message identifiers, log references/checksums, terminal results, anomalies, and interventions into the manifest and invokes reconciliation at every authority boundary, including the localhost HTTP API parity path.
+
+Validation fixtures include a 100-case interrupted/restarted resume corpus for the 99% SC-002 threshold, a 20-case deterministic recovery corpus for the 90% SC-004 threshold, and parseable print-mode events that explicitly assert `assistantSessionId`, `messageId`, and `turnId` capture.
 
 ### Milestone 11: Nudge button plus `reconcileBranchToIntendedShape`
 
@@ -223,18 +234,18 @@ Expose a nudge action only for terminal-stuck sessions after automatic remediati
 |------|--------|
 | Disk authority maintained | PASS: manifest, trailers, artifacts, failed markers, and audit records are authoritative; renderer remains derived. |
 | IPC boundary maintained | PASS: manifest/reconcile/nudge/doctor payloads are factory-validated at main and renderer bridge exits. |
-| Step lifecycle maintained | PASS WITH CHANGE: hook ownership remains, but step execution migrates to print-mode per FR-009/010. |
+| Step lifecycle maintained | PASS WITH CONSTITUTION EXCEPTION: hook ownership remains, but step execution migrates to print-mode per FR-009/010 and the Run 13 transport exception. |
 | Doctor boundedness maintained | PASS: exact 12-tool harness, two attempts per step, deterministic mutations only, no direct completion authority. |
 | Recovery safety maintained | PASS: all mutating guarded tools re-read current disk truth, validate preconditions, audit before returning, and re-enter reconciliation. |
 | Existing behavior preserved | PASS: resume reconstruction, maximum reached step advancement, navigation-loop prevention, failed-step resume, branch-null routing, and Windows-conditional behavior are explicit regression targets. |
 | Dependency policy maintained | PASS: no new runtime dependency is planned. |
 
-The only gate violation remains the planned ACP step-execution replacement. It is justified by the explicit feature specification and must be documented as a constitution impact before implementation source changes.
+No unresolved constitution gate violation remains after the Run 13 transport and dogfood branch exceptions. The exception still must be documented in ADR/project guidance before implementation source changes.
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| Replace ACP step execution with print-mode command contract | FR-009 and FR-010 make print-mode unification and ACP retirement part of the architecture seed. | Keeping ACP would preserve a constitutional principle but fail the feature's core recovery and deterministic-execution requirements. |
+| Replace ACP step execution with print-mode command contract | FR-009 and FR-010 make print-mode unification and ACP retirement part of the architecture seed, and the constitution now scopes this to the Run 13 step-execution exception. | Keeping ACP for step execution would fail the feature's recovery and deterministic-execution requirements. |
 
 No unresolved clarifications remain.

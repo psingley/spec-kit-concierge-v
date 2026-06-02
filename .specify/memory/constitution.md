@@ -5,11 +5,13 @@
 > `collette-travel` GitHub organization. Five stages map to spec-kit
 > canonical Step Agents (`specify`, `clarify`, `plan`, `tasks`,
 > `analyze`); Review is the Concierge-app surface that hosts evidence
-> review and invokes the spec-kit JIRA extension. The app drives a
-> Bound CLI (GitHub Copilot CLI in v1, any ACP-compliant CLI later)
-> over the Agent Client Protocol and exposes every human action
-> through a localhost HTTP API so external agents can drive the app
-> the same way a human does.
+> review and invokes the spec-kit JIRA extension. The app normally
+> drives a Bound CLI (GitHub Copilot CLI in v1, any ACP-compliant CLI
+> later) over the Agent Client Protocol and exposes every human action
+> through a localhost HTTP API so external agents can drive the app the
+> same way a human does. Run 13 has a constitution-approved exception:
+> step-agent execution may use the bounded Copilot print-mode adapter
+> while deterministic app code remains the only completion authority.
 
 This constitution is law. Roadmap inventory, vendor choices, version
 pins, file names, endpoint lists, and v1 implementation specifics live
@@ -51,9 +53,9 @@ Rules:
   before passing it to the data layer.
 - Filesystem writes go through typed helpers that log the target path
   and calling Step context before writing.
-- ACP wire I/O lives only in the dedicated ACP data-layer module;
-  nothing outside that module spawns or speaks to a coding-agent CLI
-  directly.
+- ACP wire I/O and any constitution-approved step-execution transport
+  exception live only in dedicated main data-layer modules; nothing
+  outside those modules spawns or speaks to a coding-agent CLI directly.
 
 Rationale: A bright IPC boundary keeps the renderer testable without
 Electron, keeps the main process replaceable by a headless driver
@@ -88,10 +90,11 @@ production. The Step Commit history is the only thing that survives a
 crash, an external git operation, or a verifier-agent test run, and
 that survival is the entire correctness story.
 
-### III. ACP-Only Bound CLI (NON-NEGOTIABLE)
+### III. Bound CLI and Step Execution Transport (NON-NEGOTIABLE)
 
-The Concierge App drives coding-agent CLIs through the Agent Client
-Protocol — JSON-RPC 2.0 over stdio — and nothing else.
+The Concierge App drives Bound CLI integrations through the Agent
+Client Protocol — JSON-RPC 2.0 over stdio — unless an explicit
+constitution amendment names a narrower step-execution exception.
 
 Rules:
 - The Bound CLI interface is a single typed `CodingAgent` surface
@@ -120,6 +123,15 @@ Rules:
   the Bound CLI process with the new model selected via launch flag.
 - CLI swap (binding a different ACP-compliant CLI) is forbidden
   mid-Session. Changing the Bound CLI ends the Session.
+- Run 13 Hybrid Manifest Architecture is the only approved exception
+  at this time: passive step-agent execution may use the typed
+  print-mode command contract `copilot -p --agent speckit.<step>
+  --output-format json --session-id <uuid> --log-dir <dir>`. This is
+  not a general non-ACP Bound CLI expansion. The print-mode adapter
+  must still emit typed events, record assistant/session identifiers,
+  capture logs/checksums, and return to deterministic reconciliation
+  before any completion status, trailer, failed marker, or manifest
+  write is authoritative.
 
 Rationale: ACP is the published cross-vendor standard. Building
 against it once gives us substitutability across every ACP-compliant
@@ -262,6 +274,19 @@ Rules:
   active turn, reverts the step's expected artifacts to the last
   Step Commit, resets the step's UI state, and presents a Retry
   affordance. Retry is manual; the app never silently auto-retries.
+- Run 13 Hybrid Manifest exception: after a manifest-backed
+  reconciler records a specific anomaly, deterministic guarded
+  recovery MAY resolve the bounded safe-recovery catalog before
+  doctor escalation when preconditions prove the action is
+  unambiguous. Every mutating recovery action re-reads disk truth,
+  validates ownership and safe restore points, is idempotent by
+  anomaly id, appends an intervention audit record, and returns to
+  reconciliation before any user-visible completion. This exception
+  does not allow silent step re-run, direct completion marking,
+  trailer writes outside hook ownership, or bypassing manual retry
+  semantics. Active-step cancellation requires observed process
+  state; pinned-context restart requires explicit user confirmation
+  or an approved guarded doctor request.
 - The Cancel control is the user-invoked Step Escape Hatch. It
   requires explicit confirmation and on confirm hard-reverts to the
   last Step Commit.
@@ -528,6 +553,11 @@ The Concierge App uses spec-kit on itself.
 Rules:
 - Non-trivial changes go through `spec/NNNN-*` branches with full
   spec-kit artifacts committed before implementation.
+- Dogfood repair lanes may preserve an existing non-spec baseline
+  branch such as `build/<slug>` only when `.specify/feature.json`
+  points at the numbered `specs/NNNN-<slug>` directory, all generated
+  artifacts name the actual active branch, and the analysis/PR record
+  calls out the exception before implementation.
 - Every `/speckit.specify` run MUST be preceded by a grill-with-docs
   planning cadence. The grilling session produces the prompt for the
   specify run; nothing skips it. The grilling artifact is committed
@@ -598,6 +628,9 @@ Test stack (Vitest, React Testing Library, Playwright via
 
 - Branch naming: `spec/NNNN-<slug>` for spec-kit work,
   `chore/<slug>` / `fix/<slug>` otherwise.
+- Branch naming exception: dogfood repair lanes covered by Spec-kit
+  Discipline may remain on the existing `build/<slug>` branch while
+  preserving numbered spec directories and step commits.
 - Every PR MUST:
   - Pass lint, typecheck, tests, coverage gate, and E2E.
   - Include or update a co-located unit test for any logic change.
@@ -672,10 +705,22 @@ Runtime guidance for contributors lives at
 that needs it. PR review comments cite the principle they invoke by
 number.
 
-**Version**: 1.0.4 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-05-27
+**Version**: 1.1.0 | **Ratified**: 2026-05-21 | **Last Amended**: 2026-06-02
 
 ### Amendment history
 
+- **1.1.0** (2026-06-02) - MINOR: added the Run 13 Hybrid Manifest
+  Architecture exception for bounded Copilot print-mode step-agent
+  execution, deterministic guarded recovery for a bounded safe catalog,
+  and the dogfood branch exception for preserving an existing
+  `build/<slug>` branch while `.specify/feature.json` points at a
+  numbered feature directory. The exception does not expand Bound CLI
+  support generally, does not make agent prose authoritative, does not
+  permit silent step re-runs, and does not weaken disk/git/artifact
+  completion gates. Sync impact:
+  `specs/0013-hybrid-manifest-architecture/`, planned ADR-0017,
+  `.github/copilot-instructions.md`, and any final PR must carry the
+  `constitution-change` label for review.
 - **1.0.4** (2026-05-27) — PATCH: relaxed Principle I's filesystem
   write guard for Run 2. The prior workspace-path refusal clause is
   replaced with a typed-helper audit-trail clause requiring the target

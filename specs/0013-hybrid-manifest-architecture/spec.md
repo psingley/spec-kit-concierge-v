@@ -22,7 +22,7 @@ As a user running the six-step Spec Kit pipeline, I need each step to resolve to
 
 **Why this priority**: This is the core value of the feature. Without deterministic step authority, the app continues to regenerate flaky success/failure behavior across runs.
 
-**Independent Test**: Can be tested by running a session through a single step and confirming that the durable manifest, branch history, required step artifacts, and completion indicators all agree before the step is shown as complete.
+**Independent Test**: Can be tested before facilitator integration by replaying a completed-step fixture and confirming that the durable manifest, branch history, required step artifacts, and completion indicators all agree before the step is shown as complete.
 
 **Acceptance Scenarios**:
 
@@ -94,7 +94,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 
 ### Functional Requirements
 
-- **FR-001**: System MUST maintain a durable on-disk session manifest at `<worktree>/.concierge/session-manifest.json` as the single source of truth for pipeline state.
+- **FR-001**: System MUST maintain a durable on-disk session manifest at `<worktree>/.concierge/session-manifest.json` as the authoritative ledger for session attempt state; step completion still requires reconciled manifest, branch trailer, and artifact evidence.
 - **FR-002**: System MUST record each step as one or more attempts using the statuses `pending`, `running`, `pass`, `failed`, `killed`, and `interrupted`.
 - **FR-003**: System MUST preserve for each attempt its supersession link, branch state before and after execution, completion commit evidence, full spawn recipe, captured assistant identifiers, log reference and checksum, terminal result, anomalies, and interventions.
 - **FR-004**: System MUST write manifest changes atomically and durably so a crash cannot leave a partially written manifest as valid state.
@@ -111,7 +111,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **FR-015**: System MUST take a step-owned path snapshot at step start and use it to distinguish intended step changes from unrelated branch changes.
 - **FR-016**: System MUST block completion when dirty-diff gates detect unrelated, ambiguous, or unsafe changes.
 - **FR-017**: System MUST record failed markers with stranded artifact details when a step cannot be safely reconciled.
-- **FR-018**: System MUST provide deterministic recovery for known safe cases before escalating to the doctor.
+- **FR-018**: System MUST provide deterministic guarded recovery for the safe recovery catalog before escalating to the doctor, under the Run 13 constitution exception: unambiguous step-owned artifact relocation, duplicate/out-of-order valid completion adoption, failed-marker refresh with stranded artifacts, unrelated-file revert only when a safe restore point is proven, active-step cancellation from observed process state, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request. Recovery MUST append audit records and return to reconciliation, and MUST NOT silently re-run a step, mark completion directly, or write completion trailers outside hook ownership.
 - **FR-019**: System MUST classify watchdog and transcript anomalies without allowing the classifier to mark completion or mutate authoritative state.
 - **FR-020**: System MUST expose exactly these read-only doctor tools: `readFeatureJson`, `readManifest`, `gitStatusDiff`, `readTrailers`, `readArtifacts`, and `readTranscript`.
 - **FR-021**: System MUST expose exactly these guarded doctor tools: `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep`.
@@ -122,12 +122,12 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **FR-026**: System MUST compute the nudge action's intended branch shape from durable manifest state, selected feature directory, step contracts, completion evidence, and trailers.
 - **FR-027**: System MUST allow the nudge flow to repair unambiguous discrepancies through guarded deterministic actions and require human escalation for ambiguous discrepancies.
 - **FR-028**: System MUST preserve existing resume reconstruction, maximum reached step advancement, navigation-loop prevention, graceful failed-step resume, branch-null routing gates, and Windows-conditional behavior.
-- **FR-029**: System MUST maintain a complete audit trail for anomalies, doctor recommendations, guarded tool invocations, deterministic recoveries, nudge actions, and human escalations.
+- **FR-029**: System MUST maintain and expose, through both renderer bridge and localhost HTTP API, a complete audit trail for anomalies, doctor recommendations, guarded tool invocations, deterministic recoveries, nudge actions, and human escalations.
 - **FR-030**: System MUST preserve this 11-milestone build order for planning and task decomposition: (1) sessionManifestStore with atomic writes and anomaly/intervention records, (2) stepContracts hardening and step-start owned-path snapshots, (3) branch-history commitStep idempotency, (4) sessionReconciler, (5) deterministic dirty-diff gates and failed markers with stranded-artifact detail, (6) guarded relocateArtifact tool, (7) deterministic watchdog and transcript classifier, (8) bounded 12-tool doctor harness, (9) doctor agent instructions, (10) facilitator integration, and (11) nudge button/reconcileBranchToIntendedShape.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Session Manifest**: Durable per-worktree record that represents the authoritative state of a Spec Kit session, including all step attempts, anomalies, interventions, and audit records.
+- **Session Manifest**: Durable per-worktree ledger that represents the authoritative attempt state of a Spec Kit session, including all step attempts, anomalies, interventions, and audit records. Completion authority is the reconciled agreement of manifest, branch trailer evidence, and step-owned artifacts.
 - **Step Attempt**: One execution attempt for a pipeline step, including status, branch evidence, invocation details, captured assistant identifiers, log references with checksum, and terminal result.
 - **Step-Owned Artifact Snapshot**: The set and content identity of files a step is responsible for producing or modifying, used for reconciliation and commit idempotency.
 - **Anomaly**: A deterministic finding that durable evidence does not match expected step state or branch shape.
@@ -140,9 +140,9 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 ### Measurable Outcomes
 
 - **SC-001**: In validation runs covering normal completion, interrupted execution, duplicate completion evidence, misplaced artifacts, unrelated edits, and resume after restart, 100% of passed steps have matching manifest, branch, and artifact evidence.
-- **SC-002**: Resume reconstruction restores the correct current step and terminal status in at least 99% of tested interrupted or restarted sessions without relying on transient UI state.
+- **SC-002**: Resume reconstruction restores the correct current step and terminal status in at least 99% of a 100-case interrupted or restarted session fixture corpus without relying on transient UI state.
 - **SC-003**: Duplicate or out-of-order completion commits are prevented or adopted correctly in 100% of tested branch-history idempotency cases.
-- **SC-004**: Known safe anomalies are resolved automatically in at least 90% of fixture-based recovery scenarios without invoking the doctor.
+- **SC-004**: The safe recovery catalog is resolved automatically in at least 90% of a 20-case fixture corpus covering safe and unsafe recovery classes without invoking the doctor.
 - **SC-005**: In doctor-assisted scenarios, 100% of authoritative state changes are made by deterministic guarded tools and followed by reconciliation before the user sees completion.
 - **SC-006**: The nudge action appears in 0% of healthy or actively recoverable sessions and appears in 100% of terminal-stuck sessions that meet the manual escape-hatch criteria.
 - **SC-007**: Users can inspect a complete anomaly and intervention audit trail for any failed, remediated, or nudged step in under 30 seconds.

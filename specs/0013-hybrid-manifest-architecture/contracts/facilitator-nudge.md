@@ -27,7 +27,7 @@ For each invocation it records:
 5. Stream progress to renderer as derived state.
 6. Parse terminal output and log references.
 7. Run reconciliation before completion commit.
-8. Write or adopt completion commit only if reconciliation permits.
+8. Ask the after-hook-owned completion path to write or adopt a completion commit only if reconciliation permits.
 9. Run reconciliation after completion commit.
 10. Update manifest attempt status.
 11. Escalate to deterministic recovery, doctor, failed marker, or nudge eligibility when needed.
@@ -83,6 +83,7 @@ Rules:
 - Applies guarded deterministic actions only for unambiguous mismatches.
 - Re-reads disk truth before each mutating action.
 - Runs reconciliation after each action.
+- Never writes or adopts completion commits outside the after-hook-owned completion path.
 - Escalates ambiguous or risky differences without destructive changes.
 - Never marks a step complete directly.
 

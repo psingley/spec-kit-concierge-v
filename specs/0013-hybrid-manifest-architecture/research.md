@@ -55,7 +55,7 @@
 
 ## Decision: Failed markers include stranded-artifact detail
 
-**Rationale**: Resume and Review need actionable failure evidence when a step cannot be safely reconciled. Recording stranded artifacts in `.specify/concierge/failed-steps/<step>.json` preserves the mismatch without marking completion and gives deterministic recovery or human escalation a precise input.
+**Rationale**: Resume and Review need actionable failure evidence when a step cannot be safely reconciled. Recording stranded artifacts in `.specify/concierge/failed-steps/<step>.json` preserves the mismatch without marking completion and gives deterministic guarded recovery or human escalation a precise input. Run 13 recovery actions audit, return to reconciliation, and never silently re-run a step or mark completion directly.
 
 **Alternatives considered**:
 - Store only a failure reason: rejected because the user cannot inspect what needs recovery.
@@ -68,8 +68,10 @@
 
 **Alternatives considered**:
 - Ask the doctor to move files directly: rejected because the doctor cannot perform raw file operations.
-- Always fail on misplaced artifacts: rejected because deterministic recovery should handle known safe cases before escalation.
+- Always fail on misplaced artifacts: rejected because deterministic recovery should handle safe recovery catalog cases before escalation.
 - Relocate based on filename alone: rejected because duplicate plausible feature directories are an explicit edge case.
+
+**Safe recovery catalog**: Deterministic recovery includes only unambiguous step-owned artifact relocation, valid completion adoption from matching branch history, failed-marker refresh with stranded artifacts, safe unrelated-file revert from a proven restore point, observed active-step cancellation, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request. Anything outside that catalog escalates without marking completion.
 
 ## Decision: Watchdog/transcript classifier records anomalies without authority
 

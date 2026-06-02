@@ -24,6 +24,7 @@ Durable worktree-local record at `.concierge/session-manifest.json`.
 - `featureDir` must match `.specify/feature.json` for the active worktree before authoritative updates.
 - Manifest writes are atomic and durable; partial writes are invalid.
 - Renderer state never writes this file directly.
+- Completion display is derived only after reconciliation agrees across manifest attempt state, branch trailer evidence, and step-owned artifact evidence.
 
 ## Step Attempt
 
@@ -283,3 +284,19 @@ Pure result emitted by `sessionReconciler`.
 **Validation rules**
 - `pass` requires agreement between manifest, branch evidence, and artifacts.
 - `canNudge` is true only when terminal-stuck and no successful automatic remediation has happened.
+
+## Renderer Status Projection
+
+Derived view exposed to renderer listeners and components.
+
+**Fields**
+- `step`: canonical step name
+- `rendererState`: `not_available | pending | complete`
+- `sourceStatus`: `pending | running | pass | failed | killed | interrupted | terminal-stuck`
+- `canNudge`: boolean
+- `auditSummary`: bounded audit metadata
+
+**Validation rules**
+- `pass` maps to `complete` only after reconciliation confirms manifest, trailer, and artifact agreement.
+- `failed`, `killed`, `interrupted`, and `terminal-stuck` map to `not_available` plus visible failure or interruption detail.
+- Renderer cache never writes authoritative manifest or completion state.

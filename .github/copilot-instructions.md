@@ -84,4 +84,17 @@ Run 6 conventions:
 - Run 6 first implementation test is `e2e/specify-vertical.spec.ts`; continue vertical tracer bullets one RED test then one minimal GREEN implementation.
 Run 9 plan: `specs/0009-review-evidence/plan.md`
 Run 13 plan: `specs/0013-hybrid-manifest-architecture/plan.md`
+Run 13 conventions:
+- Run 13 uses a constitution-approved exception to replace ACP step-agent execution with the typed Copilot print-mode adapter: `copilot -p --agent speckit.<step> --output-format json --session-id <uuid> --log-dir <dir>`.
+- This exception is scoped to step execution only. Bound CLI integrations remain ACP by default, and deterministic app code remains the only writer of manifest state, completion trailers, failed markers, guarded mutations, and completion status.
+- This dogfood lane may remain on `build/manifest-architecture-dogfood` while `.specify/feature.json` points at `specs/0013-hybrid-manifest-architecture`; do not switch branches during implementation.
+- Manifest is the durable attempt-state ledger. Step completion is displayed only after reconciliation agrees across manifest attempt state, branch trailer evidence, and step-owned artifacts.
+- The print-mode child-process adapter lives in a main data-layer module under `src/main/data-layer/agents/`; IPC handlers validate and orchestrate but do not spawn coding-agent binaries directly.
+- Manifest read, reconcile, audit trail, doctor status, and nudge must be available through both renderer bridge and localhost HTTP API, sharing the same data-layer path and factories.
+- Deterministic guarded recovery runs before doctor escalation under the Run 13 constitution exception and covers the safe recovery catalog: relocate step-owned artifact, adopt valid completion, refresh failed marker, revert proven unrelated file, cancel observed active step, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request. It must audit, return to reconciliation, and never silently re-run a step, mark completion directly, or write completion trailers outside hook ownership.
+- The doctor is a bounded anomaly intermediary with exactly six read-only tools and six guarded mutating tools. Every mutating tool re-reads disk truth, validates preconditions, appends audit records, and returns to reconciliation.
+- Renderer session and step state are projections of reconciliation and audit responses. Renderer state never marks completion directly.
+- Nudge appears only for terminal-stuck sessions after deterministic recovery and doctor paths fail or are unavailable.
+- Failed, remediated, and nudged sessions must expose bounded audit inspection without raw transcripts, secrets, or unrelated file contents.
+- Run 13 verification includes visible RED output before each paired GREEN task, `npm run test:coverage`, and the existing typecheck, lint, unit, and E2E gates.
 <!-- SPECKIT END -->

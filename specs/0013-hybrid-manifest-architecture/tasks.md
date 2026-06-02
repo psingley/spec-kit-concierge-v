@@ -2,7 +2,7 @@
 
 **Input**: `specs/0013-hybrid-manifest-architecture/plan.md`, `specs/0013-hybrid-manifest-architecture/spec.md`, `specs/0013-hybrid-manifest-architecture/research.md`, `specs/0013-hybrid-manifest-architecture/data-model.md`, `specs/0013-hybrid-manifest-architecture/contracts/`, and `specs/0013-hybrid-manifest-architecture/quickstart.md`.
 
-**Tests**: Required. The feature spec includes mandatory user-scenario testing and measurable outcomes; implementation must use vertical TDD tracer bullets: one RED test task, one minimal GREEN implementation task, then repeat. Tests exercise public interfaces and may mock only system boundaries: filesystem, git/process commands, Electron IPC, preload bridge, child process, time, and logger creation through `createMainLogger`.
+**Tests**: Required. The feature spec includes mandatory user-scenario testing and measurable outcomes; implementation must use vertical TDD tracer bullets: one RED test task, one minimal GREEN implementation task, then repeat. Each RED task records visible failing output before its paired GREEN task begins; the active dogfood directive supplies approval to continue after observed RED output unless a real branch decision or unsafe tradeoff appears. Tests exercise public interfaces and may mock only system boundaries: filesystem, git/process commands, Electron IPC, localhost HTTP, preload bridge, child process, time, and logger creation through `createMainLogger`.
 
 **Scope guard**: Implement only Run 13 Hybrid Manifest Architecture. Do not add runtime dependencies. Do not make the doctor, renderer, transcript classifier, or agent prose authoritative. Deterministic app code remains the only writer of `.concierge/session-manifest.json`, step commits/trailers, failed markers, guarded mutations, and completion status.
 
@@ -20,11 +20,12 @@
 
 **Purpose**: Lock architecture exceptions, fixtures, and test surfaces before source work begins.
 
-- [ ] T001 Create ADR for the FR-009/FR-010 print-mode exception and ACP step-execution retirement in `docs/adr/0017-hybrid-manifest-print-mode.md`
-- [ ] T002 [P] Create session manifest v1 fixture set for valid, incomplete, invalid-shape, and unknown-schema manifests in `tests/fixtures/hybrid-manifest/session-manifest.v1.json`
+- [ ] T001 Create ADR, early project guidance, and workflow validation updates for the Run 13 constitution-approved print-mode exception, constitution amendment metadata, dogfood branch exception, TDD RED-output evidence rule, and ACP step-execution retirement in `docs/adr/0017-hybrid-manifest-print-mode.md`, `.github/copilot-instructions.md`, `.specify/scripts/bash/check-prerequisites.sh`, and `.specify/scripts/bash/common.sh`
+- [ ] T002 [P] Create session manifest v1 fixture set for valid, incomplete, invalid-shape, unknown-schema, and max-size performance manifests in `tests/fixtures/hybrid-manifest/session-manifest.v1.json` and `tests/fixtures/hybrid-manifest/session-manifest.max.json`; max fixture includes six steps, three attempts per step, 30 anomalies, 30 interventions, 12 doctor invocations, and 60 artifact snapshot entries
 - [ ] T003 [P] Create branch trailer history fixture set covering duplicate, out-of-order, and matching artifact-snapshot trailers in `tests/fixtures/hybrid-manifest/branch-trailers.txt`
-- [ ] T004 [P] Create transcript and print-mode terminal-event fixture set covering success, failure, missing JSON, invalid JSON, killed, interrupted, and watchdog-silence cases in `tests/fixtures/hybrid-manifest/terminal-events.jsonl`
-- [ ] T005 [P] Create nudge and doctor scenario fixture set covering misplaced artifacts, unrelated edits, exhausted doctor attempts, and terminal-stuck sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`
+- [ ] T004 [P] Create transcript and print-mode terminal-event fixture set covering success, failure, missing JSON, invalid JSON, killed, interrupted, watchdog-silence, and parseable assistant identity events with `assistantSessionId`, `messageId`, and `turnId` in `tests/fixtures/hybrid-manifest/terminal-events.jsonl`
+- [ ] T005 [P] Create deterministic recovery catalog fixture set covering exactly 20 safe and unsafe classes from `contracts/recovery-catalog.md`, doctor exhaustion, nudge eligibility, and terminal-stuck sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`; the fixture denominator must support the SC-004 90% automatic-safe-recovery assertion without invoking the doctor
+- [ ] T005a [P] Create 100-case interrupted and restarted resume reconstruction fixture corpus with expected current step and terminal status outcomes in `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`; the fixture denominator must support the SC-002 99% reconstruction assertion without transient renderer state
 
 ---
 
@@ -36,8 +37,8 @@
 
 - [ ] T006 Create canonical Run 13 step, status, anomaly, intervention, doctor-tool, and nudge result types in `src/main/domain/manifest/types.ts`
 - [ ] T007 Create strict factory helper primitives for unknown-key rejection, non-empty strings, ISO timestamps, canonical steps, and typed named errors in `src/main/domain/manifest/factoryUtils.ts`
-- [ ] T008 [P] Create renderer-facing manifest API shared types without Electron or Node imports in `src/renderer/api/sessionManifest.types.ts`
-- [ ] T009 [P] Create main IPC channel constants for manifest read, reconcile, doctor status, and nudge requests in `src/main/ipc/sessionManifest.channels.ts`
+- [ ] T008 [P] Create renderer-facing manifest, renderer-status projection, audit-trail, and localhost HTTP API shared types without Electron or Node imports in `src/renderer/api/sessionManifest.types.ts`
+- [ ] T009 [P] Create main IPC channel constants and localhost HTTP route constants for manifest read, reconcile, audit trail, doctor status, and nudge requests in `src/main/ipc/sessionManifest.channels.ts` and `src/main/http/sessionManifest.routes.ts`
 - [ ] T010 [P] Export Run 13 feature flags and no-runtime-dependency guidance for tests in `src/main/domain/manifest/run13Policy.ts`
 
 **Checkpoint**: Foundation ready. Begin FR-030 milestone 1.
@@ -48,7 +49,7 @@
 
 **Goal**: Passed steps are shown only when manifest attempts, branch completion evidence, required artifacts, and dirty-diff gates agree.
 
-**Independent Test**: Run a single step through completion and confirm `.concierge/session-manifest.json`, branch `Concierge-Step:` trailer history, step-owned artifact snapshots, failed markers, and UI-derived status all resolve to the same terminal outcome.
+**Independent Test**: Replay a completed-step fixture before facilitator integration and confirm `.concierge/session-manifest.json`, branch `Concierge-Step:` trailer history, step-owned artifact snapshots, failed markers, and UI-derived status all resolve to the same terminal outcome.
 
 ### Tests for User Story 1
 
@@ -58,8 +59,8 @@
 - [ ] T014 [US1] Implement append-only attempt reducers, anomaly reducers, intervention reducers, and audit redaction in `src/main/domain/manifest/sessionManifestReducer.ts`
 - [ ] T015 [US1] Add RED atomic read/write tests for temp-file write, file fsync, rename, directory fsync when supported, short-write rejection, and visible parse errors in `src/main/data-layer/manifest/sessionManifestStore.test.ts`
 - [ ] T016 [US1] Implement `sessionManifestStore` atomic read/write, create/load, append attempt, append anomaly, append intervention, and audit APIs in `src/main/data-layer/manifest/sessionManifestStore.ts`
-- [ ] T017 [US1] Add RED manifest logging tests for `session-manifest-read`, `session-manifest-write`, `manifest-anomaly-recorded`, and `manifest-intervention-recorded` events in `src/main/data-layer/manifest/sessionManifestStore.logging.test.ts`
-- [ ] T018 [US1] Implement structured manifest logging through `createMainLogger` in `src/main/data-layer/manifest/sessionManifestStore.ts`
+- [ ] T017 [US1] Add RED structured logging tests for milestone-1 manifest-store events only: `session-manifest-read`, `session-manifest-write`, `manifest-anomaly-recorded`, and `manifest-intervention-recorded` in `src/main/data-layer/manifest/sessionManifestStore.logging.test.ts` and `src/main/logging/hybridManifest.logging.test.ts`
+- [ ] T018 [US1] Implement milestone-1 structured manifest-store logging through `createMainLogger` in `src/main/data-layer/manifest/sessionManifestStore.ts` and `src/main/logging/hybridManifest.logging.ts`
 
 ### Implementation for User Story 1
 
@@ -77,7 +78,7 @@
 - [ ] T030 [US1] Implement pure `sessionReconciler` completion, pending, running, failed, killed, interrupted, and terminal-stuck decisions in `src/main/domain/reconciliation/sessionReconciler.ts`
 - [ ] T031 [US1] Add RED pre-commit and post-commit reconciliation integration tests around after-hook commit writes in `src/main/hooks/hookHelpers.test.ts`
 - [ ] T032 [US1] Route after-hook completion through pre-commit and post-commit reconciliation in `src/main/hooks/hookHelpers.ts`
-- [ ] T033 [US1] Add RED resume reconstruction tests proving branch sessions derive progress from manifest, trailers, artifacts, and failed markers instead of renderer memory in `src/main/data-layer/git/branchSessions.test.ts`
+- [ ] T033 [US1] Add RED resume reconstruction tests proving branch sessions derive progress from manifest, trailers, artifacts, and failed markers instead of renderer memory and assert the 100-case SC-002 fixture corpus reaches at least 99% correct current-step plus terminal-status reconstruction in `src/main/data-layer/git/branchSessions.test.ts`
 - [ ] T034 [US1] Integrate manifest-backed reconciliation into branch session reconstruction in `src/main/data-layer/git/branchSessions.ts`
 
 **Checkpoint**: MVP complete when User Story 1 independently proves no step can pass unless manifest, branch, artifact, and failure evidence agree.
@@ -100,21 +101,21 @@
 - [ ] T040 [US2] Block passive step completion on unsafe dirty-diff classifications and write failed markers with stranded artifacts in `src/main/ipc/passiveStepIpc.ts`
 - [ ] T041 [US2] Add RED hook completion-blocking tests for dirty-diff gates and failed-marker persistence in `src/main/hooks/hookHelpers.test.ts`
 - [ ] T042 [US2] Apply dirty-diff gates and failed-marker writes to after-hook completion in `src/main/hooks/hookHelpers.ts`
-- [ ] T043 [US2] Add RED guarded relocation request factory tests for anomaly id, source ownership, destination ownership, ambiguity rejection, extra-key rejection, and idempotency key validation in `src/main/domain/recovery/relocateArtifact.factory.test.ts`
-- [ ] T044 [US2] Implement guarded relocation request and result factories in `src/main/domain/recovery/relocateArtifact.factory.ts`
-- [ ] T045 [US2] Add RED `relocateArtifact` data-layer tests for re-reading disk truth, rejecting ambiguous destinations, moving only step-owned files, auditing before return, and idempotent no-op by anomaly id in `src/main/data-layer/recovery/relocateArtifact.test.ts`
-- [ ] T046 [US2] Implement guarded `relocateArtifact` filesystem mutation and audit append flow in `src/main/data-layer/recovery/relocateArtifact.ts`
+- [ ] T043 [US2] Add RED safe recovery catalog and guarded recovery request factory tests for all six safe classes, anomaly id, ownership, ambiguity rejection, extra-key rejection, idempotency key validation, and doctor-escalation boundaries in `src/main/domain/recovery/recoveryCatalog.factory.test.ts`
+- [ ] T044 [US2] Implement safe recovery catalog request and result factories for relocation, valid completion adoption, failed-marker refresh, proven unrelated-file revert, observed active-step cancel, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request in `src/main/domain/recovery/recoveryCatalog.factory.ts`
+- [ ] T045 [US2] Add RED deterministic recovery data-layer tests for all six safe classes, including re-reading disk truth, rejecting ambiguous destinations, moving only step-owned files, adopting matching completion commits, refreshing failed markers, reverting only proven unrelated files, canceling only observed active processes, requiring explicit user confirmation or an approved guarded doctor request for pinned-context restart, structured recovery-action logging, auditing before return, no silent step re-run, no direct completion marking, and idempotent no-op by anomaly id in `src/main/data-layer/recovery/deterministicRecovery.test.ts`
+- [ ] T046 [US2] Implement deterministic recovery orchestrator, guarded actions, and recovery-action structured logging for the safe recovery catalog in `src/main/data-layer/recovery/deterministicRecovery.ts`
 - [ ] T047 [US2] Add RED watchdog and transcript classifier tests for silence, missing terminal output, invalid JSON output, unexpected child exit, killed, interrupted, and transcript irregularity anomalies in `src/main/domain/reconciliation/transcriptClassifier.test.ts`
 - [ ] T048 [US2] Implement authority-free watchdog and transcript anomaly classifier in `src/main/domain/reconciliation/transcriptClassifier.ts`
-- [ ] T049 [US2] Add RED passive step classifier integration tests proving classifier anomalies cannot mark completion, write trailers, cancel steps, or invoke doctor tools directly in `src/main/ipc/passiveStepIpc.test.ts`
-- [ ] T050 [US2] Record classifier anomalies through manifest append APIs without completion authority in `src/main/ipc/passiveStepIpc.ts`
+- [ ] T049 [US2] Add RED passive step classifier integration tests proving classifier anomalies cannot mark completion, write trailers, cancel steps, invoke doctor tools directly, or skip classifier-result structured logging in `src/main/ipc/passiveStepIpc.test.ts`
+- [ ] T050 [US2] Record classifier anomalies and classifier-result structured logs through manifest append APIs without completion authority in `src/main/ipc/passiveStepIpc.ts`
 
 ### Implementation for User Story 2
 
 - [ ] T051 [US2] Add RED regression tests preserving graceful failed-step resume with stranded artifacts in `src/main/data-layer/git/branchSessions.test.ts`
 - [ ] T052 [US2] Preserve graceful failed-step resume while surfacing stranded artifact detail in `src/main/data-layer/git/branchSessions.ts`
 
-**Checkpoint**: User Story 2 works when deterministic recovery fixes only known safe cases and all unsafe or ambiguous cases produce durable failed markers and unresolved anomalies.
+**Checkpoint**: User Story 2 works when deterministic recovery fixes only safe recovery catalog cases and all unsafe or ambiguous cases produce durable failed markers and unresolved anomalies.
 
 ---
 
@@ -130,11 +131,11 @@
 - [ ] T054 [US3] Implement doctor tool catalog factories and rejection reasons in `src/main/domain/doctor/doctorTools.factory.ts`
 - [ ] T055 [US3] Add RED read-only doctor tool tests for bounded outputs from `readFeatureJson`, `readManifest`, `gitStatusDiff`, `readTrailers`, `readArtifacts`, and `readTranscript` in `src/main/data-layer/doctor/readOnlyTools.test.ts`
 - [ ] T056 [US3] Implement read-only doctor tools without exposing secrets or raw unrelated file contents in `src/main/data-layer/doctor/readOnlyTools.ts`
-- [ ] T057 [US3] Add RED guarded doctor tool tests for re-read disk truth, precondition validation, anomaly-id idempotency, audit append, and reconciliation return for all six guarded tools in `src/main/data-layer/doctor/guardedTools.test.ts`
-- [ ] T058 [US3] Implement guarded doctor tools for `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep` in `src/main/data-layer/doctor/guardedTools.ts`
+- [ ] T057 [US3] Add RED guarded doctor tool tests for re-read disk truth, precondition validation, anomaly-id idempotency, doctor-invocation structured logging, audit append, reconciliation return, and delegation to deterministic guarded actions for all six guarded tools in `src/main/data-layer/doctor/guardedTools.test.ts`
+- [ ] T058 [US3] Implement guarded doctor tools and doctor-invocation structured logging for `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep` by routing through deterministic guarded recovery actions in `src/main/data-layer/doctor/guardedTools.ts`
 - [ ] T059 [US3] Add RED doctor budget tests for two attempts per step, unsafe request rejection, budget exhaustion anomaly recording, and escalation to terminal-stuck state in `src/main/data-layer/doctor/doctorHarness.test.ts`
 - [ ] T060 [US3] Implement bounded doctor harness, per-step budgets, tool invocation records, and escalation results in `src/main/data-layer/doctor/doctorHarness.ts`
-- [ ] T061 [US3] Add RED deterministic-core-without-doctor tests proving reconciliation, failed markers, and known-safe recovery still work when doctor is disabled in `src/main/domain/reconciliation/sessionReconciler.test.ts`
+- [ ] T061 [US3] Add RED deterministic-core-without-doctor tests proving reconciliation, failed markers, and each safe recovery catalog class still work when doctor is disabled in `src/main/domain/reconciliation/sessionReconciler.test.ts`
 - [ ] T062 [US3] Keep doctor optional and off the happy path through reconciler and recovery options in `src/main/domain/reconciliation/sessionReconciler.ts`
 
 ### Implementation for User Story 3
@@ -154,28 +155,28 @@
 
 ### Tests for User Story 4
 
-- [ ] T065 [US4] Add RED print-mode step adapter tests for exact `copilot -p --agent speckit.<step> --output-format json --session-id <uuid> --log-dir <dir>` invocation, assistant identity capture, log checksum capture, and ACP transport non-use in `src/main/ipc/copilotPassiveAgent.test.ts`
-- [ ] T066 [US4] Replace passive step execution transport with the unified print-mode adapter in `src/main/ipc/copilotPassiveAgent.ts`
-- [ ] T067 [US4] Add RED facilitator integration tests for create/load manifest, pending attempt append, branch snapshot, owned-path snapshot, print-mode execution, terminal parsing, pre/post reconciliation, doctor escalation, and failed-marker routing in `src/main/ipc/passiveStepIpc.test.ts`
-- [ ] T068 [US4] Integrate facilitator step orchestration with manifest store, print-mode adapter, reconciliation, doctor harness, and failed-marker routing in `src/main/ipc/passiveStepIpc.ts`
-- [ ] T069 [US4] Add RED main IPC trust-boundary factory tests for manifest read, reconcile, doctor status, nudge request, and nudge result seven-case floors in `src/main/ipc/sessionManifest.factory.spec.ts`
-- [ ] T070 [US4] Implement main IPC trust-boundary factories for manifest and nudge capabilities in `src/main/ipc/sessionManifest.factory.ts`
-- [ ] T071 [US4] Add RED main IPC handler tests for `sessionManifest:read`, `sessionManifest:reconcile`, `sessionManifest:doctorStatus`, and `sessionManifest:nudge` in `src/main/ipc/sessionManifest.test.ts`
-- [ ] T072 [US4] Register manifest, reconcile, doctor-status, and nudge IPC handlers in `src/main/ipc/sessionManifest.ts`
-- [ ] T073 [US4] Add RED preload bridge tests proving manifest and nudge channels validate payloads and expose no Node or Electron APIs to renderer callers in `src/preload/index.test.ts`
-- [ ] T074 [US4] Expose typed manifest and nudge bridge entries in `src/preload/index.ts`
-- [ ] T075 [US4] Add RED renderer API factory and endpoint tests for manifest read, reconcile, doctor status, nudge mutation, cache invalidation, and bridge-exit seven-case floors in `src/renderer/api/sessionManifest.endpoint.test.ts`
-- [ ] T076 [US4] Implement renderer manifest endpoint, factories, and root API registration in `src/renderer/api/sessionManifest.endpoint.ts`
-- [ ] T077 [US4] Add RED listener tests proving reconciled manifest state updates session and steps slices without making renderer state authoritative in `src/renderer/listeners/sessionLifecycle.listener.test.ts`
-- [ ] T078 [US4] Wire reconciled manifest state into renderer listener middleware as derived state only in `src/renderer/listeners/sessionLifecycle.listener.ts`
+- [ ] T065 [US4] Add RED print-mode step data-layer adapter tests for exact `copilot -p --agent speckit.<step> --output-format json --session-id <uuid> --log-dir <dir>` invocation, `assistantSessionId`, `messageId`, and `turnId` capture from parseable step output events, log checksum capture, Clarify resume/re-ask reuse of the original assistant session identity, and ACP transport non-use in `src/main/data-layer/agents/copilotPrintModeAdapter.test.ts`
+- [ ] T066 [US4] Implement unified print-mode data-layer adapter, capture `assistantSessionId`, `messageId`, and `turnId` from parseable step output events, and preserve original Clarify assistant session identity for resume/re-ask attempts in `src/main/data-layer/agents/copilotPrintModeAdapter.ts`
+- [ ] T067 [US4] Add RED facilitator integration tests for create/load manifest, pending attempt append, branch snapshot, owned-path snapshot, print-mode adapter execution, terminal parsing with `assistantSessionId`, `messageId`, and `turnId`, pre/post reconciliation, facilitator/reconciliation structured logging, doctor escalation, failed-marker routing, and after-hook-owned completion commit adoption in `src/main/ipc/passiveStepIpc.test.ts`
+- [ ] T068 [US4] Integrate facilitator step orchestration with manifest store, data-layer print-mode adapter, reconciliation, facilitator/reconciliation structured logging, doctor harness, failed-marker routing, and after-hook-owned completion commit adoption in `src/main/ipc/passiveStepIpc.ts`
+- [ ] T069 [US4] Add RED main IPC and HTTP trust-boundary factory tests for manifest read, reconcile, audit trail, and doctor status seven-case floors in `src/main/ipc/sessionManifest.factory.spec.ts` and `src/main/http/sessionManifest.factory.spec.ts`
+- [ ] T070 [US4] Implement main IPC and HTTP trust-boundary factories for manifest read, reconcile, audit trail, and doctor status capabilities in `src/main/ipc/sessionManifest.factory.ts` and `src/main/http/sessionManifest.factory.ts`
+- [ ] T071 [US4] Add RED main IPC and localhost HTTP handler tests for `sessionManifest:read`, `sessionManifest:reconcile`, `sessionManifest:doctorStatus`, `sessionManifest:auditTrail`, manifest HTTP handler structured logging, `GET /v1/session-manifest`, `POST /v1/session-manifest/reconcile`, `GET /v1/session-manifest/audit`, and `GET /v1/session-manifest/doctor-status` in `src/main/ipc/sessionManifest.test.ts` and `src/main/http/sessionManifest.test.ts`
+- [ ] T072 [US4] Register manifest, reconcile, doctor-status, and audit-trail IPC handlers plus localhost HTTP routes through the same data-layer path in `src/main/ipc/sessionManifest.ts` and `src/main/http/sessionManifest.ts`
+- [ ] T073 [US4] Add RED preload bridge tests proving manifest, reconcile, doctor-status, and audit-trail channels validate payloads and expose no Node or Electron APIs to renderer callers in `src/preload/index.test.ts`
+- [ ] T074 [US4] Expose typed manifest, reconcile, doctor-status, and audit-trail bridge entries in `src/preload/index.ts`
+- [ ] T075 [US4] Add RED renderer API factory and endpoint tests for manifest read, reconcile, doctor status, audit-trail inspection within the SC-007 target, cache invalidation, HTTP parity state updates, and bridge-exit seven-case floors in `src/renderer/api/sessionManifest.endpoint.test.ts`
+- [ ] T076 [US4] Implement renderer manifest, audit-trail, factories, and root API registration without nudge mutation surfaces in `src/renderer/api/sessionManifest.endpoint.ts`
+- [ ] T077 [US4] Add RED listener tests proving reconciled manifest state maps to renderer status projection, updates audit summaries, and updates session and steps slices without making renderer state authoritative in `src/renderer/listeners/sessionLifecycle.listener.test.ts`
+- [ ] T078 [US4] Wire reconciled manifest state, renderer status projection, and audit summaries into renderer listener middleware as derived state only in `src/renderer/listeners/sessionLifecycle.listener.ts`
 - [ ] T079 [US4] Add RED `NudgeButton` accessibility and visibility tests for `canNudge`, affected step name, disabled duplicate clicks, status announcement, alert escalation copy, and hidden healthy/running/auto-recoverable states in `src/renderer/components/NudgeButton.test.tsx`
-- [ ] T080 [US4] Implement props-only `NudgeButton` and smart container wiring in `src/renderer/components/NudgeButton.tsx`
+- [ ] T080 [US4] Implement props-only `NudgeButton` with no store, RTK Query, or workflow branching in `src/renderer/components/NudgeButton.tsx`
 - [ ] T081 [US4] Add RED `reconcileBranchToIntendedShape` tests for intended shape computation, unambiguous repair, no-op, rejected stale precondition, ambiguous escalation, and no direct completion marking in `src/main/domain/reconciliation/reconcileBranchToIntendedShape.test.ts`
 - [ ] T082 [US4] Implement `reconcileBranchToIntendedShape` pure planner and guarded action orchestration in `src/main/domain/reconciliation/reconcileBranchToIntendedShape.ts`
-- [ ] T083 [US4] Add RED nudge data-layer tests for re-reading disk truth before each mutation, intervention audit records, reconciliation after each action, and branch-change rejection in `src/main/data-layer/recovery/nudge.test.ts`
-- [ ] T084 [US4] Implement nudge execution through guarded deterministic actions in `src/main/data-layer/recovery/nudge.ts`
-- [ ] T085 [US4] Add RED E2E nudge flow covering terminal-stuck visibility, unambiguous repair, ambiguous escalation, and healthy-session hidden state in `e2e/hybrid-manifest-nudge.spec.ts`
-- [ ] T086 [US4] Wire nudge UI into passive and review step containers in `src/renderer/components/PassiveStepContainer.tsx` and `src/renderer/components/ReviewStepContainer.tsx`
+- [ ] T083 [US4] Add RED nudge data-layer, IPC, HTTP, preload bridge, and renderer API tests for nudge request/result factory floors, `sessionManifest:nudge`, `POST /v1/session-manifest/nudge`, nudge mutation cache invalidation, re-reading disk truth before each mutation, nudge-action structured logging, intervention audit records, reconciliation after each action, and branch-change rejection in `src/main/data-layer/recovery/nudge.test.ts`, `src/main/ipc/sessionManifest.nudge.test.ts`, `src/main/http/sessionManifest.nudge.test.ts`, `src/preload/index.test.ts`, and `src/renderer/api/sessionManifest.endpoint.test.ts`
+- [ ] T084 [US4] Implement nudge execution, nudge IPC/HTTP/preload/renderer surfaces, and nudge-action structured logging through guarded deterministic actions in `src/main/data-layer/recovery/nudge.ts`, `src/main/ipc/sessionManifest.ts`, `src/main/http/sessionManifest.ts`, `src/preload/index.ts`, and `src/renderer/api/sessionManifest.endpoint.ts`
+- [ ] T085 [US4] Add RED E2E nudge and audit flow covering terminal-stuck visibility, unambiguous repair, ambiguous escalation, healthy-session hidden state, external-agent HTTP nudge parity, GUI mirroring, and failed/remediated/nudged audit inspection within the SC-007 target in `e2e/hybrid-manifest-nudge.spec.ts`
+- [ ] T086 [US4] Wire smart nudge and audit-trail UI into passive and review step containers in `src/renderer/components/PassiveStepContainer.tsx` and `src/renderer/components/ReviewStepContainer.tsx`
 
 ### Implementation for User Story 4
 
@@ -191,8 +192,8 @@
 **Purpose**: Verify full feature behavior and update directly related documentation after all desired stories are complete.
 
 - [ ] T089 [P] Update Run 13 implementation notes and manual evidence checklist in `specs/0013-hybrid-manifest-architecture/quickstart.md`
-- [ ] T090 [P] Update project guidance for manifest authority, print-mode step execution, doctor boundedness, and nudge constraints in `.github/copilot-instructions.md`
-- [ ] T091 Run targeted typecheck, lint, unit, and E2E verification using scripts in `package.json`
+- [ ] T090 [P] Reconfirm project guidance for manifest authority, print-mode step execution, doctor boundedness, audit inspection, and nudge constraints in `.github/copilot-instructions.md`
+- [ ] T091 Add and run RED performance budget coverage for manifest read plus reconciliation over `tests/fixtures/hybrid-manifest/session-manifest.max.json`, SC-002 99% resume reconstruction threshold coverage over `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`, and SC-004 90% automatic recovery threshold coverage over `tests/fixtures/hybrid-manifest/recovery-scenarios.json`, then run targeted typecheck, lint, unit, coverage, and E2E verification using scripts in `package.json`, including `npm run test:coverage`
 - [ ] T092 Confirm task and implementation coverage for FR-001 through FR-030 in `specs/0013-hybrid-manifest-architecture/spec.md`
 
 ---
@@ -223,7 +224,7 @@
 3. Branch-history `commitStep` idempotency: T025-T028.
 4. `sessionReconciler`: T029-T034.
 5. Dirty-diff gates plus failed markers: T035-T042.
-6. Guarded `relocateArtifact`: T043-T046.
+6. Guarded deterministic recovery catalog: T043-T046.
 7. Watchdog/transcript classifier: T047-T052.
 8. Bounded 12-tool doctor harness: T053-T062.
 9. Doctor agent instructions: T063-T064.
@@ -285,7 +286,7 @@ After T078, T079 and T081 can be drafted in parallel because renderer nudge UI t
 
 ### Validation Gates
 
-- Run focused tests after each RED/GREEN pair.
-- Run `npm run typecheck`, `npm run lint`, and `npm run test` after each user story phase.
+- Run focused tests after each RED/GREEN pair and record the visible RED failure output before starting the paired GREEN task.
+- Run `npm run typecheck`, `npm run lint`, `npm run test`, and `npm run test:coverage` after each user story phase.
 - Run `npm run e2e` after US4 and before marking the feature complete.
 - Confirm no runtime dependency additions in `package.json`.
