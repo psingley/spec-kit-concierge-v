@@ -60,6 +60,11 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     reviewEvidence: {
       read: vi.fn()
     },
+    jiraSubmission: {
+      dryRun: vi.fn(),
+      submit: vi.fn(),
+      subscribeSubmit: vi.fn(() => vi.fn())
+    },
     sessionManifest: {
       read: vi.fn(),
       reconcile: vi.fn(),

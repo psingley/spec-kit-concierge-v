@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createProductStore } from '../store';
-import { selectUiActiveView, selectUiSidebarOpen, selectUiState, selectUiTheme, selectUiToasts } from './ui.selectors';
-import uiReducer, { toastDismissed, toastShown } from './ui';
+import {
+  selectUiActiveView,
+  selectUiShowJiraSubmission,
+  selectUiSidebarOpen,
+  selectUiState,
+  selectUiTheme,
+  selectUiToasts
+} from './ui.selectors';
+import uiReducer, { modalClosed, modalOpened, toastDismissed, toastShown } from './ui';
 
 describe('ui slice', () => {
   it('initializes to the Run 4 locked state', () => {
@@ -13,6 +20,7 @@ describe('ui slice', () => {
       showCustomize: false,
       showAbout: false,
       showRequest: false,
+      showJiraSubmission: false,
       openMenu: null,
       toasts: []
     });
@@ -25,7 +33,16 @@ describe('ui slice', () => {
     expect(selectUiTheme(state)).toBe('system');
     expect(selectUiSidebarOpen(state)).toBe(true);
     expect(selectUiActiveView(state)).toBeNull();
+    expect(selectUiShowJiraSubmission(state)).toBe(false);
     expect(selectUiToasts(state)).toEqual([]);
+  });
+
+  it('opens and closes the JIRA submission modal flag', () => {
+    const opened = uiReducer(undefined, modalOpened('showJiraSubmission'));
+    expect(opened.showJiraSubmission).toBe(true);
+
+    const closed = uiReducer(opened, modalClosed('showJiraSubmission'));
+    expect(closed.showJiraSubmission).toBe(false);
   });
 
   it('adds generated toast entries and dismisses them by id', () => {

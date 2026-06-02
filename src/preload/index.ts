@@ -80,6 +80,12 @@ contextBridge.exposeInMainWorld('concierge', {
   reviewEvidence: {
     read: (request: unknown) => ipcRenderer.invoke('review:evidence', request) as Promise<unknown>
   },
+  jiraSubmission: {
+    dryRun: (request: unknown) => ipcRenderer.invoke('jira:dryRun', request) as Promise<unknown>,
+    submit: (request: unknown) => ipcRenderer.invoke('jira:submit', request) as Promise<unknown>,
+    subscribeSubmit: (subscriptionId: string, callback: (event: unknown) => void): (() => void) =>
+      subscribeStepStream('jira:submit', subscriptionId, callback)
+  },
   sessionManifest: {
     read: (request: unknown) => ipcRenderer.invoke('sessionManifest:read', request) as Promise<unknown>,
     reconcile: (request: unknown) => ipcRenderer.invoke('sessionManifest:reconcile', request) as Promise<unknown>,

@@ -14,6 +14,7 @@ export type UiState = {
   showCustomize: boolean;
   showAbout: boolean;
   showRequest: boolean;
+  showJiraSubmission: boolean;
   openMenu: string | null;
   toasts: ToastEntry[];
 };
@@ -26,6 +27,7 @@ export const uiInitialState: UiState = {
   showCustomize: false,
   showAbout: false,
   showRequest: false,
+  showJiraSubmission: false,
   openMenu: null,
   toasts: []
 };
@@ -40,10 +42,10 @@ const uiSlice = createSlice({
     activityVisibilitySet: (state, action: PayloadAction<boolean>) => {
       state.showActivity = action.payload;
     },
-    modalOpened: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest'>) => {
+    modalOpened: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showJiraSubmission'>) => {
       state[action.payload] = true;
     },
-    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest'>) => {
+    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showJiraSubmission'>) => {
       state[action.payload] = false;
     },
     menuOpened: (state, action: PayloadAction<string | null>) => {

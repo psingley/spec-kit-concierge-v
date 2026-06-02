@@ -1,9 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { artifactsApi } from '../api/artifacts.endpoint';
 import { reviewEvidenceApi } from '../api/reviewEvidence.endpoint';
+import { parseRendererJiraDryRunPreview } from '../api/jiraSubmission.factory';
 import { sessionManifestApi } from '../api/sessionManifest.endpoint';
 import { tasksDetailApi } from '../api/tasksDetail.endpoint';
-import { useAppSelector } from '../hooks/store';
+import { useAppDispatch, useAppSelector } from '../hooks/store';
+import { jiraDryRunPreviewLoaded } from '../slices/jira';
+import { modalOpened, toastShown } from '../slices/ui';
+import { selectAuthAtlassianStatus } from '../slices/auth.selectors';
 import { selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { NudgeButton, type NudgeButtonResult } from './NudgeButton';
 import { ReviewStep } from './ReviewStep';
@@ -36,6 +40,8 @@ const nudgeResult = (payload: Record<string, unknown>): NudgeButtonResult => {
 
 export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
+  const atlassianStatus = useAppSelector(selectAuthAtlassianStatus);
+  const dispatch = useAppDispatch();
   const [artifactPath, setArtifactPath] = useState<string | null>(null);
   // The IPC resolves the feature dir from .specify/feature.json; the renderer only
   // supplies the worktree root.
@@ -52,6 +58,13 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
   const isAppOwnedArtifact = artifactPath === null ? false : isAbsoluteArtifactPath(artifactPath);
   const canNudge = reconciliation.data?.status === 'needs-attention' && reconciliation.data.canNudge === true;
+  const hasTasks = evidence.data?.artifacts.some((artifact) => artifact.path.endsWith('tasks.md')) === true;
+  const jiraAvailable = atlassianStatus === 'ok' && hasTasks && request !== undefined;
+  const jiraDisabledReason = atlassianStatus !== 'ok'
+    ? 'Atlassian auth required'
+    : !hasTasks
+      ? 'tasks.md required'
+      : undefined;
 
   return (
     <ReviewStep
@@ -87,6 +100,21 @@ export const ReviewStepContainer = (): React.ReactElement => {
         }
       }}
       onArtifactClose={() => setArtifactPath(null)}
+      jiraAvailable={jiraAvailable}
+      jiraDisabledReason={jiraDisabledReason}
+      onSendToJira={async () => {
+        if (request === undefined) return;
+        try {
+          const parsed = parseRendererJiraDryRunPreview(await window.concierge.jiraSubmission!.dryRun(request));
+          if (!parsed.ok) {
+            throw new Error(parsed.error.message);
+          }
+          dispatch(jiraDryRunPreviewLoaded(parsed.value));
+          dispatch(modalOpened('showJiraSubmission'));
+        } catch {
+          dispatch(toastShown({ level: 'error', message: 'Unable to prepare JIRA dry-run preview.' }));
+        }
+      }}
     />
   );
 };

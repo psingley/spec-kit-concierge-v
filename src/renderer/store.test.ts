@@ -5,7 +5,7 @@ import { createProductStore, type AppDispatch, type AppStore, type RootState } f
 import { useAppDispatch, useAppSelector, useAppStore } from './hooks/store';
 
 describe('product store assembly', () => {
-  it('exposes canonical Run 4 initial state for all eight slices and RTK Query', () => {
+  it('exposes canonical initial state for all product slices and RTK Query', () => {
     const state = createProductStore().getState();
 
     expect(Object.keys(state).filter((key) => key !== api.reducerPath)).toEqual([
@@ -16,7 +16,8 @@ describe('product store assembly', () => {
       'steps',
       'session',
       'activity',
-      'copilot'
+      'copilot',
+      'jira'
     ]);
     expect(state.ui).toMatchObject({ theme: 'system', sidebarOpen: true, activeView: null, showActivity: false, toasts: [] });
     expect(state.preferences).toMatchObject({ hydratedFromDisk: false, theme: 'system', accent: '#8b5cf6', activitySide: 'right' });
@@ -39,6 +40,7 @@ describe('product store assembly', () => {
     expect(state.session).toMatchObject({ activeSessionId: null, modelId: null, modeId: null, specifyPrompt: '', specMarkdown: '' });
     expect(state.activity).toEqual({ entries: [], cap: 256, currentStatus: 'Idle', busy: false });
     expect(state.copilot).toEqual({ capabilities: null, lastProbeAt: null });
+    expect(state.jira).toEqual({ submitting: false, dryRunPreview: null, results: [], issues: [], error: null });
     expect(state).toHaveProperty(api.reducerPath);
   });
 

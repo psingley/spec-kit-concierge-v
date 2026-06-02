@@ -13,7 +13,8 @@ export const RUN2_TAG_TYPES = [
   'Session',
   'Step',
   'Transcript',
-  'Preferences'
+  'Preferences',
+  'JiraSubmission'
 ] as const;
 
 export type AppVersionProof = {

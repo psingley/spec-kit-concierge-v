@@ -23,6 +23,7 @@ import { registerSessionIpc } from './ipc/session';
 import { registerStepsIpc } from './ipc/steps';
 import { registerTasksDetailIpc } from './ipc/tasksDetail';
 import { registerReviewEvidenceIpc } from './ipc/reviewEvidence';
+import { registerJiraSubmissionIpc } from './ipc/jiraSubmission';
 import { registerWorkspaceIpc } from './ipc/workspace';
 import { registerMcpConfigIpc } from './ipc/mcpConfig';
 import { verifyAgentManifestDrift } from './hooks/driftVerifier';
@@ -90,6 +91,7 @@ app.whenReady().then(async () => {
   registerArtifactsIpc({ ipcMain, logger });
   registerTasksDetailIpc({ ipcMain, logger });
   registerReviewEvidenceIpc({ ipcMain, logger, userDataPath: app.getPath('userData') });
+  registerJiraSubmissionIpc({ ipcMain, logger, userDataPath: app.getPath('userData') });
   const boundarySpecifyAgentAdapter = createBoundarySpecifyAgentAdapter();
   registerCopilotSpecifyIpc({
     ipcMain,
