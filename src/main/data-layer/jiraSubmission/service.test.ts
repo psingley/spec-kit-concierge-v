@@ -31,6 +31,39 @@ const createRepo = async (configYaml: string) => {
 };
 
 describe('JIRA submission service', () => {
+  it.each([
+    ['double-quoted with inline comment', '  key: "SKC"  # Spec-Kit Concierge project'],
+    ['double-quoted without comment', '  key: "SKC"'],
+    ['unquoted with inline comment', '  key: SKC  # Spec-Kit Concierge project'],
+    ['single-quoted with inline comment', "  key: 'SKC'  # Spec-Kit Concierge project"]
+  ])('parses project key from jira-config.yml when %s', async (_caseName, keyLine) => {
+    const { repo, featureDir } = await createRepo([
+      'site_url: "https://collette.atlassian.net/"',
+      'project:',
+      keyLine
+    ].join('\n'));
+
+    const artifacts = await buildJiraSubmissionArtifacts(repo, async () => featureDir);
+    const epic = artifacts.plan.nodes[0];
+    const epicIdempotencyLabel = epic?.labels.find((label) => /^SKC-idem-[a-f0-9]{12}$/.test(label));
+
+    expect(artifacts.plan.siteUrl).toBe('https://collette.atlassian.net/');
+    expect(epic?.payload.project_key).toBe('SKC');
+    expect(epicIdempotencyLabel).toBeDefined();
+  });
+
+  it('parses a top-level site URL with an inline comment from jira-config.yml', async () => {
+    const { repo, featureDir } = await createRepo([
+      'site_url: "https://collette.atlassian.net/"  # production Jira site',
+      'project:',
+      '  key: "SKC"'
+    ].join('\n'));
+
+    const artifacts = await buildJiraSubmissionArtifacts(repo, async () => featureDir);
+
+    expect(artifacts.plan.siteUrl).toBe('https://collette.atlassian.net/');
+  });
+
   it('threads an explicit top-level site URL from jira-config.yml into the plan', async () => {
     const { repo, featureDir } = await createRepo([
       'site_url: "https://collette.atlassian.net/"',

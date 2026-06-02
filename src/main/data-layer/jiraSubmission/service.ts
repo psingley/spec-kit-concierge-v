@@ -18,20 +18,15 @@ const defaultConfig: JiraSubmissionConfig = {
   baseLabels: ['spec-kit', 'concierge']
 };
 
-const quotedValue = (line: string): string | undefined => {
-  const value = line.split(':').slice(1).join(':').trim();
-  if (value.length === 0) return undefined;
-  return value.replace(/^["']|["']$/g, '');
-};
-
 const stripInlineComment = (value: string): string =>
   value.replace(/\s+#.*$/, '').trim();
 
 const scalarValue = (line: string): string | undefined => {
-  const value = quotedValue(line);
-  if (value === undefined) return undefined;
-  const stripped = stripInlineComment(value);
-  return stripped.length > 0 ? stripped : undefined;
+  let value = line.split(':').slice(1).join(':').trim();
+  if (value.length === 0) return undefined;
+  value = stripInlineComment(value);
+  value = value.replace(/^["']|["']$/g, '').trim();
+  return value.length > 0 ? value : undefined;
 };
 
 const findTopLevelScalar = (lines: string[], keys: string[]): string | undefined => {
