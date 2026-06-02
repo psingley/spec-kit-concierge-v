@@ -206,7 +206,56 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
     expect(calls.loadSession).toHaveLength(0);
     expect(calls.newSession).toBe(1);
     const answerPrompt = calls.prompts[calls.prompts.length - 1]!;
+    expect(answerPrompt).toContain('/speckit.clarify');
     expect(answerPrompt).toContain('Q1: A');
+  });
+
+  it('frames askAnother as a /speckit.clarify continuation', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0044-ask-another');
+    const { calls, supervisorFactory } = buildStubSupervisor();
+
+    registerCopilotClarifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      supervisorFactory
+    });
+
+    const handler = harness.handlers.get('copilot:clarify')!;
+    await handler({ sender: harness.sender }, { ...basePayload, repositoryPath, operation: 'next' });
+    await vi.waitFor(() => expect(calls.newSession).toBe(1));
+
+    await handler({ sender: harness.sender }, { ...basePayload, repositoryPath, operation: 'askAnother' });
+    await vi.waitFor(() => expect(calls.prompts.length).toBe(2));
+
+    const prompt = calls.prompts[calls.prompts.length - 1]!;
+    expect(prompt).toContain('/speckit.clarify');
+    expect(prompt).toContain('Ask exactly one additional clarification question');
+  });
+
+  it('frames reaskMalformed as a /speckit.clarify continuation', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0045-reask-malformed');
+    const { calls, supervisorFactory } = buildStubSupervisor();
+
+    registerCopilotClarifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      supervisorFactory
+    });
+
+    const handler = harness.handlers.get('copilot:clarify')!;
+    await handler({ sender: harness.sender }, { ...basePayload, repositoryPath, operation: 'next' });
+    await vi.waitFor(() => expect(calls.newSession).toBe(1));
+
+    await handler({ sender: harness.sender }, { ...basePayload, repositoryPath, operation: 'reaskMalformed', questionId: 'q-bad' });
+    await vi.waitFor(() => expect(calls.prompts.length).toBe(2));
+
+    const prompt = calls.prompts[calls.prompts.length - 1]!;
+    expect(prompt).toContain('/speckit.clarify');
+    expect(prompt).toContain('Rewrite only malformed Clarify question q-bad');
   });
 
   it('disposes the ACP session only after commit WITHOUT loadSession and emits a terminal done', async () => {
@@ -237,6 +286,9 @@ describe('registerCopilotClarifyIpc session continuity (default adapter)', () =>
     // is not a git repo here, so afterClarifyHook fails -> terminal done/fail (no hang).
     await vi.waitFor(() => expect(calls.disposed).toBe(1));
     expect(calls.loadSession).toHaveLength(0);
+    const commitPrompt = calls.prompts[calls.prompts.length - 1]!;
+    expect(commitPrompt).toContain('/speckit.clarify');
+    expect(commitPrompt).toContain('Q1: B');
     const done = harness.sender.send.mock.calls.find((call) => call[1].event.type === 'done')?.[1].event;
     expect(done).toBeDefined();
     expect(['pass', 'fail']).toContain(done.status);

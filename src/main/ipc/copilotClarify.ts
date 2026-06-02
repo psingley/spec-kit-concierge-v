@@ -94,8 +94,14 @@ const buildAnswerPrompt = (answers: CopilotClarifyRequest['answers']): string =>
     }
     return `${ref}: ${short}`;
   });
-  return `Here are my answers to the clarification questions. Apply each to the spec.md Clarifications section per your contract.\n\n${lines.join('\n')}`;
+  return `Continue /speckit.clarify for this feature. Here are my answers to the clarification questions. Apply each to the spec.md Clarifications section per your contract.\n\n${lines.join('\n')}`;
 };
+
+const buildReaskMalformedPrompt = (questionId?: string): string =>
+  `Continue /speckit.clarify for this feature. Rewrite only malformed Clarify question ${questionId ?? 'unknown'} using the supplied context. Preserve all well-formed question ids and text.`;
+
+const buildAskAnotherPrompt = (): string =>
+  'Continue /speckit.clarify for this feature. Ask exactly one additional clarification question in the same Clarify conversation.';
 
 const defaultSupervisorFactory =
   (logger: Pick<MainLogger, 'info' | 'warn' | 'error'>, userDataPath: string): ClarifySupervisorFactory =>
@@ -136,9 +142,9 @@ const defaultAgentAdapter =
       const prompt =
         request.operation === 'answer' || request.operation === 'commit'
           ? buildAnswerPrompt(request.answers)
-          : request.operation === 'reaskMalformed'
-            ? `Rewrite only malformed Clarify question ${request.questionId ?? 'unknown'} using the supplied context. Preserve all well-formed question ids and text.`
-            : 'Ask exactly one additional clarification question in the same Clarify conversation.';
+        : request.operation === 'reaskMalformed'
+            ? buildReaskMalformedPrompt(request.questionId)
+            : buildAskAnotherPrompt();
       await existing.session.prompt(existing.acpSessionId, prompt, onUpdate);
       if (request.operation === 'commit') {
         await existing.session.dispose();
@@ -160,8 +166,8 @@ const defaultAgentAdapter =
         : request.operation === 'answer' || request.operation === 'commit'
           ? buildAnswerPrompt(request.answers)
           : request.operation === 'reaskMalformed'
-            ? `Rewrite only malformed Clarify question ${request.questionId ?? 'unknown'} using the supplied context. Preserve all well-formed question ids and text.`
-            : 'Ask exactly one additional clarification question in the same Clarify conversation.';
+            ? buildReaskMalformedPrompt(request.questionId)
+            : buildAskAnotherPrompt();
     await session.prompt(created.sessionId, prompt, onUpdate);
 
     if (request.operation === 'commit') {
