@@ -28,9 +28,11 @@ Required JSON fields:
 - `description`
 - `labels`
 - `parent_key`
+- `payload_hash`
+- `idempotency_label`
 - optional `relationship_field`
 
-`idempotency_id`, `project_key`, and every caller-supplied label must match `[a-zA-Z0-9_-]+`. Caller labels are base labels only; reject incoming labels matching `[A-Z0-9]+-idem-[a-fA-F0-9]{12}` because this command derives the idempotency label after hashing.
+`idempotency_id`, `project_key`, `idempotency_label`, and every caller-supplied label must match `[a-zA-Z0-9_-]+`. `payload_hash` must be lower-case 64-character SHA-256 hex. The app is the single hash authority: use the supplied `payload_hash` and `idempotency_label` exactly as provided, ensure the label equals `<project_key>-idem-<payload_hash first 12 chars>`, and ensure the Jira labels include that supplied label. Do not recompute a hash, do not hash the wrapper, and do not hash already-rendered labels.
 
 ## Protocol
 
@@ -42,18 +44,11 @@ Before doing any other work, derive `state_dir` from the input JSON if possible,
 [ISO-8601 timestamp] FILER_ENTRY idempotency_id=<raw idempotency_id> arg_length=<length of $ARGUMENTS>
 ```
 
-### 1. Validate, Normalize, Hash
+### 1. Validate App-Supplied Hash And Label
 
 Parse `$ARGUMENTS` as JSON. If parsing or validation fails, return one single-line JSON summary with `status: "invalid"`; if a safe state path is available, write the same invalid state atomically.
 
-Normalize the payload before generated labels are added:
-
-1. sort object keys recursively
-2. preserve array order
-3. NFC-normalize strings
-4. serialize compact JSON without trailing whitespace
-
-Compute `payload_hash = sha256(normalized_payload)`. Let `hash12` be the first 12 hex characters. Derive `idempotency_label = <project_key>-idem-<hash12>` where `project_key` comes from `jira-config.yml` `project.key`. Validate the derived label matches `[a-zA-Z0-9_-]+` and is no longer than 255 chars. The generated label is excluded from the hash input and then appended to Jira labels.
+Read `payload_hash` and `idempotency_label` from the input. Let `hash12` be the first 12 hex characters of the supplied hash. Validate `idempotency_label == <project_key>-idem-<hash12>`, where `project_key` comes from `jira-config.yml` `project.key`. Validate the label is no longer than 255 chars. If the supplied idempotency label is absent from `labels`, append it to the Jira create payload; do not change the supplied `payload_hash` or recompute it.
 
 ### 2. State Record Shape
 
@@ -98,11 +93,11 @@ Use a unique temp suffix when needed, but the final state file is always `{state
 
 State-file absence on first call is normal. If `{state_dir}/{idempotency_id}.json` does not exist, continue. Do not return an error.
 
-If the file exists and `payload_hash` matches with status `verified`, `duplicate`, or `orphaned`, return `duplicate` without creating a new Jira issue. If the existing hash differs, atomically write `invalid` and return a single-line JSON summary explaining the mismatch.
+If the file exists and `payload_hash` matches with status `verified`, `duplicate`, or `orphaned`, return `duplicate` without creating a new Jira issue. If the existing hash differs, halt without creating: atomically write `payload_hash_mismatch` (or `invalid` if the record itself is malformed) and return a single-line JSON summary explaining the mismatch.
 
 ### 5. Orphan Search Before Create
 
-Before creating, and again after any 5xx/network/ambiguous response, run JQL orphan detection using the generated label:
+Before creating, and again after any 5xx/network/ambiguous response, run JQL orphan detection using the supplied idempotency label:
 
 ```jql
 project = <project_key> AND labels = "<project_key>-idem-<hash12>" ORDER BY created DESC
@@ -145,23 +140,24 @@ Relationship branching:
 
 Retry policy: on 5xx, network error, or ambiguous response, wait 2 seconds, retry once, then run the JQL orphan search. On 4xx validation/configuration errors, write `invalid`. If no verified issue exists after retry and orphan search, write `failed`.
 
-### 8. Four-Check Verification
+### 8. Five-Check Verification
 
-After create or orphan recovery, call `atlassian/getJiraIssue` with `cloudId` and verify exactly these four checks:
+After create or orphan recovery, call `atlassian/getJiraIssue` with `cloudId` and verify exactly these five checks:
 
 1. issue key was returned
 2. issue is fetchable via `getJiraIssue`
 3. summary matches expected summary exactly
-4. status is present and is not `undefined`
+4. live parent equals `parent_key` when `parent_key` is not `null`
+5. live labels include the supplied `idempotency_label`
 
 Do not compare description byte-for-byte.
 
-If all four checks pass, write the terminal state record with `status: "verified"`. If any check fails, write the terminal state record with `status: "verify_mismatch"` and include the failing check details in the `error` field. Do not write `status: "created"` as a terminal status.
+If all five checks pass, write the terminal state record with `status: "verified"` using the supplied `payload_hash`, supplied `idempotency_label`, supplied `idempotency_id`, `issue_key`, and `issue_url`. If any check fails, write the terminal state record with `status: "verify_mismatch"` and include the failing check details in the `error` field. Do not write `status: "created"` as a terminal status.
 
 ### 9. Return Contract
 
 Write terminal state atomically and return exactly one single-line JSON object:
 
 ```json
-{"idempotency_id":"...","status":"verified","issue_key":"PROJ-123","issue_url":"https://example.atlassian.net/browse/PROJ-123","attempts":1,"orphan_match":null,"error":null}
+{"idempotency_id":"...","status":"verified","issue_key":"PROJ-123","issue_url":"https://example.atlassian.net/browse/PROJ-123","payload_hash":"...","idempotency_label":"PROJ-idem-abcdef123456","attempts":1,"orphan_match":null,"error":null}
 ```

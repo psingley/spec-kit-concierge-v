@@ -18,9 +18,11 @@ The filer receives one JSON object as `$ARGUMENTS`:
   "issue_type": "Epic",
   "summary": "Foundation Shell & Boundaries",
   "description": "Standalone Jira body...",
-  "labels": ["spec-kit"],
+  "labels": ["spec-kit", "KCKB-idem-0123456789ab"],
   "parent_key": null,
-  "relationship_field": null
+  "relationship_field": null,
+  "payload_hash": "0123456789abcdef...",
+  "idempotency_label": "KCKB-idem-0123456789ab"
 }
 ```
 
@@ -34,16 +36,18 @@ Required fields:
 | `issue_type` | Jira issue type name. |
 | `summary` | Expected live Jira summary. |
 | `description` | Expected live Jira description. |
-| `labels` | Base Jira labels to apply. Every caller-supplied label must match `[a-zA-Z0-9_-]+`; callers must not supply `skc-idem-*` labels. |
+| `labels` | App-rendered Jira labels to apply, including `idempotency_label`. Every label must match `[a-zA-Z0-9_-]+`. |
 | `parent_key` | Expected parent issue key, or `null` when no parent is expected. |
 | `relationship_field` | Optional custom field id for company-managed Epic Link relationships. Use `customfield_10014` unless `jira-config.yml` specifies a different field. |
+| `payload_hash` | Runner-supplied canonical SHA-256 digest for this node payload. The app is the single hash authority. |
+| `idempotency_label` | Runner-supplied label derived from `payload_hash` as `<project_key>-idem-<hash12>`. |
 
-The filer derives the idempotency label itself as `skc-idem-<hash12>` after
-hashing. That generated label is the only `skc-idem-*` label allowed on the
-submission payload. `hash12` is the first 12 characters of `payload_hash`; the
-label is computed from the hash, not from `idempotency_id`, and uses a hyphen,
-not a colon. Jira labels have a 255-character limit. The `skc-idem-<hash12>`
-format uses 18 characters total (9 prefix + 12 hash), well within the limit.
+The app computes `payload_hash` and `idempotency_label`; the filer echoes both
+values verbatim into every state record and must not recompute a hash from the
+wrapper, rendered labels, or Jira request body. `hash12` is the first 12
+characters of `payload_hash`; the label is computed from the hash, not from
+`idempotency_id`, and uses a hyphen, not a colon. Jira labels have a
+255-character limit.
 
 ## State Record Contract
 
@@ -58,6 +62,7 @@ The filer writes exactly one state record per idempotency id:
   "live_key": "KCKB-123",
   "live_url": "https://example.atlassian.net/browse/KCKB-123",
   "payload_hash": "sha256...",
+  "idempotency_label": "KCKB-idem-abcdef123456",
   "attempts": 1,
   "started_at": "2026-05-26T12:00:00Z",
   "verified_at": "2026-05-26T12:00:12Z",
@@ -73,21 +78,19 @@ The filer writes exactly one state record per idempotency id:
 `copilot_session_id`, and `error` may be `null` while the record is in
 progress or failed.
 
-`payload_hash` is the SHA-256 of the normalized input payload before the
-generated idempotency label is added. The ordering is strict:
+`payload_hash` is the SHA-256 the app computed from its normalized intended
+payload before the idempotency label was added. The runner ordering is strict:
 
 1. validate `idempotency_id` and caller-supplied labels against
    `[a-zA-Z0-9_-]+`
 2. normalize the payload
 3. compute `payload_hash`
-4. derive `idempotency_label = "skc-idem-" + payload_hash[:12]`
+4. derive `idempotency_label = "<project_key>-idem-" + payload_hash[:12]`
 5. add `idempotency_label` to the Jira submission labels
 
-The generated idempotency label must not be present while computing the
-hash. Payload normalization means recursive key sorting for every nested
-object, stable array order by preserving input order, NFC Unicode
-normalization on every string value, compact JSON separators, and no
-trailing whitespace.
+The filer receives the completed app-rendered payload plus the app-authored
+`payload_hash` and `idempotency_label`. It verifies shape and echoes those
+values; it does not repeat the normalization or hashing step.
 
 ## State Machine
 
@@ -109,13 +112,14 @@ not_started -> creating -> verified
 - `verify_mismatch`
 - `already_verified`
 
-The outer loop treats only `verified` with a matching `payload_hash` as
-advanceable. Every other state halts the current run and surfaces the
-state directory plus the failed `idempotency_id`.
+The outer loop treats only `verified`, `duplicate`, or `already_verified` with
+the matching app-intended `payload_hash`, matching `idempotency_label`, and
+matching `idempotency_id` as advanceable. Every other state halts the current
+run and surfaces the state directory plus the failed `idempotency_id`.
 
 ## Idempotency
 
-The filer compares the incoming `payload_hash` to any existing state
+The filer compares the app-supplied incoming `payload_hash` to any existing state
 record before calling Jira.
 
 - If `status == "verified"` and `payload_hash` matches, the filer
@@ -191,7 +195,7 @@ After five 429 attempts, write `rate_limit_exhausted` with the last error
 message and return a single-line JSON summary.
 
 On Jira 5xx responses, network errors, or ambiguous responses such as timeout
-or no response, run the JQL orphan search using the derived idempotency label
+or no response, run the JQL orphan search using the supplied idempotency label
 before retrying creation:
 
 ```jql
@@ -333,8 +337,8 @@ syntax.
    `specs/<spec-name>/jira-submission-state/<idempotency_id>.json`.
 4. The filer writes every state transition with tmp-and-rename semantics.
 5. The outer loop reads that exact file after the filer returns.
-6. The outer loop advances only when `status == "verified"` and
-   `payload_hash` matches the payload it sent.
+6. The outer loop advances only when the status is terminal-pass and
+   `payload_hash` matches the app-intended payload hash it sent.
 7. The terminal success UI and `jira-mapping.json` are compiled from
    verified disk records, not from stream prose.
 

@@ -55,8 +55,10 @@ Each DAG node must include:
 - `issue_type`
 - `summary`
 - `description`
-- base `labels`
+- rendered `labels`, including the app-derived idempotency label
 - `parent_key`, initially null for children until parent state is read from disk
+- app-computed `payload_hash`
+- app-derived `idempotency_label`
 - optional `relationship_field`
 
 In 2-level mode, omit task issue nodes and embed tasks in Phase descriptions.
@@ -105,8 +107,8 @@ Also include a metadata summary with filer model, effort, session IDs when prese
 - Atomic state writes: `mkdir -p <state_dir>`, write `<state_dir>/<ticket>.tmp`, rename to `<state_dir>/<ticket>.json`.
 - Missing state file on first call is normal and must not be treated as an error.
 - Step 0 entry trace appends one line to `{state_dir}/_filer.debug.log` at filer start.
-- Four-check verification predicate: issue key returned, issue fetchable via `getJiraIssue`, summary matches, status is not `undefined`. Do not compare descriptions byte-for-byte.
-- Idempotency label format is `<project_key>-idem-<hash12>`, derived from `jira-config.yml` `project.key`, validated against `[a-zA-Z0-9_-]+`, and limited to 255 chars.
+- Five-check verification predicate: issue key returned, issue fetchable via `getJiraIssue`, summary matches, parent matches when `parent_key` is not null, and labels include the supplied idempotency label. Do not compare descriptions byte-for-byte.
+- Idempotency label format is `<project_key>-idem-<hash12>`, derived by the app from the app-computed `payload_hash`, validated against `[a-zA-Z0-9_-]+`, and limited to 255 chars. The filer echoes the supplied `payload_hash` and `idempotency_label` verbatim; it must not recompute a hash.
 - Terminal statuses are exactly `verified`, `duplicate`, `failed`, `skipped`, `orphaned`, and `invalid`; `creating` is the only transient status. `created` is NOT a terminal status; the filer writes `verified` (pass) or `verify_mismatch` (fail) as the terminal outcome of Step 8.
 - Retry policy: on 5xx, network error, or ambiguous response, wait 2s, retry once, then run `project = <project_key> AND labels = "<project_key>-idem-<hash12>" ORDER BY created DESC` to detect a created orphan.
 - All Atlassian MCP calls use literal `atlassian/<tool>` tool syntax and explicit `cloudId`.

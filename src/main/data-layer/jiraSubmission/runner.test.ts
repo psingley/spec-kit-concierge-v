@@ -83,18 +83,19 @@ describe('JIRA submission runner', () => {
 
   it('halts when the disk record payload hash does not match the app-rendered payload', async () => {
     const plan = await createPlan();
+    const stalePayloadHash = 'f'.repeat(64);
 
     const result = await runJiraSubmissionLoop({
       plan,
       now: () => '2026-06-02T12:00:00.000Z',
-      runCreateTurn: async ({ node, payloadHash }) => {
+      runCreateTurn: async ({ node }) => {
         await writeStateRecord(plan.stateDir, node.id, {
           idempotency_id: node.id,
           status: 'verified',
           live_key: 'SKC-10',
           live_url: 'https://collette.atlassian.net/browse/SKC-10',
-          payload_hash: 'wrong',
-          idempotency_label: idempotencyLabel(payloadHash),
+          payload_hash: stalePayloadHash,
+          idempotency_label: idempotencyLabel(stalePayloadHash),
           attempts: 1,
           started_at: '2026-06-02T12:00:00.000Z',
           verified_at: '2026-06-02T12:00:01.000Z',
@@ -115,7 +116,7 @@ describe('JIRA submission runner', () => {
     });
   });
 
-  it('advances issue_key-only verified records without requiring a URL and threads the key', async () => {
+  it('advances a live-shaped SKC-239 verified record without requiring a URL and threads the key', async () => {
     const plan = await createPlan();
     const calls: Array<{ id: string; parentKey: string | null }> = [];
 
@@ -125,6 +126,7 @@ describe('JIRA submission runner', () => {
       runCreateTurn: async ({ node, payload, payloadHash }) => {
         calls.push({ id: node.id, parentKey: payload.parent_key });
         await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-239' : calls.length === 2 ? 'SKC-240' : 'SKC-241',
           payload_hash: payloadHash,
@@ -148,6 +150,7 @@ describe('JIRA submission runner', () => {
     const epic = plan.nodes[0]!;
     const epicPayloadHash = epic.payloadHash;
     await writeStateRecord(plan.stateDir, epic.id, {
+      idempotency_id: epic.id,
       status: 'verified',
       issue_key: 'SKC-239',
       payload_hash: epicPayloadHash,
@@ -160,6 +163,7 @@ describe('JIRA submission runner', () => {
       runCreateTurn: async ({ node, payload, payloadHash }) => {
         calls.push({ id: node.id, parentKey: payload.parent_key });
         await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-240' : 'SKC-241',
           payload_hash: payloadHash,
@@ -186,6 +190,7 @@ describe('JIRA submission runner', () => {
       runCreateTurn: async ({ node, payload, payloadHash }) => {
         calls.push({ id: node.id, parentKey: payload.parent_key });
         await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-10' : calls.length === 2 ? 'SKC-11' : 'SKC-12',
           payload_hash: payloadHash,
@@ -206,10 +211,72 @@ describe('JIRA submission runner', () => {
       now: () => '2026-06-02T12:00:00.000Z',
       runCreateTurn: async ({ node, payloadHash }) => {
         await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
           status: 'verified',
           issue_key: 'SKC-10',
           payload_hash: payloadHash,
           idempotency_label: 'SKC-idem-stale000000'
+        });
+      }
+    });
+
+    expect(result).toMatchObject({ status: 'fail', reason: 'idempotency_label_mismatch' });
+  });
+
+  it('halts when the disk record is bound to a different idempotency id', async () => {
+    const plan = await createPlan();
+
+    const result = await runJiraSubmissionLoop({
+      plan,
+      now: () => '2026-06-02T12:00:00.000Z',
+      runCreateTurn: async ({ node, payloadHash }) => {
+        await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: 'copied-from-another-node',
+          status: 'verified',
+          issue_key: 'SKC-10',
+          payload_hash: payloadHash,
+          idempotency_label: idempotencyLabel(payloadHash)
+        });
+      }
+    });
+
+    expect(result).toMatchObject({ status: 'fail', reason: 'idempotency_id_mismatch' });
+  });
+
+  it('halts when the disk record payload hash is not a lower-case SHA-256 hex digest', async () => {
+    const plan = await createPlan();
+
+    const result = await runJiraSubmissionLoop({
+      plan,
+      now: () => '2026-06-02T12:00:00.000Z',
+      runCreateTurn: async ({ node }) => {
+        await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
+          status: 'verified',
+          issue_key: 'SKC-10',
+          payload_hash: 'not-a-sha',
+          idempotency_label: 'SKC-idem-not-a-sha'
+        });
+      }
+    });
+
+    expect(result).toMatchObject({ status: 'fail', reason: 'malformed_payload_hash' });
+  });
+
+  it('halts when the disk record label is not internally consistent with its payload hash', async () => {
+    const plan = await createPlan();
+    const stalePayloadHash = 'e'.repeat(64);
+
+    const result = await runJiraSubmissionLoop({
+      plan,
+      now: () => '2026-06-02T12:00:00.000Z',
+      runCreateTurn: async ({ node }) => {
+        await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
+          status: 'verified',
+          issue_key: 'SKC-10',
+          payload_hash: stalePayloadHash,
+          idempotency_label: 'SKC-idem-wronglabel12'
         });
       }
     });
@@ -225,6 +292,7 @@ describe('JIRA submission runner', () => {
       now: () => '2026-06-02T12:00:00.000Z',
       runCreateTurn: async ({ node, payloadHash }) => {
         await writeStateRecord(plan.stateDir, node.id, {
+          idempotency_id: node.id,
           status: 'creating',
           issue_key: 'SKC-10',
           payload_hash: payloadHash,
@@ -242,6 +310,7 @@ describe('JIRA submission runner', () => {
 
     const runCreateTurn = async (plan: typeof withSite, key: string, nodeId: string, payloadHash: string) => {
       await writeStateRecord(plan.stateDir, nodeId, {
+        idempotency_id: nodeId,
         status: 'verified',
         issue_key: key,
         payload_hash: payloadHash,
@@ -272,10 +341,12 @@ describe('JIRA submission runner', () => {
     });
   });
 
-  it('does not adopt stale existing records before create and only creates the missing work', async () => {
+  it('halts on a stale existing record whose payload hash differs from the app-rendered payload', async () => {
     const plan = await createPlan();
+    const stalePayloadHash = 'd'.repeat(64);
     const createTurn = vi.fn(async ({ node, payloadHash }) => {
       await writeStateRecord(plan.stateDir, node.id, {
+        idempotency_id: node.id,
         status: 'verified',
         issue_key: node.id.endsWith('epic') ? 'SKC-10' : node.id.includes('phase') ? 'SKC-11' : 'SKC-12',
         payload_hash: payloadHash,
@@ -283,10 +354,11 @@ describe('JIRA submission runner', () => {
       });
     });
     await writeStateRecord(plan.stateDir, plan.nodes[0]!.id, {
+      idempotency_id: plan.nodes[0]!.id,
       status: 'verified',
       issue_key: 'SKC-239',
-      payload_hash: 'stale',
-      idempotency_label: 'SKC-idem-stale000000'
+      payload_hash: stalePayloadHash,
+      idempotency_label: idempotencyLabel(stalePayloadHash)
     });
 
     const result = await runJiraSubmissionLoop({
@@ -295,7 +367,11 @@ describe('JIRA submission runner', () => {
       runCreateTurn: createTurn
     });
 
-    expect(result.status).toBe('pass');
-    expect(createTurn).toHaveBeenCalledTimes(3);
+    expect(result).toMatchObject({
+      status: 'fail',
+      reason: 'payload_hash_mismatch',
+      failedNodeId: '0015-send-jira-button-epic'
+    });
+    expect(createTurn).not.toHaveBeenCalled();
   });
 });

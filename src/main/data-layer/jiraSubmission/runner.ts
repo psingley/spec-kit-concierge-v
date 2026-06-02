@@ -6,6 +6,7 @@ export type JiraCreateTurnRequest = {
   node: JiraSubmissionNode;
   payload: JiraSubmissionPayload;
   payloadHash: string;
+  idempotencyLabel: string;
 };
 
 export type JiraCreateTurn = (request: JiraCreateTurnRequest) => Promise<void>;
@@ -29,6 +30,7 @@ export type JiraSubmissionLoopOptions = {
 };
 
 type StateRecord = {
+  idempotencyId: string;
   status: string;
   key: string | null;
   url: string | null;
@@ -63,6 +65,7 @@ const readStateRecord = async (stateDir: string, nodeId: string): Promise<StateR
     throw new Error('state record must be an object');
   }
   return {
+    idempotencyId: stringAlias(parsed, ['idempotency_id', 'idempotencyId']) ?? '',
     status: typeof parsed.status === 'string' ? parsed.status : '',
     key: stringAlias(parsed, ['issue_key', 'live_key', 'issueKey']),
     url: stringAlias(parsed, ['issue_url', 'live_url', 'issueUrl']),
@@ -74,7 +77,7 @@ const readStateRecord = async (stateDir: string, nodeId: string): Promise<StateR
 const materializePayload = (
   node: JiraSubmissionNode,
   parentKey: string | null
-): { payload: JiraSubmissionPayload; payloadHash: string } => {
+): { payload: JiraSubmissionPayload; payloadHash: string; idempotencyLabel: string } => {
   const payloadWithoutIdem: JiraSubmissionPayload = {
     ...node.payload,
     labels: node.payload.labels.filter((label) => !label.includes('-idem-')),
@@ -87,7 +90,8 @@ const materializePayload = (
       ...payloadWithoutIdem,
       labels: [...payloadWithoutIdem.labels, idemLabel]
     },
-    payloadHash
+    payloadHash,
+    idempotencyLabel: idemLabel
   };
 };
 
@@ -100,6 +104,9 @@ const terminalPassStatus = (status: string): 'verified' | 'duplicate' | null => 
 const canonicalIdempotencyLabel = (projectKey: string, payloadHash: string): string =>
   `${projectKey}-idem-${payloadHash.slice(0, 12)}`;
 
+const isSha256Hex = (value: string): boolean =>
+  /^[0-9a-f]{64}$/.test(value);
+
 const deriveIssueUrl = (siteUrl: string | undefined, issueKey: string): string => {
   if (siteUrl === undefined || siteUrl.trim().length === 0) return '';
   return `${siteUrl.replace(/\/+$/, '')}/browse/${issueKey}`;
@@ -107,14 +114,25 @@ const deriveIssueUrl = (siteUrl: string | undefined, issueKey: string): string =
 
 const acceptedRecord = (
   record: StateRecord,
+  nodeId: string,
   projectKey: string,
-  payloadHash: string,
+  appIntendedPayloadHash: string,
+  appIntendedIdempotencyLabel: string,
   siteUrl: string | undefined
 ): { ok: true; record: AcceptedRecord } | { ok: false; reason: string } => {
-  if (record.payloadHash !== payloadHash) {
+  if (record.idempotencyId !== nodeId) {
+    return { ok: false, reason: 'idempotency_id_mismatch' };
+  }
+  if (!isSha256Hex(record.payloadHash)) {
+    return { ok: false, reason: 'malformed_payload_hash' };
+  }
+  if (record.idempotencyLabel !== canonicalIdempotencyLabel(projectKey, record.payloadHash)) {
+    return { ok: false, reason: 'idempotency_label_mismatch' };
+  }
+  if (record.payloadHash !== appIntendedPayloadHash) {
     return { ok: false, reason: 'payload_hash_mismatch' };
   }
-  if (record.idempotencyLabel !== canonicalIdempotencyLabel(projectKey, payloadHash)) {
+  if (record.idempotencyLabel !== appIntendedIdempotencyLabel) {
     return { ok: false, reason: 'idempotency_label_mismatch' };
   }
   const status = terminalPassStatus(record.status);
@@ -170,21 +188,22 @@ export const runJiraSubmissionLoop = async ({
 
   for (const node of plan.nodes) {
     const parentKey = node.parentId === null ? null : keysByNode.get(node.parentId) ?? null;
-    const { payload, payloadHash } = materializePayload(node, parentKey);
+    const { payload, payloadHash, idempotencyLabel } = materializePayload(node, parentKey);
 
     try {
       const existingRecord = await readStateRecord(plan.stateDir, node.id);
-      const existingAccepted = acceptedRecord(existingRecord, payload.project_key, payloadHash, plan.siteUrl);
+      const existingAccepted = acceptedRecord(existingRecord, node.id, payload.project_key, payloadHash, idempotencyLabel, plan.siteUrl);
       if (existingAccepted.ok) {
         acceptIssue(node.id, existingAccepted.record, 'duplicate');
         continue;
       }
+      return fail(node.id, existingAccepted.reason);
     } catch {
       // Missing or malformed pre-existing records are not adoptable; the create turn owns recovery.
     }
 
     onProgress?.({ nodeId: node.id, message: `Creating ${node.issueType}: ${node.summary}`, timestamp: now() });
-    await runCreateTurn({ node, payload, payloadHash });
+    await runCreateTurn({ node, payload, payloadHash, idempotencyLabel });
 
     let record: StateRecord;
     try {
@@ -195,7 +214,7 @@ export const runJiraSubmissionLoop = async ({
       return fail(node.id, reason);
     }
 
-    const accepted = acceptedRecord(record, payload.project_key, payloadHash, plan.siteUrl);
+    const accepted = acceptedRecord(record, node.id, payload.project_key, payloadHash, idempotencyLabel, plan.siteUrl);
     if (!accepted.ok) {
       onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
       return fail(node.id, accepted.reason);

@@ -84,7 +84,7 @@ export const createBoundCliJiraCreateTurn = ({
   repositoryPath: string;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
-}): JiraCreateTurn => async ({ node, payload, payloadHash }) => {
+}): JiraCreateTurn => async ({ node, payload, payloadHash, idempotencyLabel }) => {
   const manifest = await loadAgentManifest(logger);
   const agent = manifest.agents.copilot;
   if (agent === undefined) {
@@ -97,17 +97,29 @@ export const createBoundCliJiraCreateTurn = ({
     const prompt = [
       'Run the customized concierge-jira create-issue contract for exactly one JIRA issue.',
       'Use the repository protocol at docs/jira-submission-protocol.md and the extension config at .specify/extensions/concierge-jira/.',
-      'You are the bounded CLI agent. The app has already rendered the payload and owns ordering.',
+      'You are the bounded CLI agent. The app has already rendered the payload, owns ordering, and is the single payload-hash authority.',
       'Create exactly one logical Jira issue for this node; duplicate/orphan recovery and transient retries are allowed only as required by the protocol.',
-      'Before creating, search Jira by the rendered idempotency label and adopt exactly one verified orphan if found.',
+      `Use idempotency_id "${node.id}", payload_hash "${payloadHash}", and idempotency_label "${idempotencyLabel}" exactly as supplied by the app.`,
+      'Write every state record with this exact idempotency_id, payload_hash, and idempotency_label. Echo them verbatim; do not recompute a hash and do not hash the wrapper or already-rendered labels.',
+      'Before creating, search Jira by the supplied idempotency label and adopt exactly one verified orphan if found.',
+      'If an existing state record for this idempotency_id has a different payload_hash, halt without creating.',
       'On transient Jira failures (429, 5xx, network errors, timeout, no response), retry with protocol backoff for up to five total attempts.',
       'After ambiguous transient failures, run the JQL orphan search by idempotency label before retrying create.',
-      'Only write status:"verified" after read-back verification confirms the issue key exists and matches the rendered payload/idempotency label.',
+      'Only write status:"verified" after read-back verification confirms the issue key exists, is fetchable, summary matches, parent matches when expected, and the supplied idempotency label is present on the issue.',
       'If retries are exhausted, write the terminal failure state record required by the protocol and stop.',
       'Do not edit app source. Do not invoke the retired file-ticket LLM filer. Do not call sync-status.',
       'Write the required atomic disk state record at payload.state_dir/<idempotency_id>.json.',
       '',
-      JSON.stringify({ nodeId: node.id, payloadHash, payload }, null, 2)
+      JSON.stringify({
+        nodeId: node.id,
+        idempotencyId: node.id,
+        idempotency_id: node.id,
+        payloadHash,
+        payload_hash: payloadHash,
+        idempotencyLabel,
+        idempotency_label: idempotencyLabel,
+        payload
+      }, null, 2)
     ].join('\n');
     const result = await session.prompt(sessionState.sessionId, prompt);
     if (result.stopReason !== 'complete' && result.stopReason !== 'end_turn') {
