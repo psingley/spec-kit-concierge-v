@@ -48,9 +48,9 @@ npm run e2e
 9. Exercise each safe recovery catalog class and confirm at least 90% of fixture scenarios resolve before doctor invocation while unsafe scenarios avoid false completion.
 10. Simulate missing or invalid terminal JSON and confirm classifier records an anomaly without mutating completion.
 11. Invoke the doctor in an ambiguous case and confirm it can call only the 12 approved tools, with mutating tools re-reading disk truth.
-12. Exhaust two doctor attempts and confirm a terminal-stuck state is visible without false completion.
+12. Exhaust two doctor attempts and confirm a needs-attention state is visible without false completion.
 13. Confirm pinned-context restart is unavailable until explicit user confirmation or an approved guarded doctor request exists.
-14. Confirm the nudge action appears only after terminal-stuck criteria are met and no deterministic remediation succeeded.
+14. Confirm the nudge action appears only after needs-attention criteria are met and no deterministic remediation succeeded.
 15. Call the localhost HTTP API for manifest read, reconcile, audit trail, doctor status, and nudge, and confirm it mirrors the same GUI state path as a human click.
 16. Run nudge on an unambiguous mismatch and confirm guarded repair plus reconciliation.
 17. Run nudge on ambiguous branch differences and confirm human escalation with no destructive changes.
@@ -69,5 +69,5 @@ npm run e2e
 - Pinned-context restart never runs silently; it requires explicit user confirmation or an approved guarded doctor request.
 - The audit trail is exposed for failed, remediated, and nudged sessions.
 - Manifest read, reconcile, audit trail, doctor status, and nudge are exposed through the localhost HTTP API and the renderer bridge with the same validation path.
-- Nudge is hidden for healthy or actively recoverable sessions and visible for terminal-stuck sessions that meet escape-hatch criteria.
+- Nudge is hidden for healthy or actively recoverable sessions and visible for needs-attention sessions that meet escape-hatch criteria.
 - Existing resume, maximum reached step, navigation-loop, failed-step resume, branch-null routing, and Windows-conditional regressions still pass.

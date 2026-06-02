@@ -237,13 +237,13 @@ Durable failed-step sidecar under `.specify/concierge/failed-steps/<step>.json`.
 
 ## Nudge Request
 
-Manual reconciliation attempt for terminal-stuck sessions.
+Manual reconciliation attempt for needs-attention sessions.
 
 **Fields**
 - `nudgeId`: stable id
 - `requestedAt`: ISO timestamp
 - `step`: canonical step name
-- `precondition`: `terminal-stuck-after-auto-remediation`
+- `precondition`: `needs-attention-after-auto-remediation`
 - `intendedShape`: `IntendedBranchShape`
 - `result`: `repaired | no-op | escalated | rejected`
 - `interventionIds`: string[]
@@ -273,7 +273,7 @@ Pure result emitted by `sessionReconciler`.
 
 **Fields**
 - `step`: canonical step name
-- `status`: `pending | running | pass | failed | killed | interrupted | terminal-stuck`
+- `status`: `pending | running | pass | failed | killed | interrupted | needs-attention`
 - `canCommit`: boolean
 - `canAutoRecover`: boolean
 - `canNudge`: boolean
@@ -283,7 +283,7 @@ Pure result emitted by `sessionReconciler`.
 
 **Validation rules**
 - `pass` requires agreement between manifest, branch evidence, and artifacts.
-- `canNudge` is true only when terminal-stuck and no successful automatic remediation has happened.
+- `canNudge` is true only when needs-attention and no successful automatic remediation has happened.
 
 ## Renderer Status Projection
 
@@ -292,11 +292,11 @@ Derived view exposed to renderer listeners and components.
 **Fields**
 - `step`: canonical step name
 - `rendererState`: `not_available | pending | complete`
-- `sourceStatus`: `pending | running | pass | failed | killed | interrupted | terminal-stuck`
+- `sourceStatus`: `pending | running | pass | failed | killed | interrupted | needs-attention`
 - `canNudge`: boolean
 - `auditSummary`: bounded audit metadata
 
 **Validation rules**
 - `pass` maps to `complete` only after reconciliation confirms manifest, trailer, and artifact agreement.
-- `failed`, `killed`, `interrupted`, and `terminal-stuck` map to `not_available` plus visible failure or interruption detail.
+- `failed`, `killed`, `interrupted`, and `needs-attention` map to `not_available` plus visible failure or interruption detail.
 - Renderer cache never writes authoritative manifest or completion state.

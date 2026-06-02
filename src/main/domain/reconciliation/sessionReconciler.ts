@@ -103,8 +103,8 @@ export const reconcileSessionStep = (
   }
 
   if (attempt.status !== 'pass') {
-    if (request.failedMarker !== undefined && request.completionHistory.length === 0) {
-      return { ...baseResult(request.step, 'terminal-stuck'), canNudge: true };
+    if (attempt.status === 'failed' && request.failedMarker !== undefined) {
+      return { ...baseResult(request.step, 'needs-attention'), canNudge: true };
     }
     return baseResult(request.step, attempt.status);
   }

@@ -194,8 +194,8 @@ describe('reconcileSessionStep', () => {
     });
   });
 
-  it('surfaces failed marker inputs as failed or terminal-stuck without marking completion', () => {
-    const failed = reconcileSessionStep(baseRequest({
+  it('collapses ambiguous failed marker inputs to needs-attention without guessing', () => {
+    const needsAttention = reconcileSessionStep(baseRequest({
       manifest: manifest({ attempts: [attempt({ status: 'failed', terminalResult: { exitCode: 1, resultKind: 'failure' } })] }),
       failedMarker: {
         step: 'specify',
@@ -205,7 +205,7 @@ describe('reconcileSessionStep', () => {
         strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/spec.md']
       }
     }));
-    const stuck = reconcileSessionStep(baseRequest({
+    const noStrandedArtifacts = reconcileSessionStep(baseRequest({
       manifest: manifest({ attempts: [attempt({ status: 'failed', terminalResult: { exitCode: 1, resultKind: 'failure' } })] }),
       completionHistory: [],
       failedMarker: {
@@ -217,7 +217,7 @@ describe('reconcileSessionStep', () => {
       }
     }));
 
-    expect(failed).toMatchObject({ status: 'failed', canCommit: false, canNudge: false });
-    expect(stuck).toMatchObject({ status: 'terminal-stuck', canCommit: false, canNudge: true });
+    expect(needsAttention).toMatchObject({ status: 'needs-attention', canCommit: false, canNudge: true });
+    expect(noStrandedArtifacts).toMatchObject({ status: 'needs-attention', canCommit: false, canNudge: true });
   });
 });

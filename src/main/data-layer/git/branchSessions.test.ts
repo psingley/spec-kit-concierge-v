@@ -1,5 +1,7 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { listBranchSessions, type BranchSessionsDeps } from './branchSessions';
+import { listBranchSessions, reconstructResumeCase, type BranchSessionsDeps } from './branchSessions';
 import type { ConciergeStepHistoryRecord } from './gitCommand';
 
 const CLONE = '/Users/dev/Documents/Concierge/psingley/repo';
@@ -282,5 +284,64 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
     const sessions = await listBranchSessions(CLONE, deps);
 
     expect(sessions.some((session) => session.worktreePath === wtPath)).toBe(false);
+  });
+
+  it('reconstructs the 100-case manifest/trailer/artifact/failed-marker corpus at the 99% SC-002 target', async () => {
+    const fixture = JSON.parse(
+      await readFile(path.join(process.cwd(), 'tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json'), 'utf8')
+    ) as {
+      denominator: { total: number; reconstructionTargetPercent: number };
+      cases: Array<Parameters<typeof reconstructResumeCase>[0] & {
+        caseId: string;
+        expectedTerminalStatus: string;
+        expectedCurrentStep: string;
+      }>;
+    };
+
+    const matches = fixture.cases.filter((testCase) => {
+      const result = reconstructResumeCase(testCase);
+      return result.terminalStatus === testCase.expectedTerminalStatus &&
+        result.currentStep === testCase.expectedCurrentStep;
+    });
+    const percent = (matches.length / fixture.denominator.total) * 100;
+
+    expect(fixture.cases).toHaveLength(100);
+    expect(percent).toBeGreaterThanOrEqual(fixture.denominator.reconstructionTargetPercent);
+  });
+
+  it('surfaces manifest-backed needs-attention resume state without renderer state', async () => {
+    const wtPath = `${HOME}/session-013`;
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '013-hybrid-manifest-architecture' }),
+      {},
+      {}
+    );
+
+    const sessions = await listBranchSessions(CLONE, {
+      ...deps,
+      readManifestEvidence: vi.fn(async () => ({
+        currentStep: 'tasks' as const,
+        terminalStatus: 'needs-attention' as const,
+        completedSteps: ['specify' as const, 'clarify' as const, 'plan' as const],
+        failedStep: {
+          step: 'tasks' as const,
+          sessionId: 'session-013',
+          failedAt: '2026-06-02T00:00:00.000Z',
+          reason: 'needs-attention: ambiguous failed marker',
+          strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/tasks.md']
+        }
+      }))
+    });
+
+    expect(sessions).toHaveLength(1);
+    expect(sessions[0]!.restoredStates).toMatchObject({
+      specify: 'complete',
+      clarify: 'complete',
+      plan: 'complete',
+      tasks: 'pending'
+    });
+    expect(sessions[0]!.restoredFailures.tasks).toMatchObject({
+      reason: expect.stringContaining('needs-attention')
+    });
   });
 });

@@ -18,7 +18,7 @@
 ```ts
 type ReconciliationResult = {
   step: StepName;
-  status: 'pending' | 'running' | 'pass' | 'failed' | 'killed' | 'interrupted' | 'terminal-stuck';
+  status: 'pending' | 'running' | 'pass' | 'failed' | 'killed' | 'interrupted' | 'needs-attention';
   canCommit: boolean;
   canAutoRecover: boolean;
   canNudge: boolean;

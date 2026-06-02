@@ -130,7 +130,8 @@ describe('sessionManifestStore', () => {
           events.push('dir-close');
         })
       };
-      const rename = vi.fn(async () => {
+      const rename = vi.fn(async (...args: unknown[]) => {
+        expect(args).toHaveLength(2);
         events.push('rename');
       });
 

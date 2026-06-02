@@ -12,7 +12,7 @@ Renderer state is derived from reconciliation results. It is never an authority 
 | `failed` | `not_available` with failure detail | failed marker and audit trail visible |
 | `killed` | `not_available` with interruption detail | failed marker and audit trail visible |
 | `interrupted` | `not_available` with interruption detail | failed marker and audit trail visible |
-| `terminal-stuck` | `not_available` with terminal-stuck detail | nudge visible only when `canNudge` is true |
+| `needs-attention` | `not_available` with needs-attention detail | nudge visible only when `canNudge` is true |
 
 ## Audit trail endpoint
 

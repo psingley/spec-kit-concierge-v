@@ -24,7 +24,7 @@
 - [X] T002 [P] Create session manifest v1 fixture set for valid, incomplete, invalid-shape, unknown-schema, and max-size performance manifests in `tests/fixtures/hybrid-manifest/session-manifest.v1.json` and `tests/fixtures/hybrid-manifest/session-manifest.max.json`; max fixture includes six steps, three attempts per step, 30 anomalies, 30 interventions, 12 doctor invocations, and 60 artifact snapshot entries
 - [X] T003 [P] Create branch trailer history fixture set covering duplicate, out-of-order, and matching artifact-snapshot trailers in `tests/fixtures/hybrid-manifest/branch-trailers.txt`
 - [X] T004 [P] Create transcript and print-mode terminal-event fixture set covering success, failure, missing JSON, invalid JSON, killed, interrupted, watchdog-silence, and parseable assistant identity events with `assistantSessionId`, `messageId`, and `turnId` in `tests/fixtures/hybrid-manifest/terminal-events.jsonl`
-- [X] T005 [P] Create deterministic recovery catalog fixture set covering exactly 20 safe and unsafe classes from `contracts/recovery-catalog.md`, doctor exhaustion, nudge eligibility, and terminal-stuck sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`; the fixture denominator must support the SC-004 90% automatic-safe-recovery assertion without invoking the doctor
+- [X] T005 [P] Create deterministic recovery catalog fixture set covering exactly 20 safe and unsafe classes from `contracts/recovery-catalog.md`, doctor exhaustion, nudge eligibility, and needs-attention sessions in `tests/fixtures/hybrid-manifest/recovery-scenarios.json`; the fixture denominator must support the SC-004 90% automatic-safe-recovery assertion without invoking the doctor
 - [X] T005a [P] Create 100-case interrupted and restarted resume reconstruction fixture corpus with expected current step and terminal status outcomes in `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`; the fixture denominator must support the SC-002 99% reconstruction assertion without transient renderer state
 
 ---
@@ -75,11 +75,11 @@
 - [X] T027 [US1] Add RED `commitWithTrailer` idempotency tests requiring artifact-snapshot comparison before new commit creation and exactly one `Concierge-Step: <step>:pass` trailer in `src/main/data-layer/git/gitCommand.commit.test.ts`
 - [X] T028 [US1] Replace head-only `commitWithTrailer` idempotency with branch-history artifact-snapshot adoption in `src/main/data-layer/git/gitCommand.ts`
 - [X] T029 [US1] Add RED `sessionReconciler` completion-gate tests for pass, missing artifact, stale manifest attempt, missing trailer, mismatched snapshot, unresolved blocking anomaly, and failed marker inputs in `src/main/domain/reconciliation/sessionReconciler.test.ts`
-- [X] T030 [US1] Implement pure `sessionReconciler` completion, pending, running, failed, killed, interrupted, and terminal-stuck decisions in `src/main/domain/reconciliation/sessionReconciler.ts`
+- [X] T030 [US1] Implement pure `sessionReconciler` completion, pending, running, failed, killed, interrupted, and needs-attention decisions in `src/main/domain/reconciliation/sessionReconciler.ts`
 - [X] T031 [US1] Add RED pre-commit and post-commit reconciliation integration tests around after-hook commit writes in `src/main/hooks/hookHelpers.test.ts`
 - [X] T032 [US1] Route after-hook completion through pre-commit and post-commit reconciliation in `src/main/hooks/hookHelpers.ts`
-- [ ] T033 [US1] Add RED resume reconstruction tests proving branch sessions derive progress from manifest, trailers, artifacts, and failed markers instead of renderer memory and assert the 100-case SC-002 fixture corpus reaches at least 99% correct current-step plus terminal-status reconstruction in `src/main/data-layer/git/branchSessions.test.ts`
-- [ ] T034 [US1] Integrate manifest-backed reconciliation into branch session reconstruction in `src/main/data-layer/git/branchSessions.ts`
+- [X] T033 [US1] Add RED resume reconstruction tests proving branch sessions derive progress from manifest, trailers, artifacts, and failed markers instead of renderer memory and assert the 100-case SC-002 fixture corpus reaches at least 99% correct current-step plus terminal-status reconstruction in `src/main/data-layer/git/branchSessions.test.ts`
+- [X] T034 [US1] Integrate manifest-backed reconciliation into branch session reconstruction in `src/main/data-layer/git/branchSessions.ts`
 
 **Checkpoint**: MVP complete when User Story 1 independently proves no step can pass unless manifest, branch, artifact, and failure evidence agree.
 
@@ -133,7 +133,7 @@
 - [ ] T056 [US3] Implement read-only doctor tools without exposing secrets or raw unrelated file contents in `src/main/data-layer/doctor/readOnlyTools.ts`
 - [ ] T057 [US3] Add RED guarded doctor tool tests for re-read disk truth, precondition validation, anomaly-id idempotency, doctor-invocation structured logging, audit append, reconciliation return, and delegation to deterministic guarded actions for all six guarded tools in `src/main/data-layer/doctor/guardedTools.test.ts`
 - [ ] T058 [US3] Implement guarded doctor tools and doctor-invocation structured logging for `relocateArtifact`, `reRunStepWithPinnedContext`, `issueCorrectionPrompt`, `revertUnrelatedFiles`, `markFailedWithStrandedArtifacts`, and `cancelActiveStep` by routing through deterministic guarded recovery actions in `src/main/data-layer/doctor/guardedTools.ts`
-- [ ] T059 [US3] Add RED doctor budget tests for two attempts per step, unsafe request rejection, budget exhaustion anomaly recording, and escalation to terminal-stuck state in `src/main/data-layer/doctor/doctorHarness.test.ts`
+- [ ] T059 [US3] Add RED doctor budget tests for two attempts per step, unsafe request rejection, budget exhaustion anomaly recording, and escalation to needs-attention state in `src/main/data-layer/doctor/doctorHarness.test.ts`
 - [ ] T060 [US3] Implement bounded doctor harness, per-step budgets, tool invocation records, and escalation results in `src/main/data-layer/doctor/doctorHarness.ts`
 - [ ] T061 [US3] Add RED deterministic-core-without-doctor tests proving reconciliation, failed markers, and each safe recovery catalog class still work when doctor is disabled in `src/main/domain/reconciliation/sessionReconciler.test.ts`
 - [ ] T062 [US3] Keep doctor optional and off the happy path through reconciler and recovery options in `src/main/domain/reconciliation/sessionReconciler.ts`
@@ -149,9 +149,9 @@
 
 ## Phase 6: User Story 4 - Manual Nudge For Terminal-Stuck Sessions (Priority: P4)
 
-**Goal**: Terminal-stuck sessions expose a manual nudge that reconciles unambiguous branch mismatches and escalates risky or ambiguous differences.
+**Goal**: Needs-attention sessions expose a manual nudge that reconciles unambiguous branch mismatches and escalates risky or ambiguous differences.
 
-**Independent Test**: Force a terminal-stuck step after failed automatic remediation; confirm the nudge appears, computes intended state from durable evidence, repairs only unambiguous discrepancies, and escalates ambiguity without destructive changes.
+**Independent Test**: Force a needs-attention step after failed automatic remediation; confirm the nudge appears, computes intended state from durable evidence, repairs only unambiguous discrepancies, and escalates ambiguity without destructive changes.
 
 ### Tests for User Story 4
 
@@ -175,7 +175,7 @@
 - [ ] T082 [US4] Implement `reconcileBranchToIntendedShape` pure planner and guarded action orchestration in `src/main/domain/reconciliation/reconcileBranchToIntendedShape.ts`
 - [ ] T083 [US4] Add RED nudge data-layer, IPC, HTTP, preload bridge, and renderer API tests for nudge request/result factory floors, `sessionManifest:nudge`, `POST /v1/session-manifest/nudge`, nudge mutation cache invalidation, re-reading disk truth before each mutation, nudge-action structured logging, intervention audit records, reconciliation after each action, and branch-change rejection in `src/main/data-layer/recovery/nudge.test.ts`, `src/main/ipc/sessionManifest.nudge.test.ts`, `src/main/http/sessionManifest.nudge.test.ts`, `src/preload/index.test.ts`, and `src/renderer/api/sessionManifest.endpoint.test.ts`
 - [ ] T084 [US4] Implement nudge execution, nudge IPC/HTTP/preload/renderer surfaces, and nudge-action structured logging through guarded deterministic actions in `src/main/data-layer/recovery/nudge.ts`, `src/main/ipc/sessionManifest.ts`, `src/main/http/sessionManifest.ts`, `src/preload/index.ts`, and `src/renderer/api/sessionManifest.endpoint.ts`
-- [ ] T085 [US4] Add RED E2E nudge and audit flow covering terminal-stuck visibility, unambiguous repair, ambiguous escalation, healthy-session hidden state, external-agent HTTP nudge parity, GUI mirroring, and failed/remediated/nudged audit inspection within the SC-007 target in `e2e/hybrid-manifest-nudge.spec.ts`
+- [ ] T085 [US4] Add RED E2E nudge and audit flow covering needs-attention visibility, unambiguous repair, ambiguous escalation, healthy-session hidden state, external-agent HTTP nudge parity, GUI mirroring, and failed/remediated/nudged audit inspection within the SC-007 target in `e2e/hybrid-manifest-nudge.spec.ts`
 - [ ] T086 [US4] Wire smart nudge and audit-trail UI into passive and review step containers in `src/renderer/components/PassiveStepContainer.tsx` and `src/renderer/components/ReviewStepContainer.tsx`
 
 ### Implementation for User Story 4
@@ -183,7 +183,7 @@
 - [ ] T087 [US4] Add RED regression tests preserving maximum reached step advancement, navigation-loop prevention, branch-null routing gates, and Windows-conditional command behavior in `src/renderer/components/WorkspaceContainer.test.tsx`
 - [ ] T088 [US4] Preserve derived step advancement, navigation-loop prevention, branch-null routing gates, and Windows command behavior while manifest state becomes authoritative in `src/renderer/components/WorkspaceContainer.tsx`
 
-**Checkpoint**: User Story 4 works when nudge appears only for terminal-stuck sessions after auto-remediation fails and never bypasses deterministic validation.
+**Checkpoint**: User Story 4 works when nudge appears only for needs-attention sessions after auto-remediation fails and never bypasses deterministic validation.
 
 ---
 
@@ -215,7 +215,7 @@
 - **US1 (P1)**: Starts after Foundation; no dependency on other stories.
 - **US2 (P2)**: Depends on US1 to reuse manifest authority, branch-history idempotency, and reconciliation.
 - **US3 (P3)**: Depends on US2 to reuse anomalies, guarded deterministic recovery, and failed-marker evidence.
-- **US4 (P4)**: Depends on US3 to integrate facilitator execution, doctor escalation, and terminal-stuck nudge eligibility.
+- **US4 (P4)**: Depends on US3 to integrate facilitator execution, doctor escalation, and needs-attention nudge eligibility.
 
 ### Milestone Order Mapping
 
@@ -282,7 +282,7 @@ After T078, T079 and T081 can be drafted in parallel because renderer nudge UI t
 1. Deliver US1 to establish deterministic step authority.
 2. Deliver US2 to safely recover known irregularities and preserve failed evidence.
 3. Deliver US3 to add bounded doctor triage without authority.
-4. Deliver US4 to integrate print-mode facilitator flow and terminal-stuck nudge.
+4. Deliver US4 to integrate print-mode facilitator flow and needs-attention nudge.
 
 ### Validation Gates
 

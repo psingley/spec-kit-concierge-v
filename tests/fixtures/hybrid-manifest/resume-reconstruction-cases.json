@@ -58,7 +58,7 @@
     {
       "caseId": "resume-004",
       "currentStep": "tasks",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "tasks",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -109,7 +109,7 @@
     {
       "caseId": "resume-007",
       "currentStep": "specify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "specify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -177,7 +177,7 @@
     {
       "caseId": "resume-011",
       "currentStep": "analyze",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "analyze",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -228,7 +228,7 @@
     {
       "caseId": "resume-014",
       "currentStep": "clarify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "clarify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -296,7 +296,7 @@
     {
       "caseId": "resume-018",
       "currentStep": "review",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "review",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -347,7 +347,7 @@
     {
       "caseId": "resume-021",
       "currentStep": "plan",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "plan",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -415,7 +415,7 @@
     {
       "caseId": "resume-025",
       "currentStep": "specify",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "specify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -466,7 +466,7 @@
     {
       "caseId": "resume-028",
       "currentStep": "tasks",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "tasks",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -534,7 +534,7 @@
     {
       "caseId": "resume-032",
       "currentStep": "clarify",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "clarify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -585,7 +585,7 @@
     {
       "caseId": "resume-035",
       "currentStep": "analyze",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "analyze",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -653,7 +653,7 @@
     {
       "caseId": "resume-039",
       "currentStep": "plan",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "plan",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -704,7 +704,7 @@
     {
       "caseId": "resume-042",
       "currentStep": "review",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "review",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -772,7 +772,7 @@
     {
       "caseId": "resume-046",
       "currentStep": "tasks",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "tasks",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -823,7 +823,7 @@
     {
       "caseId": "resume-049",
       "currentStep": "specify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "specify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -891,7 +891,7 @@
     {
       "caseId": "resume-053",
       "currentStep": "analyze",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "analyze",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -942,7 +942,7 @@
     {
       "caseId": "resume-056",
       "currentStep": "clarify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "clarify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1010,7 +1010,7 @@
     {
       "caseId": "resume-060",
       "currentStep": "review",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "review",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1061,7 +1061,7 @@
     {
       "caseId": "resume-063",
       "currentStep": "plan",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "plan",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1129,7 +1129,7 @@
     {
       "caseId": "resume-067",
       "currentStep": "specify",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "specify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1180,7 +1180,7 @@
     {
       "caseId": "resume-070",
       "currentStep": "tasks",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "tasks",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1248,7 +1248,7 @@
     {
       "caseId": "resume-074",
       "currentStep": "clarify",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "clarify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1299,7 +1299,7 @@
     {
       "caseId": "resume-077",
       "currentStep": "analyze",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "analyze",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1367,7 +1367,7 @@
     {
       "caseId": "resume-081",
       "currentStep": "plan",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "plan",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1418,7 +1418,7 @@
     {
       "caseId": "resume-084",
       "currentStep": "review",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "review",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1486,7 +1486,7 @@
     {
       "caseId": "resume-088",
       "currentStep": "tasks",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "tasks",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1537,7 +1537,7 @@
     {
       "caseId": "resume-091",
       "currentStep": "specify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "specify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1605,7 +1605,7 @@
     {
       "caseId": "resume-095",
       "currentStep": "analyze",
-      "expectedTerminalStatus": "failed",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "analyze",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,
@@ -1656,7 +1656,7 @@
     {
       "caseId": "resume-098",
       "currentStep": "clarify",
-      "expectedTerminalStatus": "terminal-stuck",
+      "expectedTerminalStatus": "needs-attention",
       "expectedCurrentStep": "clarify",
       "manifestAttemptStatus": "failed",
       "hasMatchingTrailer": false,

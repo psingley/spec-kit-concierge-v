@@ -6,7 +6,7 @@ export type StepName = (typeof STEP_NAMES)[number];
 export const STEP_ATTEMPT_STATUSES = ['pending', 'running', 'pass', 'failed', 'killed', 'interrupted'] as const;
 export type StepAttemptStatus = (typeof STEP_ATTEMPT_STATUSES)[number];
 
-export const RECONCILIATION_STATUSES = [...STEP_ATTEMPT_STATUSES, 'terminal-stuck'] as const;
+export const RECONCILIATION_STATUSES = [...STEP_ATTEMPT_STATUSES, 'needs-attention'] as const;
 export type ReconciliationStatus = (typeof RECONCILIATION_STATUSES)[number];
 
 export const ANOMALY_KINDS = [

@@ -5,7 +5,7 @@ export const RENDERER_SESSION_MANIFEST_STATUSES = [
   'failed',
   'killed',
   'interrupted',
-  'terminal-stuck'
+  'needs-attention'
 ] as const;
 
 export type RendererSessionManifestStatus = (typeof RENDERER_SESSION_MANIFEST_STATUSES)[number];

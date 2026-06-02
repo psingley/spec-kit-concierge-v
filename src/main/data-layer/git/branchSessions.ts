@@ -1,6 +1,6 @@
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { readFailedStepMarkers, type RestoredStepFailures } from '../failedSteps';
+import { readFailedStepMarkers, type FailedStepRecord, type RestoredStepFailures } from '../failedSteps';
 import { GitCommandError, readConciergeStepHistory, runGit as runGitDefault } from './gitCommand';
 import { worktreesHome } from './worktreePaths';
 
@@ -29,9 +29,66 @@ export type BranchSessionsDeps = {
   runGit?: (cwd: string, args: string[]) => Promise<string>;
   readHistory?: typeof readConciergeStepHistory;
   readFailedSteps?: typeof readFailedStepMarkers;
+  readManifestEvidence?: (worktreePath: string) => Promise<ManifestResumeEvidence | undefined>;
   detectStrandedTasksFailure?: typeof detectStrandedTasksFailure;
   // Path seam so the win32 worktree-home shape can be asserted in tests.
   platformPath?: Pick<typeof path, 'join' | 'dirname' | 'basename'>;
+};
+
+export type ManifestResumeTerminalStatus =
+  | 'pending'
+  | 'running'
+  | 'pass'
+  | 'needs-attention'
+  | 'failed'
+  | 'killed'
+  | 'interrupted';
+
+export type ManifestResumeEvidence = {
+  currentStep: StepName;
+  terminalStatus: ManifestResumeTerminalStatus;
+  completedSteps: StepName[];
+  restoredStepCommits?: RestoredStepCommits;
+  failedStep?: FailedStepRecord;
+};
+
+export type ResumeReconstructionCase = {
+  currentStep: StepName;
+  manifestAttemptStatus: ManifestResumeTerminalStatus;
+  hasMatchingTrailer: boolean;
+  hasRequiredArtifacts: boolean;
+  hasFailedMarker: boolean;
+};
+
+const STEP_ORDER: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
+
+const nextStep = (step: StepName): StepName =>
+  STEP_ORDER[Math.min(STEP_ORDER.indexOf(step) + 1, STEP_ORDER.length - 1)] ?? step;
+
+export const reconstructResumeCase = (
+  testCase: ResumeReconstructionCase
+): { currentStep: StepName; terminalStatus: ManifestResumeTerminalStatus } => {
+  if (
+    testCase.manifestAttemptStatus === 'pass' &&
+    testCase.hasMatchingTrailer &&
+    testCase.hasRequiredArtifacts &&
+    !testCase.hasFailedMarker
+  ) {
+    return { currentStep: nextStep(testCase.currentStep), terminalStatus: 'pass' };
+  }
+
+  if (
+    testCase.manifestAttemptStatus === 'failed' &&
+    !testCase.hasMatchingTrailer &&
+    testCase.hasFailedMarker
+  ) {
+    return { currentStep: testCase.currentStep, terminalStatus: 'needs-attention' };
+  }
+
+  return {
+    currentStep: testCase.currentStep,
+    terminalStatus: testCase.manifestAttemptStatus
+  };
 };
 
 const emptyStates = (): Record<StepName, StepState> => ({
@@ -223,6 +280,7 @@ export const listBranchSessions = async (
   const runGit = deps.runGit ?? runGitDefault;
   const readHistory = deps.readHistory ?? readConciergeStepHistory;
   const readFailedSteps = deps.readFailedSteps ?? readFailedStepMarkers;
+  const readManifestEvidence = deps.readManifestEvidence;
   const detectTasksFailure = deps.detectStrandedTasksFailure ?? detectStrandedTasksFailure;
   const platformPath = deps.platformPath ?? path;
 
@@ -256,6 +314,7 @@ export const listBranchSessions = async (
     const history = await readHistory(worktree.worktreePath, revisionRange);
     const specMdPresent = await hasSpecMd(worktree.worktreePath, revisionRange, runGit);
     const restoredFailures = { ...(await readFailedSteps(worktree.worktreePath)) };
+    const manifestEvidence = await readManifestEvidence?.(worktree.worktreePath);
 
     const states = emptyStates();
     const restoredStepCommits: RestoredStepCommits = {};
@@ -291,6 +350,25 @@ export const listBranchSessions = async (
       }
     }
 
+    if (manifestEvidence !== undefined) {
+      for (const completedStep of manifestEvidence.completedSteps) {
+        states[completedStep] = 'complete';
+      }
+      Object.assign(restoredStepCommits, manifestEvidence.restoredStepCommits);
+      if (manifestEvidence.terminalStatus === 'pass') {
+        states[manifestEvidence.currentStep] = 'complete';
+        const availableStep = nextStep(manifestEvidence.currentStep);
+        if (states[availableStep] === 'not_available') {
+          states[availableStep] = 'pending';
+        }
+      } else if (manifestEvidence.terminalStatus !== 'pending') {
+        states[manifestEvidence.currentStep] = 'pending';
+      }
+      if (manifestEvidence.terminalStatus === 'needs-attention' && manifestEvidence.failedStep !== undefined) {
+        restoredFailures[manifestEvidence.failedStep.step] = manifestEvidence.failedStep;
+      }
+    }
+
     for (const failedStep of Object.keys(restoredFailures) as StepName[]) {
       if (states[failedStep] !== 'complete') {
         states[failedStep] = 'pending';
@@ -304,7 +382,7 @@ export const listBranchSessions = async (
     // Only surface genuine resumable sessions: a named branch with at least one
     // branch-unique step trailer or in-flight spec.md work, OR a detached just-
     // created session. A bare named branch with no trailer and no spec.md is not one.
-    if (!detachedInProgress && history.length === 0 && !specMdPresent && Object.keys(restoredFailures).length === 0) {
+    if (!detachedInProgress && manifestEvidence === undefined && history.length === 0 && !specMdPresent && Object.keys(restoredFailures).length === 0) {
       continue;
     }
 

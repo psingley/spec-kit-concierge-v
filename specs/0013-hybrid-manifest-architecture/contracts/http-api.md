@@ -30,7 +30,7 @@ Returns doctor availability, per-step attempt budget, exhaustion state, and esca
 
 ### `POST /v1/session-manifest/nudge`
 
-Requests `reconcileBranchToIntendedShape` for a terminal-stuck session. The handler rejects healthy, running, auto-recoverable, stale-branch, or ambiguous-precondition sessions before mutation.
+Requests `reconcileBranchToIntendedShape` for a needs-attention session. The handler rejects healthy, running, auto-recoverable, stale-branch, or ambiguous-precondition sessions before mutation.
 
 ## Contract tests
 

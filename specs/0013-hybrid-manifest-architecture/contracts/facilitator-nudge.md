@@ -32,9 +32,9 @@ For each invocation it records:
 10. Update manifest attempt status.
 11. Escalate to deterministic recovery, doctor, failed marker, or nudge eligibility when needed.
 
-## Terminal-stuck criteria
+## Needs-attention criteria
 
-A session is terminal-stuck when:
+A session is needs-attention when:
 
 - The active/latest attempt is terminal `failed`, `killed`, or `interrupted`, or reconciliation has a blocking anomaly.
 - Deterministic known-safe recovery did not succeed.

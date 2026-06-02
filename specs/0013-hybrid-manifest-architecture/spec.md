@@ -12,7 +12,11 @@
 
 ### Session 2026-06-01
 
-- Q: Which architecture seed governs clarification? -> A: Hybrid deterministic core plus bounded LLM doctor; strict reconciliation; print-mode unification and ACP removal; deterministic code as sole writer and authority; nudge only for terminal-stuck sessions after automatic remediation fails.
+- Q: Which architecture seed governs clarification? -> A: Hybrid deterministic core plus bounded LLM doctor; strict reconciliation; print-mode unification and ACP removal; deterministic code as sole writer and authority; nudge only for needs-attention sessions after automatic remediation fails.
+
+### Session 2026-06-02
+
+- Q: How should the app handle disk states where a failed step and a stuck terminal step are indistinguishable? -> A: Do not guess. Collapse indistinguishable failed-marker terminal states into one reconciled `needs-attention` state. That state reveals the nudge action and doctor intermediary because durable evidence cannot deterministically choose a narrower status.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -66,15 +70,15 @@ As a user, I need an LLM intermediary to help triage open-ended anomalies while 
 
 ### User Story 4 - Manual Nudge For Terminal-Stuck Sessions (Priority: P4)
 
-As a user with a terminal-stuck step after automatic remediation has failed, I need a manual nudge that reconciles the branch toward the intended shape and clearly escalates ambiguous cases.
+As a user with a needs-attention step after automatic remediation has failed, I need a manual nudge that reconciles the branch toward the intended shape and clearly escalates ambiguous cases.
 
 **Why this priority**: Users need an escape hatch for rare stuck states, but it must not appear during normal happy-path operation or hide risky decisions.
 
-**Independent Test**: Can be tested by forcing a terminal-stuck session with no successful auto-remediation and confirming that the nudge becomes available, computes intended state from durable evidence, fixes unambiguous discrepancies, and asks for human judgment when ambiguity remains.
+**Independent Test**: Can be tested by forcing a needs-attention session with no successful auto-remediation and confirming that the nudge becomes available, computes intended state from durable evidence, fixes unambiguous discrepancies, and asks for human judgment when ambiguity remains.
 
 **Acceptance Scenarios**:
 
-1. **Given** a step is terminal-stuck and no automatic remediation succeeded, **When** the user views the session, **Then** the nudge action is available.
+1. **Given** a step is needs-attention and no automatic remediation succeeded, **When** the user views the session, **Then** the nudge action is available.
 2. **Given** the nudge action finds an unambiguous mismatch between intended and actual branch state, **When** it runs, **Then** the system repairs the mismatch through guarded deterministic actions and reports the result.
 3. **Given** the nudge action finds ambiguous or risky differences, **When** it runs, **Then** it escalates to the user without making destructive or authoritative changes.
 
@@ -118,7 +122,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **FR-022**: System MUST require every mutating doctor tool to re-read current disk truth at execution time, validate preconditions, be idempotent by anomaly identifier, and append an audit record before returning control to reconciliation.
 - **FR-023**: System MUST forbid the doctor from directly marking steps complete, writing trailers, performing raw file or branch operations, widening step contracts, guessing on unresolved ambiguity, or exceeding two attempts per step.
 - **FR-024**: System MUST keep the deterministic core fully usable without the doctor enabled or invoked.
-- **FR-025**: System MUST reveal the nudge action only when a step is terminal-stuck and no successful automatic remediation has happened.
+- **FR-025**: System MUST reveal the nudge action only when a step is needs-attention and no successful automatic remediation has happened.
 - **FR-026**: System MUST compute the nudge action's intended branch shape from durable manifest state, selected feature directory, step contracts, completion evidence, and trailers.
 - **FR-027**: System MUST allow the nudge flow to repair unambiguous discrepancies through guarded deterministic actions and require human escalation for ambiguous discrepancies.
 - **FR-028**: System MUST preserve existing resume reconstruction, maximum reached step advancement, navigation-loop prevention, graceful failed-step resume, branch-null routing gates, and Windows-conditional behavior.
@@ -133,7 +137,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **Anomaly**: A deterministic finding that durable evidence does not match expected step state or branch shape.
 - **Intervention**: A guarded deterministic action taken to resolve or document an anomaly.
 - **Doctor Tool Invocation**: A bounded request from the LLM doctor to a deterministic read-only or guarded mutating tool.
-- **Nudge Request**: A user-initiated reconciliation attempt for terminal-stuck sessions after automatic remediation fails.
+- **Nudge Request**: A user-initiated reconciliation attempt for needs-attention sessions after automatic remediation fails.
 
 ## Success Criteria *(mandatory)*
 
@@ -144,7 +148,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **SC-003**: Duplicate or out-of-order completion commits are prevented or adopted correctly in 100% of tested branch-history idempotency cases.
 - **SC-004**: The safe recovery catalog is resolved automatically in at least 90% of a 20-case fixture corpus covering safe and unsafe recovery classes without invoking the doctor.
 - **SC-005**: In doctor-assisted scenarios, 100% of authoritative state changes are made by deterministic guarded tools and followed by reconciliation before the user sees completion.
-- **SC-006**: The nudge action appears in 0% of healthy or actively recoverable sessions and appears in 100% of terminal-stuck sessions that meet the manual escape-hatch criteria.
+- **SC-006**: The nudge action appears in 0% of healthy or actively recoverable sessions and appears in 100% of needs-attention sessions that meet the manual escape-hatch criteria.
 - **SC-007**: Users can inspect a complete anomaly and intervention audit trail for any failed, remediated, or nudged step in under 30 seconds.
 - **SC-008**: Existing regression cases for resume, maximum reached step advancement, navigation-loop prevention, failed-step resume, branch-null routing, and Windows-conditional behavior continue to pass after the feature is introduced.
 
@@ -155,5 +159,5 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - The manifest location is scoped to the worktree so branch/session evidence travels with the session workspace.
 - Existing step contracts remain the basis for determining required artifacts and step-owned paths.
 - The doctor is additive and off the happy path; deterministic execution and reconciliation remain sufficient for normal successful runs.
-- Ambiguous recovery decisions should escalate rather than guess, even when that leaves a step failed or terminal-stuck.
-- The hybrid manifest architecture seed is authoritative for planning: the core is deterministic, reconciliation is strict, ACP is removed from step execution, print-mode is unified, deterministic code is the sole writer and authority, the doctor only reads and invokes bounded guarded tools, and the nudge appears only for terminal-stuck sessions after automatic remediation fails.
+- Ambiguous recovery decisions should escalate rather than guess, even when that leaves a step failed or needs-attention.
+- The hybrid manifest architecture seed is authoritative for planning: the core is deterministic, reconciliation is strict, ACP is removed from step execution, print-mode is unified, deterministic code is the sole writer and authority, the doctor only reads and invokes bounded guarded tools, and the nudge appears only for needs-attention sessions after automatic remediation fails.

@@ -2,7 +2,7 @@
 
 **Branch**: `build/manifest-architecture-dogfood` | **Date**: 2026-06-01 | **Spec**: `specs/0013-hybrid-manifest-architecture/spec.md`
 
-**Input**: Feature specification from `specs/0013-hybrid-manifest-architecture/spec.md`; selected by `.specify/feature.json`; clarification seed: hybrid deterministic core plus bounded LLM doctor, strict reconciliation, print-mode unification, ACP removal from step execution, deterministic code as sole writer and authority, and nudge only for terminal-stuck sessions after automatic remediation fails.
+**Input**: Feature specification from `specs/0013-hybrid-manifest-architecture/spec.md`; selected by `.specify/feature.json`; clarification seed: hybrid deterministic core plus bounded LLM doctor, strict reconciliation, print-mode unification, ACP removal from step execution, deterministic code as sole writer and authority, and nudge only for needs-attention sessions after automatic remediation fails.
 
 **Note**: This plan stops after Spec Kit Phase 2 planning. `/speckit.tasks` creates implementation tasks. No source implementation files are edited by this planning step.
 
@@ -166,7 +166,7 @@ Research is complete in `research.md`. All planning unknowns are resolved:
 - Branch-history idempotency compares step-owned artifact snapshot identities, not only HEAD.
 - Dirty-diff gates use step-start owned-path snapshots and block unrelated/ambiguous changes.
 - The doctor is a bounded LLM intermediary with exactly twelve tools and zero direct authority.
-- The nudge action computes intended branch shape from durable evidence and runs only after terminal-stuck criteria are met.
+- The nudge action computes intended branch shape from durable evidence and runs only after needs-attention criteria are met.
 
 ## Phase 1: Design & Contracts
 
@@ -176,7 +176,7 @@ Design artifacts are complete:
 - `contracts/manifest-schema.md` defines the durable manifest schema, atomic-write expectations, attempt lifecycle, anomaly/intervention audit records, and migration/version behavior.
 - `contracts/reconciliation.md` defines reconciliation inputs, completion gates, branch-history idempotency, dirty-diff gates, failed-marker writes, and classifier output.
 - `contracts/doctor-tools.md` defines the exact six read-only and six guarded doctor tools, budgets, preconditions, idempotency, audit semantics, and forbidden actions.
-- `contracts/facilitator-nudge.md` defines facilitator integration, print-mode invocation, terminal-stuck criteria, nudge visibility, `reconcileBranchToIntendedShape`, and human escalation outputs.
+- `contracts/facilitator-nudge.md` defines facilitator integration, print-mode invocation, needs-attention criteria, nudge visibility, `reconcileBranchToIntendedShape`, and human escalation outputs.
 - `contracts/http-api.md` defines localhost HTTP parity for manifest read, reconcile, audit trail, doctor status, and nudge.
 - `quickstart.md` defines implementation order and verification entry points.
 
@@ -196,7 +196,7 @@ Replace head-only idempotency with a branch-history search that compares the cur
 
 ### Milestone 4: `sessionReconciler`
 
-Build a pure reconciler that reads manifest attempts, branch trailers, artifact snapshots, failed markers, and terminal results and emits `pass`, `failed`, `killed`, `interrupted`, or terminal-stuck state without trusting renderer memory or agent prose. Run reconciliation before and after commit writes.
+Build a pure reconciler that reads manifest attempts, branch trailers, artifact snapshots, failed markers, and terminal results and emits `pass`, `failed`, `killed`, `interrupted`, or needs-attention state without trusting renderer memory or agent prose. Run reconciliation before and after commit writes.
 
 ### Milestone 5: Dirty-diff gates plus failed markers
 
@@ -226,7 +226,7 @@ Validation fixtures include a 100-case interrupted/restarted resume corpus for t
 
 ### Milestone 11: Nudge button plus `reconcileBranchToIntendedShape`
 
-Expose a nudge action only for terminal-stuck sessions after automatic remediation fails. `reconcileBranchToIntendedShape` computes intended branch state from manifest, feature directory, step contracts, completion evidence, and trailers; applies guarded deterministic repairs only for unambiguous mismatches; and escalates all ambiguous or risky differences to the user.
+Expose a nudge action only for needs-attention sessions after automatic remediation fails. `reconcileBranchToIntendedShape` computes intended branch state from manifest, feature directory, step contracts, completion evidence, and trailers; applies guarded deterministic repairs only for unambiguous mismatches; and escalates all ambiguous or risky differences to the user.
 
 ## Post-Design Constitution Check
 

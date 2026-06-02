@@ -68,4 +68,4 @@ Cancels an active step attempt and records `killed` or `interrupted` based on ob
 
 - Maximum two doctor attempts per step.
 - Tool rejections count toward the budget when the request is unsafe or out-of-contract.
-- Budget exhaustion records a blocking anomaly and escalates to user-visible terminal-stuck state.
+- Budget exhaustion records a blocking anomaly and escalates to user-visible needs-attention state.
