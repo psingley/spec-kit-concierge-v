@@ -216,6 +216,64 @@ describe('registerPassiveStepIpc', () => {
     await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain(`dirty-diff-${classification}`);
   });
 
+  it('records classifier anomalies, logs classifier results, and blocks completion authority', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0013-hybrid-manifest-architecture');
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'tasks-sha' } });
+    const recordClassifierAnomaly = vi.fn().mockResolvedValue(undefined);
+    const transcriptClassifier = vi.fn().mockResolvedValue({
+      canMarkComplete: false,
+      canInvokeDoctor: false,
+      anomalies: [{
+        anomalyId: 'tasks-watchdog-silence-session',
+        step: 'tasks',
+        kind: 'watchdog-silence',
+        severity: 'blocking',
+        detectedAt: '2026-06-02T00:00:00.000Z',
+        evidence: {
+          paths: ['specs/0013-hybrid-manifest-architecture/tasks.md']
+        }
+      }]
+    });
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook,
+      agentAdapter: vi.fn().mockResolvedValue({ updates: [{ sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk' } }] }),
+      transcriptClassifier,
+      recordClassifierAnomaly
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({
+        type: 'done',
+        step: 'tasks',
+        status: 'fail',
+        reason: 'needs-attention: transcript classifier blocked completion'
+      })
+    })));
+    expect(recordClassifierAnomaly).toHaveBeenCalledWith(expect.objectContaining({
+      repositoryPath,
+      anomaly: expect.objectContaining({ anomalyId: 'tasks-watchdog-silence-session' })
+    }));
+    expect(harness.logger.info).toHaveBeenCalledWith(expect.objectContaining({
+      event: 'classifier-result',
+      anomalyIds: ['tasks-watchdog-silence-session'],
+      canMarkComplete: false,
+      canInvokeDoctor: false
+    }), 'ipc handler invocation');
+    expect(afterHook).not.toHaveBeenCalled();
+    await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('tasks-watchdog-silence-session');
+  });
+
   it('sends fail without running the agent when the abort signal is already aborted', async () => {
     const harness = createHarness();
     const controller = new AbortController();

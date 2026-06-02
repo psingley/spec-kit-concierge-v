@@ -105,15 +105,15 @@
 - [X] T044 [US2] Implement safe recovery catalog request and result factories for relocation, valid completion adoption, failed-marker refresh, proven unrelated-file revert, observed active-step cancel, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request in `src/main/domain/recovery/recoveryCatalog.factory.ts`
 - [X] T045 [US2] Add RED deterministic recovery data-layer tests for all six safe classes, including re-reading disk truth, rejecting ambiguous destinations, moving only step-owned files, adopting matching completion commits, refreshing failed markers, reverting only proven unrelated files, canceling only observed active processes, requiring explicit user confirmation or an approved guarded doctor request for pinned-context restart, structured recovery-action logging, auditing before return, no silent step re-run, no direct completion marking, and idempotent no-op by anomaly id in `src/main/data-layer/recovery/deterministicRecovery.test.ts`
 - [X] T046 [US2] Implement deterministic recovery orchestrator, guarded actions, and recovery-action structured logging for the safe recovery catalog in `src/main/data-layer/recovery/deterministicRecovery.ts`
-- [ ] T047 [US2] Add RED watchdog and transcript classifier tests for silence, missing terminal output, invalid JSON output, unexpected child exit, killed, interrupted, and transcript irregularity anomalies in `src/main/domain/reconciliation/transcriptClassifier.test.ts`
-- [ ] T048 [US2] Implement authority-free watchdog and transcript anomaly classifier in `src/main/domain/reconciliation/transcriptClassifier.ts`
-- [ ] T049 [US2] Add RED passive step classifier integration tests proving classifier anomalies cannot mark completion, write trailers, cancel steps, invoke doctor tools directly, or skip classifier-result structured logging in `src/main/ipc/passiveStepIpc.test.ts`
-- [ ] T050 [US2] Record classifier anomalies and classifier-result structured logs through manifest append APIs without completion authority in `src/main/ipc/passiveStepIpc.ts`
+- [X] T047 [US2] Add RED watchdog and transcript classifier tests for silence, missing terminal output, invalid JSON output, unexpected child exit, killed, interrupted, and transcript irregularity anomalies in `src/main/domain/reconciliation/transcriptClassifier.test.ts`
+- [X] T048 [US2] Implement authority-free watchdog and transcript anomaly classifier in `src/main/domain/reconciliation/transcriptClassifier.ts`
+- [X] T049 [US2] Add RED passive step classifier integration tests proving classifier anomalies cannot mark completion, write trailers, cancel steps, invoke doctor tools directly, or skip classifier-result structured logging in `src/main/ipc/passiveStepIpc.test.ts`
+- [X] T050 [US2] Record classifier anomalies and classifier-result structured logs through manifest append APIs without completion authority in `src/main/ipc/passiveStepIpc.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T051 [US2] Add RED regression tests preserving graceful failed-step resume with stranded artifacts in `src/main/data-layer/git/branchSessions.test.ts`
-- [ ] T052 [US2] Preserve graceful failed-step resume while surfacing stranded artifact detail in `src/main/data-layer/git/branchSessions.ts`
+- [X] T051 [US2] Add RED regression tests preserving graceful failed-step resume with stranded artifacts in `src/main/data-layer/git/branchSessions.test.ts`
+- [X] T052 [US2] Preserve graceful failed-step resume while surfacing stranded artifact detail in `src/main/data-layer/git/branchSessions.ts`
 
 **Checkpoint**: User Story 2 works when deterministic recovery fixes only safe recovery catalog cases and all unsafe or ambiguous cases produce durable failed markers and unresolved anomalies.
 

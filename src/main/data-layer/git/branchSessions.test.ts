@@ -331,7 +331,7 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
           failedAt: '2026-06-02T00:00:00.000Z',
           reason: 'needs-attention: ambiguous failed marker',
           strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/tasks.md'],
-          anomalyIds: []
+          anomalyIds: ['tasks-watchdog-silence-session']
         }
       }))
     });
@@ -344,7 +344,9 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
       tasks: 'pending'
     });
     expect(sessions[0]!.restoredFailures.tasks).toMatchObject({
-      reason: expect.stringContaining('needs-attention')
+      reason: expect.stringContaining('needs-attention'),
+      strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/tasks.md'],
+      anomalyIds: ['tasks-watchdog-silence-session']
     });
   });
 });

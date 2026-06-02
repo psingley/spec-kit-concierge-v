@@ -5,7 +5,9 @@ import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import { readFailedStepMarker, removeFailedStepMarker, writeFailedStepMarker } from '../data-layer/failedSteps';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
+import type { Anomaly } from '../domain/manifest/types';
 import type { DirtyDiffGateResult } from '../domain/reconciliation/dirtyDiffGates';
+import type { TranscriptClassifierResult } from '../domain/reconciliation/transcriptClassifier';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -52,6 +54,13 @@ export type RegisterPassiveStepIpcOptions = {
   afterHook: (context: StepHookContext) => Promise<StepHookResult>;
   agentAdapter: PassiveStepAgentAdapter;
   dirtyDiffGate?: (context: StepHookContext) => Promise<DirtyDiffGateResult | undefined>;
+  transcriptClassifier?: (request: {
+    context: StepHookContext;
+    step: PassiveStepName;
+    sessionId: string;
+    agentResult?: PassiveStepAgentResult | void;
+  }) => Promise<TranscriptClassifierResult | undefined>;
+  recordClassifierAnomaly?: (request: { repositoryPath: string; anomaly: Anomaly }) => Promise<void>;
   abortSignal?: AbortSignal;
   now?: () => number;
 };
@@ -132,6 +141,8 @@ export const registerPassiveStepIpc = ({
   afterHook,
   agentAdapter,
   dirtyDiffGate,
+  transcriptClassifier,
+  recordClassifierAnomaly,
   abortSignal,
   now = () => performance.now()
 }: RegisterPassiveStepIpcOptions): void => {
@@ -173,6 +184,11 @@ export const registerPassiveStepIpc = ({
       };
       const failureReasonFor = (result: Extract<StepHookResult, { ok: false }>): string =>
         result.failureReason ?? result.escapeHatchReason;
+      const strandedArtifactsFrom = (anomalies: Anomaly[]): string[] =>
+        anomalies.flatMap((anomaly) => {
+          const paths = anomaly.evidence.paths;
+          return Array.isArray(paths) ? paths.filter((item): item is string => typeof item === 'string') : [];
+        });
       const finishPass = async (
         commitSha: string,
         activeFeatureDir: string,
@@ -239,6 +255,34 @@ export const registerPassiveStepIpc = ({
             });
           }
         });
+        const classifierResult = await transcriptClassifier?.({
+          context: hookContext,
+          step,
+          sessionId,
+          agentResult
+        });
+        if (classifierResult !== undefined) {
+          logger.info({
+            channel,
+            context,
+            event: 'classifier-result',
+            anomalyIds: classifierResult.anomalies.map((anomaly) => anomaly.anomalyId),
+            canMarkComplete: classifierResult.canMarkComplete,
+            canInvokeDoctor: classifierResult.canInvokeDoctor
+          }, 'ipc handler invocation');
+          for (const anomaly of classifierResult.anomalies) {
+            await recordClassifierAnomaly?.({ repositoryPath: request.repositoryPath, anomaly });
+          }
+          const blockingAnomalies = classifierResult.anomalies.filter((anomaly) => anomaly.severity === 'blocking');
+          if (blockingAnomalies.length > 0) {
+            failureDetails = {
+              reason: 'needs-attention: transcript classifier blocked completion',
+              strandedArtifacts: strandedArtifactsFrom(blockingAnomalies),
+              anomalyIds: blockingAnomalies.map((anomaly) => anomaly.anomalyId)
+            };
+            throw new Error(failureDetails.reason);
+          }
+        }
         const dirtyDiff = await dirtyDiffGate?.(hookContext);
         if (dirtyDiff?.blocking === true) {
           failureDetails = {
