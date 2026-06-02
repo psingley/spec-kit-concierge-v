@@ -88,6 +88,24 @@ const captureStepStartSnapshot = async (
   return snapshot;
 };
 
+const createFeatureArtifactDeltaReader = (context: StepHookContext) => async (
+  files: readonly string[]
+): Promise<boolean> => {
+  if (files.length === 0) {
+    return false;
+  }
+
+  const featurePrefix = path.relative(context.repositoryPath, context.featureDir);
+  const repositoryFiles = files.map((file) =>
+    path.isAbsolute(file)
+      ? path.relative(context.repositoryPath, file)
+      : path.join(featurePrefix, file)
+  );
+
+  const status = await runGit(context.repositoryPath, ['status', '--porcelain', '--', ...repositoryFiles]);
+  return status.length > 0;
+};
+
 const strandedArtifactsFromAnomalies = (anomalies: Anomaly[]): string[] =>
   anomalies.flatMap((anomaly) => {
     const strandedArtifacts = anomaly.evidence.strandedArtifacts;
@@ -188,7 +206,12 @@ export const runAfterHook = async (
           path.relative(context.repositoryPath, context.featureDir) || '.'
         ]).then((output) => output.split(/\r?\n/).filter(Boolean))
       }
-      : context;
+      : step === 'clarify' && context.validateArtifacts === undefined && context.hasArtifactDelta === undefined
+        ? {
+          ...context,
+          hasArtifactDelta: createFeatureArtifactDeltaReader(context)
+        }
+        : context;
     const result = await validate(context.featureDir, validationContext);
     if (!result.ok) {
       const reason = result.kind === 'malformed-questions' ? 'clarify-malformed' : result.escapeHatchReason;

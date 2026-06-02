@@ -120,8 +120,12 @@ export const commitWithTrailer = async (
   repositoryPath: string,
   candidate: ConciergeStepCommit
 ): Promise<CommitWithTrailerResult> => {
-  if (candidate.allowEmptyCommit === true && candidate.step !== 'analyze') {
-    throw new GitCommandError('only analyze may request empty commits', ['git', 'commit'], undefined);
+  if (
+    candidate.allowEmptyCommit === true &&
+    candidate.step !== 'analyze' &&
+    candidate.step !== 'clarify'
+  ) {
+    throw new GitCommandError('only analyze and clarify may request empty commits', ['git', 'commit'], undefined);
   }
 
   if (candidate.files.length > 0) {

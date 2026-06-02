@@ -202,4 +202,30 @@ describe('commitWithTrailer idempotency', () => {
       expect(message).toContain('Concierge-Step: analyze:pass');
     });
   }, gitFixtureTimeoutMs);
+
+  it('makes an empty commit for clarify when allowEmptyCommit is set even with nothing staged', async () => {
+    await withTempDir(async (directory) => {
+      await createRepository(directory);
+      await writeFile(path.join(directory, 'spec.md'), 'clear spec contents');
+      await git(directory, ['add', '--', 'spec.md']);
+      await git(directory, ['commit', '-m', 'feat: specify']);
+      const commitsBefore = await countCommits(directory);
+
+      const candidate: ConciergeStepCommit = {
+        step: 'clarify',
+        status: 'pass',
+        files: ['spec.md'],
+        message: 'chore: clarify',
+        allowEmptyCommit: true
+      };
+
+      const result = await commitWithTrailer(directory, candidate);
+
+      expect(result.trailer).toBe('Concierge-Step: clarify:pass');
+      expect(await countCommits(directory)).toBe(commitsBefore + 1);
+
+      const message = await runGit(directory, ['log', '-1', '--format=%B']);
+      expect(message).toContain('Concierge-Step: clarify:pass');
+    });
+  }, gitFixtureTimeoutMs);
 });

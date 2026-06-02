@@ -56,6 +56,7 @@ export type StepHookContext = {
   userDataPath: string;
   hookName?: string;
   contextFilePath?: string;
+  hasArtifactDelta?: (files: readonly string[]) => Promise<boolean>;
   authStatus?: AuthStatusSlot;
   mcpConfig?: McpConfigSlot;
   readTrailers?: TrailerReader;
