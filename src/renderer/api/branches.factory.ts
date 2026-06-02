@@ -1,10 +1,12 @@
 import { requireExactKeys, requireRecord, requireString, type RendererBoundaryErrorName, type RendererFactoryResult } from './factoryUtils';
-import type { BranchSession, RestoredStepCommits } from '../slices/workspace';
+import type { BranchSession, RestoredStepCommits, RestoredStepFailures } from '../slices/workspace';
 import type { StepName, StepState } from '../slices/steps';
 
 type ErrorName = 'InvalidBranchSessions';
 const stepNames: StepName[] = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
 const states: StepState[] = ['not_available', 'pending', 'complete'];
+const requiredSessionKeys = ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates', 'restoredStepCommits'] as const;
+const optionalSessionKeys = ['restoredFailures'] as const;
 
 export type RendererBranchSessions = { sessions: BranchSession[] };
 
@@ -22,18 +24,29 @@ export const parseRendererBranchSessions = (
   for (const session of root.value.sessions) {
     const record = requireRecord(session, 'InvalidBranchSessions', '$.sessions[]');
     if (!record.ok) return record;
-    const recordKeys = requireExactKeys<ErrorName>(record.value, ['sessionId', 'worktreePath', 'branch', 'label', 'restoredStates', 'restoredStepCommits']);
-    if (!recordKeys.ok) return recordKeys;
+    const allowedKeys = new Set([...requiredSessionKeys, ...optionalSessionKeys]);
+    const missingKey = requiredSessionKeys.find((key) => !(key in record.value));
+    const extraKey = Object.keys(record.value).find((key) => !allowedKeys.has(key as typeof requiredSessionKeys[number] | typeof optionalSessionKeys[number]));
+    if (missingKey !== undefined) {
+      return { ok: false, error: { name: 'InvalidBranchSessions', message: 'session is missing a required key', path: `$.sessions[].${missingKey}` } };
+    }
+    if (extraKey !== undefined) {
+      return { ok: false, error: { name: 'InvalidRendererBoundaryPayload', message: 'unexpected session keys', path: `$.${extraKey}` } };
+    }
     const sessionId = requireString(record.value.sessionId, 'InvalidBranchSessions', '$.sessions[].sessionId');
     const worktreePath = requireString(record.value.worktreePath, 'InvalidBranchSessions', '$.sessions[].worktreePath');
     const label = requireString(record.value.label, 'InvalidBranchSessions', '$.sessions[].label');
     const restored = requireRecord(record.value.restoredStates, 'InvalidBranchSessions', '$.sessions[].restoredStates');
     const restoredStepCommits = requireRecord(record.value.restoredStepCommits, 'InvalidBranchSessions', '$.sessions[].restoredStepCommits');
+    const restoredFailuresRecord = record.value.restoredFailures === undefined
+      ? { ok: true, value: {} as Record<string, unknown> } as const
+      : requireRecord(record.value.restoredFailures, 'InvalidBranchSessions', '$.sessions[].restoredFailures');
     if (!sessionId.ok) return sessionId;
     if (!worktreePath.ok) return worktreePath;
     if (!label.ok) return label;
     if (!restored.ok) return restored;
     if (!restoredStepCommits.ok) return restoredStepCommits;
+    if (!restoredFailuresRecord.ok) return restoredFailuresRecord;
     // branch is null for a detached, not-yet-named worktree; otherwise a non-empty string.
     const rawBranch = record.value.branch;
     let branch: string | null;
@@ -61,7 +74,36 @@ export const parseRendererBranchSessions = (
       }
       commits[step as StepName] = commitSha;
     }
-    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates, restoredStepCommits: commits });
+    const failures: RestoredStepFailures = {};
+    for (const [step, failure] of Object.entries(restoredFailuresRecord.value)) {
+      if (!stepNames.includes(step as StepName)) {
+        return { ok: false, error: { name: 'InvalidBranchSessions', message: 'invalid restored failure key', path: `$.sessions[].restoredFailures.${step}` } };
+      }
+      const failureRecord = requireRecord(failure, 'InvalidBranchSessions', `$.sessions[].restoredFailures.${step}`);
+      if (!failureRecord.ok) return failureRecord;
+      const failureStep = requireString(failureRecord.value.step, 'InvalidBranchSessions', `$.sessions[].restoredFailures.${step}.step`);
+      const failureSessionId = requireString(failureRecord.value.sessionId, 'InvalidBranchSessions', `$.sessions[].restoredFailures.${step}.sessionId`);
+      const failedAt = requireString(failureRecord.value.failedAt, 'InvalidBranchSessions', `$.sessions[].restoredFailures.${step}.failedAt`);
+      const reason = requireString(failureRecord.value.reason, 'InvalidBranchSessions', `$.sessions[].restoredFailures.${step}.reason`);
+      if (!failureStep.ok) return failureStep;
+      if (!failureSessionId.ok) return failureSessionId;
+      if (!failedAt.ok) return failedAt;
+      if (!reason.ok) return reason;
+      if (failureStep.value !== step) {
+        return { ok: false, error: { name: 'InvalidBranchSessions', message: 'restored failure step mismatch', path: `$.sessions[].restoredFailures.${step}.step` } };
+      }
+      if (!Array.isArray(failureRecord.value.strandedArtifacts) || !failureRecord.value.strandedArtifacts.every((artifact) => typeof artifact === 'string' && !artifact.includes('..'))) {
+        return { ok: false, error: { name: 'InvalidBranchSessions', message: 'invalid restored failure artifacts', path: `$.sessions[].restoredFailures.${step}.strandedArtifacts` } };
+      }
+      failures[step as StepName] = {
+        step: step as StepName,
+        sessionId: failureSessionId.value,
+        failedAt: failedAt.value,
+        reason: reason.value,
+        strandedArtifacts: failureRecord.value.strandedArtifacts
+      };
+    }
+    sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates, restoredStepCommits: commits, restoredFailures: failures });
   }
   return { ok: true, value: { sessions } };
 };

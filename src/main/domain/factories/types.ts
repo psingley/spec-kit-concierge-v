@@ -12,7 +12,13 @@ export type ConciergeStepCommit = {
 
 export type StepContractResult =
   | { ok: true; commit: ConciergeStepCommit; questions?: ClarifyQuestion[] }
-  | { ok: false; kind?: 'escape-hatch'; escapeHatchReason: StepEscapeHatchReason }
+  | {
+      ok: false;
+      kind?: 'escape-hatch';
+      escapeHatchReason: StepEscapeHatchReason;
+      failureReason?: string;
+      strandedArtifacts?: string[];
+    }
   | {
       ok: false;
       kind: 'malformed-questions';

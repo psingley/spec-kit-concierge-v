@@ -4,6 +4,7 @@ import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { registerPassiveStepIpc } from './passiveStepIpc';
+import { runAfterHook } from '../hooks/hookHelpers';
 
 const payload = {
   subscriptionId: 'sub-1',
@@ -23,6 +24,9 @@ const createRepo = async (featureRel = 'specs/0008-ai-passive-steps'): Promise<{
   await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
   return { repositoryPath, featureDir: path.join(repositoryPath, featureRel) };
 };
+
+const failedMarkerPath = (repositoryPath: string, step: string): string =>
+  path.join(repositoryPath, '.specify', 'concierge', 'failed-steps', `${step}.json`);
 
 const createHarness = () => {
   const handlers = new Map<string, (event: { sender: { id: number; send: ReturnType<typeof vi.fn> } }, payload: unknown) => Promise<unknown>>();
@@ -130,6 +134,43 @@ describe('registerPassiveStepIpc', () => {
     })));
     const terminalEvents = harness.sender.send.mock.calls.filter((call) => call[1].event.type === 'done');
     expect(terminalEvents).toHaveLength(1);
+  });
+
+  it('writes a durable failed-step marker when the after-hook factory rejects tasks output', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0012-remove-density-settings');
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn().mockResolvedValue({
+        ok: false,
+        phase: 'after',
+        step: 'tasks',
+        escapeHatchReason: 'factory-rejected',
+        failureReason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings',
+        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+      }),
+      agentAdapter: vi.fn().mockResolvedValue(undefined)
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({
+        type: 'done',
+        step: 'tasks',
+        status: 'fail',
+        reason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings'
+      })
+    })));
+    await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('"reason":"factory-rejected: expected tasks.md under specs/0012-remove-density-settings"');
+    await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('specs/0008-react-router-refactor/tasks.md');
   });
 
   it('sends fail without running the agent when the abort signal is already aborted', async () => {
@@ -243,6 +284,51 @@ describe('registerPassiveStepIpc', () => {
     await vi.waitFor(() => expect(beforeHook).toHaveBeenCalledTimes(1));
     expect(beforeHook).toHaveBeenCalledWith(expect.objectContaining({ repositoryPath, featureDir }));
     expect(featureDir).not.toBe(repositoryPath);
+  });
+
+  it('retries a failed tasks step idempotently by recovering stranded tasks.md before re-running the agent', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0012-remove-density-settings');
+    const wrongDir = path.join(repositoryPath, 'specs', '0008-react-router-refactor');
+    await mkdir(wrongDir, { recursive: true });
+    await writeFile(path.join(wrongDir, 'tasks.md'), '# Tasks\n- [ ] T001 Recover stranded output\n', 'utf8');
+    await mkdir(path.dirname(failedMarkerPath(repositoryPath, 'tasks')), { recursive: true });
+    await writeFile(failedMarkerPath(repositoryPath, 'tasks'), JSON.stringify({
+      step: 'tasks',
+      sessionId: 'tasks-old',
+      failedAt: '2026-06-01T12:00:00.000Z',
+      reason: 'factory-rejected',
+      strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+    }), 'utf8');
+    const agentAdapter = vi.fn().mockResolvedValue(undefined);
+    const commitWithTrailer = vi.fn().mockResolvedValue({ commitSha: 'tasks-sha' });
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: (context) => runAfterHook('tasks', {
+        ...context,
+        commitWithTrailer,
+        removeInFlightMarker: vi.fn().mockResolvedValue(undefined)
+      }),
+      agentAdapter
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'tasks', status: 'pass', commitSha: 'tasks-sha' })
+    })));
+    expect(agentAdapter).not.toHaveBeenCalled();
+    expect(commitWithTrailer).toHaveBeenCalledWith(repositoryPath, expect.objectContaining({
+      step: 'tasks',
+      files: [path.join('specs', '0012-remove-density-settings', 'tasks.md')]
+    }));
   });
 
   it('emits a terminal fail (does not hang) when .specify/feature.json is missing', async () => {

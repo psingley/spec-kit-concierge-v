@@ -202,6 +202,76 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
     expect(sessions[0]!.restoredStates.specify).toBe('pending');
   });
 
+  it('restores a failed tasks marker as pending with failure context while preserving prior pass commits', async () => {
+    const wtPath = `${HOME}/session-015`;
+    const fullHistory: ConciergeStepHistoryRecord[] = [
+      { step: 'plan', status: 'pass', commitSha: 'p1', warnings: [] },
+      { step: 'clarify', status: 'pass', commitSha: 'c1', warnings: [] },
+      { step: 'specify', status: 'pass', commitSha: 's1', warnings: [] }
+    ];
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '015-remove-density-settings' }),
+      { [wtPath]: fullHistory }
+    );
+
+    const session = (await listBranchSessions(CLONE, {
+      ...deps,
+      readFailedSteps: vi.fn(async () => ({
+        tasks: {
+          step: 'tasks' as const,
+          sessionId: 'tasks-old',
+          failedAt: '2026-06-01T12:00:00.000Z',
+          reason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings',
+          strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+        }
+      }))
+    }))[0]!;
+
+    expect(session.restoredStates).toMatchObject({
+      specify: 'complete',
+      clarify: 'complete',
+      plan: 'complete',
+      tasks: 'pending',
+      analyze: 'not_available'
+    });
+    expect(session.restoredStepCommits).toEqual({ specify: 's1', clarify: 'c1', plan: 'p1' });
+    expect(session.restoredFailures.tasks).toMatchObject({
+      reason: expect.stringContaining('factory-rejected'),
+      strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+    });
+  });
+
+  it('derives a failed tasks resume state from stranded dirty tasks.md when no marker exists yet', async () => {
+    const wtPath = `${HOME}/session-015`;
+    const fullHistory: ConciergeStepHistoryRecord[] = [
+      { step: 'plan', status: 'pass', commitSha: 'p1', warnings: [] },
+      { step: 'clarify', status: 'pass', commitSha: 'c1', warnings: [] },
+      { step: 'specify', status: 'pass', commitSha: 's1', warnings: [] }
+    ];
+    const { deps } = makeDeps(
+      porcelain({ path: CLONE, branch: 'main' }, { path: wtPath, branch: '015-remove-density-settings' }),
+      { [wtPath]: fullHistory }
+    );
+
+    const session = (await listBranchSessions(CLONE, {
+      ...deps,
+      readFailedSteps: vi.fn(async () => ({})),
+      detectStrandedTasksFailure: vi.fn(async () => ({
+        step: 'tasks' as const,
+        sessionId: 'session-015',
+        failedAt: 'unknown',
+        reason: 'factory-rejected: expected specs/0012-remove-density-settings/tasks.md; found stranded tasks.md at specs/0008-react-router-refactor/tasks.md',
+        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+      }))
+    }))[0]!;
+
+    expect(session.restoredStates.tasks).toBe('pending');
+    expect(session.restoredFailures.tasks).toMatchObject({
+      reason: expect.stringContaining('stranded tasks.md'),
+      strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+    });
+  });
+
   it('does not surface a named worktree with no trailer and no spec.md', async () => {
     const wtPath = `${HOME}/session-bare`;
     const { deps } = makeDeps(

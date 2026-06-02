@@ -63,7 +63,8 @@ export const RepoBrowseScreenContainer = (): React.ReactElement => {
       .then((result) => dispatch(sessionRestoredFromResume({
         specMarkdown: result.specMarkdown,
         commitSha: session.restoredStepCommits.specify ?? result.specCommitSha,
-        restoredStepCommits: session.restoredStepCommits
+        restoredStepCommits: session.restoredStepCommits,
+        restoredFailures: session.restoredFailures
       })))
       .catch(() => undefined)
       .finally(() =>

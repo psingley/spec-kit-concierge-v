@@ -203,4 +203,63 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
     expect(screen.getByRole('heading', { name: 'Plan completed' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Run Plan/i })).not.toBeInTheDocument();
   });
+
+  it('reconstructs a resumed failed tasks step with retry context instead of a fresh ready state', () => {
+    installConciergeBridge();
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge.worktrees/session-015',
+      defaultBranch: 'main'
+    };
+    const restoredStates = {
+      specify: 'complete',
+      clarify: 'complete',
+      plan: 'complete',
+      tasks: 'pending',
+      analyze: 'not_available',
+      review: 'not_available'
+    } as const;
+    const restoredStepCommits = {
+      specify: 'specify-sha',
+      clarify: 'clarify-sha',
+      plan: 'plan-sha'
+    };
+    const restoredFailures = {
+      tasks: {
+        step: 'tasks' as const,
+        sessionId: 'tasks-old',
+        failedAt: '2026-06-01T12:00:00.000Z',
+        reason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings',
+        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+      }
+    };
+
+    act(() => {
+      store.dispatch(stepsRestoredFromSession({ states: restoredStates, commitShas: restoredStepCommits }));
+      store.dispatch(sessionRestoredFromResume({
+        specMarkdown: '# Spec',
+        commitSha: 'specify-sha',
+        restoredStepCommits,
+        restoredFailures
+      }));
+      store.dispatch(workspaceEntered({ repo, branch: '015-remove-density-settings', restoredStates }));
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/workspace?step=tasks']}>
+          <WorkspaceContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(store.getState().workspace.activeStep).toBe('tasks');
+    expect(screen.getByRole('button', { name: /Retry Tasks/i })).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Tasks attempted and failed: factory-rejected');
+    expect(screen.getByRole('alert')).toHaveTextContent('specs/0008-react-router-refactor/tasks.md');
+    expect(screen.queryByText('Tasks is ready when the prior step is complete.')).not.toBeInTheDocument();
+  });
 });

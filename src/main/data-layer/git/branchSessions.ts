@@ -1,4 +1,6 @@
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { readFailedStepMarkers, type RestoredStepFailures } from '../failedSteps';
 import { GitCommandError, readConciergeStepHistory, runGit as runGitDefault } from './gitCommand';
 import { worktreesHome } from './worktreePaths';
 
@@ -18,6 +20,7 @@ export type BranchSessionSummary = {
   label: string;
   restoredStates: Record<StepName, StepState>;
   restoredStepCommits: RestoredStepCommits;
+  restoredFailures: RestoredStepFailures;
 };
 
 export type BranchSessionsDeps = {
@@ -25,6 +28,8 @@ export type BranchSessionsDeps = {
   // stub this to assert NO `checkout` is ever issued.
   runGit?: (cwd: string, args: string[]) => Promise<string>;
   readHistory?: typeof readConciergeStepHistory;
+  readFailedSteps?: typeof readFailedStepMarkers;
+  detectStrandedTasksFailure?: typeof detectStrandedTasksFailure;
   // Path seam so the win32 worktree-home shape can be asserted in tests.
   platformPath?: Pick<typeof path, 'join' | 'dirname' | 'basename'>;
 };
@@ -65,6 +70,58 @@ const sessionLabel = (branch: string | null, sessionId: string): string => {
 };
 
 const isSpecMdPath = (filePath: string): boolean => /(^|\/)spec\.md$/.test(filePath.trim());
+
+const readFeatureDirectory = async (worktreePath: string): Promise<string | undefined> => {
+  try {
+    const parsed = JSON.parse(await readFile(path.join(worktreePath, '.specify', 'feature.json'), 'utf8')) as unknown;
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      !Array.isArray(parsed) &&
+      typeof (parsed as { feature_directory?: unknown }).feature_directory === 'string'
+    ) {
+      return (parsed as { feature_directory: string }).feature_directory;
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
+};
+
+export const detectStrandedTasksFailure = async (
+  worktreePath: string,
+  runGit: (cwd: string, args: string[]) => Promise<string>,
+  platformPath: Pick<typeof path, 'join' | 'basename'> = path
+): Promise<RestoredStepFailures['tasks'] | undefined> => {
+  const featureDirectory = await readFeatureDirectory(worktreePath);
+  if (featureDirectory === undefined) {
+    return undefined;
+  }
+  const expectedTasksPath = platformPath.join(featureDirectory, 'tasks.md');
+  try {
+    await access(platformPath.join(worktreePath, expectedTasksPath));
+    return undefined;
+  } catch {
+    // Missing expected tasks.md is the only case where sibling dirty tasks can be a failure clue.
+  }
+
+  const status = await runGit(worktreePath, ['status', '--porcelain', '--untracked-files=all']);
+  const strandedArtifacts = status
+    .split(/\r?\n/)
+    .map((line) => line.slice(3).trim())
+    .filter((filePath) => /^specs\/[^/]+\/tasks\.md$/.test(filePath) && filePath !== expectedTasksPath)
+    .sort();
+  if (strandedArtifacts.length === 0) {
+    return undefined;
+  }
+  return {
+    step: 'tasks',
+    sessionId: platformPath.basename(worktreePath),
+    failedAt: 'unknown',
+    reason: `factory-rejected: expected ${expectedTasksPath}; found stranded tasks.md at ${strandedArtifacts.join(', ')}`,
+    strandedArtifacts
+  };
+};
 
 // The default branch is the comparison base: feature branches sit on top of it,
 // so only commits unique to the branch (`<defaultBranch>..<branch>`) carry that
@@ -165,6 +222,8 @@ export const listBranchSessions = async (
 ): Promise<BranchSessionSummary[]> => {
   const runGit = deps.runGit ?? runGitDefault;
   const readHistory = deps.readHistory ?? readConciergeStepHistory;
+  const readFailedSteps = deps.readFailedSteps ?? readFailedStepMarkers;
+  const detectTasksFailure = deps.detectStrandedTasksFailure ?? detectStrandedTasksFailure;
   const platformPath = deps.platformPath ?? path;
 
   const porcelain = await runGit(clonePath, ['worktree', 'list', '--porcelain']);
@@ -196,6 +255,7 @@ export const listBranchSessions = async (
         : undefined;
     const history = await readHistory(worktree.worktreePath, revisionRange);
     const specMdPresent = await hasSpecMd(worktree.worktreePath, revisionRange, runGit);
+    const restoredFailures = { ...(await readFailedSteps(worktree.worktreePath)) };
 
     const states = emptyStates();
     const restoredStepCommits: RestoredStepCommits = {};
@@ -224,6 +284,19 @@ export const listBranchSessions = async (
       states.specify = 'pending';
     }
 
+    if (restoredFailures.tasks === undefined && states.plan === 'complete' && states.tasks !== 'complete') {
+      const strandedTasksFailure = await detectTasksFailure(worktree.worktreePath, runGit, platformPath);
+      if (strandedTasksFailure !== undefined) {
+        restoredFailures.tasks = strandedTasksFailure;
+      }
+    }
+
+    for (const failedStep of Object.keys(restoredFailures) as StepName[]) {
+      if (states[failedStep] !== 'complete') {
+        states[failedStep] = 'pending';
+      }
+    }
+
     // A detached, not-yet-named worktree is an in-flight session even before any
     // spec.md exists: it was just created by start-new and specify is pending.
     const detachedInProgress = worktree.branch === null;
@@ -231,7 +304,7 @@ export const listBranchSessions = async (
     // Only surface genuine resumable sessions: a named branch with at least one
     // branch-unique step trailer or in-flight spec.md work, OR a detached just-
     // created session. A bare named branch with no trailer and no spec.md is not one.
-    if (!detachedInProgress && history.length === 0 && !specMdPresent) {
+    if (!detachedInProgress && history.length === 0 && !specMdPresent && Object.keys(restoredFailures).length === 0) {
       continue;
     }
 
@@ -241,7 +314,8 @@ export const listBranchSessions = async (
       branch: worktree.branch,
       label: sessionLabel(worktree.branch, sessionId),
       restoredStates: states,
-      restoredStepCommits
+      restoredStepCommits,
+      restoredFailures
     });
   }
 

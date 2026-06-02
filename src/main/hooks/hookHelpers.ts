@@ -102,7 +102,18 @@ export const runAfterHook = async (
         lifecycleEvent('step-escape-hatch-triggered', step, context, { reason }),
         'step after hook factory failed'
       );
-      return { ok: false, phase: 'after', step, escapeHatchReason: reason };
+      return {
+        ok: false,
+        phase: 'after',
+        step,
+        escapeHatchReason: reason,
+        ...(result.kind !== 'malformed-questions' && result.failureReason !== undefined
+          ? { failureReason: result.failureReason }
+          : {}),
+        ...(result.kind !== 'malformed-questions' && result.strandedArtifacts !== undefined
+          ? { strandedArtifacts: result.strandedArtifacts }
+          : {})
+      };
     }
 
     const commitWriter = context.commitWithTrailer ?? defaultCommitWithTrailer;

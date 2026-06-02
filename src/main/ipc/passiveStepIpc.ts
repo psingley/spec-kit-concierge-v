@@ -3,6 +3,7 @@ import { STEP_ARTIFACT_MANIFEST, expectedArtifactsForStep, type StepName } from 
 import { captureAnalyzeReport } from '../domain/evidence/analyzeReport';
 import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
+import { readFailedStepMarker, removeFailedStepMarker, writeFailedStepMarker } from '../data-layer/failedSteps';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
@@ -158,6 +159,8 @@ export const registerPassiveStepIpc = ({
 
     const run = async (): Promise<void> => {
       let terminalSent = false;
+      let featureDir: string | undefined;
+      let failureDetails: { reason?: string; strandedArtifacts?: string[] } = {};
       const terminal = (streamEvent: Extract<StepStreamEvent, { type: 'done' }>): void => {
         if (terminalSent) {
           return;
@@ -165,11 +168,31 @@ export const registerPassiveStepIpc = ({
         terminalSent = true;
         sendEvent(streamEvent);
       };
+      const failureReasonFor = (result: Extract<StepHookResult, { ok: false }>): string =>
+        result.failureReason ?? result.escapeHatchReason;
+      const finishPass = async (
+        commitSha: string,
+        activeFeatureDir: string,
+        agentResult?: PassiveStepAgentResult | void
+      ): Promise<void> => {
+        if (step === 'analyze') {
+          await captureAnalyzeReport({
+            userDataPath,
+            featureDir: activeFeatureDir,
+            sessionId,
+            analyzeCommitSha: commitSha,
+            updates: agentResult?.updates ?? []
+          });
+        }
+        await removeFailedStepMarker({ repositoryPath: request.repositoryPath, step });
+        terminal({ type: 'done', step, sessionId, status: 'pass', commitSha, summary: await summaryForStep(step, activeFeatureDir) });
+        logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+      };
       try {
         if (controller.signal.aborted) {
           throw new Error('aborted');
         }
-        const featureDir = await resolveFeatureDir(request.repositoryPath);
+        featureDir = await resolveFeatureDir(request.repositoryPath);
         const hookContext = {
           repositoryPath: request.repositoryPath,
           featureDir,
@@ -179,9 +202,22 @@ export const registerPassiveStepIpc = ({
         };
         const before = await beforeHook(hookContext);
         if (!before.ok) {
-          throw new Error(before.escapeHatchReason);
+          failureDetails = { reason: failureReasonFor(before), strandedArtifacts: before.strandedArtifacts };
+          throw new Error(failureReasonFor(before));
         }
         sendEvent({ type: 'progress', step, sessionId, level: 'info', message: `Running ${step}`, timestamp: new Date().toISOString() });
+
+        const existingFailure = step === 'tasks'
+          ? await readFailedStepMarker({ repositoryPath: request.repositoryPath, step })
+          : undefined;
+        if (existingFailure !== undefined) {
+          const retryAfter = await afterHook(hookContext);
+          if (retryAfter.ok && retryAfter.commit?.commitSha !== undefined) {
+            await finishPass(retryAfter.commit.commitSha, featureDir);
+            return;
+          }
+        }
+
         const agentResult = await agentAdapter({
           ...request,
           step,
@@ -202,21 +238,30 @@ export const registerPassiveStepIpc = ({
         });
         const after = await afterHook(hookContext);
         if (!after.ok || after.commit?.commitSha === undefined) {
-          throw new Error(after.ok ? 'missing commit sha' : after.escapeHatchReason);
+          failureDetails = after.ok
+            ? { reason: 'missing commit sha' }
+            : { reason: failureReasonFor(after), strandedArtifacts: after.strandedArtifacts };
+          throw new Error(after.ok ? 'missing commit sha' : failureReasonFor(after));
         }
-        if (step === 'analyze') {
-          await captureAnalyzeReport({
-            userDataPath,
-            featureDir,
-            sessionId,
-            analyzeCommitSha: after.commit.commitSha,
-            updates: agentResult?.updates ?? []
-          });
-        }
-        terminal({ type: 'done', step, sessionId, status: 'pass', commitSha: after.commit.commitSha, summary: await summaryForStep(step, featureDir) });
-        logger.info({ channel, context, success: true, latencyMs: latencyMs(startedAt, now) }, 'ipc handler invocation');
+        await finishPass(after.commit.commitSha, featureDir, agentResult);
       } catch (error) {
-        terminal({ type: 'done', step, sessionId, status: 'fail', reason: error instanceof Error ? error.message : String(error) });
+        const reason = failureDetails.reason ?? (error instanceof Error ? error.message : String(error));
+        if (featureDir !== undefined) {
+          try {
+            await writeFailedStepMarker({
+              repositoryPath: request.repositoryPath,
+              userDataPath,
+              step,
+              sessionId,
+              failedAt: new Date().toISOString(),
+              reason,
+              strandedArtifacts: failureDetails.strandedArtifacts
+            });
+          } catch (markerError) {
+            logger.warn({ channel, context, markerError }, 'failed-step marker write failed');
+          }
+        }
+        terminal({ type: 'done', step, sessionId, status: 'fail', reason });
         logHandlerError(logger, { channel, context, startedAt, now }, error);
       }
     };

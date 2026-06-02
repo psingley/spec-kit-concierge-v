@@ -2,11 +2,21 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { STEP_ARTIFACT_MANIFEST, type StepName } from '../../hooks/manifest';
 import type { ConciergeStepCommit, StepContractContext, StepContractResult } from './types';
+import type { StepEscapeHatchReason } from '../../hooks/types';
 
-export const factoryEscape = (escapeHatchReason = 'factory-rejected' as const): StepContractResult => ({
+type FactoryEscapeDetails = {
+  failureReason?: string;
+  strandedArtifacts?: string[];
+};
+
+export const factoryEscape = (
+  escapeHatchReason: StepEscapeHatchReason = 'factory-rejected',
+  details: FactoryEscapeDetails = {}
+): StepContractResult => ({
   ok: false,
   kind: 'escape-hatch',
-  escapeHatchReason
+  escapeHatchReason,
+  ...details
 });
 
 const frontmatterPattern = /^---\r?\n([\s\S]*?)\r?\n---/;
@@ -36,6 +46,23 @@ export const readRequiredArtifact = async (
   }
 };
 
+export const validateMarkdownContents = (
+  contents: string,
+  hostilePattern: RegExp,
+  partialPattern?: RegExp
+): StepContractResult | undefined => {
+  if (contents.trim().length === 0) {
+    return factoryEscape();
+  }
+  if (rejectFrontmatterKeys(contents) || hostilePattern.test(contents)) {
+    return factoryEscape();
+  }
+  if (partialPattern?.test(contents)) {
+    return factoryEscape();
+  }
+  return undefined;
+};
+
 export const validateRequiredMarkdown = async (
   step: StepName,
   featureDir: string,
@@ -45,15 +72,11 @@ export const validateRequiredMarkdown = async (
   const requiredFiles = STEP_ARTIFACT_MANIFEST[step].requiredFiles;
   for (const file of requiredFiles) {
     const contents = await readRequiredArtifact(featureDir, file);
-    if (contents === undefined || contents.trim().length === 0) {
+    if (contents === undefined) {
       return factoryEscape();
     }
-    if (rejectFrontmatterKeys(contents) || hostilePattern.test(contents)) {
-      return factoryEscape();
-    }
-    if (partialPattern?.test(contents)) {
-      return factoryEscape();
-    }
+    const invalid = validateMarkdownContents(contents, hostilePattern, partialPattern);
+    if (invalid !== undefined) return invalid;
   }
 
   return undefined;

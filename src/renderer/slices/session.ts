@@ -1,4 +1,5 @@
 import { createEntityAdapter, createSlice, type EntityState, type PayloadAction } from '@reduxjs/toolkit';
+import type { RestoredStepFailures } from './workspace';
 
 export type ClarifyChoice = {
   key: string;
@@ -104,6 +105,20 @@ const emptyPassiveStep = (step: PassiveStepName): PassiveStepRecord => ({
   milestones: []
 });
 
+const restoredFailureReason = (
+  step: PassiveStepName,
+  restoredFailures: RestoredStepFailures
+): string | null => {
+  const failure = restoredFailures[step];
+  if (failure === undefined) {
+    return null;
+  }
+  const stranded = failure.strandedArtifacts.length > 0
+    ? ` Stranded output: ${failure.strandedArtifacts.join(', ')}.`
+    : '';
+  return `${failure.reason}${stranded}`;
+};
+
 export const sessionInitialState: SessionState = {
   activeSessionId: null,
   modelId: null,
@@ -165,7 +180,12 @@ const sessionSlice = createSlice({
     },
     sessionRestoredFromResume: (
       state,
-      action: PayloadAction<{ specMarkdown: string; commitSha: string | null; restoredStepCommits?: RestoredStepCommits }>
+      action: PayloadAction<{
+        specMarkdown: string;
+        commitSha: string | null;
+        restoredStepCommits?: RestoredStepCommits;
+        restoredFailures?: RestoredStepFailures;
+      }>
     ) => {
       // Resume hydration (ADR-0016): the live session slice starts empty, so a
       // completed Specify would otherwise render as the empty prompt. Seed the
@@ -173,6 +193,7 @@ const sessionSlice = createSlice({
       // complete with its evidence. A blank spec (in-flight session) leaves
       // Specify pending — no fake "started" flag is set.
       const restoredStepCommits = action.payload.restoredStepCommits ?? {};
+      const restoredFailures = action.payload.restoredFailures ?? {};
       state.specMarkdown = action.payload.specMarkdown;
       state.commitSha = restoredStepCommits.specify ?? action.payload.commitSha;
       state.artifactPath = action.payload.specMarkdown.length > 0 ? 'spec.md' : null;
@@ -196,7 +217,7 @@ const sessionSlice = createSlice({
         record.sessionId = null;
         record.running = false;
         record.commitSha = restoredStepCommits[step] ?? null;
-        record.failureReason = null;
+        record.failureReason = record.commitSha === null ? restoredFailureReason(step, restoredFailures) : null;
         record.artifacts = [];
         record.milestones = [];
       }

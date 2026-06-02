@@ -43,6 +43,7 @@ export const PassiveStep = ({
     ...record.artifacts.map((artifact): StatusStepRow => ({ kind: 'artifact', artifact })),
     ...record.milestones.map((milestone): StatusStepRow => ({ kind: 'milestone', milestone }))
   ];
+  const runLabel = record.failureReason !== null ? `Retry ${stepLabel[step]}` : `Run ${stepLabel[step]}`;
   return (
     <section className="passive-step" aria-labelledby={`${step}-heading`}>
       <div className="section-heading">
@@ -56,7 +57,7 @@ export const PassiveStep = ({
           </button>
         ) : (
           <button type="button" className="btn primary" onClick={onRun} disabled={record.running}>
-            {record.running ? <><span className="spinner tiny" />Running</> : <><Ico.Sparkles size={13} />Run {stepLabel[step]}</>}
+            {record.running ? <><span className="spinner tiny" />Running</> : <><Ico.Sparkles size={13} />{runLabel}</>}
           </button>
         )}
       </div>
@@ -81,6 +82,10 @@ export const PassiveStep = ({
             <h3>{stepLabel[step]} completed</h3>
             <p className="meta">{record.commitSha}</p>
           </div>
+        ) : record.failureReason !== null ? (
+          <div className="clarify-card empty">
+            <p>{stepLabel[step]} attempted and failed. Review the details below, then retry.</p>
+          </div>
         ) : (
           <div className="clarify-card empty">
             <p>{stepLabel[step]} is ready when the prior step is complete.</p>
@@ -89,7 +94,7 @@ export const PassiveStep = ({
         {rows.length > 0 ? <StatusStep step={step} rows={rows} onArtifactOpen={onArtifactOpen} /> : null}
         {record.failureReason !== null ? (
           <div className="inline-warning" role="alert">
-            {record.failureReason.includes('hang') ? 'No recent output - the step may be stuck.' : record.failureReason}
+            {record.failureReason.includes('hang') ? 'No recent output - the step may be stuck.' : `${stepLabel[step]} attempted and failed: ${record.failureReason}`}
           </div>
         ) : null}
       </div>

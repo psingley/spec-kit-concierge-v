@@ -77,6 +77,8 @@ export type StepHookResult =
       phase: StepPhase;
       step: StepName;
       escapeHatchReason: StepEscapeHatchReason;
+      failureReason?: string;
+      strandedArtifacts?: string[];
       error?: unknown;
     };
 
