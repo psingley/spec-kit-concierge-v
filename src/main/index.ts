@@ -8,6 +8,7 @@ import { registerArtifactsIpc } from './ipc/artifacts';
 import { registerAuthIpc } from './ipc/auth';
 import { registerBranchesIpc } from './ipc/branches';
 import { registerCopilotSpecifyIpc } from './ipc/copilotSpecify';
+import { createBoundarySpecifyAgentAdapter } from './ipc/copilotSpecify.boundaryAdapter';
 import { registerCopilotClarifyIpc } from './ipc/copilotClarify';
 import { registerCopilotPlanIpc } from './ipc/copilotPlan';
 import { registerCopilotTasksIpc } from './ipc/copilotTasks';
@@ -89,7 +90,12 @@ app.whenReady().then(async () => {
   registerArtifactsIpc({ ipcMain, logger });
   registerTasksDetailIpc({ ipcMain, logger });
   registerReviewEvidenceIpc({ ipcMain, logger, userDataPath: app.getPath('userData') });
-  registerCopilotSpecifyIpc({ ipcMain, logger });
+  const boundarySpecifyAgentAdapter = createBoundarySpecifyAgentAdapter();
+  registerCopilotSpecifyIpc({
+    ipcMain,
+    logger,
+    ...(boundarySpecifyAgentAdapter === undefined ? {} : { agentAdapter: boundarySpecifyAgentAdapter })
+  });
   registerCopilotClarifyIpc({ ipcMain, logger });
   registerCopilotPlanIpc({ ipcMain, logger });
   registerCopilotTasksIpc({ ipcMain, logger });

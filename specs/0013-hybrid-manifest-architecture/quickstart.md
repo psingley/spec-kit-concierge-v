@@ -25,6 +25,16 @@
 10. Integrate facilitator print-mode execution, manifest writes, doctor escalation, and deterministic reconciliation.
 11. Add nudge button and `reconcileBranchToIntendedShape`.
 
+## Run 13 implementation notes
+
+- The failed-vs-terminal-stuck disk ambiguity is intentionally collapsed to `needs-attention`; the reconciler must not guess between indistinguishable terminal states.
+- `needs-attention` is the only nudge eligibility state. Healthy, running, pending, and auto-recoverable sessions keep nudge hidden.
+- Nudge repair uses guarded deterministic actions, appends intervention/audit/nudge records, re-runs reconciliation after each action, and never marks completion directly.
+- Renderer passive/review surfaces display reconciliation and audit projections only. Manifest, trailers, artifacts, and failed markers remain the authority.
+- Implemented milestone commits on this branch:
+  - `3feebbe` wires facilitator orchestration plus manifest IPC/HTTP/preload/renderer read surfaces.
+  - `b4ac017` adds the nudge planner, executor, renderer button, audit UI, HTTP parity, E2E nudge spec, and Workspace regression coverage.
+
 ## Targeted verification commands
 
 ```bash

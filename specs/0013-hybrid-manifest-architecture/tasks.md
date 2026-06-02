@@ -191,10 +191,10 @@
 
 **Purpose**: Verify full feature behavior and update directly related documentation after all desired stories are complete.
 
-- [ ] T089 [P] Update Run 13 implementation notes and manual evidence checklist in `specs/0013-hybrid-manifest-architecture/quickstart.md`
-- [ ] T090 [P] Reconfirm project guidance for manifest authority, print-mode step execution, doctor boundedness, audit inspection, and nudge constraints in `.github/copilot-instructions.md`
-- [ ] T091 Add and run RED performance budget coverage for manifest read plus reconciliation over `tests/fixtures/hybrid-manifest/session-manifest.max.json`, SC-002 99% resume reconstruction threshold coverage over `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`, and SC-004 90% automatic recovery threshold coverage over `tests/fixtures/hybrid-manifest/recovery-scenarios.json`, then run targeted typecheck, lint, unit, coverage, and E2E verification using scripts in `package.json`, including `npm run test:coverage`
-- [ ] T092 Confirm task and implementation coverage for FR-001 through FR-030 in `specs/0013-hybrid-manifest-architecture/spec.md`
+- [X] T089 [P] Update Run 13 implementation notes and manual evidence checklist in `specs/0013-hybrid-manifest-architecture/quickstart.md`
+- [X] T090 [P] Reconfirm project guidance for manifest authority, print-mode step execution, doctor boundedness, audit inspection, and nudge constraints in `.github/copilot-instructions.md`
+- [X] T091 Add and run RED performance budget coverage for manifest read plus reconciliation over `tests/fixtures/hybrid-manifest/session-manifest.max.json`, SC-002 99% resume reconstruction threshold coverage over `tests/fixtures/hybrid-manifest/resume-reconstruction-cases.json`, and SC-004 90% automatic recovery threshold coverage over `tests/fixtures/hybrid-manifest/recovery-scenarios.json`, then run targeted typecheck, lint, unit, coverage, and E2E verification using scripts in `package.json`, including `npm run test:coverage`
+- [X] T092 Confirm task and implementation coverage for FR-001 through FR-030 in `specs/0013-hybrid-manifest-architecture/spec.md`
 
 ---
 

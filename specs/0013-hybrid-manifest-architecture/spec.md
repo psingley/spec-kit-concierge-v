@@ -129,6 +129,18 @@ As a user with a needs-attention step after automatic remediation has failed, I 
 - **FR-029**: System MUST maintain and expose, through both renderer bridge and localhost HTTP API, a complete audit trail for anomalies, doctor recommendations, guarded tool invocations, deterministic recoveries, nudge actions, and human escalations.
 - **FR-030**: System MUST preserve this 11-milestone build order for planning and task decomposition: (1) sessionManifestStore with atomic writes and anomaly/intervention records, (2) stepContracts hardening and step-start owned-path snapshots, (3) branch-history commitStep idempotency, (4) sessionReconciler, (5) deterministic dirty-diff gates and failed markers with stranded-artifact detail, (6) guarded relocateArtifact tool, (7) deterministic watchdog and transcript classifier, (8) bounded 12-tool doctor harness, (9) doctor agent instructions, (10) facilitator integration, and (11) nudge button/reconcileBranchToIntendedShape.
 
+### FR Coverage Confirmation
+
+- **FR-001-FR-004**: Covered by `src/main/domain/manifest/*`, `src/main/data-layer/manifest/sessionManifestStore.*`, and manifest fixtures including `session-manifest.max.json`.
+- **FR-005-FR-008**: Covered by `sessionReconciler`, dirty-diff gates, passive-step facilitator integration, and pre/post reconciliation tests in `src/main/ipc/passiveStepIpc.test.ts`.
+- **FR-009-FR-012**: Covered by `src/main/data-layer/agents/copilotPrintModeAdapter.*` and facilitator identity capture tests for assistant session, message, turn, log, and terminal result.
+- **FR-013-FR-017**: Covered by branch-history idempotency, step-owned snapshots, dirty-diff gates, failed-step markers, and resume reconstruction tests under `src/main/data-layer/git/*`, `src/main/domain/reconciliation/*`, and `src/main/data-layer/failedSteps.*`.
+- **FR-018-FR-024**: Covered by deterministic recovery, guarded doctor tools, read-only doctor tools, doctor harness, and doctor instruction tests under `src/main/data-layer/recovery/*` and `src/main/data-layer/doctor/*`.
+- **FR-025-FR-027**: Covered by `reconcileBranchToIntendedShape`, `executeNudgeRecovery`, manifest nudge IPC/HTTP/preload/renderer tests, `NudgeButton`, passive/review container tests, and `e2e/hybrid-manifest-nudge.spec.ts`.
+- **FR-028**: Covered by `WorkspaceContainer.test.tsx`, router/guard/listener regressions, branch-session resume reconstruction, and Windows path/binary tests.
+- **FR-029**: Covered by manifest audit records, recovery/nudge audit append tests, `sessionManifest:auditTrail`, `/v1/session-manifest/audit`, and passive/review audit UI projection tests.
+- **FR-030**: Covered by the checked task order in `tasks.md`, Run 13 quickstart implementation notes, and the milestone commits for facilitator integration and nudge recovery.
+
 ### Key Entities *(include if feature involves data)*
 
 - **Session Manifest**: Durable per-worktree ledger that represents the authoritative attempt state of a Spec Kit session, including all step attempts, anomalies, interventions, and audit records. Completion authority is the reconciled agreement of manifest, branch trailer evidence, and step-owned artifacts.

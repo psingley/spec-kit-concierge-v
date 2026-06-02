@@ -80,6 +80,23 @@ describe('recoveryCatalog factory', () => {
     }
   });
 
+  it('meets the SC-004 90% automatic safe-recovery threshold without false completion', () => {
+    const safeScenarios = recoveryScenariosFixture.scenarios.filter((scenario) => scenario.safe);
+    const automaticallyRecovered = safeScenarios.filter((scenario) =>
+      scenario.expected.autoRecoverable === true &&
+      scenario.expected.doctorInvoked === false &&
+      scenario.expected.falseCompletion === false
+    );
+    const automaticPercent = (automaticallyRecovered.length / recoveryScenariosFixture.denominator.safe) * 100;
+
+    expect(recoveryScenariosFixture.scenarios).toHaveLength(recoveryScenariosFixture.denominator.total);
+    expect(safeScenarios).toHaveLength(recoveryScenariosFixture.denominator.safe);
+    expect(automaticPercent).toBeGreaterThanOrEqual(
+      recoveryScenariosFixture.denominator.automaticSafeRecoveryTargetPercent
+    );
+    expect(recoveryScenariosFixture.scenarios.every((scenario) => scenario.expected.falseCompletion === false)).toBe(true);
+  });
+
   it('requires anomaly id, idempotency key, and step ownership evidence', () => {
     expect(createSafeRecoveryRequest({ ...baseRequest, anomalyId: '' })).toMatchObject({
       ok: false,
