@@ -9,6 +9,7 @@ export const selectUiShowCustomize = (state: RootState) => state.ui.showCustomiz
 export const selectUiShowAbout = (state: RootState) => state.ui.showAbout;
 export const selectUiShowRequest = (state: RootState) => state.ui.showRequest;
 export const selectUiShowArtifactViewer = (state: RootState) => state.ui.showArtifactViewer;
+export const selectUiShowJiraSubmission = (state: RootState) => state.ui.showJiraSubmission;
 export const selectUiArtifactViewerPath = (state: RootState) => state.ui.artifactViewerPath;
 export const selectUiArtifactViewerOrigin = (state: RootState) => state.ui.artifactViewerOrigin;
 export const selectUiOpenMenu = (state: RootState) => state.ui.openMenu;

@@ -2338,6 +2338,65 @@ button.ev-row {
   width: 480px;
 }
 
+.jira-modal {
+  width: min(760px, 92vw);
+}
+
+.jira-modal-body {
+  max-height: 58vh;
+  overflow: auto;
+}
+
+.jira-summary,
+.jira-preview-row,
+.jira-progress-row,
+.jira-issue-links {
+  display: grid;
+  gap: 6px;
+}
+
+.jira-summary {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.jira-preview-list,
+.jira-progress {
+  display: grid;
+  gap: 8px;
+}
+
+.jira-preview-row,
+.jira-progress-row {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.jira-preview-row strong,
+.jira-progress-row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.jira-preview-row small,
+.jira-progress-row span {
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.jira-issue-links {
+  grid-template-columns: repeat(auto-fit, minmax(84px, max-content));
+  gap: 8px;
+}
+
 .about-tagline {
   font-size: 13px;
   line-height: 1.55;

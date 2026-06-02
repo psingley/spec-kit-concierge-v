@@ -65,6 +65,11 @@ type ConciergePreloadBridge = {
   reviewEvidence?: {
     read: (request: unknown) => Promise<unknown>;
   };
+  jiraSubmission?: {
+    dryRun: (request: unknown) => Promise<unknown>;
+    submit: (request: unknown) => Promise<unknown>;
+    subscribeSubmit: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
+  };
   sessionManifest?: {
     read: (request: unknown) => Promise<unknown>;
     reconcile: (request: unknown) => Promise<unknown>;

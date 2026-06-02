@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
 import { reviewEvidenceApi } from '../api/reviewEvidence.endpoint';
+import { parseRendererJiraDryRunPreview } from '../api/jiraSubmission.factory';
 import { sessionManifestApi } from '../api/sessionManifest.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
-import { artifactViewerOpened } from '../slices/ui';
+import { jiraDryRunPreviewLoaded } from '../slices/jira';
+import { artifactViewerOpened, modalOpened, toastShown } from '../slices/ui';
+import { selectAuthAtlassianStatus } from '../slices/auth.selectors';
 import { selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { NudgeButton, type NudgeButtonResult } from './NudgeButton';
 import { ReviewStep } from './ReviewStep';
@@ -32,6 +35,7 @@ const nudgeResult = (payload: Record<string, unknown>): NudgeButtonResult => {
 
 export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
+  const atlassianStatus = useAppSelector(selectAuthAtlassianStatus);
   const dispatch = useAppDispatch();
   // The IPC resolves the feature dir from .specify/feature.json; the renderer only
   // supplies the worktree root.
@@ -43,6 +47,13 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const audit = sessionManifestApi.useGetAuditTrailQuery(request!, { skip: request === undefined });
   const [nudgeManifest] = sessionManifestApi.useNudgeSessionManifestMutation();
   const canNudge = reconciliation.data?.status === 'needs-attention' && reconciliation.data.canNudge === true;
+  const hasTasks = evidence.data?.artifacts.some((artifact) => artifact.path.endsWith('tasks.md')) === true;
+  const jiraAvailable = atlassianStatus === 'ok' && hasTasks && request !== undefined;
+  const jiraDisabledReason = atlassianStatus !== 'ok'
+    ? 'Atlassian auth required'
+    : !hasTasks
+      ? 'tasks.md required'
+      : undefined;
 
   return (
     <ReviewStep
@@ -61,6 +72,21 @@ export const ReviewStepContainer = (): React.ReactElement => {
       />}
       auditSummary={auditSummary(audit.data)}
       onArtifactOpen={(path) => dispatch(artifactViewerOpened({ path, origin: 'review' }))}
+      jiraAvailable={jiraAvailable}
+      jiraDisabledReason={jiraDisabledReason}
+      onSendToJira={async () => {
+        if (request === undefined) return;
+        try {
+          const parsed = parseRendererJiraDryRunPreview(await window.concierge.jiraSubmission!.dryRun(request));
+          if (!parsed.ok) {
+            throw new Error(parsed.error.message);
+          }
+          dispatch(jiraDryRunPreviewLoaded(parsed.value));
+          dispatch(modalOpened('showJiraSubmission'));
+        } catch {
+          dispatch(toastShown({ level: 'error', message: 'Unable to prepare JIRA dry-run preview.' }));
+        }
+      }}
     />
   );
 };

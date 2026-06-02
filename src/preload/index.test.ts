@@ -45,6 +45,7 @@ describe('preload concierge bridge', () => {
       'artifacts',
       'tasksDetail',
       'reviewEvidence',
+      'jiraSubmission',
       'sessionManifest',
       'copilot'
     ]);
@@ -88,6 +89,8 @@ describe('preload concierge bridge', () => {
     ['artifacts', 'read', 'artifacts:read'],
     ['tasksDetail', 'read', 'tasks:detail'],
     ['reviewEvidence', 'read', 'review:evidence'],
+    ['jiraSubmission', 'dryRun', 'jira:dryRun'],
+    ['jiraSubmission', 'submit', 'jira:submit'],
     ['sessionManifest', 'read', 'sessionManifest:read'],
     ['sessionManifest', 'reconcile', 'sessionManifest:reconcile'],
     ['sessionManifest', 'auditTrail', 'sessionManifest:auditTrail'],

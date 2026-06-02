@@ -28,6 +28,8 @@ export type IpcQueryArgs = {
     | 'artifacts:read'
     | 'tasks:detail'
     | 'review:evidence'
+    | 'jira:dryRun'
+    | 'jira:submit'
     | 'copilot:specify'
     | 'copilot:clarify'
     | 'copilot:plan'
@@ -119,6 +121,10 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.tasksDetail!.read(args.payload) };
       case 'review:evidence':
         return { data: await window.concierge.reviewEvidence!.read(args.payload) };
+      case 'jira:dryRun':
+        return { data: await window.concierge.jiraSubmission!.dryRun(args.payload) };
+      case 'jira:submit':
+        return { data: await window.concierge.jiraSubmission!.submit(args.payload) };
       case 'copilot:specify':
         return { data: await window.concierge.copilot!.specify(args.payload) };
       case 'copilot:clarify':
