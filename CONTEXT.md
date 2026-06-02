@@ -195,17 +195,28 @@ Atlassian.
 
 ### JIRA Submission
 
-The terminal action on the Review step. Implemented via a customized
-spec-kit JIRA extension agent (installed from the spec-kit extensions
-marketplace, customized to scope each invocation to one ticket). The
-Concierge App owns a deterministic outer loop: iterate tasks in
-tasks.md → invoke the per-ticket agent → wait for the agent to call
-Atlassian MCP, create the ticket, verify (not duplicate), and write to
-a stateful record on disk → the Concierge App reads the record after
-each invocation and verifies the expected delta → continue or halt.
-Idempotent on resume; if the app crashes mid-loop, the outer loop reads
-the stateful record on relaunch and skips already-verified tasks. The
-Concierge App never speaks to Atlassian directly.
+The terminal action on the Review step. The Concierge App owns a
+deterministic create loop in main-process application code: iterate the
+Spec → Phase → Task DAG built from spec.md and tasks.md → for each node,
+fire a single bounded Bound CLI turn that makes exactly one Atlassian MCP
+`createJiraIssue` call from a Concierge-supplied, pre-rendered ticket
+payload (rich description, hierarchy, idempotency label) → the Bound CLI
+writes a stateful record to disk → the Concierge App reads the record
+back, runs the disk-truth gate (status `verified` or `duplicate`, payload
+hash match, fetchable issue key), and only then threads the parent key
+into child nodes and advances. Idempotent on resume; on relaunch the loop
+reads the stateful records and skips already-verified tasks. The
+Concierge App never speaks to Atlassian directly — every MCP call is made
+by the Bound CLI (Principle X Observer-Only, ADR 0015). The per-ticket
+LLM "filer" sub-agent is NOT used: production runs proved it loses
+discipline across many sequential turns and improvises non-deterministic
+state writes; the create loop is deterministic app code that drives one
+bounded CLI turn per ticket, never a nested multi-turn agent. Ticket
+bodies are rendered deterministically by the Concierge App (Epic/Story/
+Subtask with acceptance criteria and file context), not authored by a
+per-ticket LLM. Hierarchy is Subtask-under-Story (native parent field);
+idempotency labels use the single canonical `<project_key>-idem-<hash12>`
+format so JQL orphan recovery can dedupe transient-failure re-creates.
 
 ### Workspace
 
