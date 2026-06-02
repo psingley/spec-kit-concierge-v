@@ -235,9 +235,6 @@ export const Titlebar = ({ repo, branch, identity, github, copilot, atlassian, m
   return (
     <header className="titlebar">
       <div className="titlebar-left">
-        <div className="titlebar-dots" data-vd-role="brand-orb" aria-hidden="true">
-          <span /><span /><span />
-        </div>
         <div className="titlebar-brand">Spec-kit Concierge</div>
         <span className="tb-divider" />
         <MenuWrap id="auth" open={open} setOpen={setOpen} label="Authentication" buttonClassName={`tb-chip auth-chip status-${allOk ? 'ok' : 'partial'}`} onCustomize={onCustomize} onAbout={onAbout} onRequest={onRequest} onModelSelect={onModelSelect} modelOptions={models} selectedModel={modelOption} modelDisabled={modelDisabled} github={github} copilot={copilot} atlassian={atlassian}>

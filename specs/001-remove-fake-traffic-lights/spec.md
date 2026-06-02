@@ -52,10 +52,10 @@ As a user, I see only the real window controls and the concierge logo copy, with
 
 ### Measurable Outcomes
 
-- **SC-001**: In visual checks across at least three common window sizes, no decorative traffic-light indicators appear next to the concierge logo copy.
-- **SC-002**: 100% of existing window control actions continue to work after the change.
-- **SC-003**: In at least two header-state reviews, the top bar remains aligned with no visible overlap or clipping caused by the removal.
-- **SC-004**: At least 9 of 10 reviewers describe the header as cleaner and free of duplicate controls.
+- **SC-001**: In the fixed viewport checks (1280x800, 1440x900, and 1920x1080), no decorative traffic-light indicators appear next to the concierge logo copy.
+- **SC-002**: The minimize, maximize/restore, and close controls continue to work exactly as they do today.
+- **SC-003**: The refreshed titlebar-state baselines (`workspace-titlebar-closed-menus`, `workspace-titlebar-gear-menu-open`, `workspace-titlebar-repo-dropdown-open`) no longer reference `[data-vd-role="brand-orb"]`.
+- **SC-004**: The refreshed non-titlebar baselines (`specify-complete`, `specify-input`, `specify-running`, `signin-all-ok`, `repo-browse-empty-search`, `repo-browse-repo-selected`) no longer reference `[data-vd-role="brand-orb"]`, and the contract suite passes.
 
 ## Assumptions
 

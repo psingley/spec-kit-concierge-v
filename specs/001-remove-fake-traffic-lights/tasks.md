@@ -5,7 +5,7 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Review `specs/001-remove-fake-traffic-lights/plan.md`, `specs/001-remove-fake-traffic-lights/research.md`, and `src/renderer/components/Titlebar.tsx` to confirm the fake traffic-light removal scope and preserve the drag region
+- [ ] T001 Review `specs/001-remove-fake-traffic-lights/plan.md`, `specs/001-remove-fake-traffic-lights/research.md`, `src/renderer/components/Titlebar.tsx`, and the nine affected visual-diff contract baselines that still contain `[data-vd-role="brand-orb"]` (`workspace-titlebar-closed-menus`, `workspace-titlebar-gear-menu-open`, `workspace-titlebar-repo-dropdown-open`, `specify-complete`, `specify-input`, `specify-running`, `signin-all-ok`, `repo-browse-empty-search`, `repo-browse-repo-selected`) to confirm the fake traffic-light removal scope and preserve the drag region
 
 ---
 
@@ -27,16 +27,17 @@
 
 - [ ] T003 [P] [US1] Delete the `.titlebar-dots` and `.titlebar-dots span` rule blocks from `src/renderer/styles/index.css` to remove the unused spacing and color styling
 - [ ] T004 [US1] Update `src/renderer/components/Titlebar.test.tsx` to remove the `[data-vd-role="brand-orb"]` assertion while keeping the remaining titlebar checks intact
+- [ ] T005 [US1] Refresh the nine affected `e2e/visual-diff/contracts/*.contract.json` baselines (`workspace-titlebar-closed-menus`, `workspace-titlebar-gear-menu-open`, `workspace-titlebar-repo-dropdown-open`, `specify-complete`, `specify-input`, `specify-running`, `signin-all-ok`, `repo-browse-empty-search`, `repo-browse-repo-selected`) so the cleaned titlebar states no longer assert the fake orb
 
 ### Validation
 
-- [ ] T005 [US1] Verify the cleaned header against existing renderer/e2e smoke coverage in `e2e/visual-diff/` and `playwright.config.ts`, confirming no overlap/clipping and unchanged native window controls
+- [ ] T006 [US1] Verify the cleaned header against `Titlebar.test.tsx` and the `npm run vd:loop` visual-diff path at 1280x800, 1440x900, and 1920x1080, confirming no overlap/clipping and unchanged native window controls
 
 ---
 
 ## Phase 4: Polish & Cross-Cutting Concerns
 
-- [ ] T006 [P] Re-run `src/renderer/components/Titlebar.test.tsx` and the relevant `e2e/visual-diff/` smoke path to confirm the final DOM and layout are stable
+- [ ] T007 [P] Re-run `src/renderer/components/Titlebar.test.tsx` and the relevant `npm run vd:loop` smoke path at 1280x800, 1440x900, and 1920x1080 to confirm the final DOM and layout are stable
 
 ---
 
@@ -57,5 +58,4 @@
 1. Complete `T001`–`T002`
 2. Apply `T003`–`T004` in parallel
 3. Run `T005`
-4. Finish with `T006`
-
+4. Finish with `T006` and `T007`

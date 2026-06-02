@@ -62,11 +62,6 @@
     ],
     "visualMarkers": [
       {
-        "name": "brand-orb",
-        "selector": "[data-vd-role=\"brand-orb\"]",
-        "designSelector": ".titlebar-dots"
-      },
-      {
         "name": "auth-identity-dot",
         "selector": "[data-vd-role=\"auth-identity-dot\"]",
         "designSelector": ".tb-chip.auth .dot"
