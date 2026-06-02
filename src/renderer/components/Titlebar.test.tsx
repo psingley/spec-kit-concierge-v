@@ -59,7 +59,6 @@ describe('Titlebar dropdowns', () => {
     expect(screen.getByRole('button', { name: 'collette-travel/concierge-api' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'main' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'GPT-5.5default' })).toBeInTheDocument();
-    expect(document.querySelector('[data-vd-role="brand-orb"]')).toBeInTheDocument();
     expect(document.querySelector('[data-vd-role="auth-identity-dot"]')).toBeInTheDocument();
   });
 

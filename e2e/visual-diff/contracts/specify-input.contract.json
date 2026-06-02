@@ -81,11 +81,6 @@
     ],
     "visualMarkers": [
       {
-        "name": "brand-orb",
-        "selector": "[data-vd-role=\"brand-orb\"]",
-        "designSelector": ".titlebar-dots"
-      },
-      {
         "name": "begin-sparkle",
         "selector": "[data-vd-role=\"begin-sparkle\"]",
         "designSelector": ".spec-input-actions svg"

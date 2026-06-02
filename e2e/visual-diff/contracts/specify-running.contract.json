@@ -71,11 +71,6 @@
     ],
     "visualMarkers": [
       {
-        "name": "brand-orb",
-        "selector": "[data-vd-role=\"brand-orb\"]",
-        "designSelector": ".titlebar-dots"
-      },
-      {
         "name": "spinner",
         "selector": "[data-vd-role=\"spinner\"]",
         "designSelector": ".spinner"
