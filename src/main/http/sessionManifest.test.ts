@@ -8,7 +8,8 @@ describe('session manifest HTTP handlers', () => {
       read: vi.fn(async () => ({ sessionId: 's1' })),
       reconcile: vi.fn(async () => ({ status: 'pass' })),
       auditTrail: vi.fn(async () => ({ audit: [] })),
-      doctorStatus: vi.fn(async () => ({ enabled: true }))
+      doctorStatus: vi.fn(async () => ({ enabled: true })),
+      nudge: vi.fn(async () => ({ result: 'no-op' }))
     };
     const logger = { info: vi.fn(), error: vi.fn() };
     const handlers = createSessionManifestHttpHandlers({ dataLayer, logger });

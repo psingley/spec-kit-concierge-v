@@ -263,4 +263,81 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
     expect(screen.getByRole('alert')).toHaveTextContent('specs/0008-react-router-refactor/tasks.md');
     expect(screen.queryByText('Tasks is ready when the prior step is complete.')).not.toBeInTheDocument();
   });
+
+  it('preserves max reached step advancement without forcing the viewed panel forward', () => {
+    installConciergeBridge();
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge',
+      defaultBranch: 'main'
+    };
+
+    act(() => {
+      store.dispatch(workspaceEntered({ repo, branch: '015-remove-density-settings' }));
+      store.dispatch(passiveStepRunSucceeded({ step: 'plan', commitSha: 'plan-sha', artifacts: [] }));
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/workspace?step=plan']}>
+          <WorkspaceContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(store.getState().workspace.viewedStep).toBe('specify');
+    expect(screen.getByTestId('step-tasks').textContent).toContain('pending');
+  });
+
+  it('keeps an entered branch-null session inside the workspace without route churn', () => {
+    installConciergeBridge();
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge.worktrees/session-detached',
+      defaultBranch: 'main'
+    };
+
+    act(() => {
+      store.dispatch(workspaceEntered({ repo, branch: null }));
+    });
+
+    const { getRenderCount } = renderCountingWorkspace(store, '/workspace');
+
+    expect(screen.getByRole('heading', { name: 'Specify' })).toBeInTheDocument();
+    expect(store.getState().workspace.branch).toBeNull();
+    expect(getRenderCount()).toBeLessThanOrEqual(2);
+  });
+
+  it('renders a Windows-shaped worktree path without platform-specific command branching in the workspace', () => {
+    installConciergeBridge();
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: 'C:\\Users\\Ada\\Concierge\\repo.worktrees\\session-015',
+      defaultBranch: 'main'
+    };
+
+    act(() => {
+      store.dispatch(workspaceEntered({ repo, branch: '015-remove-density-settings' }));
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/workspace']}>
+          <WorkspaceContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByRole('heading', { name: 'Specify' })).toBeInTheDocument();
+    expect(store.getState().workspace.activeRepoPath).toBe('C:\\Users\\Ada\\Concierge\\repo.worktrees\\session-015');
+  });
 });

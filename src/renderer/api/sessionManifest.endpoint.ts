@@ -13,7 +13,7 @@ const parseObjectPayload = (value: unknown): RendererFactoryResult<Record<string
     : invalid('InvalidSessionManifestEndpointPayload', 'payload must be an object', '$');
 
 const query =
-  (method: 'read' | 'reconcile' | 'doctorStatus' | 'auditTrail') =>
+  (method: 'read' | 'reconcile' | 'doctorStatus' | 'auditTrail' | 'nudge') =>
   async (arg: SessionManifestEndpointRequest): Promise<{ data: Record<string, unknown> } | { error: IpcQueryError }> => {
     const bridge = window.concierge.sessionManifest;
     if (bridge === undefined) {
@@ -40,6 +40,10 @@ export const sessionManifestApi = api.injectEndpoints({
     getAuditTrail: builder.query<Record<string, unknown>, SessionManifestEndpointRequest>({
       queryFn: query('auditTrail'),
       providesTags: ['Transcript']
+    }),
+    nudgeSessionManifest: builder.mutation<Record<string, unknown>, SessionManifestEndpointRequest>({
+      queryFn: query('nudge'),
+      invalidatesTags: ['Session', 'Agent', 'Transcript']
     })
   })
 });

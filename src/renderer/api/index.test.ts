@@ -37,7 +37,8 @@ describe('renderer API slice', () => {
       'getSessionManifest',
       'reconcileSessionManifest',
       'getDoctorStatus',
-      'getAuditTrail'
+      'getAuditTrail',
+      'nudgeSessionManifest'
     ]);
   });
 

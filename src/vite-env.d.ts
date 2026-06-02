@@ -70,7 +70,7 @@ type ConciergePreloadBridge = {
     reconcile: (request: unknown) => Promise<unknown>;
     auditTrail: (request: unknown) => Promise<unknown>;
     doctorStatus: (request: unknown) => Promise<unknown>;
-    nudge?: (request: unknown) => Promise<unknown>;
+    nudge: (request: unknown) => Promise<unknown>;
   };
   copilot?: {
     specify: (request: unknown) => Promise<unknown>;

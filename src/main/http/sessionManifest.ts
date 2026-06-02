@@ -3,6 +3,7 @@ import { SESSION_MANIFEST_HTTP_ROUTES, type SessionManifestHttpRoute } from './s
 import {
   createSessionManifestHttpAuditRequest,
   createSessionManifestHttpDoctorStatusRequest,
+  createSessionManifestHttpNudgeRequest,
   createSessionManifestHttpReadRequest,
   createSessionManifestHttpReconcileRequest,
   type SessionManifestHttpBoundaryRequest
@@ -43,5 +44,5 @@ export const createSessionManifestHttpHandlers = (
   [SESSION_MANIFEST_HTTP_ROUTES.reconcile]: handler(options, SESSION_MANIFEST_HTTP_ROUTES.reconcile, createSessionManifestHttpReconcileRequest, options.dataLayer.reconcile),
   [SESSION_MANIFEST_HTTP_ROUTES.audit]: handler(options, SESSION_MANIFEST_HTTP_ROUTES.audit, createSessionManifestHttpAuditRequest, options.dataLayer.auditTrail),
   [SESSION_MANIFEST_HTTP_ROUTES.doctorStatus]: handler(options, SESSION_MANIFEST_HTTP_ROUTES.doctorStatus, createSessionManifestHttpDoctorStatusRequest, options.dataLayer.doctorStatus),
-  [SESSION_MANIFEST_HTTP_ROUTES.nudge]: async () => ({ status: 404, body: { message: 'nudge not registered' } })
+  [SESSION_MANIFEST_HTTP_ROUTES.nudge]: handler(options, SESSION_MANIFEST_HTTP_ROUTES.nudge, createSessionManifestHttpNudgeRequest, options.dataLayer.nudge)
 });

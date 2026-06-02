@@ -15,6 +15,8 @@ export type PassiveStepProps = {
   artifactTasks?: ParsedTask[];
   viewOnly?: boolean;
   resumeLabel?: string;
+  nudgeControl?: React.ReactNode;
+  auditSummary?: string[];
   onRun: () => void;
   onResume?: () => void;
   onArtifactOpen: (path: string) => void;
@@ -34,6 +36,8 @@ export const PassiveStep = ({
   artifactTasks,
   viewOnly = false,
   resumeLabel,
+  nudgeControl,
+  auditSummary = [],
   onRun,
   onResume,
   onArtifactOpen,
@@ -95,6 +99,13 @@ export const PassiveStep = ({
         {record.failureReason !== null ? (
           <div className="inline-warning" role="alert">
             {record.failureReason.includes('hang') ? 'No recent output - the step may be stuck.' : `${stepLabel[step]} attempted and failed: ${record.failureReason}`}
+          </div>
+        ) : null}
+        {nudgeControl}
+        {auditSummary.length > 0 ? (
+          <div className="clarify-card" aria-label={`${stepLabel[step]} audit trail`}>
+            <p className="eyebrow">Audit</p>
+            {auditSummary.map((item) => <p className="meta" key={item}>{item}</p>)}
           </div>
         ) : null}
       </div>

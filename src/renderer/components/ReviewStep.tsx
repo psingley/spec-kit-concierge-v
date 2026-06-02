@@ -14,6 +14,8 @@ export type ReviewStepProps = {
   artifactLoading: boolean;
   artifactError?: string;
   artifactTasks: ParsedTask[];
+  nudgeControl?: React.ReactNode;
+  auditSummary?: string[];
   onArtifactOpen: (path: string) => void;
   onArtifactClose: () => void;
 };
@@ -27,6 +29,8 @@ export const ReviewStep = ({
   artifactLoading,
   artifactError,
   artifactTasks,
+  nudgeControl,
+  auditSummary = [],
   onArtifactOpen,
   onArtifactClose
 }: ReviewStepProps): React.ReactElement => {
@@ -86,6 +90,14 @@ export const ReviewStep = ({
             <span>{evidence?.analyzeReport?.extractionStatus ?? 'not captured'}</span>
           </div>
           <p className="meta">{evidence?.analyzeReport?.path ?? 'No app-owned analyze report is indexed for the Analyze commit.'}</p>
+        </section>
+        <section className="review-panel" aria-label="Manifest recovery">
+          <div className="panel-heading">
+            <h3>Recovery</h3>
+            <span>{auditSummary.length}</span>
+          </div>
+          {nudgeControl}
+          {auditSummary.map((item) => <p className="meta" key={item}>{item}</p>)}
         </section>
         <section className="review-panel" aria-label="Tasks">
           <div className="panel-heading">

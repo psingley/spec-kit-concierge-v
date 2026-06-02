@@ -21,3 +21,4 @@ export const createSessionManifestReadRequest = parse;
 export const createSessionManifestReconcileRequest = parse;
 export const createSessionManifestAuditRequest = parse;
 export const createSessionManifestDoctorStatusRequest = parse;
+export const createSessionManifestNudgeRequest = parse;

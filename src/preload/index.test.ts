@@ -92,6 +92,7 @@ describe('preload concierge bridge', () => {
     ['sessionManifest', 'reconcile', 'sessionManifest:reconcile'],
     ['sessionManifest', 'auditTrail', 'sessionManifest:auditTrail'],
     ['sessionManifest', 'doctorStatus', 'sessionManifest:doctorStatus'],
+    ['sessionManifest', 'nudge', 'sessionManifest:nudge'],
     ['copilot', 'specify', 'copilot:specify']
   ])('routes %s.%s to %s through ipcRenderer.invoke', async (group, method, channel) => {
     await import('./index');

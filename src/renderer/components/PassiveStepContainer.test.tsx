@@ -80,4 +80,32 @@ describe('PassiveStepContainer artifact reads', () => {
       payload: 'tasks'
     }));
   });
+
+  it('shows manifest nudge and audit only from reconciled needs-attention state', async () => {
+    installConciergeBridge({
+      sessionManifest: {
+        read: vi.fn(),
+        reconcile: vi.fn(async () => ({ step: 'tasks', status: 'needs-attention', canNudge: true })),
+        auditTrail: vi.fn(async () => ({ audit: [{ event: 'nudge-action', step: 'tasks', message: 'refresh failed marker' }] })),
+        doctorStatus: vi.fn(),
+        nudge: vi.fn(async () => ({ result: 'repaired', message: 'repaired safely' }))
+      }
+    });
+
+    const store = createProductStore();
+    store.dispatch(workspaceEntered({ repo, branch: '014-remove-faux-traffic-lights' }));
+
+    render(
+      <Provider store={store}>
+        <PassiveStepContainer step="tasks" />
+      </Provider>
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: /Set branch right for tasks/i }));
+
+    await waitFor(() => {
+      expect(window.concierge.sessionManifest!.nudge).toHaveBeenCalledWith({ repositoryPath: '/work/wt' });
+    });
+    expect(await screen.findByText(/nudge-action: refresh failed marker/i)).toBeVisible();
+  });
 });

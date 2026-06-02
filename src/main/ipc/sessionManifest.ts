@@ -5,6 +5,7 @@ import { SESSION_MANIFEST_CHANNELS } from './sessionManifest.channels';
 import {
   createSessionManifestAuditRequest,
   createSessionManifestDoctorStatusRequest,
+  createSessionManifestNudgeRequest,
   createSessionManifestReadRequest,
   createSessionManifestReconcileRequest,
   type SessionManifestBoundaryRequest
@@ -15,6 +16,7 @@ export type SessionManifestDataLayer = {
   reconcile: (request: SessionManifestBoundaryRequest) => Promise<unknown>;
   auditTrail: (request: SessionManifestBoundaryRequest) => Promise<unknown>;
   doctorStatus: (request: SessionManifestBoundaryRequest) => Promise<unknown>;
+  nudge: (request: SessionManifestBoundaryRequest) => Promise<unknown>;
 };
 
 export type RegisterSessionManifestIpcOptions = {
@@ -47,4 +49,5 @@ export const registerSessionManifestIpc = (options: RegisterSessionManifestIpcOp
   register(options, SESSION_MANIFEST_CHANNELS.reconcile, createSessionManifestReconcileRequest, options.dataLayer.reconcile);
   register(options, SESSION_MANIFEST_CHANNELS.auditTrail, createSessionManifestAuditRequest, options.dataLayer.auditTrail);
   register(options, SESSION_MANIFEST_CHANNELS.doctorStatus, createSessionManifestDoctorStatusRequest, options.dataLayer.doctorStatus);
+  register(options, SESSION_MANIFEST_CHANNELS.nudge, createSessionManifestNudgeRequest, options.dataLayer.nudge);
 };

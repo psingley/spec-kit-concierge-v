@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createSessionManifestAuditRequest,
   createSessionManifestDoctorStatusRequest,
+  createSessionManifestNudgeRequest,
   createSessionManifestReadRequest,
   createSessionManifestReconcileRequest
 } from './sessionManifest.factory';
@@ -13,7 +14,8 @@ describe('session manifest IPC factories', () => {
     ['read', createSessionManifestReadRequest],
     ['reconcile', createSessionManifestReconcileRequest],
     ['audit', createSessionManifestAuditRequest],
-    ['doctor-status', createSessionManifestDoctorStatusRequest]
+    ['doctor-status', createSessionManifestDoctorStatusRequest],
+    ['nudge', createSessionManifestNudgeRequest]
   ])('accepts %s request and rejects the seven-case floor', (_name, factory) => {
     expect(factory(valid)).toMatchObject({ ok: true, value: valid });
     for (const bad of [null, undefined, [], {}, { repositoryPath: '' }, { repositoryPath: 42 }, { ...valid, extra: true }]) {
