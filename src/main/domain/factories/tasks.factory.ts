@@ -2,7 +2,7 @@ import type { Dirent } from 'node:fs';
 import { mkdir, readdir, rename, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { STEP_ARTIFACT_MANIFEST } from '../../hooks/manifest';
-import { commitCandidate, factoryEscape, readRequiredArtifact, validateMarkdownContents, validateRequiredMarkdown } from './factoryUtils';
+import { commitCandidate, factoryEscape, readRequiredArtifact, validateMarkdownContents } from './factoryUtils';
 import type { StepContractContext, StepContractResult } from './types';
 
 type StrandedTasksCandidate = {
@@ -16,8 +16,7 @@ type RecoveryResult =
   | { recovered: true }
   | { recovered: false; strandedArtifacts: string[] };
 
-const tasksHostilePattern = /bad-task|MALFORMED/i;
-const tasksPartialPattern = /partial/i;
+const taskIdLinePattern = /^- \[ \] T\d{3,}/m;
 
 const expectedTasksPath = (featureDir: string, context: StepContractContext): string => {
   if (context.repositoryPath === undefined) {
@@ -79,8 +78,8 @@ const recoverWrongDirTasks = async (
   const strandedArtifacts = candidates.map((candidate) => candidate.relativeArtifactPath);
 
   for (const candidate of candidates) {
-    const invalid = await validateRequiredMarkdown('tasks', candidate.featureDir, tasksHostilePattern, tasksPartialPattern);
-    if (invalid !== undefined) {
+    const contents = await readRequiredArtifact(candidate.featureDir, 'tasks.md');
+    if (contents === undefined || validateMarkdownContents(contents) !== undefined || !taskIdLinePattern.test(contents)) {
       continue;
     }
     await mkdir(featureDir, { recursive: true });
@@ -97,7 +96,7 @@ export const validateTasksArtifacts = async (
 ): Promise<StepContractResult> => {
   const existingTasks = await readRequiredArtifact(featureDir, 'tasks.md');
   if (existingTasks !== undefined) {
-    const invalid = validateMarkdownContents(existingTasks, tasksHostilePattern, tasksPartialPattern);
+    const invalid = validateMarkdownContents(existingTasks);
     if (invalid !== undefined) {
       return invalid;
     }

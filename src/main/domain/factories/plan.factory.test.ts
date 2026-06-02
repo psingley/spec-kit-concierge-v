@@ -58,8 +58,23 @@ describe('validatePlanArtifacts', () => {
     expect(vi.mocked(readFile)).toHaveBeenCalledTimes(2);
   });
 
-  it('rejects research missing edge case', async () => {
-    vi.mocked(readFile).mockResolvedValueOnce('# Plan' as never).mockResolvedValueOnce('research: missing' as never);
+  it('accepts research missing as ordinary prose', async () => {
+    vi.mocked(readFile)
+      .mockResolvedValueOnce('# Plan' as never)
+      .mockResolvedValueOnce('# Research\nThe note says research: missing data from the upstream source.' as never)
+      .mockRejectedValueOnce(new Error('missing'))
+      .mockRejectedValueOnce(new Error('missing'));
+    vi.mocked(readdir).mockRejectedValue(new Error('missing'));
+
+    const result = await validatePlanArtifacts('/feature');
+
+    expect(result.ok).toBe(true);
+    expect(result).toMatchObject({ commit: { step: 'plan', files: ['plan.md', 'research.md'] } });
+    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(4);
+  });
+
+  it('rejects plan markdown with git conflict markers', async () => {
+    vi.mocked(readFile).mockResolvedValueOnce('# Plan' as never).mockResolvedValueOnce('# Research\n<<<<<<< HEAD\nnotes' as never);
 
     const result = await validatePlanArtifacts('/feature');
 

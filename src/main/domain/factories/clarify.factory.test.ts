@@ -116,7 +116,7 @@ Body unrelated to clarifications.` as never);
     });
   });
 
-  describe('hostile / malformed content', () => {
+  describe('deterministic invalid content', () => {
     it('rejects hostile frontmatter', async () => {
       vi.mocked(readFile).mockResolvedValue(`---
 token: secret
@@ -131,8 +131,17 @@ token: secret
       expect(result).toMatchObject({ ok: false, kind: 'escape-hatch', escapeHatchReason: 'factory-rejected' });
     });
 
-    it('rejects content containing the literal MALFORMED marker', async () => {
+    it('accepts content containing the literal MALFORMED word as prose', async () => {
       vi.mocked(readFile).mockResolvedValue('## Clarifications\n\n- Q: MALFORMED → A: x' as never);
+
+      const result = await validateClarifyArtifacts('/feature');
+
+      expect(result.ok).toBe(true);
+      expect(result).toMatchObject({ commit: { step: 'clarify', files: ['spec.md'] } });
+    });
+
+    it('rejects content with git conflict markers', async () => {
+      vi.mocked(readFile).mockResolvedValue('## Clarifications\n\n<<<<<<< HEAD\n- Q: Pick one? → A: Alpha' as never);
 
       const result = await validateClarifyArtifacts('/feature');
 

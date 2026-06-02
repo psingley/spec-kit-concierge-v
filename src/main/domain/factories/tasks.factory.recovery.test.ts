@@ -41,9 +41,9 @@ describe('validateTasksArtifacts wrong-dir recovery', () => {
     await expect(exists(path.join(wrongFeatureDir, 'tasks.md'))).resolves.toBe(false);
   });
 
-  it('returns a recoverable failure reason with stranded paths when sibling tasks.md is still invalid', async () => {
+  it('returns a recoverable failure reason when sibling tasks.md has no parseable task ids', async () => {
     const { repositoryPath, correctFeatureDir, wrongFeatureDir } = await createRepo();
-    await writeFile(path.join(wrongFeatureDir, 'tasks.md'), 'partial task draft', 'utf8');
+    await writeFile(path.join(wrongFeatureDir, 'tasks.md'), '# Tasks\nDraft without parseable task ids.\n', 'utf8');
 
     const result = await validateTasksArtifacts(correctFeatureDir, {
       repositoryPath,

@@ -6,7 +6,7 @@ export const validatePlanArtifacts = async (
   featureDir: string,
   context: StepContractContext = {}
 ): Promise<StepContractResult> => {
-  const invalid = await validateRequiredMarkdown('plan', featureDir, /bad-plan|MALFORMED/i, /research\s*:\s*missing/i);
+  const invalid = await validateRequiredMarkdown('plan', featureDir);
   if (invalid !== undefined) {
     return invalid;
   }

@@ -41,4 +41,24 @@ describe('validateSpecifyArtifacts', () => {
     expect(result).toMatchObject({ kind: 'escape-hatch' });
     expect(vi.mocked(readFile)).toHaveBeenCalledTimes(2);
   });
+
+  it('accepts legacy marker words as ordinary prose when the spec has a heading', async () => {
+    vi.mocked(readFile).mockResolvedValue('# Feature\nThis mentions MALFORMED, TODO_ONLY, and << examples as prose.' as never);
+
+    const result = await validateSpecifyArtifacts('/feature');
+
+    expect(result.ok).toBe(true);
+    expect(result).toMatchObject({ commit: { step: 'specify', files: ['spec.md'] } });
+    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects specs with git conflict markers', async () => {
+    vi.mocked(readFile).mockResolvedValue('# Feature\n<<<<<<< HEAD\nRequirements' as never);
+
+    const result = await validateSpecifyArtifacts('/feature');
+
+    expect(result.ok).toBe(false);
+    expect(result).toMatchObject({ kind: 'escape-hatch' });
+    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(1);
+  });
 });
