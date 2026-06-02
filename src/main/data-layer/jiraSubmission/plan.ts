@@ -81,6 +81,9 @@ const normalizeValue = (value: unknown): unknown => {
 export const createPayloadHash = (value: unknown): string =>
   crypto.createHash('sha256').update(JSON.stringify(normalizeValue(value))).digest('hex');
 
+const clampSummary = (value: string): string =>
+  value.length <= 255 ? value : `${value.slice(0, 254).trimEnd()}…`;
+
 const slugify = (value: string): string =>
   value
     .toLowerCase()
@@ -144,12 +147,13 @@ const createNode = (
     baseLabels: string[];
   }
 ): JiraSubmissionNode => {
+  const summary = clampSummary(request.summary);
   const payloadWithoutIdem: JiraSubmissionPayload = {
     idempotency_id: request.id,
     state_dir: request.stateDir,
     project_key: request.projectKey,
     issue_type: request.issueType,
-    summary: request.summary,
+    summary,
     description: request.description,
     labels: [...request.baseLabels],
     parent_key: request.parentKey,
@@ -163,7 +167,7 @@ const createNode = (
     id: request.id,
     issueType: request.issueType,
     parentId: request.parentId,
-    summary: request.summary,
+    summary,
     description: request.description,
     labels,
     payloadHash,
@@ -193,6 +197,8 @@ export const buildJiraSubmissionPlan = ({
     issueType: 'Epic',
     summary: title,
     description: [
+      title,
+      '',
       `Spec feature: ${title}`,
       '',
       'Rendered deterministically by Spec-kit Concierge.',
@@ -212,13 +218,16 @@ export const buildJiraSubmissionPlan = ({
   for (const phase of phases) {
     const phaseSlug = slugify(phase.heading);
     const phaseId = `${featureSlug}-${phaseSlug}`;
+    const phaseSummary = phase.heading.replace(/^Phase\s+\d+:\s*/i, '');
     nodes.push(createNode({
       id: phaseId,
       stateDir,
       projectKey: config.projectKey,
       issueType: 'Story',
-      summary: phase.heading.replace(/^Phase\s+\d+:\s*/i, ''),
+      summary: phaseSummary,
       description: [
+        phaseSummary,
+        '',
         `Source phase: ${phase.heading}`,
         '',
         `Repository: ${repositoryPath}`,
@@ -232,13 +241,16 @@ export const buildJiraSubmissionPlan = ({
     }));
 
     for (const task of phase.tasks) {
+      const taskSummary = `${task.id} ${task.title}`;
       nodes.push(createNode({
         id: `${featureSlug}-${task.id}`,
         stateDir,
         projectKey: config.projectKey,
         issueType: 'Subtask',
-        summary: `${task.id} ${task.title}`,
+        summary: taskSummary,
         description: [
+          taskSummary,
+          '',
           `Source task: ${task.id}`,
           '',
           task.title,
