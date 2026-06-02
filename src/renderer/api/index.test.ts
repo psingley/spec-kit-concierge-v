@@ -33,7 +33,11 @@ describe('renderer API slice', () => {
       'readReviewEvidenceBody',
       'runSpecify',
       'runClarify',
-      'runPassiveStep'
+      'runPassiveStep',
+      'getSessionManifest',
+      'reconcileSessionManifest',
+      'getDoctorStatus',
+      'getAuditTrail'
     ]);
   });
 

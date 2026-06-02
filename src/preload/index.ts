@@ -80,6 +80,12 @@ contextBridge.exposeInMainWorld('concierge', {
   reviewEvidence: {
     read: (request: unknown) => ipcRenderer.invoke('review:evidence', request) as Promise<unknown>
   },
+  sessionManifest: {
+    read: (request: unknown) => ipcRenderer.invoke('sessionManifest:read', request) as Promise<unknown>,
+    reconcile: (request: unknown) => ipcRenderer.invoke('sessionManifest:reconcile', request) as Promise<unknown>,
+    auditTrail: (request: unknown) => ipcRenderer.invoke('sessionManifest:auditTrail', request) as Promise<unknown>,
+    doctorStatus: (request: unknown) => ipcRenderer.invoke('sessionManifest:doctorStatus', request) as Promise<unknown>
+  },
   copilot: {
     specify: (request: unknown) => ipcRenderer.invoke('copilot:specify', request) as Promise<unknown>,
     clarify: (request: unknown) => ipcRenderer.invoke('copilot:clarify', request) as Promise<unknown>,

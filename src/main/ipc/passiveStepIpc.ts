@@ -5,7 +5,7 @@ import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import { readFailedStepMarker, removeFailedStepMarker, writeFailedStepMarker } from '../data-layer/failedSteps';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
-import type { Anomaly } from '../domain/manifest/types';
+import type { Anomaly, AssistantIdentity, BranchStateSnapshot, LogReference, ReconciliationResult, StepOwnedArtifactSnapshot, TerminalResult } from '../domain/manifest/types';
 import type { DirtyDiffGateResult } from '../domain/reconciliation/dirtyDiffGates';
 import type { TranscriptClassifierResult } from '../domain/reconciliation/transcriptClassifier';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
@@ -31,6 +31,9 @@ export type PassiveStepAck = {
 
 export type PassiveStepAgentResult = {
   updates?: readonly BoundCLIPromptUpdate[];
+  assistant?: AssistantIdentity[];
+  logReference?: LogReference;
+  terminalResult?: TerminalResult;
 };
 
 export type PassiveStepAgentAdapter = (
@@ -61,6 +64,22 @@ export type RegisterPassiveStepIpcOptions = {
     agentResult?: PassiveStepAgentResult | void;
   }) => Promise<TranscriptClassifierResult | undefined>;
   recordClassifierAnomaly?: (request: { repositoryPath: string; anomaly: Anomaly }) => Promise<void>;
+  facilitator?: {
+    createOrLoadManifest: (context: StepHookContext) => Promise<unknown>;
+    captureBranchSnapshot: (context: StepHookContext) => Promise<Partial<BranchStateSnapshot>>;
+    captureOwnedPathSnapshot: (context: StepHookContext) => Promise<Partial<StepOwnedArtifactSnapshot>>;
+    appendPendingAttempt: (request: {
+      context: StepHookContext;
+      branchSnapshot: Partial<BranchStateSnapshot>;
+      ownedPathSnapshot: Partial<StepOwnedArtifactSnapshot>;
+      assistant: AssistantIdentity[];
+      logReference?: LogReference;
+      terminalResult?: TerminalResult;
+    }) => Promise<void>;
+    reconcileBefore: (context: StepHookContext) => Promise<Partial<ReconciliationResult>>;
+    reconcileAfter: (context: StepHookContext) => Promise<Partial<ReconciliationResult>>;
+    runDoctor: (request: { context: StepHookContext; stage: 'before' | 'after'; reconciliation: Partial<ReconciliationResult> }) => Promise<unknown>;
+  };
   abortSignal?: AbortSignal;
   now?: () => number;
 };
@@ -143,6 +162,7 @@ export const registerPassiveStepIpc = ({
   dirtyDiffGate,
   transcriptClassifier,
   recordClassifierAnomaly,
+  facilitator,
   abortSignal,
   now = () => performance.now()
 }: RegisterPassiveStepIpcOptions): void => {
@@ -219,6 +239,25 @@ export const registerPassiveStepIpc = ({
           userDataPath,
           authStatus: { githubLoggedIn: true, copilotLoggedIn: true }
         };
+        let branchSnapshot: Partial<BranchStateSnapshot> = {};
+        let ownedPathSnapshot: Partial<StepOwnedArtifactSnapshot> = {};
+        if (facilitator !== undefined) {
+          logger.info({ channel, context, event: 'facilitator-step', step, sessionId }, 'ipc handler invocation');
+          await facilitator.createOrLoadManifest(hookContext);
+          branchSnapshot = await facilitator.captureBranchSnapshot(hookContext);
+          ownedPathSnapshot = await facilitator.captureOwnedPathSnapshot(hookContext);
+          const reconciliation = await facilitator.reconcileBefore(hookContext);
+          logger.info({
+            channel,
+            context,
+            event: 'reconciliation-result',
+            stage: 'before',
+            status: reconciliation.status
+          }, 'ipc handler invocation');
+          if (reconciliation.status === 'needs-attention') {
+            await facilitator.runDoctor({ context: hookContext, stage: 'before', reconciliation });
+          }
+        }
         const before = await beforeHook(hookContext);
         if (!before.ok) {
           failureDetails = { reason: failureReasonFor(before), strandedArtifacts: before.strandedArtifacts };
@@ -255,6 +294,16 @@ export const registerPassiveStepIpc = ({
             });
           }
         });
+        if (facilitator !== undefined) {
+          await facilitator.appendPendingAttempt({
+            context: hookContext,
+            branchSnapshot,
+            ownedPathSnapshot,
+            assistant: agentResult?.assistant ?? [],
+            logReference: agentResult?.logReference,
+            terminalResult: agentResult?.terminalResult
+          });
+        }
         const classifierResult = await transcriptClassifier?.({
           context: hookContext,
           step,
@@ -298,6 +347,17 @@ export const registerPassiveStepIpc = ({
             ? { reason: 'missing commit sha' }
             : { reason: failureReasonFor(after), strandedArtifacts: after.strandedArtifacts };
           throw new Error(after.ok ? 'missing commit sha' : failureReasonFor(after));
+        }
+        if (facilitator !== undefined) {
+          const reconciliation = await facilitator.reconcileAfter(hookContext);
+          logger.info({
+            channel,
+            context,
+            event: 'reconciliation-result',
+            stage: 'after',
+            status: reconciliation.status
+          }, 'ipc handler invocation');
+          await facilitator.runDoctor({ context: hookContext, stage: 'after', reconciliation });
         }
         await finishPass(after.commit.commitSha, featureDir, agentResult);
       } catch (error) {

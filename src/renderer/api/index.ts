@@ -15,6 +15,7 @@ import './reviewEvidence.endpoint';
 import './copilotSpecify.endpoint';
 import './copilotClarify.endpoint';
 import './copilotPassive.endpoint';
+import './sessionManifest.endpoint';
 import { api as rootApi, RUN2_TAG_TYPES } from './rootApi';
 import type { activityApi } from './activity.endpoint';
 import type { authApi } from './auth.endpoint';
@@ -33,6 +34,7 @@ import type { reviewEvidenceApi } from './reviewEvidence.endpoint';
 import type { copilotSpecifyApi } from './copilotSpecify.endpoint';
 import type { copilotClarifyApi } from './copilotClarify.endpoint';
 import type { copilotPassiveApi } from './copilotPassive.endpoint';
+import type { sessionManifestApi } from './sessionManifest.endpoint';
 import type { AppVersionProof } from './rootApi';
 
 type Run4Endpoints = typeof rootApi.endpoints &
@@ -52,7 +54,8 @@ type Run4Endpoints = typeof rootApi.endpoints &
   typeof reviewEvidenceApi.endpoints &
   typeof copilotSpecifyApi.endpoints &
   typeof copilotClarifyApi.endpoints &
-  typeof copilotPassiveApi.endpoints;
+  typeof copilotPassiveApi.endpoints &
+  typeof sessionManifestApi.endpoints;
 
 export const api = rootApi as typeof rootApi & { endpoints: Run4Endpoints };
 export { RUN2_TAG_TYPES, type AppVersionProof };

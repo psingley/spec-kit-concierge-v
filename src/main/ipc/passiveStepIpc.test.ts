@@ -274,6 +274,58 @@ describe('registerPassiveStepIpc', () => {
     await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('tasks-watchdog-silence-session');
   });
 
+  it('orchestrates facilitator manifest, reconciliation, print-mode identity, doctor escalation, and completion adoption', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0013-hybrid-manifest-architecture');
+    const facilitator = {
+      createOrLoadManifest: vi.fn().mockResolvedValue({ sessionId: 'manifest-session' }),
+      captureBranchSnapshot: vi.fn().mockResolvedValue({ branch: 'build/manifest-architecture-dogfood' }),
+      captureOwnedPathSnapshot: vi.fn().mockResolvedValue({ snapshotHash: 'snapshot-001' }),
+      appendPendingAttempt: vi.fn().mockResolvedValue(undefined),
+      reconcileBefore: vi.fn().mockResolvedValue({ status: 'running', canNudge: false, anomalies: [] }),
+      reconcileAfter: vi.fn().mockResolvedValue({ status: 'pass', canNudge: false, anomalies: [] }),
+      runDoctor: vi.fn().mockResolvedValue({ status: 'returned' })
+    };
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'tasks-sha' } });
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook,
+      agentAdapter: vi.fn().mockResolvedValue({
+        assistant: [{ assistantSessionId: 'assistant-session', messageId: 'message-1', turnId: 'turn-1', source: 'print-json-event' }],
+        terminalResult: { exitCode: 0, resultKind: 'success' },
+        logReference: { path: '/logs/tasks.jsonl', sha256: 'a'.repeat(64), sizeBytes: 42 },
+        updates: []
+      }),
+      facilitator
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', status: 'pass', commitSha: 'tasks-sha' })
+    })));
+    expect(facilitator.createOrLoadManifest).toHaveBeenCalledTimes(1);
+    expect(facilitator.appendPendingAttempt).toHaveBeenCalledWith(expect.objectContaining({
+      assistant: [expect.objectContaining({ assistantSessionId: 'assistant-session', messageId: 'message-1', turnId: 'turn-1' })],
+      logReference: expect.objectContaining({ sha256: 'a'.repeat(64) }),
+      terminalResult: expect.objectContaining({ resultKind: 'success' })
+    }));
+    expect(facilitator.reconcileBefore.mock.invocationCallOrder[0]).toBeLessThan(
+      facilitator.reconcileAfter.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY
+    );
+    expect(facilitator.runDoctor).toHaveBeenCalledWith(expect.objectContaining({ stage: 'after' }));
+    expect(afterHook).toHaveBeenCalledTimes(1);
+    expect(harness.logger.info).toHaveBeenCalledWith(expect.objectContaining({ event: 'facilitator-step' }), 'ipc handler invocation');
+    expect(harness.logger.info).toHaveBeenCalledWith(expect.objectContaining({ event: 'reconciliation-result', stage: 'after' }), 'ipc handler invocation');
+  });
+
   it('sends fail without running the agent when the abort signal is already aborted', async () => {
     const harness = createHarness();
     const controller = new AbortController();

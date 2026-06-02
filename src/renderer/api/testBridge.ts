@@ -54,6 +54,12 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
     artifacts: {
       read: vi.fn()
     },
+    sessionManifest: {
+      read: vi.fn(),
+      reconcile: vi.fn(),
+      auditTrail: vi.fn(),
+      doctorStatus: vi.fn()
+    },
     copilot: {
       specify: vi.fn(),
       subscribeStepStream: vi.fn(() => vi.fn()),
