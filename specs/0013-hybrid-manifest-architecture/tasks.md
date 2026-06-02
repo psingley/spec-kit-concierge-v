@@ -140,8 +140,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T063 [US3] Add RED doctor agent instruction validation tests for authority boundaries, 12-tool limit, two-attempt limit, no direct completion, no raw git/file operations, and ambiguity escalation in `src/main/data-layer/doctor/doctorInstructions.test.ts`
-- [ ] T064 [US3] Create bounded doctor agent instructions in `.github/agents/speckit.doctor.agent.md`
+- [X] T063 [US3] Add RED doctor agent instruction validation tests for authority boundaries, 12-tool limit, two-attempt limit, no direct completion, no raw git/file operations, and ambiguity escalation in `src/main/data-layer/doctor/doctorInstructions.test.ts`
+- [X] T064 [US3] Create bounded doctor agent instructions in `.github/agents/speckit.doctor.agent.md`
 
 **Checkpoint**: User Story 3 works when the doctor is only an anomaly intermediary and every authoritative state change remains deterministic, guarded, audited, and reconciled.
 
