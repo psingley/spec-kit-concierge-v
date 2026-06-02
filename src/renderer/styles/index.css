@@ -1652,8 +1652,13 @@ button.ev-row {
 
 .artifact-viewer {
   width: min(860px, calc(100vw - 40px));
-  max-height: calc(100vh - 80px);
+  max-height: min(760px, calc(100vh - 80px));
+}
+
+.artifact-viewer-body {
   overflow: auto;
+  min-height: min(420px, calc(100vh - 220px));
+  max-height: calc(100vh - 160px);
 }
 
 .artifact-viewer pre {

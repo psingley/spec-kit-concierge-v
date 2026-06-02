@@ -150,6 +150,61 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
     expect(getRenderCount() - beforeOpen).toBeLessThanOrEqual(4);
   });
 
+  it('opens completed plan artifacts from ModalHost as a full-app veil outside the workspace step', async () => {
+    const readArtifact = vi.fn().mockResolvedValue({ artifactPath: 'plan.md', text: '# Plan', size: 6, mtimeMs: 1 });
+    installConciergeBridge({
+      artifacts: {
+        read: readArtifact
+      }
+    });
+    const store = createProductStore();
+    const repo = {
+      id: 'repo-1',
+      name: 'concierge',
+      owner: 'octo',
+      path: '/work/concierge',
+      defaultBranch: 'main'
+    };
+
+    act(() => {
+      store.dispatch(workspaceEntered({ repo, branch: null }));
+      store.dispatch(specifyRunSucceeded({ specMarkdown: '# Spec', artifactPath: 'spec.md', commitSha: 'specify-sha' }));
+      store.dispatch(clarifyRunSucceeded({ artifactPath: 'clarify.md', commitSha: 'clarify-sha', questions: [], answers: [] }));
+      store.dispatch(clarifyCompletedInWorkspace());
+      store.dispatch(passiveStepRunSucceeded({
+        step: 'plan',
+        commitSha: 'plan-sha',
+        artifacts: [{ path: 'plan.md', kind: 'markdown', required: true }]
+      }));
+      store.dispatch(workspaceStepViewed('plan'));
+    });
+
+    const { container } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={['/workspace?step=plan']}>
+          <WorkspaceContainer />
+        </MemoryRouter>
+      </Provider>
+    );
+    const trigger = screen.getByRole('button', { name: /plan\.md/ });
+    trigger.focus();
+    fireEvent.click(trigger);
+
+    const dialog = await screen.findByRole('dialog', { name: 'plan.md' });
+    const veil = container.querySelector('.modal-veil');
+    const workspaceStep = container.querySelector('.workspace-step');
+
+    expect(dialog).toBeInTheDocument();
+    expect(veil).toHaveAttribute('data-vd-role', 'modal-veil');
+    expect(workspaceStep?.contains(veil)).toBe(false);
+    expect(container.querySelector('.modal-backdrop')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Close artifact viewer' })).toHaveFocus();
+
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'plan.md' })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
   it('reconstructs a resumed branch complete through plan across steps, session, landing step, and panel guard', () => {
     installConciergeBridge();
     const store = createProductStore();

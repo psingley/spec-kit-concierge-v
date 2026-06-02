@@ -1,5 +1,5 @@
 <!-- SPECKIT START -->
-Plan: `specs/001-remove-fake-traffic-lights/plan.md`
+Plan: `specs/0014-fix-file-display/plan.md`
 
 Run 1 plan: `specs/0001-foundation-shell/plan.md`
 Run 2 plan: `specs/0002-main-data-layer/plan.md`

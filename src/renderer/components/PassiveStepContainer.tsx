@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { artifactsApi } from '../api/artifacts.endpoint';
+import React from 'react';
 import { copilotPassiveApi } from '../api/copilotPassive.endpoint';
 import { sessionManifestApi } from '../api/sessionManifest.endpoint';
-import { tasksDetailApi } from '../api/tasksDetail.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.selectors';
 import type { PassiveStepName } from '../slices/session';
@@ -12,6 +10,7 @@ import { PassiveStep } from './PassiveStep';
 import { workspaceStepViewed } from '../slices/workspace';
 import { stepOrder, type StepName } from '../slices/steps';
 import { NudgeButton, type NudgeButtonResult } from './NudgeButton';
+import { artifactViewerOpened } from '../slices/ui';
 
 const stepLabel: Record<StepName, string> = {
   specify: 'Specify',
@@ -58,15 +57,11 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
   const branch = useAppSelector(selectWorkspaceBranch);
   const modelId = useAppSelector(selectPreferencesSelectedCopilotModel);
   const record = useAppSelector(selectSessionPassiveStep(step));
-  const [artifactPath, setArtifactPath] = useState<string | null>(null);
   const [runPassiveStep] = copilotPassiveApi.useRunPassiveStepMutation();
-  const [readArtifact, artifact] = artifactsApi.useLazyReadArtifactQuery();
-  const [readTasksDetail, tasksDetail] = tasksDetailApi.useLazyGetTasksDetailQuery();
   const manifestRequest = repo === null ? undefined : { repositoryPath: repo.path };
   const reconciliation = sessionManifestApi.useReconcileSessionManifestQuery(manifestRequest!, { skip: manifestRequest === undefined });
   const audit = sessionManifestApi.useGetAuditTrailQuery(manifestRequest!, { skip: manifestRequest === undefined });
   const [nudgeManifest] = sessionManifestApi.useNudgeSessionManifestMutation();
-  const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
   const resumeStep = nextStepAfter(step);
   const reconciledStep = reconciliation.data === undefined ? undefined : textField(reconciliation.data, 'step');
   const canNudge = reconciliation.data?.status === 'needs-attention' && reconciliation.data.canNudge === true && reconciledStep === step;
@@ -75,11 +70,6 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
     <PassiveStep
       step={step}
       record={record}
-      artifactPath={artifactPath}
-      artifactText={isTasksArtifact ? '' : artifact.data?.text ?? ''}
-      artifactLoading={isTasksArtifact ? tasksDetail.isFetching : artifact.isFetching}
-      artifactError={(isTasksArtifact ? tasksDetail.error : artifact.error) !== undefined ? 'Unable to read artifact.' : undefined}
-      artifactTasks={tasksDetail.data?.tasks ?? []}
       viewOnly={record.commitSha !== null}
       resumeLabel={stepLabel[resumeStep]}
       nudgeControl={<NudgeButton
@@ -102,19 +92,7 @@ export const PassiveStepContainer = ({ step }: { step: PassiveStepName }): React
           void runPassiveStep({ step, repositoryPath: repo.path, branch, modelId });
         }
       }}
-      onArtifactOpen={(path) => {
-        setArtifactPath(path);
-        if (repo !== null) {
-          // The IPC resolves the feature dir from .specify/feature.json; the renderer
-          // passes the worktree root + a bare artifact name (e.g. plan.md).
-          if (path.endsWith('tasks.md')) {
-            void readTasksDetail({ repositoryPath: repo.path, artifactPath: path });
-          } else {
-            void readArtifact({ repositoryPath: repo.path, artifactPath: path });
-          }
-        }
-      }}
-      onArtifactClose={() => setArtifactPath(null)}
+      onArtifactOpen={(path) => dispatch(artifactViewerOpened({ path, origin: 'passive' }))}
     />
   );
 };

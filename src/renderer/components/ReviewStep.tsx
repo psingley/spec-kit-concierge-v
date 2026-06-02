@@ -1,40 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { ReviewEvidence } from '../api/reviewEvidence.factory';
-import type { ParsedTask } from '../api/tasksDetail.factory';
-import { ArtifactViewer } from './ArtifactViewer';
 import { Ico } from './Icons';
-import { TaskViewer } from './TaskViewer';
 
 export type ReviewStepProps = {
   evidence?: ReviewEvidence;
   loading: boolean;
   error?: string;
-  artifactPath: string | null;
-  artifactText: string;
-  artifactLoading: boolean;
-  artifactError?: string;
-  artifactTasks: ParsedTask[];
   nudgeControl?: React.ReactNode;
   auditSummary?: string[];
   onArtifactOpen: (path: string) => void;
-  onArtifactClose: () => void;
 };
 
 export const ReviewStep = ({
   evidence,
   loading,
   error,
-  artifactPath,
-  artifactText,
-  artifactLoading,
-  artifactError,
-  artifactTasks,
   nudgeControl,
   auditSummary = [],
-  onArtifactOpen,
-  onArtifactClose
+  onArtifactOpen
 }: ReviewStepProps): React.ReactElement => {
-  const [taskModalOpen, setTaskModalOpen] = useState(false);
   const taskArtifact = evidence?.artifacts.find((artifact) => artifact.path.endsWith('tasks.md'));
 
   return (
@@ -103,30 +87,13 @@ export const ReviewStep = ({
           <div className="panel-heading">
             <h3>Tasks</h3>
             {taskArtifact !== undefined ? (
-              <button type="button" className="btn ghost" onClick={() => {
-                onArtifactOpen(taskArtifact.path);
-                setTaskModalOpen(true);
-              }}>
+              <button type="button" className="btn ghost" onClick={() => onArtifactOpen(taskArtifact.path)}>
                 <Ico.Check size={13} />Open
               </button>
             ) : <span>none</span>}
           </div>
         </section>
       </div>
-      {taskModalOpen ? (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Task details">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>Task details</h3>
-              <button type="button" className="icon-btn" onClick={() => setTaskModalOpen(false)} aria-label="Close task details">
-                <Ico.X size={16} />
-              </button>
-            </div>
-            <TaskViewer tasks={artifactTasks} />
-          </div>
-        </div>
-      ) : null}
-      <ArtifactViewer path={artifactPath} text={artifactText} loading={artifactLoading} error={artifactError} tasks={[]} onClose={onArtifactClose} />
     </section>
   );
 };

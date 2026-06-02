@@ -1,12 +1,18 @@
 {
   "name": "review-task-modal",
   "designPath": "design/v3-fetch/project/steps.jsx",
-  "primaryRegion": { "designSelector": ".review-step", "shippedSelector": ".review-step" },
+  "primaryRegion": { "designSelector": ".modal", "shippedSelector": ".modal" },
   "required": {
-    "texts": [{ "value": "Review" }, { "value": "Task details" }, { "value": "T001" }, { "value": "Build review:evidence aggregator" }],
-    "headings": [{ "level": 2, "text": "Review" }, { "level": 3, "text": "Task details" }],
-    "controls": [{ "role": "button", "name": "x", "count": 1 }],
-    "visualMarkers": []
+    "texts": [{ "value": "Artifact" }, { "value": "tasks.md" }, { "value": "T001" }, { "value": "Build review:evidence aggregator" }],
+    "headings": [{ "level": 2, "text": "tasks.md" }],
+    "controls": [{ "role": "button", "name": "Close artifact viewer", "count": 1 }],
+    "visualMarkers": [
+      {
+        "name": "modal-veil",
+        "selector": "[data-vd-role=\"modal-veil\"]",
+        "designSelector": ".modal-backdrop"
+      }
+    ]
   },
   "styleSamples": [],
   "pixel": { "maxDiffPercent": 5, "warnDiffPercent": 4 }

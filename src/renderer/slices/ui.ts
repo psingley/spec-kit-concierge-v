@@ -14,6 +14,9 @@ export type UiState = {
   showCustomize: boolean;
   showAbout: boolean;
   showRequest: boolean;
+  showArtifactViewer: boolean;
+  artifactViewerPath: string | null;
+  artifactViewerOrigin: 'passive' | 'review' | null;
   openMenu: string | null;
   toasts: ToastEntry[];
 };
@@ -26,6 +29,9 @@ export const uiInitialState: UiState = {
   showCustomize: false,
   showAbout: false,
   showRequest: false,
+  showArtifactViewer: false,
+  artifactViewerPath: null,
+  artifactViewerOrigin: null,
   openMenu: null,
   toasts: []
 };
@@ -43,8 +49,22 @@ const uiSlice = createSlice({
     modalOpened: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest'>) => {
       state[action.payload] = true;
     },
-    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest'>) => {
+    modalClosed: (state, action: PayloadAction<'showCustomize' | 'showAbout' | 'showRequest' | 'showArtifactViewer'>) => {
       state[action.payload] = false;
+      if (action.payload === 'showArtifactViewer') {
+        state.artifactViewerPath = null;
+        state.artifactViewerOrigin = null;
+      }
+    },
+    artifactViewerOpened: (state, action: PayloadAction<{ path: string; origin: 'passive' | 'review' }>) => {
+      state.showArtifactViewer = true;
+      state.artifactViewerPath = action.payload.path;
+      state.artifactViewerOrigin = action.payload.origin;
+    },
+    artifactViewerClosed: (state) => {
+      state.showArtifactViewer = false;
+      state.artifactViewerPath = null;
+      state.artifactViewerOrigin = null;
     },
     menuOpened: (state, action: PayloadAction<string | null>) => {
       state.openMenu = action.payload;
@@ -62,7 +82,7 @@ const uiSlice = createSlice({
   extraReducers: () => {}
 });
 
-export const { activityVisibilityToggled, activityVisibilitySet, modalOpened, modalClosed, menuOpened, toastShown, toastDismissed } =
+export const { activityVisibilityToggled, activityVisibilitySet, modalOpened, modalClosed, artifactViewerOpened, artifactViewerClosed, menuOpened, toastShown, toastDismissed } =
   uiSlice.actions;
 export const uiReducer = uiSlice.reducer;
 export default uiReducer;
