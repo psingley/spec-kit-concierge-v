@@ -8,6 +8,13 @@
 
 **Input**: User description: "lets remove the fake inner-top-bar traffic lights that dont do anything on the top left next to spec-kit concierge logo copy. keep the actual top bar normal behavior obviously but lets remove these fake ones that resulted from an overly literal design enforcement agent"
 
+## Clarifications
+
+### Session 2026-06-02
+
+- Q: What should happen to the fake traffic-light indicators and their related layout/styling? -> A: Remove them entirely.
+- Q: Should any placeholder or reserved space remain after removal? -> A: No; the header should collapse the space and stay clean.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Cleaner Header Chrome (Priority: P1)
