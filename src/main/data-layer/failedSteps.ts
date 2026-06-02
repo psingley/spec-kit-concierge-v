@@ -12,6 +12,7 @@ export type FailedStepRecord = {
   failedAt: string;
   reason: string;
   strandedArtifacts: string[];
+  anomalyIds: string[];
 };
 
 export type RestoredStepFailures = Partial<Record<FailedStepName, FailedStepRecord>>;
@@ -27,6 +28,7 @@ export type WriteFailedStepMarkerRequest = FailedStepMarkerRequest & {
   failedAt: string;
   reason: string;
   strandedArtifacts?: string[];
+  anomalyIds?: string[];
 };
 
 export const failedStepMarkerPath = ({ repositoryPath, step }: FailedStepMarkerRequest): string =>
@@ -44,8 +46,14 @@ const parseFailedStepRecord = (value: unknown, expectedStep: FailedStepName): Fa
     typeof value.sessionId !== 'string' ||
     typeof value.failedAt !== 'string' ||
     typeof value.reason !== 'string' ||
-    !Array.isArray(value.strandedArtifacts) ||
-    !value.strandedArtifacts.every((artifact) => typeof artifact === 'string')
+    (value.strandedArtifacts !== undefined && (
+      !Array.isArray(value.strandedArtifacts) ||
+      !value.strandedArtifacts.every((artifact) => typeof artifact === 'string')
+    )) ||
+    (value.anomalyIds !== undefined && (
+      !Array.isArray(value.anomalyIds) ||
+      !value.anomalyIds.every((anomalyId) => typeof anomalyId === 'string')
+    ))
   ) {
     throw new Error('InvalidFailedStepMarker');
   }
@@ -55,7 +63,8 @@ const parseFailedStepRecord = (value: unknown, expectedStep: FailedStepName): Fa
     sessionId: value.sessionId,
     failedAt: value.failedAt,
     reason: value.reason,
-    strandedArtifacts: value.strandedArtifacts
+    strandedArtifacts: value.strandedArtifacts ?? [],
+    anomalyIds: value.anomalyIds ?? []
   };
 };
 
@@ -68,7 +77,8 @@ export const writeFailedStepMarker = async (request: WriteFailedStepMarkerReques
         sessionId: request.sessionId,
         failedAt: request.failedAt,
         reason: request.reason,
-        strandedArtifacts: request.strandedArtifacts ?? []
+        strandedArtifacts: request.strandedArtifacts ?? [],
+        anomalyIds: request.anomalyIds ?? []
       }),
       stepContext: { stepId: request.step, label: 'failed-step marker' }
     },

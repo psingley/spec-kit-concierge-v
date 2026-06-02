@@ -116,12 +116,19 @@ export const createBranchSessionsResponse = (value: unknown): FactoryResult<Bran
       if (!Array.isArray(failureRecord.value.strandedArtifacts) || !failureRecord.value.strandedArtifacts.every((artifact) => typeof artifact === 'string' && !artifact.includes('..'))) {
         return invalid('InvalidBranchesPayload', 'restored failure artifacts must be safe strings', `$.sessions[].restoredFailures.${step}.strandedArtifacts`);
       }
+      if (
+        failureRecord.value.anomalyIds !== undefined &&
+        (!Array.isArray(failureRecord.value.anomalyIds) || !failureRecord.value.anomalyIds.every((anomalyId) => typeof anomalyId === 'string' && anomalyId.trim().length > 0))
+      ) {
+        return invalid('InvalidBranchesPayload', 'restored failure anomaly ids must be non-empty strings', `$.sessions[].restoredFailures.${step}.anomalyIds`);
+      }
       failures[step as StepName] = {
         step: step as StepName,
         sessionId: failureSessionId.value,
         failedAt: failedAt.value,
         reason: reason.value,
-        strandedArtifacts: failureRecord.value.strandedArtifacts
+        strandedArtifacts: failureRecord.value.strandedArtifacts,
+        anomalyIds: failureRecord.value.anomalyIds ?? []
       };
     }
     sessions.push({ sessionId: sessionId.value, worktreePath: worktreePath.value, branch, label: label.value, restoredStates: restored, restoredStepCommits: commits, restoredFailures: failures });

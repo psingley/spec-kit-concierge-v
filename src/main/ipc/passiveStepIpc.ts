@@ -5,6 +5,7 @@ import { discoverOptionalArtifacts } from '../domain/factories/factoryUtils';
 import type { BoundCLIPromptUpdate } from '../data-layer/acp/types';
 import { readFailedStepMarker, removeFailedStepMarker, writeFailedStepMarker } from '../data-layer/failedSteps';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
+import type { DirtyDiffGateResult } from '../domain/reconciliation/dirtyDiffGates';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
@@ -50,6 +51,7 @@ export type RegisterPassiveStepIpcOptions = {
   beforeHook: (context: StepHookContext) => Promise<StepHookResult>;
   afterHook: (context: StepHookContext) => Promise<StepHookResult>;
   agentAdapter: PassiveStepAgentAdapter;
+  dirtyDiffGate?: (context: StepHookContext) => Promise<DirtyDiffGateResult | undefined>;
   abortSignal?: AbortSignal;
   now?: () => number;
 };
@@ -129,6 +131,7 @@ export const registerPassiveStepIpc = ({
   beforeHook,
   afterHook,
   agentAdapter,
+  dirtyDiffGate,
   abortSignal,
   now = () => performance.now()
 }: RegisterPassiveStepIpcOptions): void => {
@@ -160,7 +163,7 @@ export const registerPassiveStepIpc = ({
     const run = async (): Promise<void> => {
       let terminalSent = false;
       let featureDir: string | undefined;
-      let failureDetails: { reason?: string; strandedArtifacts?: string[] } = {};
+      let failureDetails: { reason?: string; strandedArtifacts?: string[]; anomalyIds?: string[] } = {};
       const terminal = (streamEvent: Extract<StepStreamEvent, { type: 'done' }>): void => {
         if (terminalSent) {
           return;
@@ -236,6 +239,15 @@ export const registerPassiveStepIpc = ({
             });
           }
         });
+        const dirtyDiff = await dirtyDiffGate?.(hookContext);
+        if (dirtyDiff?.blocking === true) {
+          failureDetails = {
+            reason: `needs-attention: ${dirtyDiff.classification} dirty diff blocked completion`,
+            strandedArtifacts: dirtyDiff.strandedArtifacts,
+            anomalyIds: [`dirty-diff-${dirtyDiff.classification}`]
+          };
+          throw new Error(failureDetails.reason);
+        }
         const after = await afterHook(hookContext);
         if (!after.ok || after.commit?.commitSha === undefined) {
           failureDetails = after.ok
@@ -255,7 +267,8 @@ export const registerPassiveStepIpc = ({
               sessionId,
               failedAt: new Date().toISOString(),
               reason,
-              strandedArtifacts: failureDetails.strandedArtifacts
+              strandedArtifacts: failureDetails.strandedArtifacts,
+              anomalyIds: failureDetails.anomalyIds
             });
           } catch (markerError) {
             logger.warn({ channel, context, markerError }, 'failed-step marker write failed');

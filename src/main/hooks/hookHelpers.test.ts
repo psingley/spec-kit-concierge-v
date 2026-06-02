@@ -207,6 +207,7 @@ describe('hookHelpers', () => {
       ...baseContext(),
       validateArtifacts,
       reconcileAfterHook,
+      writeFailedStepMarker: vi.fn().mockResolvedValue(undefined),
       commitWithTrailer
     });
 
@@ -218,6 +219,52 @@ describe('hookHelpers', () => {
       failureReason: 'pre-commit reconciliation blocked completion'
     });
     expect(commitWithTrailer).not.toHaveBeenCalled();
+  });
+
+  it('persists failed marker detail when reconciliation blocks after-hook completion', async () => {
+    const validateArtifacts = vi.fn().mockResolvedValue({
+      ok: true,
+      commit: { step: 'tasks', status: 'pass', files: ['tasks.md'], message: 'Concierge tasks step' }
+    });
+    const reconcileAfterHook = vi.fn().mockResolvedValue({
+      step: 'tasks',
+      status: 'needs-attention',
+      canCommit: false,
+      canAutoRecover: true,
+      canNudge: true,
+      anomalies: [{
+        anomalyId: 'anomaly-1',
+        step: 'tasks',
+        kind: 'unrelated-diff',
+        severity: 'blocking',
+        detectedAt: '2026-06-02T00:00:00.000Z',
+        evidence: { strandedArtifacts: ['src/main/ipc/passiveStepIpc.ts'] }
+      }],
+      requiredInterventions: ['anomaly-1']
+    });
+    const writeFailedStepMarker = vi.fn().mockResolvedValue(undefined);
+
+    const result = await runAfterHook('tasks', {
+      ...baseContext(),
+      validateArtifacts,
+      reconcileAfterHook,
+      writeFailedStepMarker
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      escapeHatchReason: 'factory-rejected',
+      failureReason: 'pre-commit reconciliation blocked completion'
+    });
+    expect(writeFailedStepMarker).toHaveBeenCalledWith(expect.objectContaining({
+      repositoryPath: '/repo',
+      userDataPath: '/tmp/user',
+      step: 'tasks',
+      sessionId: 's1',
+      reason: 'pre-commit reconciliation blocked completion',
+      anomalyIds: ['anomaly-1'],
+      strandedArtifacts: ['src/main/ipc/passiveStepIpc.ts']
+    }));
   });
 
   it('returns clarify-specific escape hatch for malformed question validation', async () => {

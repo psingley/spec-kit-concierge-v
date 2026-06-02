@@ -1,6 +1,7 @@
 import type { ConciergeStepCommit, StepContractResult } from '../domain/factories/types';
 import type { commitWithTrailer as defaultCommitWithTrailer } from '../data-layer/git/gitCommand';
 import type { CommitWithTrailerResult } from '../data-layer/git/gitCommand';
+import type { WriteFailedStepMarkerRequest } from '../data-layer/failedSteps';
 import type { BranchStateSnapshot, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
 import type { ReconciliationResult } from '../domain/manifest/types';
 import type { StepName } from './manifest';
@@ -66,6 +67,7 @@ export type StepHookContext = {
     phase: AfterHookReconcilePhase,
     request: AfterHookReconcileRequest
   ) => Promise<ReconciliationResult>;
+  writeFailedStepMarker?: (request: WriteFailedStepMarkerRequest) => Promise<void>;
   captureBranchState?: (context: StepHookContext) => Promise<BranchStateSnapshot>;
   captureOwnedPathSnapshot?: (
     step: StepName,

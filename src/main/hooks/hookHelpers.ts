@@ -1,7 +1,8 @@
 import { createMainLogger } from '../logging';
 import { commitWithTrailer as defaultCommitWithTrailer, runGit } from '../data-layer/git/gitCommand';
+import { writeFailedStepMarker as defaultWriteFailedStepMarker } from '../data-layer/failedSteps';
 import { createStepOwnedArtifactSnapshot } from '../domain/factories/artifactSnapshot.factory';
-import type { BranchStateSnapshot, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
+import type { Anomaly, BranchStateSnapshot, ReconciliationResult, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
 import {
   validateAnalyzeArtifacts,
   validateClarifyArtifacts,
@@ -85,6 +86,33 @@ const captureStepStartSnapshot = async (
   await context.stepStartSnapshotSink?.(snapshot);
 
   return snapshot;
+};
+
+const strandedArtifactsFromAnomalies = (anomalies: Anomaly[]): string[] =>
+  anomalies.flatMap((anomaly) => {
+    const strandedArtifacts = anomaly.evidence.strandedArtifacts;
+    return Array.isArray(strandedArtifacts)
+      ? strandedArtifacts.filter((artifact): artifact is string => typeof artifact === 'string')
+      : [];
+  });
+
+const persistReconciliationFailure = async (
+  step: StepName,
+  context: StepHookContext,
+  reconciliation: ReconciliationResult,
+  reason: string
+): Promise<void> => {
+  const writeMarker = context.writeFailedStepMarker ?? defaultWriteFailedStepMarker;
+  await writeMarker({
+    repositoryPath: context.repositoryPath,
+    userDataPath: context.userDataPath,
+    step,
+    sessionId: context.sessionId,
+    failedAt: (context.now?.() ?? new Date()).toISOString(),
+    reason,
+    strandedArtifacts: strandedArtifactsFromAnomalies(reconciliation.anomalies),
+    anomalyIds: reconciliation.requiredInterventions
+  });
 };
 
 export const runBeforeHook = async (
@@ -193,6 +221,7 @@ export const runAfterHook = async (
       preCommitReconciliation.status !== 'pass' &&
       !preCommitReconciliation.canCommit
     ) {
+      await persistReconciliationFailure(step, context, preCommitReconciliation, 'pre-commit reconciliation blocked completion');
       return {
         ok: false,
         phase: 'after',
@@ -213,6 +242,7 @@ export const runAfterHook = async (
       postCommitReconciliation !== undefined &&
       postCommitReconciliation.status !== 'pass'
     ) {
+      await persistReconciliationFailure(step, context, postCommitReconciliation, 'post-commit reconciliation did not verify completion');
       return {
         ok: false,
         phase: 'after',

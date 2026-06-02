@@ -173,6 +173,49 @@ describe('registerPassiveStepIpc', () => {
     await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('specs/0008-react-router-refactor/tasks.md');
   });
 
+  it.each([
+    'unrelated',
+    'ambiguous',
+    'unsafe',
+    'owned-mismatched'
+  ] as const)('blocks passive completion on %s dirty diffs and writes stranded artifact detail', async (classification) => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo('specs/0013-hybrid-manifest-architecture');
+    const afterHook = vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'tasks-sha' } });
+
+    registerPassiveStepIpc({
+      step: 'tasks',
+      channel: 'copilot:tasks',
+      eventChannel: 'copilot:tasks:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook,
+      agentAdapter: vi.fn().mockResolvedValue(undefined),
+      dirtyDiffGate: vi.fn().mockResolvedValue({
+        classification,
+        affectedPaths: ['src/main/ipc/passiveStepIpc.ts'],
+        blocking: true,
+        strandedArtifacts: ['src/main/ipc/passiveStepIpc.ts']
+      })
+    });
+
+    await harness.handlers.get('copilot:tasks')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:tasks:event', expect.objectContaining({
+      event: expect.objectContaining({
+        type: 'done',
+        step: 'tasks',
+        status: 'fail',
+        reason: `needs-attention: ${classification} dirty diff blocked completion`
+      })
+    })));
+    expect(afterHook).not.toHaveBeenCalled();
+    await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain('src/main/ipc/passiveStepIpc.ts');
+    await expect(readFile(failedMarkerPath(repositoryPath, 'tasks'), 'utf8')).resolves.toContain(`dirty-diff-${classification}`);
+  });
+
   it('sends fail without running the agent when the abort signal is already aborted', async () => {
     const harness = createHarness();
     const controller = new AbortController();

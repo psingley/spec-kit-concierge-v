@@ -59,6 +59,7 @@ export type RestoredStepFailure = {
   failedAt: string;
   reason: string;
   strandedArtifacts: string[];
+  anomalyIds: string[];
 };
 export type RestoredStepFailures = Partial<Record<StepName, RestoredStepFailure>>;
 

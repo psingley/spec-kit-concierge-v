@@ -202,7 +202,8 @@ describe('reconcileSessionStep', () => {
         sessionId: 's1',
         failedAt: timestamp,
         reason: 'factory-rejected',
-        strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/spec.md']
+        strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/spec.md'],
+        anomalyIds: []
       }
     }));
     const noStrandedArtifacts = reconcileSessionStep(baseRequest({
@@ -213,7 +214,8 @@ describe('reconcileSessionStep', () => {
         sessionId: 's1',
         failedAt: timestamp,
         reason: 'factory-rejected',
-        strandedArtifacts: []
+        strandedArtifacts: [],
+        anomalyIds: []
       }
     }));
 

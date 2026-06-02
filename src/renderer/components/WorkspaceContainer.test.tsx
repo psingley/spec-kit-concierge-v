@@ -233,7 +233,8 @@ describe('WorkspaceContainer step derivation (prior-step-complete unlock chain)'
         sessionId: 'tasks-old',
         failedAt: '2026-06-01T12:00:00.000Z',
         reason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings',
-        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md'],
+        anomalyIds: []
       }
     };
 

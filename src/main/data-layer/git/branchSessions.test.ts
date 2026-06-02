@@ -224,7 +224,8 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
           sessionId: 'tasks-old',
           failedAt: '2026-06-01T12:00:00.000Z',
           reason: 'factory-rejected: expected tasks.md under specs/0012-remove-density-settings',
-          strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+          strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md'],
+          anomalyIds: []
         }
       }))
     }))[0]!;
@@ -263,7 +264,8 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
         sessionId: 'session-015',
         failedAt: 'unknown',
         reason: 'factory-rejected: expected specs/0012-remove-density-settings/tasks.md; found stranded tasks.md at specs/0008-react-router-refactor/tasks.md',
-        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md']
+        strandedArtifacts: ['specs/0008-react-router-refactor/tasks.md'],
+        anomalyIds: []
       }))
     }))[0]!;
 
@@ -328,7 +330,8 @@ describe('listBranchSessions (Phase 2: reads worktrees in place, never checks ou
           sessionId: 'session-013',
           failedAt: '2026-06-02T00:00:00.000Z',
           reason: 'needs-attention: ambiguous failed marker',
-          strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/tasks.md']
+          strandedArtifacts: ['specs/0013-hybrid-manifest-architecture/tasks.md'],
+          anomalyIds: []
         }
       }))
     });

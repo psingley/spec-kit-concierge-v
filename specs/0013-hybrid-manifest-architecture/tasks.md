@@ -93,14 +93,14 @@
 
 ### Tests for User Story 2
 
-- [ ] T035 [US2] Add RED dirty-diff gate tests for `owned-safe`, `owned-mismatched`, `unrelated`, `ambiguous`, and `unsafe` classifications in `src/main/domain/reconciliation/dirtyDiffGates.test.ts`
-- [ ] T036 [US2] Implement deterministic dirty-diff gate classification from step-start snapshots and current git facts in `src/main/domain/reconciliation/dirtyDiffGates.ts`
-- [ ] T037 [US2] Add RED failed marker factory tests for backward-compatible fields plus `strandedArtifacts` and `anomalyIds` strict validation in `src/main/data-layer/failedSteps.test.ts`
-- [ ] T038 [US2] Extend failed marker read/write helpers with stranded-artifact details and invalid-marker warnings in `src/main/data-layer/failedSteps.ts`
-- [ ] T039 [US2] Add RED passive completion-blocking tests for unrelated, ambiguous, unsafe, and owned-mismatched dirty diffs in `src/main/ipc/passiveStepIpc.test.ts`
-- [ ] T040 [US2] Block passive step completion on unsafe dirty-diff classifications and write failed markers with stranded artifacts in `src/main/ipc/passiveStepIpc.ts`
-- [ ] T041 [US2] Add RED hook completion-blocking tests for dirty-diff gates and failed-marker persistence in `src/main/hooks/hookHelpers.test.ts`
-- [ ] T042 [US2] Apply dirty-diff gates and failed-marker writes to after-hook completion in `src/main/hooks/hookHelpers.ts`
+- [X] T035 [US2] Add RED dirty-diff gate tests for `owned-safe`, `owned-mismatched`, `unrelated`, `ambiguous`, and `unsafe` classifications in `src/main/domain/reconciliation/dirtyDiffGates.test.ts`
+- [X] T036 [US2] Implement deterministic dirty-diff gate classification from step-start snapshots and current git facts in `src/main/domain/reconciliation/dirtyDiffGates.ts`
+- [X] T037 [US2] Add RED failed marker factory tests for backward-compatible fields plus `strandedArtifacts` and `anomalyIds` strict validation in `src/main/data-layer/failedSteps.test.ts`
+- [X] T038 [US2] Extend failed marker read/write helpers with stranded-artifact details and invalid-marker warnings in `src/main/data-layer/failedSteps.ts`
+- [X] T039 [US2] Add RED passive completion-blocking tests for unrelated, ambiguous, unsafe, and owned-mismatched dirty diffs in `src/main/ipc/passiveStepIpc.test.ts`
+- [X] T040 [US2] Block passive step completion on unsafe dirty-diff classifications and write failed markers with stranded artifacts in `src/main/ipc/passiveStepIpc.ts`
+- [X] T041 [US2] Add RED hook completion-blocking tests for dirty-diff gates and failed-marker persistence in `src/main/hooks/hookHelpers.test.ts`
+- [X] T042 [US2] Apply dirty-diff gates and failed-marker writes to after-hook completion in `src/main/hooks/hookHelpers.ts`
 - [ ] T043 [US2] Add RED safe recovery catalog and guarded recovery request factory tests for all six safe classes, anomaly id, ownership, ambiguity rejection, extra-key rejection, idempotency key validation, and doctor-escalation boundaries in `src/main/domain/recovery/recoveryCatalog.factory.test.ts`
 - [ ] T044 [US2] Implement safe recovery catalog request and result factories for relocation, valid completion adoption, failed-marker refresh, proven unrelated-file revert, observed active-step cancel, and pinned-context restart only after explicit user confirmation or an approved guarded doctor request in `src/main/domain/recovery/recoveryCatalog.factory.ts`
 - [ ] T045 [US2] Add RED deterministic recovery data-layer tests for all six safe classes, including re-reading disk truth, rejecting ambiguous destinations, moving only step-owned files, adopting matching completion commits, refreshing failed markers, reverting only proven unrelated files, canceling only observed active processes, requiring explicit user confirmation or an approved guarded doctor request for pinned-context restart, structured recovery-action logging, auditing before return, no silent step re-run, no direct completion marking, and idempotent no-op by anomaly id in `src/main/data-layer/recovery/deterministicRecovery.test.ts`

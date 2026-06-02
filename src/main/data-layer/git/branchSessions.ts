@@ -176,7 +176,8 @@ export const detectStrandedTasksFailure = async (
     sessionId: platformPath.basename(worktreePath),
     failedAt: 'unknown',
     reason: `factory-rejected: expected ${expectedTasksPath}; found stranded tasks.md at ${strandedArtifacts.join(', ')}`,
-    strandedArtifacts
+    strandedArtifacts,
+    anomalyIds: []
   };
 };
 
