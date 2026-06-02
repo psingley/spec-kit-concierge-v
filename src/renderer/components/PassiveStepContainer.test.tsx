@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import type { Mock } from 'vitest';
 import { describe, expect, it, vi } from 'vitest';
 import { createProductStore } from '../store';
 import { installConciergeBridge } from '../api/testBridge';
@@ -26,8 +25,8 @@ const repo = { id: 'r1', name: 'concierge', owner: 'org', path: '/work/wt', defa
 describe('PassiveStepContainer artifact reads', () => {
   it('passes the worktree root + a bare artifact name; the IPC resolves the feature dir', async () => {
     installConciergeBridge();
-    const read = window.concierge.artifacts!.read as Mock;
-    read.mockResolvedValue({ artifactPath: 'plan.md', text: '# Plan', size: 6, mtimeMs: 1 });
+    const dispatch = vi.fn();
+    mockUseAppDispatch.mockReturnValue(dispatch);
 
     const store = createProductStore();
     // NNN-slug worktree branch (not spec/...) — the renderer must NOT derive the
@@ -47,11 +46,10 @@ describe('PassiveStepContainer artifact reads', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /plan\.md/ }));
 
-    await waitFor(() => {
-      expect(read).toHaveBeenCalledWith(
-        expect.objectContaining({ repositoryPath: '/work/wt', artifactPath: 'plan.md' })
-      );
-    });
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: 'ui/artifactViewerOpened',
+      payload: { path: 'plan.md', origin: 'passive' }
+    }));
   });
 
   it('resumes from a completed plan step to tasks instead of review', () => {
