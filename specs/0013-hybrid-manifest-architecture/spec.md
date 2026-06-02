@@ -8,6 +8,12 @@
 
 **Input**: User description: "Hybrid Manifest Architecture — deterministic step authority + bounded LLM anomaly-intermediary"
 
+## Clarifications
+
+### Session 2026-06-01
+
+- Q: Which architecture seed governs clarification? -> A: Hybrid deterministic core plus bounded LLM doctor; strict reconciliation; print-mode unification and ACP removal; deterministic code as sole writer and authority; nudge only for terminal-stuck sessions after automatic remediation fails.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Deterministic Step Completion (Priority: P1)
@@ -117,6 +123,7 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - **FR-027**: System MUST allow the nudge flow to repair unambiguous discrepancies through guarded deterministic actions and require human escalation for ambiguous discrepancies.
 - **FR-028**: System MUST preserve existing resume reconstruction, maximum reached step advancement, navigation-loop prevention, graceful failed-step resume, branch-null routing gates, and Windows-conditional behavior.
 - **FR-029**: System MUST maintain a complete audit trail for anomalies, doctor recommendations, guarded tool invocations, deterministic recoveries, nudge actions, and human escalations.
+- **FR-030**: System MUST preserve this 11-milestone build order for planning and task decomposition: (1) sessionManifestStore with atomic writes and anomaly/intervention records, (2) stepContracts hardening and step-start owned-path snapshots, (3) branch-history commitStep idempotency, (4) sessionReconciler, (5) deterministic dirty-diff gates and failed markers with stranded-artifact detail, (6) guarded relocateArtifact tool, (7) deterministic watchdog and transcript classifier, (8) bounded 12-tool doctor harness, (9) doctor agent instructions, (10) facilitator integration, and (11) nudge button/reconcileBranchToIntendedShape.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -149,4 +156,4 @@ As a user with a terminal-stuck step after automatic remediation has failed, I n
 - Existing step contracts remain the basis for determining required artifacts and step-owned paths.
 - The doctor is additive and off the happy path; deterministic execution and reconciliation remain sufficient for normal successful runs.
 - Ambiguous recovery decisions should escalate rather than guess, even when that leaves a step failed or terminal-stuck.
-- The project-memory architecture notes referenced by the user remain the authoritative design source; this specification encodes the provided seed and constraints for planning.
+- The hybrid manifest architecture seed is authoritative for planning: the core is deterministic, reconciliation is strict, ACP is removed from step execution, print-mode is unified, deterministic code is the sole writer and authority, the doctor only reads and invokes bounded guarded tools, and the nudge appears only for terminal-stuck sessions after automatic remediation fails.
