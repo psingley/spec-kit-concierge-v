@@ -1,7 +1,7 @@
 import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { listRepositories, parseGhRepositories, type GhRepositoryRow } from './repoList';
 import type { ExecFileAdapter } from '../auth/cliAuth';
 
@@ -14,6 +14,10 @@ const row = (name: string, overrides: Partial<GhRepositoryRow> = {}): GhReposito
   pushedAt: '2026-05-30T12:00:00Z',
   defaultBranchRef: { name: 'main' },
   ...overrides
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('parseGhRepositories', () => {
@@ -131,19 +135,107 @@ describe('listRepositories', () => {
     ]);
   });
 
-  it('omits the owner positional so gh lists the signed-in account when owner is undefined', async () => {
+  it('lists personal repositories and every organization repository when owner is undefined', async () => {
     const invocations: string[] = [];
     const execFile: ExecFileAdapter = async (command, args) => {
       invocations.push(`${command} ${args.join(' ')}`);
-      return { stdout: JSON.stringify([row('spec-kit-concierge-v', { owner: { login: 'psingley' } })]), stderr: '' };
+      if (args.join(' ') === 'repo list --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef') {
+        return {
+          stdout: JSON.stringify([
+            row('spec-kit-concierge-v', { owner: { login: 'psingley' } }),
+            row('shared-repo', { id: 'R_shared', owner: { login: 'psingley' } })
+          ]),
+          stderr: ''
+        };
+      }
+      if (args.join(' ') === 'api --paginate /user/orgs --jq .[].login') {
+        return { stdout: 'collette-travel\nother-org\n', stderr: '' };
+      }
+      if (
+        args.join(' ') ===
+        'repo list collette-travel --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+      ) {
+        return {
+          stdout: JSON.stringify([
+            row('shared-repo', { id: 'R_shared', owner: { login: 'collette-travel' } }),
+            row('pricing-api', { owner: { login: 'collette-travel' } })
+          ]),
+          stderr: ''
+        };
+      }
+      if (
+        args.join(' ') ===
+        'repo list other-org --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+      ) {
+        return { stdout: JSON.stringify([row('docs', { owner: { login: 'other-org' } })]), stderr: '' };
+      }
+      throw new Error(`unexpected gh invocation: ${command} ${args.join(' ')}`);
+    };
+
+    await expect(listRepositories(undefined, '', execFile)).resolves.toEqual([
+      expect.objectContaining({ id: 'R_spec-kit-concierge-v', name: 'spec-kit-concierge-v', owner: 'psingley' }),
+      expect.objectContaining({ id: 'R_shared', name: 'shared-repo', owner: 'psingley' }),
+      expect.objectContaining({ id: 'R_pricing-api', name: 'pricing-api', owner: 'collette-travel' }),
+      expect.objectContaining({ id: 'R_docs', name: 'docs', owner: 'other-org' })
+    ]);
+    expect(invocations).toEqual([
+      'gh repo list --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef',
+      'gh api --paginate /user/orgs --jq .[].login',
+      'gh repo list collette-travel --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef',
+      'gh repo list other-org --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+    ]);
+  });
+
+  it('falls back to personal repositories when organization enumeration fails', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const execFile: ExecFileAdapter = async (_command, args) => {
+      if (args[0] === 'repo') {
+        return { stdout: JSON.stringify([row('spec-kit-concierge-v', { owner: { login: 'psingley' } })]), stderr: '' };
+      }
+      throw Object.assign(new Error('gh api failed'), { stderr: 'missing read:org scope' });
     };
 
     await expect(listRepositories(undefined, '', execFile)).resolves.toMatchObject([
       { name: 'spec-kit-concierge-v', owner: 'psingley', path: 'psingley/spec-kit-concierge-v' }
     ]);
-    expect(invocations).toEqual([
-      'gh repo list --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('GitHub CLI could not list organizations for the signed-in account.'),
+      expect.any(Error)
+    );
+  });
+
+  it('skips one inaccessible organization while returning personal and other organization repositories', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const execFile: ExecFileAdapter = async (_command, args) => {
+      if (args.join(' ') === 'repo list --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef') {
+        return { stdout: JSON.stringify([row('spec-kit-concierge-v', { owner: { login: 'psingley' } })]), stderr: '' };
+      }
+      if (args.join(' ') === 'api --paginate /user/orgs --jq .[].login') {
+        return { stdout: 'collette-travel\nlocked-org\n', stderr: '' };
+      }
+      if (
+        args.join(' ') ===
+        'repo list collette-travel --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+      ) {
+        return { stdout: JSON.stringify([row('pricing-api', { owner: { login: 'collette-travel' } })]), stderr: '' };
+      }
+      if (
+        args.join(' ') ===
+        'repo list locked-org --limit 1000 --json id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef'
+      ) {
+        throw Object.assign(new Error('gh repo list failed'), { stderr: 'SSO authorization required' });
+      }
+      throw new Error(`unexpected args: ${args.join(' ')}`);
+    };
+
+    await expect(listRepositories(undefined, '', execFile)).resolves.toMatchObject([
+      { name: 'spec-kit-concierge-v', owner: 'psingley' },
+      { name: 'pricing-api', owner: 'collette-travel' }
     ]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('GitHub CLI could not list repositories for organization locked-org.'),
+      expect.any(Error)
+    );
   });
 
   it('returns an empty list (not fixtures) when the signed-in account has no visible repositories', async () => {
