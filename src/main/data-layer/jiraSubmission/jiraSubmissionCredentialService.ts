@@ -146,11 +146,13 @@ export const createJiraSubmissionCredentialService = ({
       if (!isSecureStorageAvailable(safeStorageAdapter)) {
         throw new Error('secure storage unavailable for Jira submission credential');
       }
+      const normalizedEmail = credential.email.trim();
+      const normalizedToken = credential.token.trim();
       const baseUrl = credential.baseUrl === undefined || credential.baseUrl.trim() === ''
-        ? deriveBaseUrlFromEmail(credential.email)
+        ? deriveBaseUrlFromEmail(normalizedEmail)
         : normalizeCandidateBaseUrl(credential.baseUrl);
       if (baseUrl === undefined) return { ok: false, status: 'site_not_found' };
-      const normalizedCredential: JiraRestCredential = { email: credential.email, token: credential.token, baseUrl };
+      const normalizedCredential: JiraRestCredential = { email: normalizedEmail, token: normalizedToken, baseUrl };
       const identity = await validateCredential(normalizedCredential, fetch);
       if (!identity.ok) return identity;
       const stored: StoredCredential = {

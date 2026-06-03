@@ -31,6 +31,22 @@ describe('Jira submission leak scrubbing', () => {
     expect(serialized).not.toContain('Authorization');
   });
 
+  it('returns sanitized log copies without mutating outgoing request headers', () => {
+    const base64 = Buffer.from('person@example.com:api.token=3E29F2AF+/_.-~').toString('base64');
+    const request = {
+      method: 'GET',
+      headers: {
+        Authorization: `Basic ${base64}`,
+        Accept: 'application/json'
+      }
+    };
+
+    const scrubbed = sanitizeForSecrets(request, [`Basic ${base64}`]);
+
+    expect(request.headers.Authorization).toBe(`Basic ${base64}`);
+    expect(JSON.stringify(scrubbed)).not.toContain(base64);
+  });
+
   it('writes sanitized failed-fetch error details into the state record', async () => {
     const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'jira-rest-redact-'));
     const featureDir = path.join(repositoryPath, 'specs', '0016-rest-turn');

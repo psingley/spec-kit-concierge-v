@@ -81,6 +81,33 @@ describe('jiraSubmissionCredentialService', () => {
     });
   });
 
+  it('trims credential boundary whitespace before validation while preserving internal token bytes', async () => {
+    const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
+    const fetch = vi.fn<typeof globalThis.fetch>()
+      .mockResolvedValue(response({ accountId: 'acct-1', displayName: 'Pat User', emailAddress: 'person@collette.com' }));
+    const service = createJiraSubmissionCredentialService({ userDataPath, safeStorage: createSafeStorage(), fetch });
+    const token = 'api.token=3E29F2AF+/_.-~';
+
+    await expect(service.saveCredential({
+      email: '  person@collette.com\t',
+      token: `\n${token} \t`
+    })).resolves.toMatchObject({
+      ok: true,
+      authState: { state: 'warm', baseUrl: 'https://collette.atlassian.net' }
+    });
+
+    const headers = fetch.mock.calls[0]![1]!.headers as Record<string, string>;
+    const authorization = headers.Authorization;
+    expect(authorization).toBeDefined();
+    const decoded = Buffer.from(authorization!.replace(/^Basic /, ''), 'base64').toString('utf8');
+    expect(decoded).toBe(`person@collette.com:${token}`);
+
+    await expect(service.loadCredential()).resolves.toMatchObject({
+      email: 'person@collette.com',
+      token
+    });
+  });
+
   it('returns site_not_found when the derived site is unreachable or absent', async () => {
     const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
     const fetch = vi.fn<typeof globalThis.fetch>()
