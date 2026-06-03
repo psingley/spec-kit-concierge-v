@@ -25,10 +25,18 @@ const renderTitlebar = (overrides: Partial<React.ComponentProps<typeof Titlebar>
         ]}
         repositories={liveRepos}
         repositoriesError={false}
+        jiraAuthState={{ state: 'warm', displayName: 'Pat User', expiryDate: '2099-01-01' }}
+        jiraBoard={{ projectKey: 'SKC', source: 'user' }}
+        jiraBoardSuggestions={[{ key: 'SKC', name: 'Spec-kit Concierge', lastActivity: '2026-06-02' }]}
+        jiraProjectResults={[{ key: 'PLAT', name: 'Platform' }]}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={vi.fn()}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
         {...overrides}
       />
       <button type="button">Outside target</button>
@@ -47,10 +55,18 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model={null}
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5', enablement: 'default' }]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={vi.fn()}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -58,6 +74,7 @@ describe('Titlebar dropdowns', () => {
     expect(screen.getByRole('button', { name: 'a.kim' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'collette-travel/concierge-api' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'main' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /jira board/i })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'GPT-5.5default' })).toBeInTheDocument();
     expect(document.querySelector('[data-vd-role="auth-identity-dot"]')).toBeInTheDocument();
   });
@@ -73,10 +90,18 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model={null}
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5' }]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={vi.fn()}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -94,10 +119,18 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model={null}
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5' }]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={vi.fn()}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -182,10 +215,18 @@ describe('Titlebar dropdowns', () => {
           { id: 'gpt-5.5', name: 'GPT-5.5', enablement: 'default' },
           { id: 'claude-sonnet-4-5', name: 'Claude Sonnet 4.5', cost: 'premium' }
         ]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={onModelSelect}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -211,11 +252,19 @@ describe('Titlebar dropdowns', () => {
           { id: 'gpt-5.5', name: 'GPT-5.5', enablement: 'default' },
           { id: 'claude-sonnet-4-5', name: 'Claude Sonnet 4.5' }
         ]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         modelDisabled
         onCustomize={vi.fn()}
         onAbout={vi.fn()}
         onRequest={vi.fn()}
         onModelSelect={onModelSelect}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -240,10 +289,18 @@ describe('Titlebar dropdowns', () => {
         atlassian="ok"
         model="gpt-5.5"
         models={[{ id: 'gpt-5.5', name: 'GPT-5.5' }]}
+        jiraAuthState={{ state: 'none' }}
+        jiraBoard={{ source: 'none' }}
+        jiraBoardSuggestions={[]}
+        jiraProjectResults={[]}
         onCustomize={onCustomize}
         onAbout={onAbout}
         onRequest={onRequest}
         onModelSelect={vi.fn()}
+        onSetJiraBoard={vi.fn()}
+        onSearchJiraProjects={vi.fn()}
+        onSaveJiraCredential={vi.fn()}
+        onClearJiraCredential={vi.fn()}
       />
     );
 
@@ -255,5 +312,54 @@ describe('Titlebar dropdowns', () => {
     expect(onCustomize).toHaveBeenCalledTimes(1);
     expect(onRequest).toHaveBeenCalledTimes(1);
     expect(onAbout).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the JIRA board chip and sets a board from suggestions and search results', () => {
+    const onSetJiraBoard = vi.fn();
+    const onSearchJiraProjects = vi.fn();
+    renderTitlebar({ onSetJiraBoard, onSearchJiraProjects });
+
+    fireEvent.click(screen.getByRole('button', { name: /jira board skc/i }));
+    const menu = screen.getByRole('menu', { name: /jira board for this repo/i });
+    expect(within(menu).getByText('JIRA board for this repo')).toBeVisible();
+    expect(within(menu).getByText('Current')).toBeVisible();
+    fireEvent.click(within(menu).getByRole('menuitem', { name: /skc spec-kit concierge 2026-06-02/i }));
+    expect(onSetJiraBoard).toHaveBeenCalledWith('SKC');
+
+    fireEvent.click(screen.getByRole('button', { name: /jira board skc/i }));
+    fireEvent.change(screen.getByLabelText('Search JIRA projects'), { target: { value: 'pla' } });
+    expect(onSearchJiraProjects).toHaveBeenCalledWith('pla');
+    fireEvent.click(screen.getByRole('menuitem', { name: /plat platform/i }));
+    expect(onSetJiraBoard).toHaveBeenCalledWith('PLAT');
+  });
+
+  it('renders the warning board chip when JIRA is warm but no board is configured', () => {
+    renderTitlebar({ jiraBoard: { source: 'none' }, jiraBoardSuggestions: [] });
+
+    const chip = screen.getByRole('button', { name: /jira board set board/i });
+    expect(chip).toHaveClass('status-warn');
+    fireEvent.click(chip);
+    expect(screen.getByText('No recent activity, search above')).toBeVisible();
+  });
+
+  it('renders the gear JIRA Integration section with manage, clear, and board picker controls', () => {
+    const onSaveJiraCredential = vi.fn();
+    const onClearJiraCredential = vi.fn();
+    const onSetJiraBoard = vi.fn();
+    renderTitlebar({ onSaveJiraCredential, onClearJiraCredential, onSetJiraBoard });
+
+    fireEvent.click(screen.getByRole('button', { name: /settings/i }));
+    const menu = screen.getByRole('dialog', { name: /settings/i });
+    expect(within(menu).getByText('JIRA Integration')).toBeVisible();
+    expect(within(menu).getByText('Connected as Pat User')).toBeVisible();
+
+    fireEvent.click(within(menu).getByRole('button', { name: /manage credential/i }));
+    expect(within(menu).getByLabelText('API token')).toBeVisible();
+
+    fireEvent.click(within(menu).getByRole('button', { name: /clear credential/i }));
+    expect(onClearJiraCredential).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(within(menu).getByRole('menuitem', { name: /skc spec-kit concierge 2026-06-02/i }));
+    expect(onSetJiraBoard).toHaveBeenCalledWith('SKC');
   });
 });

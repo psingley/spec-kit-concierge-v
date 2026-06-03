@@ -27,6 +27,36 @@ export type JiraIssueLink = {
   url: string;
 };
 
+export type JiraAuthState = {
+  state: 'warm' | 'expired' | 'none';
+  displayName?: string;
+  emailAddress?: string;
+  accountId?: string;
+  expiryDate?: string;
+  baseUrl?: string;
+};
+
+export type JiraCredentialSaveResponse = {
+  ok: true;
+  authState: JiraAuthState;
+};
+
+export type JiraBoardMapping = {
+  projectKey?: string;
+  source: 'user' | 'seed' | 'none';
+};
+
+export type JiraBoardSuggestion = {
+  key: string;
+  name?: string;
+  lastActivity?: string;
+};
+
+export type JiraProject = {
+  key: string;
+  name?: string;
+};
+
 export type JiraState = {
   submitting: boolean;
   dryRunPreview: JiraDryRunPreview | null;
@@ -34,6 +64,8 @@ export type JiraState = {
   issues: JiraIssueLink[];
   remaining: string[];
   error: string | null;
+  authState: JiraAuthState;
+  board: JiraBoardMapping;
 };
 
 export const jiraInitialState: JiraState = {
@@ -42,7 +74,9 @@ export const jiraInitialState: JiraState = {
   results: [],
   issues: [],
   remaining: [],
-  error: null
+  error: null,
+  authState: { state: 'none' },
+  board: { source: 'none' }
 };
 
 const jiraSlice = createSlice({
@@ -84,6 +118,12 @@ const jiraSlice = createSlice({
       state.remaining = [];
       state.error = null;
       state.submitting = false;
+    },
+    jiraAuthStateLoaded: (state, action: PayloadAction<JiraAuthState>) => {
+      state.authState = action.payload;
+    },
+    jiraBoardLoaded: (state, action: PayloadAction<JiraBoardMapping>) => {
+      state.board = action.payload;
     }
   }
 });
@@ -94,7 +134,9 @@ export const {
   jiraSubmissionResultRecorded,
   jiraSubmissionSucceeded,
   jiraSubmissionFailed,
-  jiraSubmissionCleared
+  jiraSubmissionCleared,
+  jiraAuthStateLoaded,
+  jiraBoardLoaded
 } = jiraSlice.actions;
 
 export const jiraReducer = jiraSlice.reducer;

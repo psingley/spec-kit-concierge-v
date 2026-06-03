@@ -65,6 +65,17 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
       submit: vi.fn(),
       subscribeSubmit: vi.fn(() => vi.fn())
     },
+    jiraCredential: {
+      save: vi.fn(),
+      clear: vi.fn(),
+      state: vi.fn()
+    },
+    jiraBoard: {
+      get: vi.fn(),
+      set: vi.fn(),
+      suggest: vi.fn(),
+      searchProjects: vi.fn()
+    },
     sessionManifest: {
       read: vi.fn(),
       reconcile: vi.fn(),

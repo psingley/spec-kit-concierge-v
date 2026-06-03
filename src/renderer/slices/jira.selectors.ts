@@ -6,3 +6,6 @@ export const selectJiraSubmitting = (state: RootState) => state.jira.submitting;
 export const selectJiraResults = (state: RootState) => state.jira.results;
 export const selectJiraIssues = (state: RootState) => state.jira.issues;
 export const selectJiraError = (state: RootState) => state.jira.error;
+export const selectJiraAuthState = (state: RootState) => state.jira.authState;
+export const selectJiraBoard = (state: RootState) => state.jira.board;
+export const selectJiraDirectConfigured = (state: RootState) => state.jira.authState.state === 'warm';

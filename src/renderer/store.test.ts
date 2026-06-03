@@ -40,7 +40,7 @@ describe('product store assembly', () => {
     expect(state.session).toMatchObject({ activeSessionId: null, modelId: null, modeId: null, specifyPrompt: '', specMarkdown: '' });
     expect(state.activity).toEqual({ entries: [], cap: 256, currentStatus: 'Idle', busy: false });
     expect(state.copilot).toEqual({ capabilities: null, lastProbeAt: null });
-    expect(state.jira).toEqual({ submitting: false, dryRunPreview: null, results: [], issues: [], remaining: [], error: null });
+    expect(state.jira).toEqual({ submitting: false, dryRunPreview: null, results: [], issues: [], remaining: [], error: null, authState: { state: 'none' }, board: { source: 'none' } });
     expect(state).toHaveProperty(api.reducerPath);
   });
 
