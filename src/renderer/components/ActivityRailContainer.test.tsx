@@ -1,9 +1,9 @@
 import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { activityBusyChanged, activityReducer, hangSuspectedRecorded } from '../slices/activity';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { activityBusyChanged, activityReducer, hangSuspectedRecorded, recordActivity } from '../slices/activity';
 import { preferencesReducer } from '../slices/preferences';
 import { activityVisibilitySet, uiReducer } from '../slices/ui';
 import { ACTIVITY_FOLLOW_DEBOUNCE_MS, ActivityRailContainer, followStateFromScrollMetrics } from './ActivityRailContainer';
@@ -37,5 +37,40 @@ describe('ActivityRailContainer', () => {
     );
 
     expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+  });
+
+  it('pauses and resumes follow state from debounced scroll metrics', () => {
+    vi.useFakeTimers();
+    const store = makeStore();
+    store.dispatch(activityVisibilitySet(true));
+    store.dispatch(recordActivity({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      level: 'info',
+      message: 'first'
+    }));
+
+    const { container } = render(
+      <Provider store={store}>
+        <ActivityRailContainer />
+      </Provider>
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 1000 });
+    Object.defineProperty(stream, 'clientHeight', { configurable: true, value: 200 });
+
+    stream.scrollTop = 500;
+    fireEvent.scroll(stream);
+    act(() => {
+      vi.advanceTimersByTime(ACTIVITY_FOLLOW_DEBOUNCE_MS);
+    });
+    expect(store.getState().activity.followState).toBe('paused');
+
+    stream.scrollTop = 700;
+    fireEvent.scroll(stream);
+    act(() => {
+      vi.advanceTimersByTime(ACTIVITY_FOLLOW_DEBOUNCE_MS);
+    });
+    expect(store.getState().activity.followState).toBe('following');
+    vi.useRealTimers();
   });
 });
