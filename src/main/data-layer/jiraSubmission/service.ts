@@ -5,6 +5,7 @@ import { BoundCLISupervisor } from '../acp/supervisor';
 import type { MainLogger } from '../../logging';
 import { resolveFeatureDir } from '../specify/featureDir';
 import { buildJiraSubmissionPlan, type JiraSubmissionConfig, type JiraSubmissionPlan } from './plan';
+import { findExplicitProjectKey, findTopLevelScalar } from './jiraConfigYaml';
 import { createRestJiraCreateTurn, type JiraRestCredential } from './restCreateTurn';
 import { runJiraSubmissionLoop, type JiraCreateTurn, type JiraSubmissionLoopOptions, type JiraSubmissionLoopResult } from './runner';
 
@@ -19,34 +20,11 @@ const defaultConfig: JiraSubmissionConfig = {
   baseLabels: ['spec-kit', 'concierge']
 };
 
-const stripInlineComment = (value: string): string =>
-  value.replace(/\s+#.*$/, '').trim();
-
-const scalarValue = (line: string): string | undefined => {
-  let value = line.split(':').slice(1).join(':').trim();
-  if (value.length === 0) return undefined;
-  value = stripInlineComment(value);
-  value = value.replace(/^["']|["']$/g, '').trim();
-  return value.length > 0 ? value : undefined;
-};
-
-const findTopLevelScalar = (lines: string[], keys: string[]): string | undefined => {
-  for (const line of lines) {
-    if (/^\s*#/.test(line) || /^\s/.test(line)) continue;
-    const key = keys.find((candidate) => new RegExp(`^${candidate}:\\s*`).test(line));
-    if (key !== undefined) return scalarValue(line);
-  }
-  return undefined;
-};
-
 const readJiraConfig = async (repositoryPath: string): Promise<JiraSubmissionConfig> => {
   try {
     const raw = await readFile(path.join(repositoryPath, '.specify', 'extensions', 'concierge-jira', 'jira-config.yml'), 'utf8');
     const lines = raw.split(/\r?\n/);
-    const keyLineIndex = lines.findIndex((line) => /^\s*project:\s*$/.test(line));
-    const projectKey = keyLineIndex >= 0
-      ? scalarValue(lines.slice(keyLineIndex + 1).find((line) => /^\s+key:\s*/.test(line)) ?? '')
-      : undefined;
+    const projectKey = findExplicitProjectKey(raw);
     const siteUrl = findTopLevelScalar(lines, ['site_url', 'siteUrl', 'base_url', 'baseUrl']);
     return {
       projectKey: projectKey || defaultConfig.projectKey,
@@ -60,7 +38,8 @@ const readJiraConfig = async (repositoryPath: string): Promise<JiraSubmissionCon
 
 export const buildJiraSubmissionArtifacts = async (
   repositoryPath: string,
-  resolveDir: (repositoryPath: string) => Promise<string> = resolveFeatureDir
+  resolveDir: (repositoryPath: string) => Promise<string> = resolveFeatureDir,
+  configOverride: Partial<JiraSubmissionConfig> = {}
 ): Promise<JiraSubmissionArtifacts> => {
   const featureDir = await resolveDir(repositoryPath);
   const [specMarkdown, tasksMarkdown, config] = await Promise.all([
@@ -68,7 +47,7 @@ export const buildJiraSubmissionArtifacts = async (
     readFile(path.join(featureDir, 'tasks.md'), 'utf8'),
     readJiraConfig(repositoryPath)
   ]);
-  const plan = buildJiraSubmissionPlan({ repositoryPath, featureDir, specMarkdown, tasksMarkdown, config });
+  const plan = buildJiraSubmissionPlan({ repositoryPath, featureDir, specMarkdown, tasksMarkdown, config: { ...config, ...configOverride } });
   return { featureDir, featureDirRelative: path.relative(repositoryPath, featureDir), plan };
 };
 
@@ -135,6 +114,7 @@ export const runJiraSubmission = async ({
   userDataPath,
   jiraRestCredential,
   runCreateTurn,
+  projectKeyOverride,
   onProgress,
   onResult,
   now
@@ -144,8 +124,9 @@ export const runJiraSubmission = async ({
   userDataPath?: string;
   jiraRestCredential?: JiraRestCredential;
   runCreateTurn?: JiraCreateTurn;
+  projectKeyOverride?: string;
 } & Pick<JiraSubmissionLoopOptions, 'onProgress' | 'onResult' | 'now'>): Promise<JiraSubmissionLoopResult> => {
-  const artifacts = await buildJiraSubmissionArtifacts(repositoryPath);
+  const artifacts = await buildJiraSubmissionArtifacts(repositoryPath, resolveFeatureDir, projectKeyOverride === undefined ? {} : { projectKey: projectKeyOverride });
   const createTurn = runCreateTurn ?? (
     jiraRestCredential === undefined
       ? createBoundCliJiraCreateTurn({ repositoryPath, logger, userDataPath })

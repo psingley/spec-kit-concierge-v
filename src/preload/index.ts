@@ -86,6 +86,17 @@ contextBridge.exposeInMainWorld('concierge', {
     subscribeSubmit: (subscriptionId: string, callback: (event: unknown) => void): (() => void) =>
       subscribeStepStream('jira:submit', subscriptionId, callback)
   },
+  jiraCredential: {
+    save: (request: unknown) => ipcRenderer.invoke('jira:credential:save', request) as Promise<unknown>,
+    clear: (request: unknown) => ipcRenderer.invoke('jira:credential:clear', request) as Promise<unknown>,
+    state: (request: unknown) => ipcRenderer.invoke('jira:credential:state', request) as Promise<unknown>
+  },
+  jiraBoard: {
+    get: (request: unknown) => ipcRenderer.invoke('jira:board:get', request) as Promise<unknown>,
+    set: (request: unknown) => ipcRenderer.invoke('jira:board:set', request) as Promise<unknown>,
+    suggest: (request: unknown) => ipcRenderer.invoke('jira:board:suggest', request) as Promise<unknown>,
+    searchProjects: (request: unknown) => ipcRenderer.invoke('jira:project:search', request) as Promise<unknown>
+  },
   sessionManifest: {
     read: (request: unknown) => ipcRenderer.invoke('sessionManifest:read', request) as Promise<unknown>,
     reconcile: (request: unknown) => ipcRenderer.invoke('sessionManifest:reconcile', request) as Promise<unknown>,

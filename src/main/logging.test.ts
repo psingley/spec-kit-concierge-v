@@ -144,4 +144,30 @@ describe('createMainLogger', () => {
       expect(chunks.join('')).toBe('');
     });
   });
+
+  it('redacts Jira credentials and Basic authorization material from file logs', async () => {
+    await withTempDir(async (directory) => {
+      const token = 'secret-token';
+      const base64 = Buffer.from(`person@example.com:${token}`).toString('base64');
+      const logger = createMainLogger({
+        userDataPath: directory,
+        now: new Date('2026-05-27T12:00:00Z'),
+        enablePrettyStream: false
+      });
+
+      logger.error({
+        token,
+        nested: { token, authorization: `Basic ${base64}` },
+        headers: { Authorization: `Basic ${base64}` },
+        message: `Authorization: Basic ${base64} ${token}`
+      }, 'leak check');
+      logger.flush();
+
+      const raw = readFileSync(`${directory}/logs/concierge-2026-05-27.log`, 'utf8');
+      expect(raw).toContain('[REDACTED]');
+      expect(raw).not.toContain(token);
+      expect(raw).not.toContain(base64);
+      expect(raw).not.toContain('Authorization');
+    });
+  });
 });
