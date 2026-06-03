@@ -1,8 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { execFile } from 'node:child_process';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { promisify } from 'node:util';
 import { runAfterHook, runBeforeHook, manifestForHook } from './hookHelpers';
 import { STEP_ARTIFACT_MANIFEST } from './manifest';
 import type { BranchStateSnapshot, StepOwnedArtifactSnapshot } from '../domain/manifest/types';
 import type { StepHookContext } from './types';
+import { withTempDir } from '../../test/tempDir';
 
 vi.mock('../logging', () => ({
   createMainLogger: vi.fn(() => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn() }))
@@ -22,6 +27,27 @@ const baseContext = (): StepHookContext => ({
   userDataPath: '/tmp/user',
   now: () => new Date('2026-05-27T00:00:00.000Z')
 });
+
+const execFileAsync = promisify(execFile);
+const gitFixtureTimeoutMs = 60_000;
+
+const git = async (cwd: string, args: string[]): Promise<void> => {
+  await execFileAsync('git', args, { cwd });
+};
+
+const createClarifyRepository = async (directory: string, specText: string): Promise<string> => {
+  await git(directory, ['init', '--initial-branch', 'main']);
+  await git(directory, ['config', 'user.email', 'concierge@example.com']);
+  await git(directory, ['config', 'user.name', 'Concierge Test']);
+
+  const featureDir = path.join(directory, 'specs', '0001');
+  await mkdir(featureDir, { recursive: true });
+  await writeFile(path.join(featureDir, 'spec.md'), specText);
+  await git(directory, ['add', '--', 'specs/0001/spec.md']);
+  await git(directory, ['commit', '-m', 'feat: specify']);
+
+  return featureDir;
+};
 
 describe('hookHelpers', () => {
   beforeEach(() => {
@@ -277,6 +303,69 @@ describe('hookHelpers', () => {
     expect(validateArtifacts).toHaveBeenCalledTimes(1);
     expect(commitWithTrailer).not.toHaveBeenCalled();
   });
+
+  it('wires clarify no-delta passes to an empty marker commit candidate', async () => {
+    await withTempDir(async (directory) => {
+      const featureDir = await createClarifyRepository(directory, '# Feature Spec\n\n## Requirements\n\nClear enough.');
+      const commitWithTrailer = vi.fn().mockResolvedValue({
+        commitSha: 'abc123',
+        trailer: 'Concierge-Step: clarify:pass'
+      });
+
+      const result = await runAfterHook('clarify', {
+        ...baseContext(),
+        repositoryPath: directory,
+        featureDir,
+        commitWithTrailer,
+        removeInFlightMarker: vi.fn()
+      });
+
+      expect(result).toMatchObject({ ok: true, phase: 'after', step: 'clarify' });
+      expect(commitWithTrailer).toHaveBeenCalledWith(directory, expect.objectContaining({
+        step: 'clarify',
+        files: ['specs/0001/spec.md'],
+        allowEmptyCommit: true
+      }));
+    });
+  }, gitFixtureTimeoutMs);
+
+  it('wires clarify spec deltas to a normal commit candidate', async () => {
+    await withTempDir(async (directory) => {
+      const featureDir = await createClarifyRepository(directory, '# Feature Spec\n\n## Requirements\n\nOriginal.');
+      await writeFile(path.join(featureDir, 'spec.md'), `# Feature Spec
+
+## Clarifications
+
+### Session 2026-06-01
+
+- Q: Which API should the workflow call first? → A: GitHub
+
+## Requirements
+
+Original.`);
+      const commitWithTrailer = vi.fn().mockResolvedValue({
+        commitSha: 'abc123',
+        trailer: 'Concierge-Step: clarify:pass'
+      });
+
+      const result = await runAfterHook('clarify', {
+        ...baseContext(),
+        repositoryPath: directory,
+        featureDir,
+        commitWithTrailer,
+        removeInFlightMarker: vi.fn()
+      });
+
+      expect(result).toMatchObject({ ok: true, phase: 'after', step: 'clarify' });
+      expect(commitWithTrailer).toHaveBeenCalledWith(directory, expect.objectContaining({
+        step: 'clarify',
+        files: ['specs/0001/spec.md']
+      }));
+      expect(commitWithTrailer).toHaveBeenCalledWith(directory, expect.not.objectContaining({
+        allowEmptyCommit: true
+      }));
+    });
+  }, gitFixtureTimeoutMs);
 
   it('returns hook-failed when after hook commit throws', async () => {
     const error = new Error('commit failed');

@@ -12,6 +12,7 @@ import type { StepHook } from '../hooks/types';
 import { runGit } from '../data-layer/git/gitCommand';
 import { ensureBranch as ensureBranchDefault } from '../data-layer/git/ensureBranch';
 import { resolveFeatureDir } from '../data-layer/specify/featureDir';
+import { reconcileSpecifyFeatureJson } from '../data-layer/specify/reconcileFeatureJson';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
 import {
@@ -89,6 +90,7 @@ export type RegisterCopilotSpecifyIpcOptions = {
   beforeHook?: StepHook;
   afterHook?: StepHook;
   branchReader?: (repositoryPath: string) => Promise<string>;
+  reconcileFeatureJson?: typeof reconcileSpecifyFeatureJson;
   // Post-specify reconciliation: guarantee the worktree ends on a real branch
   // (Bug 25) when spec-kit's LLM-executed git.feature hook left it detached.
   ensureBranch?: (repositoryPath: string, branchName: string) => Promise<string>;
@@ -508,6 +510,7 @@ export const registerCopilotSpecifyIpc = ({
   // equivalent to `git -C <worktreePath> branch --show-current`; it returns the
   // real spec-kit-named branch (empty only on a still-detached HEAD).
   branchReader = (repositoryPath) => runGit(repositoryPath, ['branch', '--show-current']),
+  reconcileFeatureJson = reconcileSpecifyFeatureJson,
   ensureBranch = ensureBranchDefault,
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
@@ -619,6 +622,7 @@ export const registerCopilotSpecifyIpc = ({
           },
           'specify agent spawn'
         );
+        const featureJsonBaseRef = await runGit(request.value.repositoryPath, ['rev-parse', 'HEAD']).catch(() => undefined);
         await agentAdapter({
           ...request.value,
           sessionId,
@@ -636,14 +640,23 @@ export const registerCopilotSpecifyIpc = ({
             });
           }
         });
-        // spec-kit has now created/updated .specify/feature.json; resolve the real
-        // feature directory so both the artifact read and the after-hook use it.
+        const featureJsonReconciliation = await reconcileFeatureJson({
+          repositoryPath: request.value.repositoryPath,
+          logger,
+          branchName: request.value.branch,
+          baseRef: featureJsonBaseRef
+        });
+        // Reconcile .specify/feature.json before resolving the feature directory
+        // so the after-hook and artifact read use the spec.md path the agent wrote.
         const featureDir = await resolveFeatureDir(request.value.repositoryPath);
         const after = await afterHook({
           repositoryPath: request.value.repositoryPath,
           featureDir,
           sessionId,
           userDataPath,
+          ...(featureJsonReconciliation.commitRequired === true
+            ? { additionalCommitFiles: ['.specify/feature.json'] }
+            : {}),
           authStatus: { githubLoggedIn: true, copilotLoggedIn: true }
         });
         if (!after.ok || after.commit?.commitSha === undefined) {

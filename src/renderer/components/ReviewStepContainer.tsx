@@ -1,19 +1,14 @@
-import React, { useMemo, useState } from 'react';
-import { artifactsApi } from '../api/artifacts.endpoint';
+import React, { useMemo } from 'react';
 import { reviewEvidenceApi } from '../api/reviewEvidence.endpoint';
 import { parseRendererJiraDryRunPreview } from '../api/jiraSubmission.factory';
 import { sessionManifestApi } from '../api/sessionManifest.endpoint';
-import { tasksDetailApi } from '../api/tasksDetail.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { jiraDryRunPreviewLoaded } from '../slices/jira';
-import { modalOpened, toastShown } from '../slices/ui';
+import { artifactViewerOpened, modalOpened, toastShown } from '../slices/ui';
 import { selectAuthAtlassianStatus } from '../slices/auth.selectors';
 import { selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { NudgeButton, type NudgeButtonResult } from './NudgeButton';
 import { ReviewStep } from './ReviewStep';
-
-const isAbsoluteArtifactPath = (value: string): boolean =>
-  value.startsWith('/') || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('\\\\');
 
 const textField = (value: Record<string, unknown>, field: string): string | undefined =>
   typeof value[field] === 'string' ? value[field] : undefined;
@@ -42,7 +37,6 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const repo = useAppSelector(selectWorkspaceSelectedRepo);
   const atlassianStatus = useAppSelector(selectAuthAtlassianStatus);
   const dispatch = useAppDispatch();
-  const [artifactPath, setArtifactPath] = useState<string | null>(null);
   // The IPC resolves the feature dir from .specify/feature.json; the renderer only
   // supplies the worktree root.
   const request = useMemo(() => repo === null ? undefined : {
@@ -52,11 +46,6 @@ export const ReviewStepContainer = (): React.ReactElement => {
   const reconciliation = sessionManifestApi.useReconcileSessionManifestQuery(request!, { skip: request === undefined });
   const audit = sessionManifestApi.useGetAuditTrailQuery(request!, { skip: request === undefined });
   const [nudgeManifest] = sessionManifestApi.useNudgeSessionManifestMutation();
-  const [readArtifact, artifact] = artifactsApi.useLazyReadArtifactQuery();
-  const [readReviewEvidenceBody, reviewEvidenceBody] = reviewEvidenceApi.useLazyReadReviewEvidenceBodyQuery();
-  const [readTasksDetail, tasksDetail] = tasksDetailApi.useLazyGetTasksDetailQuery();
-  const isTasksArtifact = artifactPath?.endsWith('tasks.md') ?? false;
-  const isAppOwnedArtifact = artifactPath === null ? false : isAbsoluteArtifactPath(artifactPath);
   const canNudge = reconciliation.data?.status === 'needs-attention' && reconciliation.data.canNudge === true;
   const hasTasks = evidence.data?.artifacts.some((artifact) => artifact.path.endsWith('tasks.md')) === true;
   const jiraAvailable = atlassianStatus === 'ok' && hasTasks && request !== undefined;
@@ -71,11 +60,6 @@ export const ReviewStepContainer = (): React.ReactElement => {
       evidence={evidence.data}
       loading={evidence.isFetching}
       error={evidence.error !== undefined ? 'Unable to load review evidence.' : undefined}
-      artifactPath={artifactPath}
-      artifactText={isTasksArtifact ? '' : isAppOwnedArtifact ? reviewEvidenceBody.data?.text ?? '' : artifact.data?.text ?? ''}
-      artifactLoading={isTasksArtifact ? tasksDetail.isFetching : isAppOwnedArtifact ? reviewEvidenceBody.isFetching : artifact.isFetching}
-      artifactError={(isTasksArtifact ? tasksDetail.error : isAppOwnedArtifact ? reviewEvidenceBody.error : artifact.error) !== undefined ? 'Unable to read artifact.' : undefined}
-      artifactTasks={tasksDetail.data?.tasks ?? []}
       nudgeControl={<NudgeButton
         canNudge={canNudge}
         step="review"
@@ -87,19 +71,7 @@ export const ReviewStepContainer = (): React.ReactElement => {
         }}
       />}
       auditSummary={auditSummary(audit.data)}
-      onArtifactOpen={(path) => {
-        setArtifactPath(path);
-        if (request !== undefined) {
-          if (path.endsWith('tasks.md')) {
-            void readTasksDetail({ repositoryPath: request.repositoryPath, artifactPath: path });
-          } else if (isAbsoluteArtifactPath(path)) {
-            void readReviewEvidenceBody({ ...request, artifactPath: path });
-          } else {
-            void readArtifact({ repositoryPath: request.repositoryPath, artifactPath: path });
-          }
-        }
-      }}
-      onArtifactClose={() => setArtifactPath(null)}
+      onArtifactOpen={(path) => dispatch(artifactViewerOpened({ path, origin: 'review' }))}
       jiraAvailable={jiraAvailable}
       jiraDisabledReason={jiraDisabledReason}
       onSendToJira={async () => {

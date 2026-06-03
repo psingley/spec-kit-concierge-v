@@ -5,6 +5,7 @@ import { selectAuthIdentity } from '../slices/auth.selectors';
 import { selectUiShowAbout, selectUiShowRequest } from '../slices/ui.selectors';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { AboutModal } from './AboutModal';
+import { ArtifactViewerModalContainer } from './ArtifactViewerModalContainer';
 import { CustomizeModalContainer } from './CustomizeModalContainer';
 import { JiraSubmissionModalContainer } from './JiraSubmissionModalContainer';
 import { RequestModal } from './RequestModal';
@@ -17,6 +18,7 @@ export const ModalHost = (): React.ReactElement => {
   return (
     <>
       <CustomizeModalContainer />
+      <ArtifactViewerModalContainer />
       <JiraSubmissionModalContainer />
       <AboutModal open={useAppSelector(selectUiShowAbout)} onClose={() => dispatch(modalClosed('showAbout'))} repo={repo?.name ?? 'No repo'} branch={branch ?? 'No branch'} account={identity?.login ?? null} />
       <RequestModal open={useAppSelector(selectUiShowRequest)} onClose={() => dispatch(modalClosed('showRequest'))} />

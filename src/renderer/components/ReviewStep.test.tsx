@@ -15,25 +15,17 @@ const evidence: ReviewEvidence = {
 };
 
 describe('ReviewStep presentation', () => {
-  it('routes task details through the artifact open callback and local task modal', () => {
+  it('routes task details through the artifact open callback without rendering an inline backdrop', () => {
     const onArtifactOpen = vi.fn();
-    render(
-      <ReviewStep
-        evidence={evidence}
-        loading={false}
-        artifactPath={null}
-        artifactText=""
-        artifactLoading={false}
-        artifactTasks={[]}
-        onArtifactOpen={onArtifactOpen}
-        onArtifactClose={vi.fn()}
-      />
+    const { container } = render(
+      <ReviewStep evidence={evidence} loading={false} onArtifactOpen={onArtifactOpen} />
     );
 
     fireEvent.click(screen.getByRole('button', { name: /Open/i }));
 
     expect(onArtifactOpen).toHaveBeenCalledWith('tasks.md');
-    expect(screen.getByRole('dialog', { name: /Task details/i })).toBeInTheDocument();
+    expect(container.querySelector('.modal-backdrop')).not.toBeInTheDocument();
+    expect(screen.queryByRole('dialog', { name: /Task details/i })).not.toBeInTheDocument();
   });
 
   it('renders Send to JIRA enabled only when Atlassian auth and tasks.md are present', () => {
@@ -42,12 +34,7 @@ describe('ReviewStep presentation', () => {
       <ReviewStep
         evidence={evidence}
         loading={false}
-        artifactPath={null}
-        artifactText=""
-        artifactLoading={false}
-        artifactTasks={[]}
         onArtifactOpen={vi.fn()}
-        onArtifactClose={vi.fn()}
         jiraAvailable={false}
         jiraDisabledReason="Atlassian auth required"
         onSendToJira={onSendToJira}
@@ -61,12 +48,7 @@ describe('ReviewStep presentation', () => {
       <ReviewStep
         evidence={evidence}
         loading={false}
-        artifactPath={null}
-        artifactText=""
-        artifactLoading={false}
-        artifactTasks={[]}
         onArtifactOpen={vi.fn()}
-        onArtifactClose={vi.fn()}
         jiraAvailable
         onSendToJira={onSendToJira}
       />

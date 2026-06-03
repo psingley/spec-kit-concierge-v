@@ -48,19 +48,28 @@ export const validateClarifyArtifacts = async (
     return factoryEscape();
   }
 
-  const committable = (): StepContractResult => ({
-    ok: true,
-    commit: commitCandidate('clarify', [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles], context)
-  });
+  const committable = async (allowEmptyMarkerWhenClean: boolean): Promise<StepContractResult> => {
+    const requiredFiles = [...STEP_ARTIFACT_MANIFEST.clarify.requiredFiles];
+    const candidate = commitCandidate('clarify', requiredFiles, context);
+    const hasDelta = await context.hasArtifactDelta?.(requiredFiles);
+
+    return {
+      ok: true,
+      commit: {
+        ...candidate,
+        ...(allowEmptyMarkerWhenClean && hasDelta === false ? { allowEmptyCommit: true } : {})
+      }
+    };
+  };
 
   if (rawText.trim() === 'no questions needed') {
-    return committable();
+    return committable(true);
   }
 
   const clarificationBody = extractClarificationBody(rawText);
   // No Clarifications section at all -> nothing to clarify -> committable.
   if (clarificationBody === undefined) {
-    return committable();
+    return committable(true);
   }
 
   const bulletLines = clarificationBody
@@ -71,7 +80,7 @@ export const validateClarifyArtifacts = async (
   // Clarifications section present but no "- Q:" bullets (e.g. empty section,
   // prose-only, or the no-questions-needed flow) -> committable.
   if (bulletLines.length === 0) {
-    return committable();
+    return committable(true);
   }
 
   // Every "- Q:" bullet must carry a well-formed "<arrow> A:" segment. Pending
@@ -82,5 +91,5 @@ export const validateClarifyArtifacts = async (
     return factoryEscape();
   }
 
-  return committable();
+  return committable(false);
 };

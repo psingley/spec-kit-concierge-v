@@ -5,8 +5,14 @@
   "required": {
     "texts": [{ "value": "Artifact" }, { "value": "plan.md" }, { "value": "Plan Artifact" }, { "value": "Validated" }, { "value": "Close" }],
     "headings": [{ "level": 2, "text": "plan.md" }, { "level": 1, "text": "Plan Artifact" }],
-    "controls": [{ "role": "button", "name": "Close", "count": 1 }],
-    "visualMarkers": []
+    "controls": [{ "role": "button", "name": "Close artifact viewer", "count": 1 }],
+    "visualMarkers": [
+      {
+        "name": "modal-veil",
+        "selector": "[data-vd-role=\"modal-veil\"]",
+        "designSelector": ".modal-backdrop"
+      }
+    ]
   },
   "styleSamples": [],
   "pixel": { "maxDiffPercent": 8, "warnDiffPercent": 7 }

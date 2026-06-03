@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { validateClarifyArtifacts } from './clarify.factory';
+import type { StepContractContext } from './types';
 
 const fsMocks = vi.hoisted(() => ({ readFile: vi.fn() }));
 
@@ -70,6 +71,56 @@ Body unrelated to clarifications.` as never);
   });
 
   describe('no clarifications to record', () => {
+    it('requests an empty marker commit when a valid no-clarifications pass has no spec delta', async () => {
+      const hasArtifactDelta = vi.fn().mockResolvedValue(false);
+      const context = {
+        repositoryPath: '/repo',
+        featureDir: '/repo/specs/0001',
+        hasArtifactDelta
+      } as unknown as StepContractContext;
+      vi.mocked(readFile).mockResolvedValue('# Feature Spec\n\n## Requirements\n\nSome content.' as never);
+
+      const result = await validateClarifyArtifacts('/repo/specs/0001', context);
+
+      expect(result.ok).toBe(true);
+      expect(hasArtifactDelta).toHaveBeenCalledWith(['spec.md']);
+      expect(result).toMatchObject({
+        commit: {
+          step: 'clarify',
+          files: ['specs/0001/spec.md'],
+          allowEmptyCommit: true
+        }
+      });
+    });
+
+    it('keeps a normal commit candidate when clarify changed spec.md', async () => {
+      const hasArtifactDelta = vi.fn().mockResolvedValue(true);
+      const context = {
+        repositoryPath: '/repo',
+        featureDir: '/repo/specs/0001',
+        hasArtifactDelta
+      } as unknown as StepContractContext;
+      vi.mocked(readFile).mockResolvedValue(`# Feature Spec
+
+## Clarifications
+
+### Session 2026-06-01
+
+- Q: Which API should the workflow call first? → A: GitHub` as never);
+
+      const result = await validateClarifyArtifacts('/repo/specs/0001', context);
+
+      expect(result.ok).toBe(true);
+      expect(hasArtifactDelta).toHaveBeenCalledWith(['spec.md']);
+      expect(result).toMatchObject({
+        commit: {
+          step: 'clarify',
+          files: ['specs/0001/spec.md']
+        }
+      });
+      expect(result.ok && result.commit.allowEmptyCommit).toBeUndefined();
+    });
+
     it('commits when there is no ## Clarifications section', async () => {
       vi.mocked(readFile).mockResolvedValue('# Feature Spec\n\n## Requirements\n\nSome content.' as never);
 

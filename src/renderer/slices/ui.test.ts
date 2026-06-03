@@ -2,13 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { createProductStore } from '../store';
 import {
   selectUiActiveView,
+  selectUiArtifactViewerOrigin,
+  selectUiArtifactViewerPath,
+  selectUiShowArtifactViewer,
   selectUiShowJiraSubmission,
   selectUiSidebarOpen,
   selectUiState,
   selectUiTheme,
   selectUiToasts
 } from './ui.selectors';
-import uiReducer, { modalClosed, modalOpened, toastDismissed, toastShown } from './ui';
+import uiReducer, { artifactViewerClosed, artifactViewerOpened, modalClosed, modalOpened, toastDismissed, toastShown } from './ui';
 
 describe('ui slice', () => {
   it('initializes to the Run 4 locked state', () => {
@@ -20,7 +23,10 @@ describe('ui slice', () => {
       showCustomize: false,
       showAbout: false,
       showRequest: false,
+      showArtifactViewer: false,
       showJiraSubmission: false,
+      artifactViewerPath: null,
+      artifactViewerOrigin: null,
       openMenu: null,
       toasts: []
     });
@@ -33,7 +39,10 @@ describe('ui slice', () => {
     expect(selectUiTheme(state)).toBe('system');
     expect(selectUiSidebarOpen(state)).toBe(true);
     expect(selectUiActiveView(state)).toBeNull();
+    expect(selectUiShowArtifactViewer(state)).toBe(false);
     expect(selectUiShowJiraSubmission(state)).toBe(false);
+    expect(selectUiArtifactViewerPath(state)).toBeNull();
+    expect(selectUiArtifactViewerOrigin(state)).toBeNull();
     expect(selectUiToasts(state)).toEqual([]);
   });
 
@@ -43,6 +52,28 @@ describe('ui slice', () => {
 
     const closed = uiReducer(opened, modalClosed('showJiraSubmission'));
     expect(closed.showJiraSubmission).toBe(false);
+  });
+
+  it('opens and closes shared artifact viewer state with path and origin', () => {
+    const opened = uiReducer(undefined, artifactViewerOpened({ path: 'plan.md', origin: 'passive' }));
+
+    expect(opened.showArtifactViewer).toBe(true);
+    expect(opened.artifactViewerPath).toBe('plan.md');
+    expect(opened.artifactViewerOrigin).toBe('passive');
+
+    const closed = uiReducer(opened, artifactViewerClosed());
+    expect(closed.showArtifactViewer).toBe(false);
+    expect(closed.artifactViewerPath).toBeNull();
+    expect(closed.artifactViewerOrigin).toBeNull();
+  });
+
+  it('clears artifact viewer metadata through the shared modalClosed action', () => {
+    const opened = uiReducer(undefined, artifactViewerOpened({ path: 'tasks.md', origin: 'review' }));
+    const closed = uiReducer(opened, modalClosed('showArtifactViewer'));
+
+    expect(closed.showArtifactViewer).toBe(false);
+    expect(closed.artifactViewerPath).toBeNull();
+    expect(closed.artifactViewerOrigin).toBeNull();
   });
 
   it('adds generated toast entries and dismisses them by id', () => {

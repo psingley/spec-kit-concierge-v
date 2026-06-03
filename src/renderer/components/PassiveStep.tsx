@@ -1,18 +1,11 @@
 import React from 'react';
-import type { ParsedTask } from '../api/tasksDetail.factory';
 import type { PassiveStepName, PassiveStepRecord } from '../slices/session';
 import { Ico } from './Icons';
-import { ArtifactViewer } from './ArtifactViewer';
 import { StatusStep, type StatusStepRow } from './StatusStep';
 
 export type PassiveStepProps = {
   step: PassiveStepName;
   record: PassiveStepRecord;
-  artifactPath: string | null;
-  artifactText: string;
-  artifactLoading: boolean;
-  artifactError?: string;
-  artifactTasks?: ParsedTask[];
   viewOnly?: boolean;
   resumeLabel?: string;
   nudgeControl?: React.ReactNode;
@@ -20,7 +13,6 @@ export type PassiveStepProps = {
   onRun: () => void;
   onResume?: () => void;
   onArtifactOpen: (path: string) => void;
-  onArtifactClose: () => void;
 };
 
 const stepNumber: Record<PassiveStepName, string> = { plan: '3', tasks: '4', analyze: '5' };
@@ -29,19 +21,13 @@ const stepLabel: Record<PassiveStepName, string> = { plan: 'Plan', tasks: 'Tasks
 export const PassiveStep = ({
   step,
   record,
-  artifactPath,
-  artifactText,
-  artifactLoading,
-  artifactError,
-  artifactTasks,
   viewOnly = false,
   resumeLabel,
   nudgeControl,
   auditSummary = [],
   onRun,
   onResume,
-  onArtifactOpen,
-  onArtifactClose
+  onArtifactOpen
 }: PassiveStepProps): React.ReactElement => {
   const rows: StatusStepRow[] = [
     ...record.artifacts.map((artifact): StatusStepRow => ({ kind: 'artifact', artifact })),
@@ -109,7 +95,6 @@ export const PassiveStep = ({
           </div>
         ) : null}
       </div>
-      <ArtifactViewer path={artifactPath} text={artifactText} loading={artifactLoading} error={artifactError} tasks={artifactTasks} onClose={onArtifactClose} />
     </section>
   );
 };
