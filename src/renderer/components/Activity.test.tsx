@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Activity } from './Activity';
-import activityReducer, { recordActivity } from '../slices/activity';
+import activityReducer, { assistantTextReceived, recordActivity } from '../slices/activity';
 
 describe('Activity', () => {
   it('renders real activity entries instead of demo terminal rows', () => {
@@ -103,5 +103,46 @@ describe('Activity', () => {
 
     expect(state.entries).toHaveLength(256);
     expect(container.querySelectorAll('.activity-stream .log-line')).toHaveLength(state.entries.length);
+  });
+
+  it('renders reducer-accumulated assistant fragments as one row with separate status rows', () => {
+    let state = activityReducer(undefined, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-1',
+      text: 'Hel'
+    }));
+    state = activityReducer(state, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-1',
+      text: 'lo'
+    }));
+    state = activityReducer(state, recordActivity({
+      timestamp: '2026-06-03T00:00:02.000Z',
+      level: 'info',
+      kind: 'status-update',
+      event: 'status-update',
+      message: 'Plan updated',
+      step: 'plan',
+      sessionId: 'plan-1'
+    }));
+
+    const { container } = render(
+      <Activity
+        entries={state.entries}
+        currentStatus={state.currentStatus}
+        busy={state.busy}
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(container.querySelectorAll('.activity-stream .log-line.assistant-text')).toHaveLength(1);
+    expect(container.querySelector('.activity-stream .log-line.assistant-text .msg')).toHaveTextContent('Hello');
+    expect(container.querySelectorAll('.activity-stream .log-line.status-update')).toHaveLength(1);
+    expect(container.querySelector('.activity-stream .log-line.status-update .msg')).toHaveTextContent('Plan updated');
   });
 });
