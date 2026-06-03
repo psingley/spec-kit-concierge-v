@@ -17,6 +17,8 @@ const glyphFor = (level: string): string => {
 };
 
 const renderMessage = (message: string): string => message;
+const classForEntry = (entry: ActivityEntry): string =>
+  ['log-line', entry.level, entry.kind ?? entry.event].filter(Boolean).join(' ');
 
 export const Activity = ({ entries, currentStatus, busy, side, onClear }: ActivityProps): React.ReactElement | null => {
   if (side === 'hidden') return null;
@@ -44,7 +46,7 @@ export const Activity = ({ entries, currentStatus, busy, side, onClear }: Activi
             <span className="msg">No activity yet.</span>
           </div>
         ) : entries.map((entry) => (
-          <div key={entry.id} className={`log-line ${entry.level}`}>
+          <div key={entry.id} className={classForEntry(entry)}>
             <span className="ts">{entry.timestamp}</span>
             <span className="glyph" aria-hidden="true">{glyphFor(entry.level)}</span>
             <span className="msg">{renderMessage(entry.message)}</span>
