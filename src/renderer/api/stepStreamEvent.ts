@@ -23,7 +23,7 @@ export type StepStreamEvent =
       level: 'info' | 'ok' | 'warn' | 'error';
       message: string;
       timestamp: string;
-      kind: StreamEventKind;
+      kind?: StreamEventKind;
       messageId?: string;
       raw?: unknown;
     }

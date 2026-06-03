@@ -64,7 +64,7 @@ describe('activity slice', () => {
       sessionId: 'plan-1',
       messageId: 'message-1'
     });
-    expect(state.activeAssistantRowId).toBe(state.entries[0].id);
+    expect(state.activeAssistantRowId).toBe(state.entries[0]!.id);
     expect(state.currentStatus).toBe('Hello world');
     expect(state.busy).toBe(true);
   });
@@ -139,7 +139,7 @@ describe('activity slice', () => {
     }));
 
     expect(state.entries.map((entry) => entry.message)).toEqual(['first', 'second']);
-    expect(state.activeAssistantRowId).toBe(state.entries[1].id);
+    expect(state.activeAssistantRowId).toBe(state.entries[1]!.id);
   });
 
   it('keeps tool rows separate even when later assistant text has the same message id', () => {
@@ -177,5 +177,23 @@ describe('activity slice', () => {
     expect(state.followState).toBe('paused');
     expect(state.hangSuspectedFor).toBe('plan-1:2026-06-03T00:00:00.000Z');
     expect(state.entries).toEqual([]);
+  });
+
+  it('clears visible entries without resetting the cap or id sequence', () => {
+    let state = activityReducer(undefined, recordActivity({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      level: 'info',
+      message: 'first'
+    }));
+    state = activityReducer(state, { type: 'activity/activityCleared' });
+    state = activityReducer(state, recordActivity({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      level: 'info',
+      message: 'second'
+    }));
+
+    expect(state.cap).toBe(256);
+    expect(state.entries).toHaveLength(1);
+    expect(state.entries[0]!.id).toBe('activity-1');
   });
 });

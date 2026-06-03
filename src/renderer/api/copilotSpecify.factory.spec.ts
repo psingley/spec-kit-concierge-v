@@ -8,7 +8,8 @@ const validProgress = {
   sessionId: 'specify-1',
   level: 'info',
   message: 'Working',
-  timestamp: '2026-05-28T00:00:00.000Z'
+  timestamp: '2026-05-28T00:00:00.000Z',
+  kind: 'generic'
 };
 const validDone = {
   type: 'done',
@@ -35,7 +36,7 @@ describe('copilot specify renderer factory', () => {
     });
 
     it('accepts a valid progress event', () => {
-      expect(parseRendererStepStreamEvent(validProgress)).toEqual({ ok: true, value: validProgress });
+      expect(parseRendererStepStreamEvent(validProgress)).toEqual({ ok: true, value: { ...validProgress, kind: 'generic' } });
     });
 
     it('accepts fail done events without optional artifact fields', () => {
