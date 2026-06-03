@@ -31,10 +31,12 @@ describe('renderer jira submission factory', () => {
     expect(parseRendererJiraSubmissionEvent({ type: 'progress', nodeId: 'n1', message: 'Creating', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(parseRendererJiraSubmissionEvent({ type: 'result', nodeId: 'n1', status: 'verified', issueKey: 'SKC-1', issueUrl: 'https://x', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(parseRendererJiraSubmissionEvent({ type: 'done', status: 'pass', issues: [], timestamp: 'now' })).toMatchObject({ ok: true });
+    expect(parseRendererJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], remainingNodeIds: ['n2'], timestamp: 'now' })).toMatchObject({ ok: true });
   });
 
   it('rejects malformed stream events', () => {
     expect(parseRendererJiraSubmissionEvent(null)).toMatchObject({ ok: false });
     expect(parseRendererJiraSubmissionEvent({ type: 'done', status: 'maybe', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
+    expect(parseRendererJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
   });
 });

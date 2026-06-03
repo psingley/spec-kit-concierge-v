@@ -11,7 +11,7 @@ import {
   selectUiTheme,
   selectUiToasts
 } from './ui.selectors';
-import uiReducer, { artifactViewerClosed, artifactViewerOpened, modalClosed, toastDismissed, toastShown } from './ui';
+import uiReducer, { artifactViewerClosed, artifactViewerOpened, modalClosed, modalOpened, toastDismissed, toastShown } from './ui';
 
 describe('ui slice', () => {
   it('initializes to the Run 4 locked state', () => {
@@ -44,6 +44,14 @@ describe('ui slice', () => {
     expect(selectUiArtifactViewerPath(state)).toBeNull();
     expect(selectUiArtifactViewerOrigin(state)).toBeNull();
     expect(selectUiToasts(state)).toEqual([]);
+  });
+
+  it('opens and closes the JIRA submission modal flag', () => {
+    const opened = uiReducer(undefined, modalOpened('showJiraSubmission'));
+    expect(opened.showJiraSubmission).toBe(true);
+
+    const closed = uiReducer(opened, modalClosed('showJiraSubmission'));
+    expect(closed.showJiraSubmission).toBe(false);
   });
 
   it('opens and closes shared artifact viewer state with path and origin', () => {

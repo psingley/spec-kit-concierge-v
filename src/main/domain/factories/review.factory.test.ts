@@ -32,8 +32,28 @@ describe('validateReviewArtifacts', () => {
     expect(vi.mocked(readFile)).toHaveBeenCalledWith(expect.stringContaining('review.md'), 'utf8');
   });
 
-  it('rejects malformed optional review artifact as an edge case', async () => {
-    vi.mocked(readFile).mockResolvedValue('bad-review' as never);
+  it('accepts legacy marker words in optional review artifact prose', async () => {
+    vi.mocked(readFile).mockResolvedValue('# Review\nThe previous bad-review and MALFORMED labels are discussed as prose.' as never);
+
+    const result = await validateReviewArtifacts('/feature');
+
+    expect(result.ok).toBe(true);
+    expect(result).toMatchObject({ commit: { step: 'review', files: [] } });
+    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects optional review artifact with frontmatter key injection', async () => {
+    vi.mocked(readFile).mockResolvedValue('---\ntoken: secret\n---\n# Review' as never);
+
+    const result = await validateReviewArtifacts('/feature');
+
+    expect(result.ok).toBe(false);
+    expect(result).toMatchObject({ kind: 'escape-hatch' });
+    expect(vi.mocked(readFile)).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects optional review artifact with git conflict markers', async () => {
+    vi.mocked(readFile).mockResolvedValue('# Review\n<<<<<<< HEAD\nSummary' as never);
 
     const result = await validateReviewArtifacts('/feature');
 

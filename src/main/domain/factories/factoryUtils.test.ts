@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFile } from 'node:fs/promises';
-import { commitCandidate, factoryEscape, readRequiredArtifact, validateRequiredMarkdown } from './factoryUtils';
+import {
+  commitCandidate,
+  factoryEscape,
+  hasGitConflictMarkers,
+  readRequiredArtifact,
+  validateMarkdownContents,
+  validateRequiredMarkdown
+} from './factoryUtils';
 
 const fsMocks = vi.hoisted(() => ({
   readFile: vi.fn()
@@ -46,16 +53,27 @@ describe('factoryUtils', () => {
     expect(mockedReadFile.mock.calls[0]?.[0]).toContain('missing.md');
   });
 
-  it('rejects missing, hostile, and partial markdown', async () => {
-    mockedReadFile.mockResolvedValueOnce('   ' as never).mockResolvedValueOnce('bad-task' as never).mockResolvedValueOnce('partial' as never);
+  it('rejects deterministic invalid markdown and allows ordinary prose words', async () => {
+    mockedReadFile
+      .mockRejectedValueOnce(new Error('missing'))
+      .mockResolvedValueOnce('   ' as never)
+      .mockResolvedValueOnce('---\ntoken: secret\n---\n# Tasks' as never)
+      .mockResolvedValueOnce('# Tasks\n<<<<<<< HEAD\nbody' as never)
+      .mockResolvedValueOnce('# Tasks\nThe draft mentions partial and malformed artifacts as prose.' as never);
 
-    const missing = await validateRequiredMarkdown('tasks', '/feature', /bad-task/i, /partial/i);
-    const hostile = await validateRequiredMarkdown('tasks', '/feature', /bad-task/i, /partial/i);
-    const partial = await validateRequiredMarkdown('tasks', '/feature', /bad-task/i, /partial/i);
+    const missing = await validateRequiredMarkdown('tasks', '/feature');
+    const empty = await validateRequiredMarkdown('tasks', '/feature');
+    const frontmatter = await validateRequiredMarkdown('tasks', '/feature');
+    const conflict = await validateRequiredMarkdown('tasks', '/feature');
+    const prose = await validateRequiredMarkdown('tasks', '/feature');
 
     expect(missing).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
-    expect(hostile).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
-    expect(partial).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
+    expect(empty).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
+    expect(frontmatter).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
+    expect(conflict).toMatchObject({ ok: false, escapeHatchReason: 'factory-rejected' });
+    expect(prose).toBeUndefined();
+    expect(validateMarkdownContents('# Notes\nA malformed partial artifact was discussed.')).toBeUndefined();
+    expect(hasGitConflictMarkers('# Notes\n=======\nbody')).toBe(true);
   });
 
   it('creates commit candidates with step-specific edge cases', () => {

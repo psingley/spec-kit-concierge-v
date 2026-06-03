@@ -6,6 +6,7 @@ import { app } from 'electron';
 import pino from 'pino';
 import pretty from 'pino-pretty';
 import packageJson from '../../package.json';
+import { sanitizeForSecrets } from './data-layer/jiraSubmission/redaction';
 
 export type MainLogger = pino.Logger;
 
@@ -25,6 +26,15 @@ export type CreateMainLoggerOptions = {
 };
 
 const formatLogDate = (date: Date): string => date.toISOString().slice(0, 10);
+
+const collectSecretValues = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value.flatMap(collectSecretValues);
+  if (typeof value !== 'object' || value === null) return [];
+  return Object.entries(value as Record<string, unknown>).flatMap(([key, child]) => {
+    const own = key.toLowerCase() === 'token' && typeof child === 'string' ? [child] : [];
+    return [...own, ...collectSecretValues(child)];
+  });
+};
 
 /**
  * A Writable stream that resolves the destination path per write call. This
@@ -86,7 +96,22 @@ export const createMainLogger = (options: CreateMainLoggerOptions = {}): MainLog
         app: 'concierge',
         version: options.packageVersion ?? packageJson.version
       },
-      redact: []
+      formatters: {
+        log: (object) => sanitizeForSecrets(object, collectSecretValues(object)) as Record<string, unknown>
+      },
+      redact: {
+        paths: [
+          'token',
+          '*.token',
+          'authorization',
+          '*.authorization',
+          'Authorization',
+          '*.Authorization',
+          'headers.Authorization',
+          '*.headers.Authorization'
+        ],
+        censor: '[REDACTED]'
+      }
     },
     pino.multistream(streams)
   );

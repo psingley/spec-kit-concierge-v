@@ -33,6 +33,13 @@ describe('renderer API slice', () => {
       'readReviewEvidenceBody',
       'dryRunJiraSubmission',
       'submitJiraSubmission',
+      'saveCredential',
+      'clearCredential',
+      'getAuthState',
+      'getBoard',
+      'setBoard',
+      'suggestBoards',
+      'searchProjects',
       'runSpecify',
       'runClarify',
       'runPassiveStep',
@@ -92,9 +99,11 @@ describe('renderer API slice', () => {
       'Step',
       'Transcript',
       'Preferences',
-      'JiraSubmission'
+      'JiraSubmission',
+      'JiraCredential',
+      'JiraBoard'
     ]);
-    expect(new Set(RUN2_TAG_TYPES).size).toBe(9);
+    expect(new Set(RUN2_TAG_TYPES).size).toBe(11);
   });
 
   it('dispatches getBoundCLICapabilities through the ACP preload bridge and validates the response first', async () => {

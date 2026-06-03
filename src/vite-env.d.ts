@@ -70,6 +70,17 @@ type ConciergePreloadBridge = {
     submit: (request: unknown) => Promise<unknown>;
     subscribeSubmit: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
   };
+  jiraCredential?: {
+    save: (request: unknown) => Promise<unknown>;
+    clear: (request: unknown) => Promise<unknown>;
+    state: (request: unknown) => Promise<unknown>;
+  };
+  jiraBoard?: {
+    get: (request: unknown) => Promise<unknown>;
+    set: (request: unknown) => Promise<unknown>;
+    suggest: (request: unknown) => Promise<unknown>;
+    searchProjects: (request: unknown) => Promise<unknown>;
+  };
   sessionManifest?: {
     read: (request: unknown) => Promise<unknown>;
     reconcile: (request: unknown) => Promise<unknown>;

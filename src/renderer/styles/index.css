@@ -413,6 +413,21 @@ small {
   color: var(--accent-text);
 }
 
+.tb-chip-board {
+  background: var(--surface);
+}
+
+.tb-chip-board.status-warn {
+  color: var(--warn);
+  border-color: var(--warn);
+  background: var(--warn-bg);
+}
+
+.tb-chip-board.status-warn .tb-chip-name,
+.tb-chip-board.status-warn > svg {
+  color: var(--warn);
+}
+
 .tb-chip-new {
   background: var(--accent);
   border-color: var(--accent);
@@ -508,7 +523,9 @@ small {
 .tb-menu.gear-menu {
   right: 0;
   left: auto;
-  width: 260px;
+  width: 360px;
+  max-height: calc(100vh - var(--titlebar-h) - 16px);
+  overflow-y: auto;
 }
 
 .tb-menu-h {
@@ -657,6 +674,91 @@ small {
   color: var(--text-dim);
   font-family: var(--font-mono);
   font-size: 10.5px;
+}
+
+.tb-menu-empty {
+  padding: 9px 10px 11px;
+  color: var(--text-faint);
+  font-size: 11.5px;
+}
+
+.gear-section {
+  margin: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.gear-section-h {
+  padding: 6px 6px 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.jira-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jira-settings-auth {
+  padding: 0 6px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.jira-settings-details {
+  padding: 0 6px;
+}
+
+.jira-settings-details summary {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  color: var(--accent-text);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.jira-clear-credential {
+  color: var(--text-dim);
+}
+
+.jira-current-board {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-dim);
+  font-size: 11.5px;
+}
+
+.jira-current-board strong {
+  color: var(--text);
+  font-size: 11.5px;
+}
+
+.jira-current-board small {
+  color: var(--text-faint);
+  font-size: 10.5px;
+}
+
+.jira-board-picker.is-compact {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.jira-board-picker.is-compact .tb-menu-h:first-child {
+  display: none;
+}
+
+.jira-board-row .tb-menu-row-pill {
+  border-radius: var(--radius-xs);
 }
 
 /* ============ Stepper ============ */
@@ -951,6 +1053,135 @@ small {
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 11px;
+}
+
+.jira-auth-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jira-auth-warn {
+  color: var(--warn);
+}
+
+.jira-auth-bad,
+.jira-form-error {
+  color: var(--bad);
+}
+
+.signin-inline-panel {
+  padding: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.jira-credential-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jira-credential-form.is-compact {
+  margin-top: 6px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.jira-connect-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.jira-connect-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.jira-connect-step-title {
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.jira-form-note,
+.jira-secret-note,
+.jira-field-help {
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.jira-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.jira-credential-form.is-compact .jira-form-grid {
+  grid-template-columns: 1fr;
+}
+
+.jira-credential-form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.jira-token-input {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.jira-token-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.jira-token-input .icon-btn {
+  width: 32px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.jira-token-input:focus-within {
+  border-color: var(--accent-dim);
+}
+
+.jira-text-link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.jira-text-link:hover {
+  color: var(--text);
+}
+
+.jira-form-error {
+  margin: 0;
+  font-size: 11.5px;
 }
 
 .signin-dot {

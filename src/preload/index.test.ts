@@ -46,6 +46,8 @@ describe('preload concierge bridge', () => {
       'tasksDetail',
       'reviewEvidence',
       'jiraSubmission',
+      'jiraCredential',
+      'jiraBoard',
       'sessionManifest',
       'copilot'
     ]);
@@ -91,6 +93,13 @@ describe('preload concierge bridge', () => {
     ['reviewEvidence', 'read', 'review:evidence'],
     ['jiraSubmission', 'dryRun', 'jira:dryRun'],
     ['jiraSubmission', 'submit', 'jira:submit'],
+    ['jiraCredential', 'save', 'jira:credential:save'],
+    ['jiraCredential', 'clear', 'jira:credential:clear'],
+    ['jiraCredential', 'state', 'jira:credential:state'],
+    ['jiraBoard', 'get', 'jira:board:get'],
+    ['jiraBoard', 'set', 'jira:board:set'],
+    ['jiraBoard', 'suggest', 'jira:board:suggest'],
+    ['jiraBoard', 'searchProjects', 'jira:project:search'],
     ['sessionManifest', 'read', 'sessionManifest:read'],
     ['sessionManifest', 'reconcile', 'sessionManifest:reconcile'],
     ['sessionManifest', 'auditTrail', 'sessionManifest:auditTrail'],

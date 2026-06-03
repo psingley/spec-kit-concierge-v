@@ -1,5 +1,5 @@
 import { STEP_ARTIFACT_MANIFEST } from '../../hooks/manifest';
-import { commitCandidate, factoryEscape, readRequiredArtifact } from './factoryUtils';
+import { commitCandidate, factoryEscape, hasGitConflictMarkers, readRequiredArtifact } from './factoryUtils';
 import type { StepContractContext, StepContractResult } from './types';
 
 const hasHostileFrontmatter = (rawText: string): boolean => {
@@ -44,7 +44,7 @@ export const validateClarifyArtifacts = async (
   if (typeof rawText !== 'string' || rawText.trim().length === 0) {
     return factoryEscape();
   }
-  if (hasHostileFrontmatter(rawText) || /MALFORMED/i.test(rawText)) {
+  if (hasHostileFrontmatter(rawText) || hasGitConflictMarkers(rawText)) {
     return factoryEscape();
   }
 

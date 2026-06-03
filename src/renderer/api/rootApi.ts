@@ -14,7 +14,9 @@ export const RUN2_TAG_TYPES = [
   'Step',
   'Transcript',
   'Preferences',
-  'JiraSubmission'
+  'JiraSubmission',
+  'JiraCredential',
+  'JiraBoard'
 ] as const;
 
 export type AppVersionProof = {

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  createJiraAuthStateResponse,
+  createJiraBoardGetResponse,
   createJiraDryRunRequest,
+  createJiraCredentialSaveRequest,
+  createJiraCredentialSaveResponse,
   createJiraSubmissionAck,
   createJiraSubmissionEvent,
   createJiraSubmitRequest
@@ -36,12 +40,57 @@ describe('jira submission IPC factory', () => {
     expect(createJiraSubmissionEvent({ type: 'progress', nodeId: 'n1', message: 'Creating', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(createJiraSubmissionEvent({ type: 'result', nodeId: 'n1', status: 'verified', issueKey: 'SKC-1', issueUrl: 'https://x/browse/SKC-1', timestamp: 'now' })).toMatchObject({ ok: true });
     expect(createJiraSubmissionEvent({ type: 'done', status: 'pass', issues: [], timestamp: 'now' })).toMatchObject({ ok: true });
-    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], timestamp: 'now' })).toMatchObject({ ok: true });
+    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], remainingNodeIds: ['n2'], timestamp: 'now' })).toMatchObject({ ok: true });
   });
 
   it('rejects malformed stream events', () => {
     expect(createJiraSubmissionEvent(null)).toMatchObject({ ok: false });
     expect(createJiraSubmissionEvent({ type: 'progress', nodeId: 'n1' })).toMatchObject({ ok: false });
     expect(createJiraSubmissionEvent({ type: 'done', status: 'maybe', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
+    expect(createJiraSubmissionEvent({ type: 'done', status: 'fail', reason: 'verify_mismatch', issues: [], timestamp: 'now' })).toMatchObject({ ok: false });
+  });
+
+  it('accepts R2 credential and board boundary shapes while rejecting token-bearing responses', () => {
+    expect(createJiraCredentialSaveRequest({
+      email: 'person@example.com',
+      token: 'secret-token'
+    })).toEqual({ ok: true, value: { email: 'person@example.com', token: 'secret-token' } });
+    expect(createJiraCredentialSaveRequest({
+      email: 'person@example.com',
+      token: 'secret-token',
+      baseUrl: 'https://example.atlassian.net'
+    })).toMatchObject({ ok: true });
+    expect(createJiraCredentialSaveRequest({
+      email: 'person@example.com',
+      token: 'secret-token',
+      expiryDate: '2026-12-31'
+    })).toMatchObject({ ok: false });
+    expect(createJiraCredentialSaveResponse({
+      ok: true,
+      authState: {
+        state: 'warm',
+        displayName: 'Pat User',
+        accountId: 'acct-1',
+        baseUrl: 'https://example.atlassian.net'
+      }
+    })).toMatchObject({ ok: true });
+    expect(createJiraCredentialSaveResponse({
+      ok: false,
+      status: 'site_not_found'
+    })).toEqual({ ok: true, value: { ok: false, status: 'site_not_found' } });
+    expect(createJiraAuthStateResponse({
+      state: 'warm',
+      displayName: 'Pat User',
+      accountId: 'acct-1',
+      baseUrl: 'https://example.atlassian.net'
+    })).toMatchObject({ ok: true });
+    expect(createJiraBoardGetResponse({ projectKey: 'SKC', source: 'seed' })).toMatchObject({ ok: true });
+
+    expect(createJiraCredentialSaveResponse({
+      ok: true,
+      authState: { state: 'warm', token: 'secret-token' }
+    })).toMatchObject({ ok: false });
+    expect(createJiraAuthStateResponse({ state: 'warm', token: 'secret-token' })).toMatchObject({ ok: false });
+    expect(createJiraBoardGetResponse({ projectKey: 'SKC', source: 'seed', token: 'secret-token' })).toMatchObject({ ok: false });
   });
 });

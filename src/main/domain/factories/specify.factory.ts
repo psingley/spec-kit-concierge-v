@@ -1,16 +1,16 @@
 import { STEP_ARTIFACT_MANIFEST } from '../../hooks/manifest';
-import { commitCandidate, factoryEscape, validateRequiredMarkdown } from './factoryUtils';
+import { commitCandidate, factoryEscape, readRequiredArtifact, validateRequiredMarkdown } from './factoryUtils';
 import type { StepContractContext, StepContractResult } from './types';
 
 export const validateSpecifyArtifacts = async (
   featureDir: string,
   context: StepContractContext = {}
 ): Promise<StepContractResult> => {
-  const invalid = await validateRequiredMarkdown('specify', featureDir, /<<|MALFORMED/i, /TODO_ONLY/i);
+  const invalid = await validateRequiredMarkdown('specify', featureDir);
   if (invalid !== undefined) {
     return invalid;
   }
-  const spec = await import('./factoryUtils').then((module) => module.readRequiredArtifact(featureDir, 'spec.md'));
+  const spec = await readRequiredArtifact(featureDir, 'spec.md');
   if (spec === undefined || !/#/.test(spec)) {
     return factoryEscape();
   }

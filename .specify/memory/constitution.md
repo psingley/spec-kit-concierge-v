@@ -388,19 +388,27 @@ Bound CLI can reach what it needs," not "be a generic MCP client."
 
 External-service submission flows (the Send-to-JIRA action on the
 Review stage is the v1 instance) are owned by Concierge as a
-deterministic outer loop over the unit-of-work, with the per-unit
-external call delegated to a customized spec-kit extension agent
-running through the Bound CLI.
+deterministic outer loop over the unit-of-work. The per-unit external
+call uses one of two mechanisms (see ADR-0018): the **Direct
+mechanism**, in which the Concierge App makes the call itself via the
+external service's REST API using a user-supplied, app-owned credential
+distinct from the Bound CLI's MCP credential (primary); or the
+**Delegated mechanism**, in which the call is delegated to a customized
+spec-kit extension agent running through the Bound CLI via MCP
+(fallback). The outer loop, per-unit verification, and idempotent
+resume are mandatory and identical under both mechanisms.
 
 Rules:
 - The Concierge App owns iteration over the unit-of-work
   (per-ticket, per-issue, per-row) and the verification step between
   iterations.
-- For each unit, the Concierge App invokes a single per-unit agent
-  invocation through ACP. The agent calls the external service via
-  MCP, verifies the result is not a duplicate, and writes its result
-  to a stateful record file on disk.
-- After each invocation, the Concierge App reads the stateful record
+- For each unit, the per-unit create is performed by the active
+  mechanism — Direct (the app calls the external REST API) or
+  Delegated (a single per-unit agent invocation through ACP calls the
+  external service via MCP). Under either mechanism the create
+  performs orphan-search-before-create, verifies the result is not a
+  duplicate, and writes its result to a stateful record file on disk.
+- After each create, the Concierge App reads the stateful record
   and verifies the expected delta (one new verified entry for the
   current unit). On match, the loop advances. On mismatch, the loop
   halts and the UI surfaces the discrepancy with a retry affordance.
@@ -409,15 +417,20 @@ Rules:
   already-verified units. No duplicates.
 - The terminal success UI (e.g., a celebration screen) reads from the
   stateful record, not from stream events.
-- The Concierge App never speaks to the external service directly.
+- Under the Delegated mechanism the Concierge App never speaks to the
+  external service directly. Under the Direct mechanism the app speaks
+  to the external service's REST API only, using its own user-supplied
+  credential; this is not MCP traffic and does not affect Principle X.
 
 The v1 instance (JIRA) and its specific record-file conventions are
-documented in `ROADMAP_DECISIONS.md`.
+documented in `ROADMAP_DECISIONS.md`. The Direct/Delegated mechanism
+decision is documented in ADR-0018.
 
-Rationale: Concierge owns deterministic iteration and idempotency
-without owning external-service API knowledge. The agent + MCP do
-all external calls. The stateful record is the visible source of
-truth for both UI and recovery.
+Rationale: Concierge owns deterministic iteration and idempotency. The
+per-unit create may be deterministic-app-direct (fast, gold-fidelity,
+no LLM) or agent+MCP-delegated (when the app holds no direct
+credential). The stateful record is the visible source of truth for
+both UI and recovery regardless of mechanism.
 
 ### XII. Smart / Dumb Component Separation
 

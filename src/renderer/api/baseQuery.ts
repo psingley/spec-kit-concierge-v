@@ -30,6 +30,13 @@ export type IpcQueryArgs = {
     | 'review:evidence'
     | 'jira:dryRun'
     | 'jira:submit'
+    | 'jira:credential:save'
+    | 'jira:credential:clear'
+    | 'jira:credential:state'
+    | 'jira:board:get'
+    | 'jira:board:set'
+    | 'jira:board:suggest'
+    | 'jira:project:search'
     | 'copilot:specify'
     | 'copilot:clarify'
     | 'copilot:plan'
@@ -125,6 +132,20 @@ export const ipcBaseQuery: BaseQueryFn<IpcQueryArgs, unknown, IpcQueryError> = a
         return { data: await window.concierge.jiraSubmission!.dryRun(args.payload) };
       case 'jira:submit':
         return { data: await window.concierge.jiraSubmission!.submit(args.payload) };
+      case 'jira:credential:save':
+        return { data: await window.concierge.jiraCredential!.save(args.payload) };
+      case 'jira:credential:clear':
+        return { data: await window.concierge.jiraCredential!.clear(args.payload) };
+      case 'jira:credential:state':
+        return { data: await window.concierge.jiraCredential!.state(args.payload) };
+      case 'jira:board:get':
+        return { data: await window.concierge.jiraBoard!.get(args.payload) };
+      case 'jira:board:set':
+        return { data: await window.concierge.jiraBoard!.set(args.payload) };
+      case 'jira:board:suggest':
+        return { data: await window.concierge.jiraBoard!.suggest(args.payload) };
+      case 'jira:project:search':
+        return { data: await window.concierge.jiraBoard!.searchProjects(args.payload) };
       case 'copilot:specify':
         return { data: await window.concierge.copilot!.specify(args.payload) };
       case 'copilot:clarify':

@@ -195,6 +195,31 @@ describe('logHandlerError (regression guard for "error":{} blind logs)', () => {
     const [fields] = error.mock.calls[0]!;
     expect(fields.reason).toBe('manual');
   });
+
+  it('sanitizes token-bearing IPC error serialization and log fields', () => {
+    const { logger, error: errorSpy } = createSpyLogger();
+    const token = 'secret-token';
+    const base64 = Buffer.from(`person@example.com:${token}`).toString('base64');
+    const thrown = Object.assign(new Error(`Authorization: Basic ${base64} ${token}`), {
+      token,
+      headers: { Authorization: `Basic ${base64}` }
+    });
+
+    const serialized = serializeError(thrown, [token]);
+    logHandlerError(
+      logger,
+      { channel: 'jira:submit', context: { senderId: 1 }, startedAt: 0, now: () => 1 },
+      thrown,
+      [token]
+    );
+
+    expect(JSON.stringify(serialized)).toContain('[REDACTED]');
+    expect(JSON.stringify(serialized)).not.toContain(token);
+    expect(JSON.stringify(serialized)).not.toContain(base64);
+    const [fields] = errorSpy.mock.calls[0]!;
+    expect(JSON.stringify(fields.errorDetail)).not.toContain(token);
+    expect(JSON.stringify(fields.errorDetail)).not.toContain(base64);
+  });
 });
 
 describe('logHandlerSuccess', () => {

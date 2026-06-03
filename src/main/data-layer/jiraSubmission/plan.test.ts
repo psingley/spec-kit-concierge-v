@@ -49,8 +49,58 @@ describe('JIRA submission plan', () => {
       ['0015-send-jira-button-T004', 'Subtask', '0015-send-jira-button-phase-2-user-story-1-review-sends-tickets']
     ]);
     expect(plan.nodes[0]?.labels.some((label) => /^SKC-idem-[a-f0-9]{12}$/.test(label))).toBe(true);
-    expect(plan.nodes[2]?.description).toContain('Source task: T001');
+    expect(plan.nodes[0]?.labels.some((label) => /^SKC-id-[a-f0-9]{12}$/.test(label))).toBe(true);
+    expect(plan.nodes[2]?.description).toContain('**Contributes to:** Setup');
+    expect(plan.nodes[2]?.description).toContain('### Done when');
     expect(plan.nodes[2]?.payload.relationship_field).toBeNull();
+  });
+
+  it('clamps long Jira summaries while preserving full text in descriptions and payload hashes', () => {
+    const longEpicTitle = `Long Jira epic ${'overflow '.repeat(35)}`.trim();
+    const longPhaseTitle = `Long Jira phase ${'overflow '.repeat(35)}`.trim();
+    const longTaskTitle = `Long Jira task ${'overflow '.repeat(35)}`.trim();
+    const shortTaskSummary = 'T002 Short task';
+    const plan = buildJiraSubmissionPlan({
+      repositoryPath: '/repo',
+      featureDir: '/repo/specs/0016-long-jira-summary',
+      specMarkdown: `# ${longEpicTitle}
+
+## Requirements
+
+- Preserve long titles.`,
+      tasksMarkdown: `# Tasks: Long Jira summary
+
+## Phase 1: ${longPhaseTitle}
+
+- [ ] T001 ${longTaskTitle}
+- [ ] T002 Short task
+`,
+      config: { projectKey: 'SKC', baseLabels: ['spec-kit', 'concierge'] }
+    });
+
+    expect(plan.nodes.every((node) => node.summary.length <= 255)).toBe(true);
+    expect(plan.nodes.every((node) => node.payload.summary.length <= 255)).toBe(true);
+
+    const [epic, phase, longTask, shortTask] = plan.nodes;
+    expect(epic?.summary.length).toBeLessThanOrEqual(255);
+    expect(epic?.summary.endsWith('…')).toBe(true);
+    expect(epic?.description).toContain(longEpicTitle);
+
+    expect(phase?.summary.length).toBeLessThanOrEqual(255);
+    expect(phase?.summary.endsWith('…')).toBe(true);
+    expect(phase?.description).toContain(longPhaseTitle);
+
+    expect(longTask?.summary.length).toBeLessThanOrEqual(255);
+    expect(longTask?.summary.endsWith('…')).toBe(true);
+    expect(longTask?.description).toContain(longTaskTitle);
+
+    expect(shortTask?.summary).toBe(shortTaskSummary);
+    expect(shortTask?.description).toContain('Short task');
+
+    expect(longTask?.payloadHash).toBe(createPayloadHash({
+      ...longTask?.payload,
+      labels: ['spec-kit', 'concierge', '0016-long-jira-summary']
+    }));
   });
 
   it('hashes normalized payloads without the generated idempotency label', () => {

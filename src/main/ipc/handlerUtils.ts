@@ -1,4 +1,5 @@
 import type { IpcMainInvokeEvent } from 'electron';
+import { sanitizeForSecrets, sanitizeErrorMessage } from '../data-layer/jiraSubmission/redaction';
 
 export type SenderContext = {
   senderId: number;
@@ -52,8 +53,10 @@ const safeString = (v: unknown): string => {
  * object itself can never propagate — it would replace the original error with
  * an opaque serializer crash inside a catch block.
  */
-export const serializeError = (error: unknown): Record<string, unknown> => {
+export const serializeError = (error: unknown, secrets: readonly string[] = []): Record<string, unknown> => {
   try {
+    const sanitize = (value: Record<string, unknown>): Record<string, unknown> =>
+      sanitizeForSecrets(value, secrets) as Record<string, unknown>;
     if (error instanceof Error) {
       let own: Record<string, unknown> = {};
       try {
@@ -61,7 +64,7 @@ export const serializeError = (error: unknown): Record<string, unknown> => {
       } catch {
         // A throwing enumerable getter — skip own-prop spread, keep base fields.
       }
-      return { message: error.message, name: error.name, stack: error.stack, ...own };
+      return sanitize({ message: error.message, name: error.name, stack: error.stack, ...own });
     }
 
     if (typeof error === 'object' && error !== null) {
@@ -71,10 +74,10 @@ export const serializeError = (error: unknown): Record<string, unknown> => {
       } catch {
         // Throwing getter — fall through to safeString fallback.
       }
-      return Object.keys(own).length > 0 ? own : { value: safeString(error) };
+      return sanitize(Object.keys(own).length > 0 ? own : { value: safeString(error) });
     }
 
-    return { value: safeString(error) };
+    return sanitize({ value: safeString(error) });
   } catch {
     // Last-resort: the outer block itself failed (e.g. a hostile Proxy whose
     // instanceof / typeof traps throw). Use a static literal — never call
@@ -107,10 +110,14 @@ const baseFields = ({ channel, context, startedAt, now, ...rest }: HandlerLogFie
 export const logHandlerError = (
   logger: StructuredHandlerLogger,
   fields: HandlerLogFields,
-  error: unknown
+  error: unknown,
+  secrets: readonly string[] = []
 ): void => {
+  const sanitizedError = error instanceof Error
+    ? new Error(sanitizeErrorMessage(error, secrets))
+    : error;
   logger.error(
-    { ...baseFields(fields), success: false, err: error, errorDetail: serializeError(error) },
+    { ...baseFields(fields), success: false, err: sanitizedError, errorDetail: serializeError(error, secrets) },
     'ipc handler invocation'
   );
 };

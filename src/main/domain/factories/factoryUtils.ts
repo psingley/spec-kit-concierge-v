@@ -20,8 +20,11 @@ export const factoryEscape = (
 });
 
 const frontmatterPattern = /^---\r?\n([\s\S]*?)\r?\n---/;
+const conflictMarkerPattern = /^(?:<{7}|={7}|>{7})[^\r\n]*$/m;
 
-const rejectFrontmatterKeys = (contents: string): boolean => {
+export const hasGitConflictMarkers = (contents: string): boolean => conflictMarkerPattern.test(contents);
+
+export const rejectFrontmatterKeys = (contents: string): boolean => {
   const match = frontmatterPattern.exec(contents);
   if (match === null) {
     return false;
@@ -46,18 +49,11 @@ export const readRequiredArtifact = async (
   }
 };
 
-export const validateMarkdownContents = (
-  contents: string,
-  hostilePattern: RegExp,
-  partialPattern?: RegExp
-): StepContractResult | undefined => {
+export const validateMarkdownContents = (contents: string): StepContractResult | undefined => {
   if (contents.trim().length === 0) {
     return factoryEscape();
   }
-  if (rejectFrontmatterKeys(contents) || hostilePattern.test(contents)) {
-    return factoryEscape();
-  }
-  if (partialPattern?.test(contents)) {
+  if (rejectFrontmatterKeys(contents) || hasGitConflictMarkers(contents)) {
     return factoryEscape();
   }
   return undefined;
@@ -65,9 +61,7 @@ export const validateMarkdownContents = (
 
 export const validateRequiredMarkdown = async (
   step: StepName,
-  featureDir: string,
-  hostilePattern: RegExp,
-  partialPattern?: RegExp
+  featureDir: string
 ): Promise<StepContractResult | undefined> => {
   const requiredFiles = STEP_ARTIFACT_MANIFEST[step].requiredFiles;
   for (const file of requiredFiles) {
@@ -75,7 +69,7 @@ export const validateRequiredMarkdown = async (
     if (contents === undefined) {
       return factoryEscape();
     }
-    const invalid = validateMarkdownContents(contents, hostilePattern, partialPattern);
+    const invalid = validateMarkdownContents(contents);
     if (invalid !== undefined) return invalid;
   }
 
