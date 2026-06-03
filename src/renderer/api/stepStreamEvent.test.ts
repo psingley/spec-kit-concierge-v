@@ -29,6 +29,21 @@ describe('shared step stream event renderer factory', () => {
     expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: event });
   });
 
+  it('accepts progress message ids for assistant row coalescing', () => {
+    const event = {
+      type: 'progress',
+      step: 'plan',
+      sessionId: 'plan-1',
+      level: 'info',
+      message: 'Hello',
+      timestamp: '2026-06-03T00:00:00.000Z',
+      kind: 'assistant-text',
+      messageId: 'message-1'
+    };
+
+    expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: event });
+  });
+
   it('defaults missing progress kind to generic', () => {
     const event = {
       type: 'progress',

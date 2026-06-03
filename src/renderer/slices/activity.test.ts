@@ -106,6 +106,70 @@ describe('activity slice', () => {
     expect(new Set(ids)).toHaveLength(256);
   });
 
+  it('does not collide with explicit caller-provided ids', () => {
+    let state = activityReducer(undefined, recordActivity({
+      id: 'activity-0',
+      timestamp: '2026-06-03T00:00:00.000Z',
+      level: 'info',
+      message: 'explicit id'
+    }));
+    state = activityReducer(state, recordActivity({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      level: 'info',
+      message: 'generated id'
+    }));
+
+    expect(state.entries.map((entry) => entry.id)).toEqual(['activity-0', 'activity-1']);
+  });
+
+  it('starts a new assistant row for a different message id', () => {
+    let state = activityReducer(undefined, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-1',
+      text: 'first'
+    }));
+    state = activityReducer(state, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-2',
+      text: 'second'
+    }));
+
+    expect(state.entries.map((entry) => entry.message)).toEqual(['first', 'second']);
+    expect(state.activeAssistantRowId).toBe(state.entries[1].id);
+  });
+
+  it('keeps tool rows separate even when later assistant text has the same message id', () => {
+    let state = activityReducer(undefined, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      step: 'tasks',
+      sessionId: 'tasks-1',
+      messageId: 'message-1',
+      text: 'before tool'
+    }));
+    state = activityReducer(state, recordActivity({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      level: 'info',
+      message: 'Running tool read',
+      kind: 'tool-call',
+      event: 'tool-call',
+      step: 'tasks',
+      sessionId: 'tasks-1'
+    }));
+    state = activityReducer(state, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:02.000Z',
+      step: 'tasks',
+      sessionId: 'tasks-1',
+      messageId: 'message-1',
+      text: 'after tool'
+    }));
+
+    expect(state.entries.map((entry) => entry.message)).toEqual(['before tool', 'Running tool read', 'after tool']);
+  });
+
   it('tracks follow state and hang visibility without adding entries', () => {
     let state = activityReducer(undefined, activityFollowStateChanged({ followState: 'paused' }));
     state = activityReducer(state, hangSuspectedRecorded({ marker: 'plan-1:2026-06-03T00:00:00.000Z' }));

@@ -69,6 +69,14 @@ const nextEntryId = (state: ActivityState): string => {
   return id;
 };
 
+const reserveEntryId = (state: ActivityState, id: string): void => {
+  const match = /^activity-(\d+)$/.exec(id);
+  if (match === null) {
+    return;
+  }
+  state.nextEntrySequence = Math.max(state.nextEntrySequence, Number(match[1]) + 1);
+};
+
 const enforceCap = (state: ActivityState): void => {
   if (state.entries.length <= state.cap) {
     return;
@@ -83,6 +91,9 @@ const enforceCap = (state: ActivityState): void => {
 };
 
 const appendEntry = (state: ActivityState, payload: RecordActivityPayload): void => {
+  if (payload.id !== undefined) {
+    reserveEntryId(state, payload.id);
+  }
   const id = payload.id ?? nextEntryId(state);
   state.entries.push({ id, ...payload });
   enforceCap(state);
