@@ -11,7 +11,8 @@ type ExecFileResult = {
 };
 
 export type ExecFileAdapter = (command: string, args: string[], options: { shell: false }) => Promise<ExecFileResult>;
-const defaultExecFile: ExecFileAdapter = async (command, args, options) => execFileAsync(command, args, options);
+const defaultExecFile: ExecFileAdapter = async (command, args, options) =>
+  execFileAsync(await resolveWindowsBinary(command), args, options);
 
 type SpawnedProcess = {
   stdout: NodeJS.EventEmitter;
