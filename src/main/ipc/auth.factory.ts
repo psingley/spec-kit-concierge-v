@@ -22,6 +22,7 @@ export type AuthStatusResponse = {
 
 export type AuthLoginRequest = {
   provider: 'github' | 'copilot' | 'atlassian';
+  subscriptionId?: string;
 };
 
 export type AuthLoginResponse = {
@@ -62,14 +63,21 @@ export const createAuthLoginRequest = (
   if (!root.ok) {
     return root;
   }
-  const keys = requireExactKeys(root.value, ['provider'], 'InvalidAuthLoginPayload', '$');
-  if (!keys.ok) {
-    return keys;
+  const keys = Object.keys(root.value);
+  if (!keys.every((key) => key === 'provider' || key === 'subscriptionId')) {
+    return invalid('InvalidAuthLoginPayload', 'payload may contain only provider and subscriptionId', '$');
   }
   if (root.value.provider !== provider) {
     return invalid('InvalidAuthLoginPayload', `provider must be ${provider}`, '$.provider');
   }
-  return { ok: true, value: { provider } };
+  const subscriptionId = optionalString(root.value.subscriptionId);
+  if (root.value.subscriptionId !== undefined && subscriptionId === undefined) {
+    return invalid('InvalidAuthLoginPayload', 'subscriptionId must be a string', '$.subscriptionId');
+  }
+  return {
+    ok: true,
+    value: subscriptionId === undefined ? { provider } : { provider, subscriptionId }
+  };
 };
 
 export const createAuthLoginResponse = (value: unknown): FactoryResult<AuthLoginResponse, LoginErrorName> => {

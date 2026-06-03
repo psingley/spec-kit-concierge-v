@@ -33,6 +33,7 @@ type ConciergePreloadBridge = {
     loginGitHub?: (request: unknown) => Promise<unknown>;
     loginCopilot?: (request: unknown) => Promise<unknown>;
     loginAtlassian?: (request: unknown) => Promise<unknown>;
+    subscribeCopilotLogin?: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
   };
   mcpConfig?: {
     check: (request: unknown) => Promise<unknown>;

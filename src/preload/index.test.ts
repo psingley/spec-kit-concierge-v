@@ -54,6 +54,7 @@ describe('preload concierge bridge', () => {
     expect(Object.keys(bridge.app as Record<string, unknown>)).toEqual(['getVersion']);
     expect(Object.keys(bridge.acp as Record<string, unknown>)).toEqual(['probeBoundCLI']);
     expect(Object.keys(bridge.preferences as Record<string, unknown>)).toEqual(['read', 'write']);
+    expect(Object.keys(bridge.auth as Record<string, unknown>)).toEqual(['status', 'loginGitHub', 'loginCopilot', 'loginAtlassian', 'subscribeCopilotLogin']);
     expect(bridge).not.toHaveProperty('ipcRenderer');
   });
 
@@ -139,5 +140,26 @@ describe('preload concierge bridge', () => {
 
     bridge.copilot.subscribeSpecify('sub-2', vi.fn());
     expect(on).toHaveBeenCalledWith('copilot:specify:event', expect.any(Function));
+  });
+
+  it('exposes a Copilot auth login stream subscription on the auth bridge', async () => {
+    await import('./index');
+    const bridge = exposeInMainWorld.mock.calls[0]?.[1] as {
+      auth: {
+        subscribeCopilotLogin: (subscriptionId: string, callback: (event: unknown) => void) => () => void;
+      };
+    };
+    const callback = vi.fn();
+
+    const unsubscribe = bridge.auth.subscribeCopilotLogin('auth-sub-1', callback);
+    const listener = on.mock.calls[0]?.[1] as (_event: unknown, payload: unknown) => void;
+    listener({}, { subscriptionId: 'other', event: { type: 'device-code', code: 'AAAA-BBBB' } });
+    listener({}, { subscriptionId: 'auth-sub-1', event: { type: 'device-code', code: '023C-3350', url: 'https://github.com/login/device' } });
+    unsubscribe();
+
+    expect(on).toHaveBeenCalledWith('auth:copilot:login:event', expect.any(Function));
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledWith({ type: 'device-code', code: '023C-3350', url: 'https://github.com/login/device' });
+    expect(off).toHaveBeenCalledWith('auth:copilot:login:event', listener);
   });
 });

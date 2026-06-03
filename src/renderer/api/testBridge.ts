@@ -27,7 +27,8 @@ export const installConciergeBridge = (overrides: Partial<ConciergePreloadBridge
       status: vi.fn(),
       loginGitHub: vi.fn(),
       loginCopilot: vi.fn(),
-      loginAtlassian: vi.fn()
+      loginAtlassian: vi.fn(),
+      subscribeCopilotLogin: vi.fn(() => vi.fn())
     },
     mcpConfig: {
       check: vi.fn(),

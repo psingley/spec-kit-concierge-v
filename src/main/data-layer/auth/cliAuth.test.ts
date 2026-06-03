@@ -1,3 +1,4 @@
+import { EventEmitter } from 'node:events';
 import { describe, expect, it } from 'vitest';
 import { loginCopilot, loginGitHub, parseGitHubAuthStatus, type ExecFileAdapter } from './cliAuth';
 
@@ -153,7 +154,7 @@ describe('loginCopilot', () => {
     ]);
   });
 
-  it('runs the real copilot login subcommand and verifies the credential when no Copilot credential exists yet', async () => {
+  it('streams the Copilot device code from stdout and verifies the credential when login exits', async () => {
     const invocations: string[] = [];
     let credentialExists = false;
     const execFile: ExecFileAdapter = async (command, args) => {
@@ -167,14 +168,26 @@ describe('loginCopilot', () => {
         }
         throw new Error('credential not found');
       }
-      if (command === 'copilot' && args[0] === 'login') {
-        credentialExists = true;
-        return { stdout: '', stderr: '' };
-      }
       throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
     };
+    const deviceCodes: Array<{ code: string; url: string }> = [];
+    const spawnAdapter = () => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stdout.emit('data', Buffer.from('To authenticate, visit https://github.com/login/device and enter code 023C-3350.\nWaiting for authorization...\n'));
+        credentialExists = true;
+        child.emit('exit', 0);
+        child.emit('close', 0);
+      });
+      return child;
+    };
 
-    await expect(loginCopilot(true, '', execFile, 'darwin')).resolves.toEqual({
+    await expect(loginCopilot(true, '', execFile, 'darwin', {
+      onDeviceCode: (info) => deviceCodes.push(info),
+      spawnAdapter
+    })).resolves.toEqual({
       status: 'ok',
       provider: 'copilot',
       label: 'Copilot CLI ready'
@@ -182,9 +195,39 @@ describe('loginCopilot', () => {
     expect(invocations).toEqual([
       'gh auth status --active --hostname github.com',
       'security find-generic-password -s copilot-cli -a https://github.com:monalisa',
-      'copilot login',
       'security find-generic-password -s copilot-cli -a https://github.com:monalisa'
     ]);
+    expect(deviceCodes).toEqual([{ code: '023C-3350', url: 'https://github.com/login/device' }]);
+  });
+
+  it('throws after Copilot login exits when the credential is still missing', async () => {
+    const execFile: ExecFileAdapter = async (command, args) => {
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      if (command === 'security' && args[0] === 'find-generic-password') {
+        throw new Error('credential not found');
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+    const deviceCodes: Array<{ code: string; url: string }> = [];
+    const spawnAdapter = () => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stdout.emit('data', Buffer.from('023C-3350\n'));
+        child.emit('exit', 0);
+        child.emit('close', 0);
+      });
+      return child;
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'darwin', {
+      onDeviceCode: (info) => deviceCodes.push(info),
+      spawnAdapter
+    })).rejects.toThrow('Copilot CLI login did not complete.');
+    expect(deviceCodes).toEqual([{ code: '023C-3350', url: 'https://github.com/login/device' }]);
   });
 
   it('requires GitHub to be connected before Copilot login', async () => {

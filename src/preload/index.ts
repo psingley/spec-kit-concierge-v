@@ -47,7 +47,9 @@ contextBridge.exposeInMainWorld('concierge', {
     status: (request: unknown) => ipcRenderer.invoke('auth:status', request) as Promise<unknown>,
     loginGitHub: (request: unknown) => ipcRenderer.invoke('auth:gh:login', request) as Promise<unknown>,
     loginCopilot: (request: unknown) => ipcRenderer.invoke('auth:copilot:login', request) as Promise<unknown>,
-    loginAtlassian: (request: unknown) => ipcRenderer.invoke('auth:atlassian:login', request) as Promise<unknown>
+    loginAtlassian: (request: unknown) => ipcRenderer.invoke('auth:atlassian:login', request) as Promise<unknown>,
+    subscribeCopilotLogin: (subscriptionId: string, callback: (event: unknown) => void): (() => void) =>
+      subscribeStepStream('auth:copilot:login', subscriptionId, callback)
   },
   mcpConfig: {
     check: (request: unknown) => ipcRenderer.invoke('mcp:config:check', request) as Promise<unknown>,

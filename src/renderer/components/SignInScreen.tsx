@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AuthIdentity, AuthProviderStatus } from '../slices/auth';
 import type { JiraAuthState, JiraCredentialSaveResponse } from '../slices/jira';
 import { Ico } from './Icons';
@@ -11,7 +11,7 @@ export type SignInScreenProps = {
   identity: AuthIdentity | null;
   jiraAuthState: JiraAuthState;
   onGitHub: () => void;
-  onCopilot: () => void;
+  onCopilot: (subscriptionId?: string) => void;
   onAtlassian: () => void;
   onSaveJiraCredential: (value: JiraCredentialFormValue) => Promise<JiraCredentialSaveResponse | void> | JiraCredentialSaveResponse | void;
   onOpenJiraTokenPage: () => void;
@@ -43,10 +43,38 @@ const jiraSubtitle = (authState: JiraAuthState): React.ReactNode => {
 const jiraActionLabel = (authState: JiraAuthState): string =>
   authState.state === 'warm' ? 'Manage' : authState.state === 'expired' ? 'Reconnect' : 'Connect';
 
+type CopilotDeviceCode = {
+  code: string;
+  url: string;
+};
+
+const isCopilotDeviceCode = (event: unknown): event is CopilotDeviceCode & { type: 'device-code' } =>
+  typeof event === 'object' &&
+  event !== null &&
+  (event as { type?: unknown }).type === 'device-code' &&
+  typeof (event as { code?: unknown }).code === 'string' &&
+  typeof (event as { url?: unknown }).url === 'string';
+
 export const SignInScreen = ({ github, copilot, atlassian, identity, jiraAuthState, onGitHub, onCopilot, onAtlassian, onSaveJiraCredential, onOpenJiraTokenPage }: SignInScreenProps): React.ReactElement => {
   const [jiraPanelOpen, setJiraPanelOpen] = useState(false);
   const [localJiraAuthState, setLocalJiraAuthState] = useState<JiraAuthState | null>(null);
+  const [copilotLoginSubscriptionId] = useState(() => `auth-copilot-${Date.now().toString(36)}`);
+  const [copilotDeviceCode, setCopilotDeviceCode] = useState<CopilotDeviceCode | null>(null);
   const effectiveJiraAuthState = localJiraAuthState ?? jiraAuthState;
+
+  useEffect(() => {
+    if (copilot !== 'starting') {
+      setCopilotDeviceCode(null);
+      return undefined;
+    }
+
+    return window.concierge.auth?.subscribeCopilotLogin?.(copilotLoginSubscriptionId, (event) => {
+      if (isCopilotDeviceCode(event)) {
+        setCopilotDeviceCode({ code: event.code, url: event.url });
+      }
+    });
+  }, [copilot, copilotLoginSubscriptionId]);
+
   return (
     <main className="screen signin signin-stage" data-testid="sign-in-screen">
       <section className="signin-card" aria-labelledby="signin-heading">
@@ -79,9 +107,34 @@ export const SignInScreen = ({ github, copilot, atlassian, identity, jiraAuthSta
             <div className="signin-row-main">
               <div className="signin-row-title">GitHub Copilot CLI</div>
               <div className="signin-row-sub">{copilot === 'ok' ? 'Active subscription' : github !== 'ok' ? 'Requires GitHub CLI first' : 'Drives the spec-kit workflow'}</div>
+              {copilotDeviceCode !== null ? (
+                <div className="copilot-device-code" role="status">
+                  <span className="copilot-device-code-label">Enter this code at github.com/login/device:</span>
+                  <span className="copilot-device-code-actions">
+                    <span className="copilot-device-code-pill" data-vd-role="copilot-device-code">{copilotDeviceCode.code}</span>
+                    <button
+                      type="button"
+                      className="btn secondary compact"
+                      onClick={() => void navigator.clipboard?.writeText(copilotDeviceCode.code)}
+                    >
+                      Copy
+                    </button>
+                    <a className="btn secondary compact" href={copilotDeviceCode.url} target="_blank" rel="noreferrer">Open GitHub device page</a>
+                  </span>
+                </div>
+              ) : null}
             </div>
             {copilot === 'ok' ? <span className="signin-row-status"><span className="signin-dot ok" />Connected</span> : (
-              <button type="button" className="btn primary" data-vd-role="signin-provider-action" onClick={onCopilot} disabled={github !== 'ok' || copilot === 'starting'}>
+              <button
+                type="button"
+                className="btn primary"
+                data-vd-role="signin-provider-action"
+                onClick={() => {
+                  setCopilotDeviceCode(null);
+                  onCopilot(copilotLoginSubscriptionId);
+                }}
+                disabled={github !== 'ok' || copilot === 'starting'}
+              >
                 <Ico.Copilot size={12} />{actionLabel(copilot)}
               </button>
             )}

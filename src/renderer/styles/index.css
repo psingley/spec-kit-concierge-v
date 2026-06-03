@@ -99,6 +99,18 @@ button {
   border-color: var(--accent);
 }
 
+.btn.secondary {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn.compact {
+  height: 26px;
+  padding: 0 9px;
+  font-size: 11px;
+  text-decoration: none;
+}
+
 .btn:disabled,
 .btn[disabled] {
   opacity: 0.5;
@@ -1040,6 +1052,36 @@ small {
 .signin-row-sub {
   font-size: 11.5px;
   color: var(--text-faint);
+}
+
+.copilot-device-code {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--text);
+}
+
+.copilot-device-code-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.copilot-device-code-pill {
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
 }
 
 .signin-row-status {

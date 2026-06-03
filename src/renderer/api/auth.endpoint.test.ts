@@ -88,4 +88,24 @@ describe('auth endpoint', () => {
       consoleSpy.mockRestore();
     });
   });
+
+  it('passes the Copilot login stream subscription id through the auth IPC request', async () => {
+    installConciergeBridge({
+      auth: {
+        status: vi.fn(),
+        loginGitHub: vi.fn(),
+        loginCopilot: vi.fn(async () => ({ status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' })),
+        loginAtlassian: vi.fn()
+      }
+    });
+    const store = createFullAuthStore();
+
+    await expect(store.dispatch(authApi.endpoints.loginCopilot.initiate({ subscriptionId: 'auth-sub-1' })).unwrap()).resolves.toEqual({
+      status: 'ok',
+      provider: 'copilot',
+      label: 'Copilot CLI ready'
+    });
+
+    expect(window.concierge.auth!.loginCopilot).toHaveBeenCalledWith({ provider: 'copilot', subscriptionId: 'auth-sub-1' });
+  });
 });

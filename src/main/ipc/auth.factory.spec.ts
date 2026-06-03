@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createAuthStatusRequest, createAuthStatusResponse } from './auth.factory';
+import { createAuthLoginRequest, createAuthStatusRequest, createAuthStatusResponse } from './auth.factory';
 
 const validRequest = { providers: ['copilot', 'github'] };
 const validResponse = { copilotLoggedIn: true, githubLoggedIn: null };
@@ -12,6 +12,13 @@ describe('auth IPC factory', () => {
 
     it('accepts a valid response payload', () => {
       expect(createAuthStatusResponse(validResponse)).toEqual({ ok: true, value: validResponse });
+    });
+
+    it('accepts a Copilot login payload with a stream subscription id', () => {
+      expect(createAuthLoginRequest({ provider: 'copilot', subscriptionId: 'auth-sub-1' }, 'copilot')).toEqual({
+        ok: true,
+        value: { provider: 'copilot', subscriptionId: 'auth-sub-1' }
+      });
     });
   });
 

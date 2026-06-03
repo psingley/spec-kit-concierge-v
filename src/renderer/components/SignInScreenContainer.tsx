@@ -20,7 +20,7 @@ export const SignInScreenContainer = (): React.ReactElement => {
       identity={useAppSelector(selectAuthIdentity)}
       jiraAuthState={useAppSelector(selectJiraAuthState)}
       onGitHub={() => void loginGitHub()}
-      onCopilot={() => void loginCopilot()}
+      onCopilot={(subscriptionId) => void loginCopilot(subscriptionId === undefined ? undefined : { subscriptionId })}
       onAtlassian={() => void loginAtlassianStub()}
       onSaveJiraCredential={(value) => saveCredential(prepareJiraCredentialSave(value)).unwrap()}
       onOpenJiraTokenPage={() => window.open('https://id.atlassian.com/manage-profile/security/api-tokens', '_blank', 'noopener,noreferrer')}
