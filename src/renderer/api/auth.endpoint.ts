@@ -14,6 +14,10 @@ export type AuthStatusArgs = {
   providers: Array<'copilot' | 'github'>;
 };
 
+export type LoginCopilotArgs = {
+  subscriptionId?: string;
+};
+
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAuthStatus: builder.query<RendererAuthStatus, AuthStatusArgs>({
@@ -60,11 +64,16 @@ export const authApi = api.injectEndpoints({
       },
       invalidatesTags: ['Agent']
     }),
-    loginCopilot: builder.mutation<RendererAuthLoginResult, void>({
-      async queryFn(_arg, queryApi, _extraOptions, baseQuery) {
+    loginCopilot: builder.mutation<RendererAuthLoginResult, LoginCopilotArgs | void>({
+      async queryFn(arg, queryApi, _extraOptions, baseQuery) {
         queryApi.dispatch(authLoginStarted({ provider: 'copilot' }));
         try {
-          const response = await baseQuery({ channel: 'auth:copilot:login', payload: { provider: 'copilot' } });
+          const response = await baseQuery({
+            channel: 'auth:copilot:login',
+            payload: arg?.subscriptionId === undefined
+              ? { provider: 'copilot' }
+              : { provider: 'copilot', subscriptionId: arg.subscriptionId }
+          });
           if (response.error !== undefined) {
             const message = response.error.data?.message ?? 'Copilot login failed';
             console.error('[auth:copilot:login]', message, response.error);

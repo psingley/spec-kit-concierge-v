@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { promisify } from 'node:util';
 
@@ -11,6 +11,25 @@ type ExecFileResult = {
 
 export type ExecFileAdapter = (command: string, args: string[], options: { shell: false }) => Promise<ExecFileResult>;
 const defaultExecFile: ExecFileAdapter = async (command, args, options) => execFileAsync(command, args, options);
+
+type SpawnedProcess = {
+  stdout: NodeJS.EventEmitter;
+  stderr?: NodeJS.EventEmitter;
+  on: (event: 'close' | 'exit' | 'error', listener: (...args: unknown[]) => void) => unknown;
+};
+
+export type SpawnAdapter = (command: string, args: string[], options: { shell: false }) => SpawnedProcess;
+const defaultSpawn: SpawnAdapter = (command, args, options) => spawn(command, args, options) as unknown as SpawnedProcess;
+
+export type CopilotDeviceCodeInfo = {
+  code: string;
+  url: string;
+};
+
+export type LoginCopilotOptions = {
+  onDeviceCode?: (info: CopilotDeviceCodeInfo) => void;
+  spawnAdapter?: SpawnAdapter;
+};
 
 export type LoginIdentity = {
   login: string;
@@ -144,6 +163,52 @@ export const loginGitHub = async (
 const hasEnvironmentCopilotToken = (): boolean =>
   process.env.COPILOT_GITHUB_TOKEN !== undefined || process.env.GH_TOKEN !== undefined || process.env.GITHUB_TOKEN !== undefined;
 
+const GITHUB_DEVICE_URL = 'https://github.com/login/device';
+const COPILOT_DEVICE_LINE = /visit\s+(https:\/\/github\.com\/login\/device)\s+and\s+enter\s+code\s+([A-Z0-9]{4}-[A-Z0-9]{4})/i;
+const BARE_DEVICE_CODE = /\b([A-Z0-9]{4}-[A-Z0-9]{4})\b/;
+
+const parseCopilotDeviceCode = (output: string): CopilotDeviceCodeInfo | null => {
+  const primary = output.match(COPILOT_DEVICE_LINE);
+  if (primary?.[1] !== undefined && primary[2] !== undefined) {
+    return { url: primary[1], code: primary[2].toUpperCase() };
+  }
+
+  const fallback = output.match(BARE_DEVICE_CODE);
+  if (fallback?.[1] !== undefined) {
+    return { url: GITHUB_DEVICE_URL, code: fallback[1].toUpperCase() };
+  }
+
+  return null;
+};
+
+const runCopilotLogin = async (
+  spawnAdapter: SpawnAdapter,
+  onDeviceCode?: (info: CopilotDeviceCodeInfo) => void
+): Promise<void> => new Promise((resolve, reject) => {
+  const child = spawnAdapter('copilot', ['login'], { shell: false });
+  let stdout = '';
+  let emittedDeviceCode = false;
+  let settled = false;
+  const settle = (fn: () => void): void => {
+    if (settled) return;
+    settled = true;
+    fn();
+  };
+  const inspectStdout = (chunk: unknown): void => {
+    stdout += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+    if (emittedDeviceCode) return;
+    const parsed = parseCopilotDeviceCode(stdout);
+    if (parsed === null) return;
+    emittedDeviceCode = true;
+    onDeviceCode?.(parsed);
+  };
+
+  child.stdout.on('data', inspectStdout);
+  child.on('error', (error) => settle(() => reject(error)));
+  child.on('close', () => settle(resolve));
+  child.on('exit', () => settle(resolve));
+});
+
 export const readCopilotAuthStatus = async (
   githubLogin: string | undefined,
   execFileAdapter: ExecFileAdapter = defaultExecFile,
@@ -175,7 +240,8 @@ export const loginCopilot = async (
   githubConnected: boolean,
   adapterPath = process.env.CONCIERGE_TEST_COPILOT_ADAPTER,
   execFileAdapter: ExecFileAdapter = defaultExecFile,
-  platform = process.platform
+  platform = process.platform,
+  options: LoginCopilotOptions = {}
 ): Promise<LoginResult> => {
   if (!githubConnected) {
     throw new Error('GitHub login is required before Copilot login.');
@@ -196,7 +262,7 @@ export const loginCopilot = async (
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   }
 
-  await execFileAdapter('copilot', ['login'], { shell: false });
+  await runCopilotLogin(options.spawnAdapter ?? defaultSpawn, options.onDeviceCode);
   const authenticated = await readCopilotAuthStatus(githubStatus.login, execFileAdapter, platform);
   if (!authenticated.authenticated) {
     throw new Error('Copilot CLI login did not complete.');
