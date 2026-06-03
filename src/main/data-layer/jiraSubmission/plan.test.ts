@@ -49,7 +49,9 @@ describe('JIRA submission plan', () => {
       ['0015-send-jira-button-T004', 'Subtask', '0015-send-jira-button-phase-2-user-story-1-review-sends-tickets']
     ]);
     expect(plan.nodes[0]?.labels.some((label) => /^SKC-idem-[a-f0-9]{12}$/.test(label))).toBe(true);
-    expect(plan.nodes[2]?.description).toContain('Source task: T001');
+    expect(plan.nodes[0]?.labels.some((label) => /^SKC-id-[a-f0-9]{12}$/.test(label))).toBe(true);
+    expect(plan.nodes[2]?.description).toContain('**Contributes to:** Setup');
+    expect(plan.nodes[2]?.description).toContain('### Done when');
     expect(plan.nodes[2]?.payload.relationship_field).toBeNull();
   });
 
@@ -57,7 +59,6 @@ describe('JIRA submission plan', () => {
     const longEpicTitle = `Long Jira epic ${'overflow '.repeat(35)}`.trim();
     const longPhaseTitle = `Long Jira phase ${'overflow '.repeat(35)}`.trim();
     const longTaskTitle = `Long Jira task ${'overflow '.repeat(35)}`.trim();
-    const longTaskSummary = `T001 ${longTaskTitle}`;
     const shortTaskSummary = 'T002 Short task';
     const plan = buildJiraSubmissionPlan({
       repositoryPath: '/repo',
@@ -91,10 +92,10 @@ describe('JIRA submission plan', () => {
 
     expect(longTask?.summary.length).toBeLessThanOrEqual(255);
     expect(longTask?.summary.endsWith('…')).toBe(true);
-    expect(longTask?.description).toContain(longTaskSummary);
+    expect(longTask?.description).toContain(longTaskTitle);
 
     expect(shortTask?.summary).toBe(shortTaskSummary);
-    expect(shortTask?.description).toContain(shortTaskSummary);
+    expect(shortTask?.description).toContain('Short task');
 
     expect(longTask?.payloadHash).toBe(createPayloadHash({
       ...longTask?.payload,

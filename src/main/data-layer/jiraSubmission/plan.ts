@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
+import { parseJiraTicketModel } from './parser';
+import { buildTicketDocument } from './ticketDocument';
 
 export type JiraIssueType = 'Epic' | 'Story' | 'Subtask';
 
@@ -28,6 +30,8 @@ export type JiraSubmissionNode = {
   summary: string;
   description: string;
   labels: string[];
+  identityLabel: string;
+  idempotencyLabel: string;
   payloadHash: string;
   payload: JiraSubmissionPayload;
 };
@@ -47,19 +51,6 @@ export type BuildJiraSubmissionPlanRequest = {
   tasksMarkdown: string;
   config: JiraSubmissionConfig;
 };
-
-type TaskLine = {
-  id: string;
-  title: string;
-};
-
-type Phase = {
-  heading: string;
-  tasks: TaskLine[];
-};
-
-const taskPattern = /-\s+\[[ xX]\]\s+(T\d{3,})\s+(.+)/;
-const headingPattern = /^##\s+(.+)$/;
 
 const normalizeValue = (value: unknown): unknown => {
   if (typeof value === 'string') {
@@ -84,55 +75,11 @@ export const createPayloadHash = (value: unknown): string =>
 const clampSummary = (value: string): string =>
   value.length <= 255 ? value : `${value.slice(0, 254).trimEnd()}…`;
 
-const slugify = (value: string): string =>
-  value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
+export const canonicalIdempotencyLabel = (projectKey: string, payloadHash: string): string =>
+  `${projectKey}-idem-${payloadHash.slice(0, 12)}`;
 
-const firstHeading = (markdown: string): string => {
-  const heading = markdown.split(/\r?\n/).find((line) => line.startsWith('# '));
-  return heading?.replace(/^#\s+/, '').trim() || 'Spec-kit feature';
-};
-
-const excerpt = (markdown: string, heading: string): string => {
-  const lines = markdown.split(/\r?\n/);
-  const start = lines.findIndex((line) => line.trim() === heading.trim());
-  if (start < 0) {
-    return '';
-  }
-  const body: string[] = [];
-  for (const line of lines.slice(start + 1)) {
-    if (line.startsWith('## ') || line.startsWith('### ')) {
-      break;
-    }
-    if (line.trim().length > 0) {
-      body.push(line.trim());
-    }
-  }
-  return body.join('\n');
-};
-
-const parsePhases = (tasksMarkdown: string): Phase[] => {
-  const phases: Phase[] = [];
-  for (const rawLine of tasksMarkdown.split(/\r?\n/)) {
-    const heading = rawLine.match(headingPattern)?.[1]?.trim();
-    if (heading !== undefined && /^Phase\s+\d+/i.test(heading)) {
-      phases.push({ heading, tasks: [] });
-      continue;
-    }
-    const task = rawLine.match(taskPattern);
-    if (task !== null) {
-      const phase = phases.at(-1) ?? { heading: 'Phase 0: Unassigned', tasks: [] };
-      if (phases.length === 0) {
-        phases.push(phase);
-      }
-      phase.tasks.push({ id: task[1]!, title: task[2]!.trim() });
-    }
-  }
-  return phases;
-};
+export const canonicalIdentityLabel = (projectKey: string, idempotencyId: string): string =>
+  `${projectKey}-id-${crypto.createHash('sha256').update(idempotencyId).digest('hex').slice(0, 12)}`;
 
 const createNode = (
   request: {
@@ -148,6 +95,7 @@ const createNode = (
   }
 ): JiraSubmissionNode => {
   const summary = clampSummary(request.summary);
+  const identityLabel = canonicalIdentityLabel(request.projectKey, request.id);
   const payloadWithoutIdem: JiraSubmissionPayload = {
     idempotency_id: request.id,
     state_dir: request.stateDir,
@@ -160,8 +108,8 @@ const createNode = (
     relationship_field: null
   };
   const payloadHash = createPayloadHash(payloadWithoutIdem);
-  const idemLabel = `${request.projectKey}-idem-${payloadHash.slice(0, 12)}`;
-  const labels = [...request.baseLabels, idemLabel];
+  const idemLabel = canonicalIdempotencyLabel(request.projectKey, payloadHash);
+  const labels = [...request.baseLabels, identityLabel, idemLabel];
 
   return {
     id: request.id,
@@ -170,13 +118,14 @@ const createNode = (
     summary,
     description: request.description,
     labels,
+    identityLabel,
+    idempotencyLabel: idemLabel,
     payloadHash,
     payload: { ...payloadWithoutIdem, labels }
   };
 };
 
 export const buildJiraSubmissionPlan = ({
-  repositoryPath,
   featureDir,
   specMarkdown,
   tasksMarkdown,
@@ -185,80 +134,48 @@ export const buildJiraSubmissionPlan = ({
   const featureSlug = path.basename(featureDir);
   const stateDir = path.join(featureDir, 'jira-submission-state');
   const baseLabels = [...config.baseLabels, featureSlug].filter((label, index, labels) => labels.indexOf(label) === index);
-  const warnings: string[] = [];
+  const model = parseJiraTicketModel({ featureSlug, specMarkdown, tasksMarkdown });
+  const warnings: string[] = [...model.warnings];
   const nodes: JiraSubmissionNode[] = [];
-  const title = firstHeading(specMarkdown);
-  const epicId = `${featureSlug}-epic`;
+  const epicId = model.epic.id;
+  const epicDocument = buildTicketDocument(model, epicId);
 
   nodes.push(createNode({
     id: epicId,
     stateDir,
     projectKey: config.projectKey,
     issueType: 'Epic',
-    summary: title,
-    description: [
-      title,
-      '',
-      `Spec feature: ${title}`,
-      '',
-      'Rendered deterministically by Spec-kit Concierge.',
-      '',
-      excerpt(specMarkdown, '## Requirements') || specMarkdown.slice(0, 1600)
-    ].join('\n'),
+    summary: epicDocument.summary,
+    description: epicDocument.markdown,
     parentId: null,
     parentKey: null,
     baseLabels
   }));
 
-  const phases = parsePhases(tasksMarkdown);
-  if (phases.length === 0) {
-    warnings.push('No Phase headings with T### tasks were found in tasks.md.');
-  }
-
-  for (const phase of phases) {
-    const phaseSlug = slugify(phase.heading);
-    const phaseId = `${featureSlug}-${phaseSlug}`;
-    const phaseSummary = phase.heading.replace(/^Phase\s+\d+:\s*/i, '');
+  for (const story of model.stories) {
+    const storyDocument = buildTicketDocument(model, story.id);
     nodes.push(createNode({
-      id: phaseId,
+      id: story.id,
       stateDir,
       projectKey: config.projectKey,
       issueType: 'Story',
-      summary: phaseSummary,
-      description: [
-        phaseSummary,
-        '',
-        `Source phase: ${phase.heading}`,
-        '',
-        `Repository: ${repositoryPath}`,
-        `Feature: ${featureSlug}`,
-        '',
-        `Tasks in phase: ${phase.tasks.map((task) => task.id).join(', ') || 'none'}`
-      ].join('\n'),
+      summary: storyDocument.summary,
+      description: storyDocument.markdown,
       parentId: epicId,
       parentKey: null,
       baseLabels
     }));
 
-    for (const task of phase.tasks) {
-      const taskSummary = `${task.id} ${task.title}`;
+    for (const task of model.subtasks.filter((candidate) => candidate.parentStoryId === story.id)) {
+      const taskDocument = buildTicketDocument(model, task.id);
       nodes.push(createNode({
-        id: `${featureSlug}-${task.id}`,
+        id: task.id,
         stateDir,
         projectKey: config.projectKey,
         issueType: 'Subtask',
-        summary: taskSummary,
-        description: [
-          taskSummary,
-          '',
-          `Source task: ${task.id}`,
-          '',
-          task.title,
-          '',
-          `Parent phase: ${phase.heading}`,
-          `Feature: ${featureSlug}`
-        ].join('\n'),
-        parentId: phaseId,
+        summary: taskDocument.summary,
+        description: taskDocument.markdown,
+        parentId: story.id,
         parentKey: null,
         baseLabels
       }));

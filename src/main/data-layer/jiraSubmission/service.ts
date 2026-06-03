@@ -5,6 +5,7 @@ import { BoundCLISupervisor } from '../acp/supervisor';
 import type { MainLogger } from '../../logging';
 import { resolveFeatureDir } from '../specify/featureDir';
 import { buildJiraSubmissionPlan, type JiraSubmissionConfig, type JiraSubmissionPlan } from './plan';
+import { createRestJiraCreateTurn, type JiraRestCredential } from './restCreateTurn';
 import { runJiraSubmissionLoop, type JiraCreateTurn, type JiraSubmissionLoopOptions, type JiraSubmissionLoopResult } from './runner';
 
 export type JiraSubmissionArtifacts = {
@@ -79,7 +80,7 @@ export const createBoundCliJiraCreateTurn = ({
   repositoryPath: string;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
-}): JiraCreateTurn => async ({ node, payload, payloadHash, idempotencyLabel }) => {
+}): JiraCreateTurn => async ({ node, payload, payloadHash, idempotencyLabel, identityLabel }) => {
   const manifest = await loadAgentManifest(logger);
   const agent = manifest.agents.copilot;
   if (agent === undefined) {
@@ -95,8 +96,9 @@ export const createBoundCliJiraCreateTurn = ({
       'You are the bounded CLI agent. The app has already rendered the payload, owns ordering, and is the single payload-hash authority.',
       'Create exactly one logical Jira issue for this node; duplicate/orphan recovery and transient retries are allowed only as required by the protocol.',
       `Use idempotency_id "${node.id}", payload_hash "${payloadHash}", and idempotency_label "${idempotencyLabel}" exactly as supplied by the app.`,
+      `Use identity_label "${identityLabel}" for orphan search and write it back as identity_label in the state record.`,
       'Write every state record with this exact idempotency_id, payload_hash, and idempotency_label. Echo them verbatim; do not recompute a hash and do not hash the wrapper or already-rendered labels.',
-      'Before creating, search Jira by the supplied idempotency label and adopt exactly one verified orphan if found.',
+      'Before creating, search Jira by the supplied identity label and adopt exactly one verified orphan if found.',
       'If an existing state record for this idempotency_id has a different payload_hash, halt without creating.',
       'On transient Jira failures (429, 5xx, network errors, timeout, no response), retry with protocol backoff for up to five total attempts.',
       'After ambiguous transient failures, run the JQL orphan search by idempotency label before retrying create.',
@@ -113,6 +115,8 @@ export const createBoundCliJiraCreateTurn = ({
         payload_hash: payloadHash,
         idempotencyLabel,
         idempotency_label: idempotencyLabel,
+        identityLabel,
+        identity_label: identityLabel,
         payload
       }, null, 2)
     ].join('\n');
@@ -129,6 +133,7 @@ export const runJiraSubmission = async ({
   repositoryPath,
   logger,
   userDataPath,
+  jiraRestCredential,
   runCreateTurn,
   onProgress,
   onResult,
@@ -137,12 +142,18 @@ export const runJiraSubmission = async ({
   repositoryPath: string;
   logger: Pick<MainLogger, 'info' | 'warn' | 'error'>;
   userDataPath?: string;
+  jiraRestCredential?: JiraRestCredential;
   runCreateTurn?: JiraCreateTurn;
 } & Pick<JiraSubmissionLoopOptions, 'onProgress' | 'onResult' | 'now'>): Promise<JiraSubmissionLoopResult> => {
   const artifacts = await buildJiraSubmissionArtifacts(repositoryPath);
+  const createTurn = runCreateTurn ?? (
+    jiraRestCredential === undefined
+      ? createBoundCliJiraCreateTurn({ repositoryPath, logger, userDataPath })
+      : createRestJiraCreateTurn({ credential: jiraRestCredential })
+  );
   return runJiraSubmissionLoop({
     plan: artifacts.plan,
-    runCreateTurn: runCreateTurn ?? createBoundCliJiraCreateTurn({ repositoryPath, logger, userDataPath }),
+    runCreateTurn: createTurn,
     onProgress,
     onResult,
     now: now ?? (() => new Date().toISOString())

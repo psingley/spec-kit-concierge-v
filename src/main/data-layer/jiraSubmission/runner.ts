@@ -1,12 +1,22 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { createPayloadHash, type JiraSubmissionNode, type JiraSubmissionPayload, type JiraSubmissionPlan } from './plan';
+import {
+  canonicalIdempotencyLabel,
+  canonicalIdentityLabel,
+  createPayloadHash,
+  type JiraSubmissionNode,
+  type JiraSubmissionPayload,
+  type JiraSubmissionPlan
+} from './plan';
+
+export { canonicalIdentityLabel } from './plan';
 
 export type JiraCreateTurnRequest = {
   node: JiraSubmissionNode;
   payload: JiraSubmissionPayload;
   payloadHash: string;
   idempotencyLabel: string;
+  identityLabel: string;
 };
 
 export type JiraCreateTurn = (request: JiraCreateTurnRequest) => Promise<void>;
@@ -36,6 +46,7 @@ type StateRecord = {
   url: string | null;
   payloadHash: string;
   idempotencyLabel: string;
+  identityLabel: string;
 };
 
 type AcceptedRecord = {
@@ -70,28 +81,36 @@ const readStateRecord = async (stateDir: string, nodeId: string): Promise<StateR
     key: stringAlias(parsed, ['issue_key', 'live_key', 'issueKey']),
     url: stringAlias(parsed, ['issue_url', 'live_url', 'issueUrl']),
     payloadHash: stringAlias(parsed, ['payload_hash', 'payloadHash']) ?? '',
-    idempotencyLabel: stringAlias(parsed, ['idempotency_label', 'idempotencyLabel']) ?? ''
+    idempotencyLabel: stringAlias(parsed, ['idempotency_label', 'idempotencyLabel']) ?? '',
+    identityLabel: stringAlias(parsed, ['identity_label', 'identityLabel']) ?? ''
   };
 };
 
-const materializePayload = (
+const generatedLabelPattern = (projectKey: string): RegExp =>
+  new RegExp(`^${projectKey}-(?:idem|id)-[a-f0-9]{12}$`);
+
+export const materializePayload = (
   node: JiraSubmissionNode,
   parentKey: string | null
-): { payload: JiraSubmissionPayload; payloadHash: string; idempotencyLabel: string } => {
+): { payload: JiraSubmissionPayload; payloadHash: string; idempotencyLabel: string; identityLabel: string } => {
+  const projectKey = node.payload.project_key;
+  const baseLabels = node.payload.labels.filter((label) => !generatedLabelPattern(projectKey).test(label));
+  const identityLabel = canonicalIdentityLabel(projectKey, node.id);
   const payloadWithoutIdem: JiraSubmissionPayload = {
     ...node.payload,
-    labels: node.payload.labels.filter((label) => !label.includes('-idem-')),
+    labels: baseLabels,
     parent_key: parentKey
   };
   const payloadHash = createPayloadHash(payloadWithoutIdem);
-  const idemLabel = `${payloadWithoutIdem.project_key}-idem-${payloadHash.slice(0, 12)}`;
+  const idemLabel = canonicalIdempotencyLabel(payloadWithoutIdem.project_key, payloadHash);
   return {
     payload: {
       ...payloadWithoutIdem,
-      labels: [...payloadWithoutIdem.labels, idemLabel]
+      labels: [...payloadWithoutIdem.labels, identityLabel, idemLabel]
     },
     payloadHash,
-    idempotencyLabel: idemLabel
+    idempotencyLabel: idemLabel,
+    identityLabel
   };
 };
 
@@ -100,9 +119,6 @@ const terminalPassStatus = (status: string): 'verified' | 'duplicate' | null => 
   if (status === 'duplicate' || status === 'already_verified') return 'duplicate';
   return null;
 };
-
-const canonicalIdempotencyLabel = (projectKey: string, payloadHash: string): string =>
-  `${projectKey}-idem-${payloadHash.slice(0, 12)}`;
 
 const isSha256Hex = (value: string): boolean =>
   /^[0-9a-f]{64}$/.test(value);
@@ -118,6 +134,7 @@ const acceptedRecord = (
   projectKey: string,
   appIntendedPayloadHash: string,
   appIntendedIdempotencyLabel: string,
+  appIntendedIdentityLabel: string,
   siteUrl: string | undefined
 ): { ok: true; record: AcceptedRecord } | { ok: false; reason: string } => {
   if (record.idempotencyId !== nodeId) {
@@ -129,11 +146,17 @@ const acceptedRecord = (
   if (record.idempotencyLabel !== canonicalIdempotencyLabel(projectKey, record.payloadHash)) {
     return { ok: false, reason: 'idempotency_label_mismatch' };
   }
+  if (record.identityLabel !== canonicalIdentityLabel(projectKey, nodeId)) {
+    return { ok: false, reason: 'identity_label_mismatch' };
+  }
   if (record.payloadHash !== appIntendedPayloadHash) {
     return { ok: false, reason: 'payload_hash_mismatch' };
   }
   if (record.idempotencyLabel !== appIntendedIdempotencyLabel) {
     return { ok: false, reason: 'idempotency_label_mismatch' };
+  }
+  if (record.identityLabel !== appIntendedIdentityLabel) {
+    return { ok: false, reason: 'identity_label_mismatch' };
   }
   const status = terminalPassStatus(record.status);
   if (status === null) {
@@ -188,11 +211,11 @@ export const runJiraSubmissionLoop = async ({
 
   for (const node of plan.nodes) {
     const parentKey = node.parentId === null ? null : keysByNode.get(node.parentId) ?? null;
-    const { payload, payloadHash, idempotencyLabel } = materializePayload(node, parentKey);
+    const { payload, payloadHash, idempotencyLabel, identityLabel } = materializePayload(node, parentKey);
 
     try {
       const existingRecord = await readStateRecord(plan.stateDir, node.id);
-      const existingAccepted = acceptedRecord(existingRecord, node.id, payload.project_key, payloadHash, idempotencyLabel, plan.siteUrl);
+      const existingAccepted = acceptedRecord(existingRecord, node.id, payload.project_key, payloadHash, idempotencyLabel, identityLabel, plan.siteUrl);
       if (existingAccepted.ok) {
         acceptIssue(node.id, existingAccepted.record, 'duplicate');
         continue;
@@ -203,7 +226,7 @@ export const runJiraSubmissionLoop = async ({
     }
 
     onProgress?.({ nodeId: node.id, message: `Creating ${node.issueType}: ${node.summary}`, timestamp: now() });
-    await runCreateTurn({ node, payload, payloadHash, idempotencyLabel });
+    await runCreateTurn({ node, payload, payloadHash, idempotencyLabel, identityLabel });
 
     let record: StateRecord;
     try {
@@ -214,7 +237,7 @@ export const runJiraSubmissionLoop = async ({
       return fail(node.id, reason);
     }
 
-    const accepted = acceptedRecord(record, node.id, payload.project_key, payloadHash, idempotencyLabel, plan.siteUrl);
+    const accepted = acceptedRecord(record, node.id, payload.project_key, payloadHash, idempotencyLabel, identityLabel, plan.siteUrl);
     if (!accepted.ok) {
       onResult?.({ nodeId: node.id, status: 'failed', timestamp: now() });
       return fail(node.id, accepted.reason);

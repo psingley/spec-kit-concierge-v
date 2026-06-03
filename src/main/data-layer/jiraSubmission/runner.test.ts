@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import { buildJiraSubmissionPlan } from './plan';
+import { canonicalIdentityLabel, materializePayload } from './runner';
 import { runJiraSubmissionLoop } from './runner';
 
 const specMarkdown = `# Create Jira issues
@@ -42,6 +43,7 @@ const writeStateRecord = async (
 };
 
 const idempotencyLabel = (payloadHash: string): string => `SKC-idem-${payloadHash.slice(0, 12)}`;
+const identityLabel = (nodeId: string): string => canonicalIdentityLabel('SKC', nodeId);
 
 describe('JIRA submission runner', () => {
   it('drives one bounded create turn per node and threads verified parent keys from disk truth', async () => {
@@ -60,6 +62,7 @@ describe('JIRA submission runner', () => {
           live_url: `https://collette.atlassian.net/browse/SKC-${9 + calls.length}`,
           payload_hash: payloadHash,
           idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id),
           attempts: 1,
           started_at: '2026-06-02T12:00:00.000Z',
           verified_at: '2026-06-02T12:00:01.000Z',
@@ -96,6 +99,7 @@ describe('JIRA submission runner', () => {
           live_url: 'https://collette.atlassian.net/browse/SKC-10',
           payload_hash: stalePayloadHash,
           idempotency_label: idempotencyLabel(stalePayloadHash),
+          identity_label: identityLabel(node.id),
           attempts: 1,
           started_at: '2026-06-02T12:00:00.000Z',
           verified_at: '2026-06-02T12:00:01.000Z',
@@ -130,7 +134,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-239' : calls.length === 2 ? 'SKC-240' : 'SKC-241',
           payload_hash: payloadHash,
-          idempotency_label: idempotencyLabel(payloadHash)
+          idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -154,7 +159,8 @@ describe('JIRA submission runner', () => {
       status: 'verified',
       issue_key: 'SKC-239',
       payload_hash: epicPayloadHash,
-      idempotency_label: idempotencyLabel(epicPayloadHash)
+      idempotency_label: idempotencyLabel(epicPayloadHash),
+      identity_label: identityLabel(epic.id)
     });
 
     const result = await runJiraSubmissionLoop({
@@ -167,7 +173,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-240' : 'SKC-241',
           payload_hash: payloadHash,
-          idempotency_label: idempotencyLabel(payloadHash)
+          idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -194,7 +201,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: calls.length === 1 ? 'SKC-10' : calls.length === 2 ? 'SKC-11' : 'SKC-12',
           payload_hash: payloadHash,
-          idempotency_label: idempotencyLabel(payloadHash)
+          idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -215,7 +223,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: 'SKC-10',
           payload_hash: payloadHash,
-          idempotency_label: 'SKC-idem-stale000000'
+          idempotency_label: 'SKC-idem-stale000000',
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -235,7 +244,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: 'SKC-10',
           payload_hash: payloadHash,
-          idempotency_label: idempotencyLabel(payloadHash)
+          idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -255,7 +265,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: 'SKC-10',
           payload_hash: 'not-a-sha',
-          idempotency_label: 'SKC-idem-not-a-sha'
+          idempotency_label: 'SKC-idem-not-a-sha',
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -276,7 +287,8 @@ describe('JIRA submission runner', () => {
           status: 'verified',
           issue_key: 'SKC-10',
           payload_hash: stalePayloadHash,
-          idempotency_label: 'SKC-idem-wronglabel12'
+          idempotency_label: 'SKC-idem-wronglabel12',
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -296,7 +308,8 @@ describe('JIRA submission runner', () => {
           status: 'creating',
           issue_key: 'SKC-10',
           payload_hash: payloadHash,
-          idempotency_label: idempotencyLabel(payloadHash)
+          idempotency_label: idempotencyLabel(payloadHash),
+          identity_label: identityLabel(node.id)
         });
       }
     });
@@ -314,7 +327,8 @@ describe('JIRA submission runner', () => {
         status: 'verified',
         issue_key: key,
         payload_hash: payloadHash,
-        idempotency_label: idempotencyLabel(payloadHash)
+        idempotency_label: idempotencyLabel(payloadHash),
+        identity_label: identityLabel(nodeId)
       });
     };
 
@@ -350,7 +364,8 @@ describe('JIRA submission runner', () => {
         status: 'verified',
         issue_key: node.id.endsWith('epic') ? 'SKC-10' : node.id.includes('phase') ? 'SKC-11' : 'SKC-12',
         payload_hash: payloadHash,
-        idempotency_label: idempotencyLabel(payloadHash)
+        idempotency_label: idempotencyLabel(payloadHash),
+        identity_label: identityLabel(node.id)
       });
     });
     await writeStateRecord(plan.stateDir, plan.nodes[0]!.id, {
@@ -358,7 +373,8 @@ describe('JIRA submission runner', () => {
       status: 'verified',
       issue_key: 'SKC-239',
       payload_hash: stalePayloadHash,
-      idempotency_label: idempotencyLabel(stalePayloadHash)
+      idempotency_label: idempotencyLabel(stalePayloadHash),
+      identity_label: identityLabel(plan.nodes[0]!.id)
     });
 
     const result = await runJiraSubmissionLoop({
@@ -373,5 +389,24 @@ describe('JIRA submission runner', () => {
       failedNodeId: '0015-send-jira-button-epic'
     });
     expect(createTurn).not.toHaveBeenCalled();
+  });
+
+  it('derives a stable identity label from idempotency id independent of description while payload hash still detects drift', async () => {
+    const plan = await createPlan();
+    const node = plan.nodes[0]!;
+    const first = materializePayload(node, null);
+    const changedDescription = {
+      ...node,
+      payload: {
+        ...node.payload,
+        description: `${node.payload.description}\n\nRicher body`
+      }
+    };
+    const second = materializePayload(changedDescription, null);
+
+    expect(first.identityLabel).toBe(second.identityLabel);
+    expect(first.identityLabel).toBe(canonicalIdentityLabel('SKC', node.id));
+    expect(first.idempotencyLabel).not.toBe(second.idempotencyLabel);
+    expect(first.payloadHash).not.toBe(second.payloadHash);
   });
 });
