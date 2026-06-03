@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { activityCleared, activityFollowStateChanged, type ActivityFollowState } from '../slices/activity';
-import { selectActivityBusy, selectActivityCurrentStatus, selectActivityEntries, selectActivityHangSuspected } from '../slices/activity.selectors';
+import { selectActivityBusy, selectActivityCurrentStatus, selectActivityEntries, selectActivityFollowState, selectActivityHangSuspected } from '../slices/activity.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 import { selectUiShowActivity } from '../slices/ui.selectors';
 import { Activity, type ActivityScrollMetrics } from './Activity';
@@ -41,6 +41,7 @@ export const ActivityRailContainer = (): React.ReactElement | null => {
       currentStatus={useAppSelector(selectActivityCurrentStatus)}
       busy={useAppSelector(selectActivityBusy)}
       hangSuspected={useAppSelector(selectActivityHangSuspected)}
+      followState={useAppSelector(selectActivityFollowState)}
       side={side}
       onClear={() => dispatch(activityCleared())}
       onScrollPositionChanged={onScrollPositionChanged}

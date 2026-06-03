@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Activity } from './Activity';
 import activityReducer, { assistantTextReceived, recordActivity } from '../slices/activity';
@@ -189,5 +189,85 @@ describe('Activity', () => {
     expect(screen.queryByText('No activity yet.')).not.toBeInTheDocument();
     expect(container.querySelectorAll('.activity-stream .log-line')).toHaveLength(256);
     expect(screen.getByText('long run event 599')).toBeInTheDocument();
+  });
+
+  it('auto-scrolls the activity stream when follow state is enabled', () => {
+    const { container, rerender } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        followState="following"
+        side="right"
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 500 });
+
+    rerender(
+      <Activity
+        entries={[
+          { id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' },
+          { id: 'two', timestamp: '2026-06-03T00:00:01.000Z', level: 'info', message: 'two' }
+        ]}
+        currentStatus="two"
+        busy={false}
+        followState="following"
+        side="right"
+      />
+    );
+
+    expect(stream.scrollTop).toBe(500);
+  });
+
+  it('does not auto-scroll while follow state is paused', () => {
+    const { container, rerender } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        followState="paused"
+        side="right"
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 500 });
+    stream.scrollTop = 120;
+
+    rerender(
+      <Activity
+        entries={[
+          { id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' },
+          { id: 'two', timestamp: '2026-06-03T00:00:01.000Z', level: 'info', message: 'two' }
+        ]}
+        currentStatus="two"
+        busy={false}
+        followState="paused"
+        side="right"
+      />
+    );
+
+    expect(stream.scrollTop).toBe(120);
+  });
+
+  it('reports activity stream scroll metrics', () => {
+    const onScrollPositionChanged = vi.fn();
+    const { container } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        side="right"
+        onScrollPositionChanged={onScrollPositionChanged}
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 1000 });
+    Object.defineProperty(stream, 'clientHeight', { configurable: true, value: 200 });
+    stream.scrollTop = 650;
+
+    fireEvent.scroll(stream);
+
+    expect(onScrollPositionChanged).toHaveBeenCalledWith({ scrollTop: 650, scrollHeight: 1000, clientHeight: 200 });
   });
 });

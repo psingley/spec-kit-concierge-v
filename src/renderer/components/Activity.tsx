@@ -6,6 +6,7 @@ export type ActivityProps = {
   currentStatus: string;
   busy: boolean;
   hangSuspected?: boolean;
+  followState?: 'following' | 'paused';
   side: 'left' | 'right' | 'hidden';
   onClear?: () => void;
   onScrollPositionChanged?: (metrics: ActivityScrollMetrics) => void;
@@ -28,9 +29,34 @@ const renderMessage = (message: string): string => message;
 const classForEntry = (entry: ActivityEntry): string =>
   ['log-line', entry.level, entry.kind ?? entry.event].filter(Boolean).join(' ');
 
-export const Activity = ({ entries, currentStatus, busy, hangSuspected = false, side, onClear }: ActivityProps): React.ReactElement | null => {
+export const Activity = ({
+  entries,
+  currentStatus,
+  busy,
+  hangSuspected = false,
+  followState = 'following',
+  side,
+  onClear,
+  onScrollPositionChanged
+}: ActivityProps): React.ReactElement | null => {
+  const streamRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    if (followState !== 'following' || streamRef.current === null) {
+      return;
+    }
+    streamRef.current.scrollTop = streamRef.current.scrollHeight;
+  }, [entries, followState]);
+
   if (side === 'hidden') return null;
   const stalled = busy && hangSuspected;
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>): void => {
+    const target = event.currentTarget;
+    onScrollPositionChanged?.({
+      scrollTop: target.scrollTop,
+      scrollHeight: target.scrollHeight,
+      clientHeight: target.clientHeight
+    });
+  };
   return (
     <aside className={`activity ${side}`} aria-label="Activity log">
       <div className="activity-head">
@@ -47,7 +73,7 @@ export const Activity = ({ entries, currentStatus, busy, hangSuspected = false, 
           <div className="now-text">{renderMessage(currentStatus)}</div>
         </div>
       </div>
-      <div className="activity-stream" role="log" aria-label="Activity log entries" aria-live="polite" tabIndex={0}>
+      <div ref={streamRef} className="activity-stream" role="log" aria-label="Activity log entries" aria-live="polite" tabIndex={0} onScroll={handleScroll}>
         {entries.length === 0 ? (
           <div className="log-line muted">
             <span className="ts">--:--:--</span>
