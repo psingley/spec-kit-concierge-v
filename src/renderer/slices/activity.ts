@@ -58,6 +58,8 @@ export const acpStreamEventReceived = createAction<{
   sessionId: string;
   step: StepName;
   message: string;
+  kind?: ActivityEntryKind;
+  messageId?: string;
   raw?: unknown;
 }>('activity/acpStreamEventReceived');
 

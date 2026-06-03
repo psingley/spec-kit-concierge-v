@@ -37,6 +37,7 @@ export type StepStreamEvent =
       message: string;
       timestamp: string;
       kind: StreamEventKind;
+      messageId?: string;
       raw?: unknown;
     }
   | {
@@ -154,7 +155,7 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
   const root = requireRecord(value, 'InvalidStepStreamEvent', '$');
   if (!root.ok) return root;
   if (root.value.type === 'progress') {
-    const progressKeys = ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw', 'kind'];
+    const progressKeys = ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw', 'kind', 'messageId'];
     const unexpectedKey = Object.keys(root.value).find((key) => !progressKeys.includes(key));
     if (unexpectedKey !== undefined) {
       return invalid('InvalidStepStreamEvent', 'progress event contains an unexpected key', `$.${unexpectedKey}`);
@@ -162,9 +163,13 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
     const sessionId = requireString(root.value.sessionId, 'InvalidStepStreamEvent', '$.sessionId');
     const message = requireString(root.value.message, 'InvalidStepStreamEvent', '$.message');
     const timestamp = requireString(root.value.timestamp, 'InvalidStepStreamEvent', '$.timestamp');
+    const messageId = root.value.messageId === undefined
+      ? undefined
+      : requireString(root.value.messageId, 'InvalidStepStreamEvent', '$.messageId');
     if (!sessionId.ok) return sessionId;
     if (!message.ok) return message;
     if (!timestamp.ok) return timestamp;
+    if (messageId !== undefined && !messageId.ok) return messageId;
     if (!isStepName(root.value.step) || !isLevel(root.value.level)) {
       return invalid('InvalidStepStreamEvent', 'progress event must target a valid step with a valid level', '$');
     }
@@ -180,6 +185,9 @@ export const createStepStreamEvent = (value: unknown): FactoryResult<StepStreamE
       timestamp: timestamp.value,
       kind: root.value.kind ?? 'generic'
     };
+    if (messageId !== undefined) {
+      value.messageId = messageId.value;
+    }
     if (Object.prototype.hasOwnProperty.call(root.value, 'raw')) {
       value.raw = root.value.raw;
     }

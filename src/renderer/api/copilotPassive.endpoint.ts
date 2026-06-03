@@ -57,14 +57,25 @@ export const copilotPassiveApi = api.injectEndpoints({
           if (parsed.value.type === 'progress') {
             queryApi.dispatch(passiveStepRunProgressed({ step: arg.step }));
             queryApi.dispatch(activityBusyChanged({ busy: true, status: parsed.value.message }));
-            queryApi.dispatch(recordActivity({ timestamp: parsed.value.timestamp, level: 'progress', message: parsed.value.message, step: arg.step, sessionId: parsed.value.sessionId }));
             if (parsed.value.raw !== undefined) {
               queryApi.dispatch(acpStreamEventReceived({
                 timestamp: parsed.value.timestamp,
                 step: arg.step,
                 sessionId: parsed.value.sessionId,
                 message: parsed.value.message,
+                kind: parsed.value.kind,
+                messageId: parsed.value.messageId,
                 raw: parsed.value.raw
+              }));
+            } else {
+              queryApi.dispatch(recordActivity({
+                timestamp: parsed.value.timestamp,
+                level: 'progress',
+                message: parsed.value.message,
+                kind: parsed.value.kind,
+                event: parsed.value.kind === 'generic' ? undefined : parsed.value.kind,
+                step: arg.step,
+                sessionId: parsed.value.sessionId
               }));
             }
             return;

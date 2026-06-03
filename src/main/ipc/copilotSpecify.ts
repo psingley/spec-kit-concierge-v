@@ -15,12 +15,14 @@ import { resolveFeatureDir } from '../data-layer/specify/featureDir';
 import { reconcileSpecifyFeatureJson } from '../data-layer/specify/reconcileFeatureJson';
 import type { MainLogger } from '../logging';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
+import { createBufferedStepStreamEmitter, type StreamProgressInput } from './stepStreamBuffer';
 import {
   createCopilotSpecifyAck,
   createCopilotSpecifyRequest,
   createStepStreamEvent,
   type CopilotSpecifyAck,
   type CopilotSpecifyRequest,
+  type StreamEventKind,
   type StepStreamEvent
 } from './copilotSpecify.factory';
 import {
@@ -72,7 +74,7 @@ export type SpecifyAgentAdapter = (
     // Per-run directory handed to copilot via --log-dir, keyed by Concierge id.
     logDir: string;
     // Called with each stdout line emitted by the copilot print-mode process.
-    onUpdate?: (line: string) => void;
+    onUpdate?: (update: SpecifyStreamUpdate) => void;
   }
 ) => Promise<void>;
 
@@ -168,6 +170,13 @@ export type SpecifyRunOutcome = {
   usage?: unknown;
   // copilot's own session id echoed in the result event (should equal ours).
   copilotSessionId?: string;
+};
+
+export type SpecifyStreamUpdate = string | {
+  kind: StreamEventKind;
+  message: string;
+  messageId?: string;
+  raw?: unknown;
 };
 
 // Pull the first non-empty string from a record at any of the given keys. The
@@ -275,6 +284,30 @@ export const readableFromEvent = (event: CopilotJsonEvent): string | undefined =
   return type !== undefined && type.length > 0 ? friendlyTypeLabel(type) : undefined;
 };
 
+const streamUpdateFromEvent = (event: CopilotJsonEvent): Exclude<SpecifyStreamUpdate, string> | undefined => {
+  const message = readableFromEvent(event);
+  if (message === undefined) {
+    return undefined;
+  }
+  const type = typeof event.type === 'string' ? event.type : undefined;
+  const data = isRecord(event.data) ? event.data : undefined;
+  const messageId =
+    (data !== undefined ? firstString(data, 'messageId', 'id', 'turnId') : undefined) ??
+    firstString(event, 'messageId', 'id', 'turnId');
+  const kind: StreamEventKind =
+    type === 'assistant.message' || type === 'assistant.message_delta' || type === 'assistant.message_start'
+      ? 'assistant-text'
+      : type === 'tool.execution_start' || type === 'tool.execution_complete'
+        ? 'tool-call'
+        : 'status-update';
+  return {
+    kind,
+    message,
+    ...(messageId !== undefined ? { messageId } : {}),
+    raw: event
+  };
+};
+
 // Spawn copilot in print-mode with --agent flag (Option D — GitHub's documented
 // deterministic agent-pinning pattern), hardened for the lingering-MCP-tree
 // problem.
@@ -309,7 +342,7 @@ export const runSpecifyPrintMode = (
   prompt: string,
   repositoryPath: string,
   modelId: string | undefined,
-  onLine: ((line: string) => void) | undefined,
+  onLine: ((update: SpecifyStreamUpdate) => void) | undefined,
   spawnFn: SpawnAdapter,
   copilotSessionId: string,
   logDir: string,
@@ -383,9 +416,9 @@ export const runSpecifyPrintMode = (
         return;
       }
 
-      const readable = readableFromEvent(event);
-      if (readable !== undefined) {
-        onLine?.(readable);
+      const update = streamUpdateFromEvent(event);
+      if (update !== undefined) {
+        onLine?.(update);
       }
 
       if (isResultEvent(event)) {
@@ -497,6 +530,13 @@ async (request) => {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
+const normalizeSpecifyStreamUpdate = (update: SpecifyStreamUpdate): StreamProgressInput => {
+  if (typeof update === 'string') {
+    return { kind: 'status-update', message: update };
+  }
+  return update;
+};
+
 export const registerCopilotSpecifyIpc = ({
   ipcMain,
   logger,
@@ -552,11 +592,13 @@ export const registerCopilotSpecifyIpc = ({
 
     const run = async (): Promise<void> => {
       let terminalSent = false;
+      const streamEmitter = createBufferedStepStreamEmitter({ step: 'specify', sessionId, sendEvent });
       const terminal = (streamEvent: Extract<StepStreamEvent, { type: 'done' }>): void => {
         if (terminalSent) {
           return;
         }
         terminalSent = true;
+        streamEmitter.flush();
         sendEvent(streamEvent);
       };
       // Resolve against the repo root for the before-hook; the real feature directory
@@ -629,15 +671,8 @@ export const registerCopilotSpecifyIpc = ({
           featureDir: request.value.repositoryPath,
           copilotSessionId,
           logDir,
-          onUpdate: (line) => {
-            sendEvent({
-              type: 'progress',
-              step: 'specify',
-              sessionId,
-              level: 'info',
-              message: line,
-              timestamp: new Date().toISOString()
-            });
+          onUpdate: (update) => {
+            streamEmitter.emit(normalizeSpecifyStreamUpdate(update));
           }
         });
         const featureJsonReconciliation = await reconcileFeatureJson({

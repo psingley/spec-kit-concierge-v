@@ -24,6 +24,7 @@ export type StepStreamEvent =
       message: string;
       timestamp: string;
       kind: StreamEventKind;
+      messageId?: string;
       raw?: unknown;
     }
   | {
@@ -121,14 +122,18 @@ export const parseRendererStepStreamEvent = (
   const root = requireRecord(value, 'InvalidStepStreamEvent', '$');
   if (!root.ok) return root;
   if (root.value.type === 'progress') {
-    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw', 'kind']);
+    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw', 'kind', 'messageId']);
     if (!keys.ok) return keys;
     const sessionId = requireString(root.value.sessionId, 'InvalidStepStreamEvent', '$.sessionId');
     const message = requireString(root.value.message, 'InvalidStepStreamEvent', '$.message');
     const timestamp = requireString(root.value.timestamp, 'InvalidStepStreamEvent', '$.timestamp');
+    const messageId = root.value.messageId === undefined
+      ? undefined
+      : requireString(root.value.messageId, 'InvalidStepStreamEvent', '$.messageId');
     if (!sessionId.ok) return sessionId;
     if (!message.ok) return message;
     if (!timestamp.ok) return timestamp;
+    if (messageId !== undefined && !messageId.ok) return messageId;
     if (!isStepName(root.value.step) || !isLevel(root.value.level)) {
       return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'invalid progress event', path: '$' } };
     }
@@ -144,6 +149,9 @@ export const parseRendererStepStreamEvent = (
       timestamp: timestamp.value,
       kind: root.value.kind ?? 'generic'
     };
+    if (messageId !== undefined) {
+      value.messageId = messageId.value;
+    }
     if (Object.prototype.hasOwnProperty.call(root.value, 'raw')) {
       value.raw = root.value.raw;
     }

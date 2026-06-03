@@ -265,6 +265,48 @@ describe('registerCopilotSpecifyIpc streaming', () => {
     })));
     expect(agentAdapter).toHaveBeenCalledWith(expect.objectContaining({ onUpdate: expect.any(Function) }));
   });
+
+  it('coalesces Specify print-mode assistant deltas before sending progress events', async () => {
+    const harness = createHarness();
+    const repositoryPath = await mkdtemp(path.join(os.tmpdir(), 'concierge-specify-stream-coalesce-'));
+    const featureRel = 'specs/0012-x';
+    await mkdir(path.join(repositoryPath, '.specify'), { recursive: true });
+    await mkdir(path.join(repositoryPath, featureRel), { recursive: true });
+    await writeFile(path.join(repositoryPath, '.specify', 'feature.json'), JSON.stringify({ feature_directory: featureRel }), 'utf8');
+    await writeFile(path.join(repositoryPath, featureRel, 'spec.md'), '# spec', 'utf8');
+
+    const agentAdapter = vi.fn(async (request: { onUpdate?: (update: unknown) => void }) => {
+      request.onUpdate?.({ kind: 'assistant-text', message: 'Hel', messageId: 'spec-message-1' });
+      request.onUpdate?.({ kind: 'assistant-text', message: 'lo', messageId: 'spec-message-1' });
+    });
+
+    registerCopilotSpecifyIpc({
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      evaluateReadiness: vi.fn().mockResolvedValue({ ready: true, checks: [{ name: 'copilot-authed', ok: true, detail: 'ok' }] }),
+      beforeHook: okBefore,
+      afterHook: okAfter,
+      agentAdapter: agentAdapter as never
+    });
+
+    await harness.handlers.get('copilot:specify')?.({ sender: harness.sender }, { ...basePayload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:specify:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'specify', status: 'pass' })
+    })));
+    const assistantEvents = harness.sender.send.mock.calls
+      .map((call) => call[1].event)
+      .filter((event) => event.type === 'progress' && event.kind === 'assistant-text');
+    expect(assistantEvents).toEqual([
+      expect.objectContaining({
+        step: 'specify',
+        message: 'Hello',
+        kind: 'assistant-text',
+        messageId: 'spec-message-1'
+      })
+    ]);
+  });
 });
 
 // RFC-4122 v4 UUID shape — copilot rejects the non-UUID Concierge sessionId, so

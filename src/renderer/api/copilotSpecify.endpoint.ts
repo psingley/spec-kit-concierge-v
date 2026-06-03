@@ -1,7 +1,7 @@
 import { api } from './rootApi';
 import { parsingError } from './endpointUtils';
 import { parseRendererCopilotSpecifyAck, parseRendererStepStreamEvent, type RendererCopilotSpecifyAck } from './copilotSpecify.factory';
-import { activityBusyChanged, recordActivity } from '../slices/activity';
+import { activityBusyChanged, assistantTextReceived, recordActivity } from '../slices/activity';
 import { branchUpdated, specifyCompletedInWorkspace } from '../slices/workspace';
 import { stepCompleted, stepPending } from '../slices/steps';
 import { specifyRunFailed, specifyRunProgressed, specifyRunStarted, specifyRunSucceeded } from '../slices/session';
@@ -41,7 +41,27 @@ export const copilotSpecifyApi = api.injectEndpoints({
           if (parsed.value.type === 'progress') {
             queryApi.dispatch(specifyRunProgressed());
             queryApi.dispatch(activityBusyChanged({ busy: true, status: parsed.value.message }));
-            queryApi.dispatch(recordActivity({ timestamp: parsed.value.timestamp, level: 'progress', message: parsed.value.message, step: 'specify', sessionId: parsed.value.sessionId }));
+            if (parsed.value.kind === 'assistant-text') {
+              queryApi.dispatch(assistantTextReceived({
+                timestamp: parsed.value.timestamp,
+                step: 'specify',
+                sessionId: parsed.value.sessionId,
+                text: parsed.value.message,
+                messageId: parsed.value.messageId,
+                raw: parsed.value.raw
+              }));
+            } else {
+              queryApi.dispatch(recordActivity({
+                timestamp: parsed.value.timestamp,
+                level: 'progress',
+                message: parsed.value.message,
+                kind: parsed.value.kind,
+                event: parsed.value.kind === 'generic' ? undefined : parsed.value.kind,
+                step: 'specify',
+                sessionId: parsed.value.sessionId,
+                raw: parsed.value.raw
+              }));
+            }
           } else if (parsed.value.status === 'pass') {
             queryApi.dispatch(specifyRunSucceeded({ specMarkdown: parsed.value.specMarkdown ?? '', artifactPath: parsed.value.artifactPath ?? 'specs/0006-specify-vertical/spec.md', commitSha: parsed.value.commitSha ?? '' }));
             queryApi.dispatch(stepCompleted({ step: 'specify', commitSha: parsed.value.commitSha ?? '', trailer: 'Concierge-Step: specify:pass' }));
