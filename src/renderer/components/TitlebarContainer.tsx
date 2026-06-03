@@ -5,14 +5,25 @@ import { jiraApi, prepareJiraCredentialSave } from '../api/jira.endpoint';
 import { repositoriesApi } from '../api/repositories.endpoint';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { selectAuthAtlassianStatus, selectAuthCopilotStatus, selectAuthGithubStatus, selectAuthIdentity } from '../slices/auth.selectors';
-import { preferencesUpdated } from '../slices/preferences';
+import { DEFAULT_COPILOT_MODEL_ID, preferencesUpdated } from '../slices/preferences';
 import { selectPreferencesSelectedCopilotModel } from '../slices/preferences.selectors';
 import { selectJiraAuthState, selectJiraBoard } from '../slices/jira.selectors';
 import { selectSessionAnyStepRunning } from '../slices/session.selectors';
 import { modalOpened } from '../slices/ui';
 import { selectWorkspaceBranch, selectWorkspaceSelectedRepo } from '../slices/workspace.selectors';
 import { ActivityPillContainer } from './ActivityPillContainer';
-import { Titlebar } from './Titlebar';
+import { Titlebar, type CopilotModelOption } from './Titlebar';
+
+export const deriveEffectiveCopilotModel = (
+  savedModel: string | null,
+  currentModel: string | null | undefined,
+  availableModels: CopilotModelOption[]
+): string | null =>
+  savedModel ??
+  (availableModels.some((entry) => entry.id === DEFAULT_COPILOT_MODEL_ID) ? DEFAULT_COPILOT_MODEL_ID : undefined) ??
+  currentModel ??
+  availableModels[0]?.id ??
+  null;
 
 export const TitlebarContainer = (): React.ReactElement => {
   const dispatch = useAppDispatch();
@@ -29,7 +40,7 @@ export const TitlebarContainer = (): React.ReactElement => {
   const jiraBoard = useAppSelector(selectJiraBoard);
   const { data: capabilities } = api.endpoints.getBoundCLICapabilities.useQuery();
   const models = capabilities?.models.available ?? [];
-  const model = selectedModel ?? capabilities?.models.current ?? models[0]?.id ?? null;
+  const model = deriveEffectiveCopilotModel(selectedModel, capabilities?.models.current, models);
   const repos = repositoriesApi.useListReposQuery();
   const activeRepositoryPath = branch === null ? null : selectedRepo?.path ?? null;
   jiraApi.useGetAuthStateQuery();

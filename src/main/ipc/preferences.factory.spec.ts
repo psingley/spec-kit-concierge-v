@@ -22,6 +22,21 @@ describe('preferences IPC factory', () => {
     it('accepts a valid write payload', () => {
       expect(createPreferencesWriteRequest(validWriteRequest)).toEqual({ ok: true, value: validWriteRequest });
     });
+
+    it('accepts GPT-5.4 mini model and hidden activity-side preferences', () => {
+      expect(createPreferencesWriteRequest({
+        theme: 'system',
+        selectedCopilotModel: 'gpt-5.4-mini',
+        activitySide: 'hidden'
+      })).toEqual({
+        ok: true,
+        value: {
+          theme: 'system',
+          selectedCopilotModel: 'gpt-5.4-mini',
+          activitySide: 'hidden'
+        }
+      });
+    });
   });
 
   describe('empty object', () => {
