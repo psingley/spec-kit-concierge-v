@@ -5,6 +5,7 @@ export type ActivityProps = {
   entries: ActivityEntry[];
   currentStatus: string;
   busy: boolean;
+  hangSuspected?: boolean;
   side: 'left' | 'right' | 'hidden';
   onClear?: () => void;
 };
@@ -20,15 +21,16 @@ const renderMessage = (message: string): string => message;
 const classForEntry = (entry: ActivityEntry): string =>
   ['log-line', entry.level, entry.kind ?? entry.event].filter(Boolean).join(' ');
 
-export const Activity = ({ entries, currentStatus, busy, side, onClear }: ActivityProps): React.ReactElement | null => {
+export const Activity = ({ entries, currentStatus, busy, hangSuspected = false, side, onClear }: ActivityProps): React.ReactElement | null => {
   if (side === 'hidden') return null;
+  const stalled = busy && hangSuspected;
   return (
     <aside className={`activity ${side}`} aria-label="Activity log">
       <div className="activity-head">
         <div className="h">▣<span>Activity</span></div>
-        <div className={`activity-status ${busy ? '' : 'idle'}`}>
-          {busy ? <span className="spinner sm" data-vd-role="spinner" /> : <span className="dot" data-vd-role="activity-idle-dot" />}
-          <span>{busy ? 'running' : 'idle'}</span>
+        <div className={`activity-status ${busy ? '' : 'idle'} ${stalled ? 'stalled' : ''}`}>
+          {stalled ? <span className="dot" data-vd-role="activity-stalled-dot" /> : busy ? <span className="spinner sm" data-vd-role="spinner" /> : <span className="dot" data-vd-role="activity-idle-dot" />}
+          <span>{stalled ? 'possibly stalled' : busy ? 'running' : 'idle'}</span>
         </div>
       </div>
       <div className="activity-now">

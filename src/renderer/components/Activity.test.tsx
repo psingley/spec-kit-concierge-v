@@ -145,4 +145,20 @@ describe('Activity', () => {
     expect(container.querySelectorAll('.activity-stream .log-line.status-update')).toHaveLength(1);
     expect(container.querySelector('.activity-stream .log-line.status-update .msg')).toHaveTextContent('Plan updated');
   });
+
+  it('surfaces a stall badge while a busy stream is suspected hung', () => {
+    render(
+      <Activity
+        entries={[]}
+        currentStatus="Running plan"
+        busy
+        hangSuspected
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+    expect(screen.queryByText('running')).not.toBeInTheDocument();
+  });
 });
