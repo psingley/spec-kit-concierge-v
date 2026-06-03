@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { JiraAuthState, JiraCredentialSaveResponse } from '../slices/jira';
 import { Ico } from './Icons';
 
 export type JiraCredentialFormValue = {
   email: string;
   token: string;
-  baseUrl: string;
-  expiryDate?: string;
+  baseUrl?: string;
 };
 
 export type JiraCredentialFormProps = {
@@ -17,13 +16,14 @@ export type JiraCredentialFormProps = {
   onOpenTokenPage?: () => void;
 };
 
-const defaultBaseUrl = (authState: JiraAuthState): string => authState.baseUrl ?? 'https://example.atlassian.net';
+const defaultBaseUrl = (authState: JiraAuthState): string => authState.baseUrl ?? '';
 
 export const JiraCredentialForm = ({ authState, compact = false, onSave, onSaved, onOpenTokenPage }: JiraCredentialFormProps): React.ReactElement => {
   const [email, setEmail] = useState(authState.emailAddress ?? '');
-  const [token, setToken] = useState('');
+  const tokenRef = useRef<HTMLInputElement>(null);
+  const [tokenPresent, setTokenPresent] = useState(false);
   const [baseUrl, setBaseUrl] = useState(defaultBaseUrl(authState));
-  const [expiryDate, setExpiryDate] = useState(authState.expiryDate ?? '');
+  const [siteFallbackVisible, setSiteFallbackVisible] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,19 +32,33 @@ export const JiraCredentialForm = ({ authState, compact = false, onSave, onSaved
     event.preventDefault();
     setSaving(true);
     setError(null);
+    let keepToken = false;
     try {
+      const token = tokenRef.current?.value ?? '';
       const result = await onSave({
         email: email.trim(),
         token,
-        baseUrl: baseUrl.trim(),
-        expiryDate: expiryDate === '' ? undefined : expiryDate
+        ...(siteFallbackVisible ? { baseUrl: baseUrl.trim() } : {})
       });
-      if (result !== undefined) onSaved?.(result.authState);
+      if (result !== undefined) {
+        if (result.ok) {
+          onSaved?.(result.authState);
+        } else if (result.status === 'site_not_found') {
+          keepToken = true;
+          setSiteFallbackVisible(true);
+          setError(null);
+        } else {
+          setError("Couldn't connect. Check the email and token.");
+        }
+      }
     } catch {
       setError("Couldn't connect. Check the email and token.");
     } finally {
       setSaving(false);
-      setToken('');
+      if (!keepToken && tokenRef.current !== null) {
+        tokenRef.current.value = '';
+        setTokenPresent(false);
+      }
     }
   };
 
@@ -61,31 +75,29 @@ export const JiraCredentialForm = ({ authState, compact = false, onSave, onSaved
       ) : null}
       <div className="jira-form-grid">
         <label className="field">
-          <span className="label">JIRA site URL</span>
-          <input aria-label="JIRA site URL" value={baseUrl} onChange={(event) => setBaseUrl(event.currentTarget.value)} placeholder="https://example.atlassian.net" autoComplete="url" required />
-        </label>
-        <label className="field">
           <span className="label">Email</span>
           <input aria-label="Email" value={email} onChange={(event) => setEmail(event.currentTarget.value)} type="email" autoComplete="email" required />
         </label>
         <label className="field jira-token-field">
           <span className="label">API token</span>
           <span className="jira-token-input">
-            <input aria-label="API token" value={token} onChange={(event) => setToken(event.currentTarget.value)} type={showToken ? 'text' : 'password'} autoComplete="off" required />
+            <input ref={tokenRef} aria-label="API token" onChange={(event) => setTokenPresent(event.currentTarget.value !== '')} type={showToken ? 'text' : 'password'} autoComplete="off" required />
             <button type="button" className="icon-btn" aria-label={showToken ? 'Hide API token' : 'Show API token'} onClick={() => setShowToken((value) => !value)}>
               <Ico.Eye size={13} />
             </button>
           </span>
         </label>
-        <label className="field">
-          <span className="label">Expires</span>
-          <input aria-label="Expires" value={expiryDate} onChange={(event) => setExpiryDate(event.currentTarget.value)} type="date" />
-          <span className="jira-field-help">Shown on the token page, lets us warn you before it lapses.</span>
-        </label>
+        {siteFallbackVisible ? (
+          <label className="field">
+            <span className="label">JIRA site URL</span>
+            <input aria-label="JIRA site URL" value={baseUrl} onChange={(event) => setBaseUrl(event.currentTarget.value)} placeholder="https://yourcompany.atlassian.net" autoComplete="url" required />
+            <span className="jira-field-help">We couldn't find your Jira site automatically. Paste it (e.g. https://yourcompany.atlassian.net).</span>
+          </label>
+        ) : null}
       </div>
       <p className="jira-secret-note">Stored in your OS keychain. Never sent to any AI agent. We can't recover it, so keep a copy.</p>
       {error !== null ? <p className="jira-form-error" role="alert">{error}</p> : null}
-      <button type="submit" className="btn primary" disabled={saving || email.trim() === '' || token === '' || baseUrl.trim() === ''}>
+      <button type="submit" className="btn primary" disabled={saving || email.trim() === '' || !tokenPresent || (siteFallbackVisible && baseUrl.trim() === '')}>
         {saving ? 'Saving...' : 'Save'}
       </button>
     </form>

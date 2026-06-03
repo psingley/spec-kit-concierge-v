@@ -1,7 +1,7 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { safeStorage } from 'electron';
-import { createJiraRestClient, normalizeBaseUrl } from './jiraRestClient';
+import { createJiraRestClient, jiraHeaders, normalizeBaseUrl } from './jiraRestClient';
 import type { JiraRestCredential } from './restCreateTurn';
 
 export type SafeStorageAdapter = {
@@ -11,9 +11,13 @@ export type SafeStorageAdapter = {
   decryptStringAsync: (cipherText: Buffer) => Promise<string>;
 };
 
-export type SaveJiraSubmissionCredentialRequest = JiraRestCredential & {
-  expiryDate?: string;
+export type SaveJiraSubmissionCredentialRequest = {
+  email: string;
+  token: string;
+  baseUrl?: string;
 };
+
+export type JiraCredentialSaveFailureStatus = 'site_not_found' | 'invalid_credentials';
 
 export type JiraAuthState = {
   state: 'warm' | 'expired' | 'none';
@@ -24,14 +28,19 @@ export type JiraAuthState = {
   baseUrl?: string;
 };
 
-type StoredCredential = SaveJiraSubmissionCredentialRequest & {
+type StoredCredential = JiraRestCredential & {
+  expiryDate?: string;
   displayName?: string;
   emailAddress?: string;
   accountId?: string;
 };
 
+export type JiraCredentialSaveResponse =
+  | { ok: true; authState: JiraAuthState }
+  | { ok: false; status: JiraCredentialSaveFailureStatus };
+
 export type JiraSubmissionCredentialService = {
-  saveCredential: (credential: SaveJiraSubmissionCredentialRequest) => Promise<{ ok: true; authState: JiraAuthState }>;
+  saveCredential: (credential: SaveJiraSubmissionCredentialRequest) => Promise<JiraCredentialSaveResponse>;
   loadCredential: () => Promise<StoredCredential | undefined>;
   clearCredential: () => Promise<void>;
   hasCredential: () => Promise<boolean>;
@@ -70,6 +79,45 @@ const persist = async (userDataPath: string, safeStorageAdapter: SafeStorageAdap
   await writeFile(credentialFilePath(userDataPath), encrypted.toString('base64'), 'utf8');
 };
 
+const deriveBaseUrlFromEmail = (email: string): string | undefined => {
+  const domain = email.trim().toLowerCase().split('@')[1];
+  const siteName = domain?.split('.')[0];
+  return siteName === undefined || siteName.trim() === '' ? undefined : `https://${siteName}.atlassian.net`;
+};
+
+const normalizeCandidateBaseUrl = (baseUrl: string): string => {
+  const trimmed = baseUrl.trim();
+  return normalizeBaseUrl(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
+};
+
+const readIdentity = async (response: Response): Promise<Pick<StoredCredential, 'accountId' | 'displayName' | 'emailAddress'>> => {
+  const body = await response.json().catch(() => ({})) as unknown;
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return {};
+  const record = body as Record<string, unknown>;
+  return {
+    accountId: typeof record.accountId === 'string' ? record.accountId : undefined,
+    displayName: typeof record.displayName === 'string' ? record.displayName : undefined,
+    emailAddress: typeof record.emailAddress === 'string' ? record.emailAddress : undefined
+  };
+};
+
+const validateCredential = async (
+  credential: JiraRestCredential,
+  fetch: typeof globalThis.fetch
+): Promise<({ ok: true } & Pick<StoredCredential, 'accountId' | 'displayName' | 'emailAddress'>) | { ok: false; status: JiraCredentialSaveFailureStatus }> => {
+  try {
+    const response = await fetch(`${normalizeBaseUrl(credential.baseUrl)}/rest/api/3/myself`, {
+      method: 'GET',
+      headers: jiraHeaders(credential)
+    });
+    if (response.status === 200) return { ok: true, ...(await readIdentity(response)) };
+    if (response.status === 401) return { ok: false, status: 'invalid_credentials' };
+    return { ok: false, status: 'site_not_found' };
+  } catch {
+    return { ok: false, status: 'site_not_found' };
+  }
+};
+
 export const createJiraSubmissionCredentialService = ({
   userDataPath,
   safeStorage: safeStorageAdapter = defaultSafeStorage,
@@ -98,11 +146,13 @@ export const createJiraSubmissionCredentialService = ({
       if (!isSecureStorageAvailable(safeStorageAdapter)) {
         throw new Error('secure storage unavailable for Jira submission credential');
       }
-      const normalizedCredential = { ...credential, baseUrl: normalizeBaseUrl(credential.baseUrl) };
-      const identity = await createJiraRestClient({ credential: normalizedCredential, fetch }).myself();
-      if (identity.status !== 200) {
-        throw new Error('Jira credential validation failed: reauth_required');
-      }
+      const baseUrl = credential.baseUrl === undefined || credential.baseUrl.trim() === ''
+        ? deriveBaseUrlFromEmail(credential.email)
+        : normalizeCandidateBaseUrl(credential.baseUrl);
+      if (baseUrl === undefined) return { ok: false, status: 'site_not_found' };
+      const normalizedCredential: JiraRestCredential = { email: credential.email, token: credential.token, baseUrl };
+      const identity = await validateCredential(normalizedCredential, fetch);
+      if (!identity.ok) return identity;
       const stored: StoredCredential = {
         ...normalizedCredential,
         displayName: identity.displayName,

@@ -15,15 +15,14 @@ const createJiraStore = () =>
   });
 
 describe('jira endpoint', () => {
-  it('saves a direct credential through the preload bridge without caching the token in redux', async () => {
+  it('saves a direct credential through the preload bridge without caching the token in redux or sending a site by default', async () => {
     const save = vi.fn(async () => ({
       ok: true,
       authState: {
         state: 'warm',
         displayName: 'Pat User',
         accountId: 'acct-1',
-        expiryDate: '2026-12-31',
-        baseUrl: 'https://example.atlassian.net'
+        baseUrl: 'https://collette.atlassian.net'
       }
     }));
     installConciergeBridge({ jiraCredential: { save, clear: vi.fn(), state: vi.fn() } });
@@ -32,19 +31,35 @@ describe('jira endpoint', () => {
     await expect(
       store.dispatch(jiraApi.endpoints.saveCredential.initiate(prepareJiraCredentialSave({
         email: 'pat@example.com',
-        token: 'secret-api-token',
-        baseUrl: 'https://example.atlassian.net',
-        expiryDate: '2026-12-31'
+        token: 'secret-api-token'
       }))).unwrap()
     ).resolves.toMatchObject({ authState: { state: 'warm', displayName: 'Pat User' } });
 
     expect(save).toHaveBeenCalledWith({
       email: 'pat@example.com',
-      token: 'secret-api-token',
-      baseUrl: 'https://example.atlassian.net',
-      expiryDate: '2026-12-31'
+      token: 'secret-api-token'
     });
     expect(JSON.stringify(store.getState())).not.toContain('secret-api-token');
+  });
+
+  it('passes an explicit site only after the fallback asks for one', async () => {
+    const save = vi.fn(async () => ({ ok: false as const, status: 'site_not_found' as const }));
+    installConciergeBridge({ jiraCredential: { save, clear: vi.fn(), state: vi.fn() } });
+    const store = createJiraStore();
+
+    await expect(
+      store.dispatch(jiraApi.endpoints.saveCredential.initiate(prepareJiraCredentialSave({
+        email: 'pat@example.com',
+        token: 'secret-api-token',
+        baseUrl: 'https://custom.atlassian.net'
+      }))).unwrap()
+    ).resolves.toEqual({ ok: false, status: 'site_not_found' });
+
+    expect(save).toHaveBeenCalledWith({
+      email: 'pat@example.com',
+      token: 'secret-api-token',
+      baseUrl: 'https://custom.atlassian.net'
+    });
   });
 
   it('reads and clears credential state through the R2 channels', async () => {

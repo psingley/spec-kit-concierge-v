@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { invalid, requireExactKeys, requireRecord, requireString, type FactoryResult } from './factoryUtils';
 import type { JiraSubmissionNode } from '../data-layer/jiraSubmission/plan';
-import type { JiraAuthState, SaveJiraSubmissionCredentialRequest } from '../data-layer/jiraSubmission/jiraSubmissionCredentialService';
+import type { JiraAuthState, JiraCredentialSaveResponse, SaveJiraSubmissionCredentialRequest } from '../data-layer/jiraSubmission/jiraSubmissionCredentialService';
 import type { JiraBoardMapping } from '../data-layer/jiraSubmission/jiraBoardMappingService';
 import type { JiraBoardSuggestion, JiraProject } from '../data-layer/jiraSubmission/jiraRestClient';
 
@@ -27,11 +27,6 @@ export type JiraDryRunResponse = {
   stateDir: string;
   nodes: Pick<JiraSubmissionNode, 'id' | 'issueType' | 'summary' | 'parentId' | 'labels'>[];
   warnings: string[];
-};
-
-export type JiraCredentialSaveResponse = {
-  ok: true;
-  authState: JiraAuthState;
 };
 
 export type JiraBoardSetRequest = {
@@ -140,23 +135,20 @@ const parseAuthState = (value: unknown): FactoryResult<JiraAuthState, ErrorName>
 export const createJiraCredentialSaveRequest = (value: unknown): FactoryResult<SaveJiraSubmissionCredentialRequest, ErrorName> => {
   const root = requireRecord(value, 'InvalidJiraSubmissionPayload', '$');
   if (!root.ok) return root;
-  const allowed = ['email', 'token', 'baseUrl', 'expiryDate'];
+  const allowed = ['email', 'token', 'baseUrl'];
   if (Object.keys(root.value).some((key) => !allowed.includes(key))) {
     return invalid('InvalidJiraSubmissionPayload', 'payload contains unexpected key', '$');
   }
   const email = requireString(root.value.email, 'InvalidJiraSubmissionPayload', '$.email');
   const token = requireString(root.value.token, 'InvalidJiraSubmissionPayload', '$.token');
-  const baseUrl = requireString(root.value.baseUrl, 'InvalidJiraSubmissionPayload', '$.baseUrl');
   if (!email.ok) return email;
   if (!token.ok) return token;
-  if (!baseUrl.ok) return baseUrl;
   return {
     ok: true,
     value: {
       email: email.value,
       token: token.value,
-      baseUrl: baseUrl.value,
-      expiryDate: typeof root.value.expiryDate === 'string' ? root.value.expiryDate : undefined
+      baseUrl: typeof root.value.baseUrl === 'string' ? root.value.baseUrl : undefined
     }
   };
 };
@@ -164,11 +156,21 @@ export const createJiraCredentialSaveRequest = (value: unknown): FactoryResult<S
 export const createJiraCredentialSaveResponse = (value: unknown): FactoryResult<JiraCredentialSaveResponse, ErrorName> => {
   const root = requireRecord(value, 'InvalidJiraSubmissionPayload', '$');
   if (!root.ok) return root;
-  const exact = requireExactKeys(root.value, ['ok', 'authState'], 'InvalidJiraSubmissionPayload', '$');
-  if (!exact.ok) return exact;
-  if (root.value.ok !== true) return invalid('InvalidJiraSubmissionPayload', 'ok must be true', '$.ok');
-  const authState = parseAuthState(root.value.authState);
-  return authState.ok ? rejectTokenShape({ ok: true, authState: authState.value }) : authState;
+  if (root.value.ok === false) {
+    const exact = requireExactKeys(root.value, ['ok', 'status'], 'InvalidJiraSubmissionPayload', '$');
+    if (!exact.ok) return exact;
+    if (root.value.status !== 'site_not_found' && root.value.status !== 'invalid_credentials') {
+      return invalid('InvalidJiraSubmissionPayload', 'status must be site_not_found or invalid_credentials', '$.status');
+    }
+    return rejectTokenShape({ ok: false, status: root.value.status });
+  }
+  if (root.value.ok === true) {
+    const exact = requireExactKeys(root.value, ['ok', 'authState'], 'InvalidJiraSubmissionPayload', '$');
+    if (!exact.ok) return exact;
+    const authState = parseAuthState(root.value.authState);
+    return authState.ok ? rejectTokenShape({ ok: true, authState: authState.value }) : authState;
+  }
+  return invalid('InvalidJiraSubmissionPayload', 'ok must be boolean', '$.ok');
 };
 
 export const createJiraAuthStateResponse = (value: unknown): FactoryResult<JiraAuthState, ErrorName> =>

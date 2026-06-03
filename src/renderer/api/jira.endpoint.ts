@@ -16,14 +16,12 @@ type ErrorName = 'InvalidRendererJira';
 export type JiraCredentialFormValue = {
   email: string;
   token: string;
-  baseUrl: string;
-  expiryDate?: string;
+  baseUrl?: string;
 };
 
 export type JiraCredentialSaveArg = {
   email: string;
-  baseUrl: string;
-  expiryDate?: string;
+  baseUrl?: string;
   tokenId: string;
 };
 
@@ -36,7 +34,6 @@ export const prepareJiraCredentialSave = (value: JiraCredentialFormValue): JiraC
   return {
     email: value.email,
     baseUrl: value.baseUrl,
-    expiryDate: value.expiryDate,
     tokenId
   };
 };
@@ -83,7 +80,11 @@ const parseAuthState = (value: unknown): RendererFactoryResult<JiraAuthState, Re
 const parseSaveResponse = (value: unknown): RendererFactoryResult<JiraCredentialSaveResponse, RendererBoundaryErrorName<ErrorName>> => {
   if (!isRecord(value)) return invalid('save response must be an object');
   if (containsTokenKey(value)) return invalid('save response must not contain token');
-  if (value.ok !== true) return invalid('ok must be true');
+  if (value.ok === false) {
+    if (value.status !== 'site_not_found' && value.status !== 'invalid_credentials') return invalid('status is invalid');
+    return { ok: true, value: { ok: false, status: value.status } };
+  }
+  if (value.ok !== true) return invalid('ok must be true or false');
   const authState = parseAuthState(value.authState);
   return authState.ok ? { ok: true, value: { ok: true, authState: authState.value } } : authState;
 };
@@ -145,14 +146,13 @@ export const jiraApi = api.injectEndpoints({
         const payload = {
           email: arg.email,
           token,
-          baseUrl: arg.baseUrl,
-          expiryDate: arg.expiryDate
+          ...(arg.baseUrl === undefined ? {} : { baseUrl: arg.baseUrl })
         };
         const response = await baseQuery({ channel: 'jira:credential:save', payload });
         if (response.error !== undefined) return { error: response.error };
         const parsed = parseSaveResponse(response.data);
         if (!parsed.ok) return { error: parsingError(parsed.error) };
-        queryApi.dispatch(jiraAuthStateLoaded(parsed.value.authState));
+        if (parsed.value.ok) queryApi.dispatch(jiraAuthStateLoaded(parsed.value.authState));
         return { data: parsed.value };
       },
       invalidatesTags: ['JiraCredential']

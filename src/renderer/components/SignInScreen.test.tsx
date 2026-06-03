@@ -68,16 +68,6 @@ describe('SignInScreen', () => {
     expect(screen.getByRole('button', { name: /reconnect/i })).toBeVisible();
   });
 
-  it('warns when a warm JIRA token expires within seven days', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-06-02T12:00:00Z'));
-
-    renderSignIn({ jiraAuthState: { state: 'warm', displayName: 'Pat User', expiryDate: '2026-06-05' } });
-
-    expect(screen.getByText('token expires in 3 days')).toHaveClass('jira-auth-warn');
-    vi.useRealTimers();
-  });
-
   it('expands the inline JIRA panel, opens the token page, and saves the credential', async () => {
     const onOpenJiraTokenPage = vi.fn();
     const onSaveJiraCredential = vi.fn(async () => ({ ok: true as const, authState: { state: 'warm' as const, displayName: 'Pat User' } }));
@@ -89,19 +79,45 @@ describe('SignInScreen', () => {
     fireEvent.click(within(panel).getByRole('button', { name: /open token page/i }));
     expect(onOpenJiraTokenPage).toHaveBeenCalledTimes(1);
 
-    fireEvent.change(within(panel).getByLabelText('JIRA site URL'), { target: { value: 'https://example.atlassian.net' } });
+    expect(within(panel).queryByLabelText('JIRA site URL')).not.toBeInTheDocument();
+    expect(within(panel).queryByLabelText('Expires')).not.toBeInTheDocument();
     fireEvent.change(within(panel).getByLabelText('Email'), { target: { value: 'pat@example.com' } });
     fireEvent.change(within(panel).getByLabelText('API token'), { target: { value: 'secret-api-token' } });
-    fireEvent.change(within(panel).getByLabelText('Expires'), { target: { value: '2026-12-31' } });
     fireEvent.click(within(panel).getByRole('button', { name: /save/i }));
 
     await waitFor(() => expect(onSaveJiraCredential).toHaveBeenCalledWith({
-      baseUrl: 'https://example.atlassian.net',
       email: 'pat@example.com',
-      token: 'secret-api-token',
-      expiryDate: '2026-12-31'
+      token: 'secret-api-token'
     }));
     await waitFor(() => expect(screen.getByText('Connected as Pat User')).toBeVisible());
+  });
+
+  it('reveals the site field on site_not_found and distinguishes invalid credentials', async () => {
+    const onSaveJiraCredential = vi.fn()
+      .mockResolvedValueOnce({ ok: false as const, status: 'site_not_found' as const })
+      .mockResolvedValueOnce({ ok: false as const, status: 'invalid_credentials' as const });
+    renderSignIn({ onSaveJiraCredential });
+
+    fireEvent.click(screen.getByRole('button', { name: /connect/i }));
+    const panel = screen.getByRole('region', { name: /jira direct connect/i });
+
+    fireEvent.change(within(panel).getByLabelText('Email'), { target: { value: 'pat@vanity.example' } });
+    fireEvent.change(within(panel).getByLabelText('API token'), { target: { value: 'secret-api-token' } });
+    fireEvent.click(within(panel).getByRole('button', { name: /save/i }));
+
+    await waitFor(() => expect(within(panel).getByLabelText('JIRA site URL')).toBeVisible());
+    expect(within(panel).getByText("We couldn't find your Jira site automatically. Paste it (e.g. https://yourcompany.atlassian.net).")).toBeVisible();
+
+    fireEvent.change(within(panel).getByLabelText('JIRA site URL'), { target: { value: 'https://custom.atlassian.net' } });
+    fireEvent.change(within(panel).getByLabelText('API token'), { target: { value: 'secret-api-token' } });
+    fireEvent.click(within(panel).getByRole('button', { name: /save/i }));
+
+    await waitFor(() => expect(onSaveJiraCredential).toHaveBeenLastCalledWith({
+      email: 'pat@vanity.example',
+      token: 'secret-api-token',
+      baseUrl: 'https://custom.atlassian.net'
+    }));
+    await waitFor(() => expect(within(panel).getByRole('alert')).toHaveTextContent('Check the email and token.'));
   });
 
   it('shows the MCP fallback link only when direct JIRA is unconfigured and MCP is ok', () => {

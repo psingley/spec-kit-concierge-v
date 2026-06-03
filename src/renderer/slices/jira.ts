@@ -36,10 +36,9 @@ export type JiraAuthState = {
   baseUrl?: string;
 };
 
-export type JiraCredentialSaveResponse = {
-  ok: true;
-  authState: JiraAuthState;
-};
+export type JiraCredentialSaveResponse =
+  | { ok: true; authState: JiraAuthState }
+  | { ok: false; status: 'site_not_found' | 'invalid_credentials' };
 
 export type JiraBoardMapping = {
   projectKey?: string;

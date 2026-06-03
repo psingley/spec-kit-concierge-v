@@ -40,17 +40,15 @@ describe('jiraSubmissionCredentialService', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('validates with /myself, persists encrypted metadata, loads in main only, and reports warm auth state without token', async () => {
+  it('derives the site from the email domain, validates with /myself, persists encrypted metadata, loads in main only, and reports warm auth state without token', async () => {
     const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
     const fetch = vi.fn<typeof globalThis.fetch>()
       .mockImplementation(async () => response({ accountId: 'acct-1', displayName: 'Pat User', emailAddress: 'person@example.com' }));
     const service = createJiraSubmissionCredentialService({ userDataPath, safeStorage: createSafeStorage(), fetch });
 
     const saved = await service.saveCredential({
-      email: 'person@example.com',
-      token: 'secret-token',
-      baseUrl: 'https://example.atlassian.net/',
-      expiryDate: '2026-12-31'
+      email: 'person@collette.com',
+      token: 'secret-token'
     });
 
     expect(saved).toEqual({
@@ -60,22 +58,21 @@ describe('jiraSubmissionCredentialService', () => {
         displayName: 'Pat User',
         emailAddress: 'person@example.com',
         accountId: 'acct-1',
-        expiryDate: '2026-12-31',
-        baseUrl: 'https://example.atlassian.net'
+        baseUrl: 'https://collette.atlassian.net'
       }
     });
     expect(JSON.stringify(saved)).not.toContain('secret-token');
-    expect(fetch.mock.calls[0]![0]).toBe('https://example.atlassian.net/rest/api/3/myself');
+    expect(fetch.mock.calls[0]![0]).toBe('https://collette.atlassian.net/rest/api/3/myself');
     expect(fetch.mock.calls[0]![1]!.headers).toMatchObject({
-      Authorization: `Basic ${Buffer.from('person@example.com:secret-token').toString('base64')}`
+      Authorization: `Basic ${Buffer.from('person@collette.com:secret-token').toString('base64')}`
     });
     const encrypted = await readFile(path.join(userDataPath, 'jira-credential.enc'), 'utf8');
     expect(encrypted).not.toContain('secret-token');
 
     await expect(service.loadCredential()).resolves.toMatchObject({
-      email: 'person@example.com',
+      email: 'person@collette.com',
       token: 'secret-token',
-      baseUrl: 'https://example.atlassian.net'
+      baseUrl: 'https://collette.atlassian.net'
     });
     await expect(service.getAuthState()).resolves.toMatchObject({
       state: 'warm',
@@ -84,7 +81,51 @@ describe('jiraSubmissionCredentialService', () => {
     });
   });
 
-  it('rejects invalid credentials, reports expired on 401 warmth ping, and clears stored credential', async () => {
+  it('returns site_not_found when the derived site is unreachable or absent', async () => {
+    const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
+    const fetch = vi.fn<typeof globalThis.fetch>()
+      .mockResolvedValueOnce(response({ errorMessages: ['missing'] }, { status: 404 }))
+      .mockRejectedValueOnce(new TypeError('getaddrinfo ENOTFOUND'));
+    const service = createJiraSubmissionCredentialService({ userDataPath, safeStorage: createSafeStorage(), fetch });
+
+    await expect(service.saveCredential({ email: 'person@vanity.example', token: 'secret-token' })).resolves.toEqual({
+      ok: false,
+      status: 'site_not_found'
+    });
+    await expect(service.saveCredential({ email: 'person@vanity.example', token: 'secret-token' })).resolves.toEqual({
+      ok: false,
+      status: 'site_not_found'
+    });
+    await expect(service.hasCredential()).resolves.toBe(false);
+  });
+
+  it('uses an explicit site fallback and reports 401 as invalid_credentials', async () => {
+    const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
+    const fetch = vi.fn<typeof globalThis.fetch>()
+      .mockResolvedValueOnce(response({ accountId: 'acct-1', displayName: 'Pat User' }))
+      .mockResolvedValueOnce(response({ errorMessages: ['bad'] }, { status: 401 }));
+    const service = createJiraSubmissionCredentialService({ userDataPath, safeStorage: createSafeStorage(), fetch });
+
+    await expect(service.saveCredential({
+      email: 'person@custom.example',
+      token: 'secret-token',
+      baseUrl: 'https://teamjira.atlassian.net/'
+    })).resolves.toMatchObject({
+      ok: true,
+      authState: { state: 'warm', baseUrl: 'https://teamjira.atlassian.net' }
+    });
+    expect(fetch.mock.calls[0]![0]).toBe('https://teamjira.atlassian.net/rest/api/3/myself');
+
+    await expect(service.saveCredential({
+      email: 'person@collette.com',
+      token: 'bad-token'
+    })).resolves.toEqual({
+      ok: false,
+      status: 'invalid_credentials'
+    });
+  });
+
+  it('reports invalid credentials, reports expired on 401 warmth ping, and clears stored credential', async () => {
     const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
     const fetch = vi.fn<typeof globalThis.fetch>()
       .mockResolvedValueOnce(response({ errorMessages: ['bad'] }, { status: 401 }))
@@ -96,7 +137,10 @@ describe('jiraSubmissionCredentialService', () => {
       email: 'person@example.com',
       token: 'bad-token',
       baseUrl: 'https://example.atlassian.net'
-    })).rejects.toThrow('Jira credential validation failed');
+    })).resolves.toEqual({
+      ok: false,
+      status: 'invalid_credentials'
+    });
     await expect(service.hasCredential()).resolves.toBe(false);
 
     await service.saveCredential({

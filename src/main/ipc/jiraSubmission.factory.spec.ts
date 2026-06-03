@@ -53,10 +53,18 @@ describe('jira submission IPC factory', () => {
   it('accepts R2 credential and board boundary shapes while rejecting token-bearing responses', () => {
     expect(createJiraCredentialSaveRequest({
       email: 'person@example.com',
+      token: 'secret-token'
+    })).toEqual({ ok: true, value: { email: 'person@example.com', token: 'secret-token' } });
+    expect(createJiraCredentialSaveRequest({
+      email: 'person@example.com',
       token: 'secret-token',
-      baseUrl: 'https://example.atlassian.net',
-      expiryDate: '2026-12-31'
+      baseUrl: 'https://example.atlassian.net'
     })).toMatchObject({ ok: true });
+    expect(createJiraCredentialSaveRequest({
+      email: 'person@example.com',
+      token: 'secret-token',
+      expiryDate: '2026-12-31'
+    })).toMatchObject({ ok: false });
     expect(createJiraCredentialSaveResponse({
       ok: true,
       authState: {
@@ -66,6 +74,10 @@ describe('jira submission IPC factory', () => {
         baseUrl: 'https://example.atlassian.net'
       }
     })).toMatchObject({ ok: true });
+    expect(createJiraCredentialSaveResponse({
+      ok: false,
+      status: 'site_not_found'
+    })).toEqual({ ok: true, value: { ok: false, status: 'site_not_found' } });
     expect(createJiraAuthStateResponse({
       state: 'warm',
       displayName: 'Pat User',
