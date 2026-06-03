@@ -5,6 +5,15 @@ import { readTestAdapterConfig, type ExecFileAdapter } from '../auth/cliAuth';
 const execFileAsync = promisify(execFile);
 const defaultExecFile: ExecFileAdapter = async (command, args, options) => execFileAsync(command, args, options);
 const GH_REPOSITORY_FIELDS = 'id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef';
+const ghRepoListArgs = (owner?: string): string[] => [
+  'repo',
+  'list',
+  ...(owner === undefined ? [] : [owner]),
+  '--limit',
+  '1000',
+  '--json',
+  GH_REPOSITORY_FIELDS
+];
 
 export type RepositorySummary = {
   id: string;
@@ -72,6 +81,35 @@ export const parseGhRepositories = (rows: unknown, fallbackOwner: string): Repos
   });
 };
 
+const parseGhOrgLogins = (stdout: string): string[] =>
+  Array.from(
+    new Set(
+      stdout
+        .split('\n')
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
+    )
+  );
+
+const dedupeRepositoriesById = (repositories: RepositorySummary[]): RepositorySummary[] => {
+  const seen = new Set<string>();
+  return repositories.filter((repository) => {
+    if (seen.has(repository.id)) {
+      return false;
+    }
+    seen.add(repository.id);
+    return true;
+  });
+};
+
+const listGhRepositoriesForOwner = async (
+  owner: string | undefined,
+  execFileAdapter: ExecFileAdapter
+): Promise<RepositorySummary[]> => {
+  const { stdout } = await execFileAdapter('gh', ghRepoListArgs(owner), { shell: false });
+  return parseGhRepositories(JSON.parse(stdout), owner ?? '');
+};
+
 export const listRepositories = async (
   owner?: string,
   adapterPath = process.env.CONCIERGE_TEST_REPOS_ADAPTER,
@@ -82,17 +120,43 @@ export const listRepositories = async (
     return config.repositories.filter(isRepositorySummary);
   }
 
-  // When no owner is supplied, `gh repo list` lists every repository the signed-in
-  // account can see (personal repos plus any org memberships). When an owner is
-  // supplied, it filters to that owner.
-  const ownerArgs = owner === undefined ? [] : [owner];
+  // `gh repo list` without an owner only lists personal repositories; org
+  // membership repositories must be enumerated through each organization.
   const target = owner ?? 'the signed-in account';
+  if (owner !== undefined) {
+    try {
+      return await listGhRepositoriesForOwner(owner, execFileAdapter);
+    } catch (error) {
+      throw new Error(`GitHub CLI could not list repositories for ${target}.`, { cause: error });
+    }
+  }
+
+  let personalRepositories: RepositorySummary[];
   try {
-    const { stdout } = await execFileAdapter('gh', ['repo', 'list', ...ownerArgs, '--limit', '1000', '--json', GH_REPOSITORY_FIELDS], {
-      shell: false
-    });
-    return parseGhRepositories(JSON.parse(stdout), owner ?? '');
+    personalRepositories = await listGhRepositoriesForOwner(undefined, execFileAdapter);
   } catch (error) {
     throw new Error(`GitHub CLI could not list repositories for ${target}.`, { cause: error });
   }
+
+  let orgLogins: string[];
+  try {
+    const { stdout } = await execFileAdapter('gh', ['api', '--paginate', '/user/orgs', '--jq', '.[].login'], { shell: false });
+    orgLogins = parseGhOrgLogins(stdout);
+  } catch (error) {
+    console.warn('GitHub CLI could not list organizations for the signed-in account. Falling back to personal repositories only.', error);
+    return personalRepositories;
+  }
+
+  const orgRepositoryLists = await Promise.all(
+    orgLogins.map(async (orgLogin) => {
+      try {
+        return await listGhRepositoriesForOwner(orgLogin, execFileAdapter);
+      } catch (error) {
+        console.warn(`GitHub CLI could not list repositories for organization ${orgLogin}. Skipping organization.`, error);
+        return [];
+      }
+    })
+  );
+
+  return dedupeRepositoriesById([...personalRepositories, ...orgRepositoryLists.flat()]);
 };
