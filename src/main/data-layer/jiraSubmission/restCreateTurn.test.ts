@@ -66,8 +66,9 @@ describe('Direct REST JIRA create turn', () => {
 
     expect(fetch).toHaveBeenCalledTimes(3);
     const searchUrl = new URL(fetch.mock.calls[0]![0] as string);
-    expect(searchUrl.pathname).toBe('/rest/api/3/search');
+    expect(searchUrl.pathname).toBe('/rest/api/3/search/jql');
     expect(searchUrl.searchParams.get('jql')).toBe(`labels="${materialized.identityLabel}"`);
+    expect(searchUrl.searchParams.get('fields')).toBe('key');
 
     const createBody = JSON.parse(fetch.mock.calls[1]![1]!.body as string) as Record<string, unknown>;
     expect(fetch.mock.calls[1]![1]!.headers).toMatchObject({

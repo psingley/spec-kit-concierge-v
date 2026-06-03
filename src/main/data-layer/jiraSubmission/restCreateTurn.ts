@@ -158,8 +158,9 @@ const adoptSingleOrphan = async (
   fetch: typeof globalThis.fetch,
   sleep: (milliseconds: number) => Promise<void>
 ): Promise<boolean> => {
-  const searchUrl = new URL(`${normalizeBaseUrl(credential.baseUrl)}/rest/api/3/search`);
+  const searchUrl = new URL(`${normalizeBaseUrl(credential.baseUrl)}/rest/api/3/search/jql`);
   searchUrl.searchParams.set('jql', `labels="${request.identityLabel}"`);
+  searchUrl.searchParams.set('fields', 'key');
   const search = await requestJson(searchUrl.toString(), { method: 'GET', headers: jiraHeaders(credential) }, { fetch, sleep });
   if (!search.ok || !isRecord(search.body) || !Array.isArray(search.body.issues) || search.body.issues.length !== 1) {
     return false;
