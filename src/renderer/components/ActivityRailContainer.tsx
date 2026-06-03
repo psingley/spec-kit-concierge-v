@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/store';
 import { activityCleared } from '../slices/activity';
-import { selectActivityBusy, selectActivityCurrentStatus, selectActivityEntries } from '../slices/activity.selectors';
+import { selectActivityBusy, selectActivityCurrentStatus, selectActivityEntries, selectActivityHangSuspected } from '../slices/activity.selectors';
 import { selectPreferencesActivitySide } from '../slices/preferences.selectors';
 import { selectUiShowActivity } from '../slices/ui.selectors';
 import { Activity } from './Activity';
@@ -16,6 +16,7 @@ export const ActivityRailContainer = (): React.ReactElement | null => {
       entries={useAppSelector(selectActivityEntries)}
       currentStatus={useAppSelector(selectActivityCurrentStatus)}
       busy={useAppSelector(selectActivityBusy)}
+      hangSuspected={useAppSelector(selectActivityHangSuspected)}
       side={side}
       onClear={() => dispatch(activityCleared())}
     />

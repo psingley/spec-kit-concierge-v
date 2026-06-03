@@ -97,4 +97,34 @@ describe('transcript capture listener', () => {
     }));
     vi.useRealTimers();
   });
+
+  it('routes assistant bursts while marking each event as live', () => {
+    vi.useFakeTimers();
+    const startListening = vi.fn() as unknown as AppStartListening;
+    setupTranscriptCaptureListener(startListening);
+
+    const effect = vi.mocked(startListening).mock.calls[0]?.[0].effect;
+    const dispatch = vi.fn();
+    const listenerApi = { dispatch } as never;
+    effect?.(acpStreamEventReceived({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      sessionId: 'tasks-1',
+      step: 'tasks',
+      message: 'Hel',
+      kind: 'assistant-text',
+      messageId: 'message-1'
+    }), listenerApi);
+    effect?.(acpStreamEventReceived({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      sessionId: 'tasks-1',
+      step: 'tasks',
+      message: 'lo',
+      kind: 'assistant-text',
+      messageId: 'message-1'
+    }), listenerApi);
+
+    expect(dispatch.mock.calls.filter((call) => call[0].type === assistantTextReceived.type)).toHaveLength(2);
+    expect(dispatch.mock.calls.filter((call) => call[0].type === markAcpEventSeen.type)).toHaveLength(2);
+    vi.useRealTimers();
+  });
 });
