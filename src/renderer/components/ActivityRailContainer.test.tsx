@@ -26,7 +26,6 @@ describe('ActivityRailContainer', () => {
 
   it('passes hang suspicion through to the Activity rail while busy', () => {
     const store = makeStore();
-    store.dispatch(activityVisibilitySet(true));
     store.dispatch(activityBusyChanged({ busy: true, status: 'Running plan' }));
     store.dispatch(hangSuspectedRecorded({ marker: 'plan-1:2026-06-03T00:00:00.000Z' }));
 
@@ -37,6 +36,31 @@ describe('ActivityRailContainer', () => {
     );
 
     expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+  });
+
+  it('renders the activity rail by default when no saved activity preference is hidden', () => {
+    const store = makeStore();
+
+    render(
+      <Provider store={store}>
+        <ActivityRailContainer />
+      </Provider>
+    );
+
+    expect(screen.getByRole('complementary', { name: 'Activity log' })).toBeInTheDocument();
+  });
+
+  it('shows the idle empty state when the default rail has no activity entries', () => {
+    const store = makeStore();
+
+    render(
+      <Provider store={store}>
+        <ActivityRailContainer />
+      </Provider>
+    );
+
+    expect(screen.getByText('No activity yet.')).toBeInTheDocument();
+    expect(screen.getByText('idle')).toBeInTheDocument();
   });
 
   it('pauses and resumes follow state from debounced scroll metrics', () => {

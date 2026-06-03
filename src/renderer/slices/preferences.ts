@@ -13,6 +13,8 @@ export type PreferencesState = {
   lastPersistenceError: string | null;
 };
 
+export const DEFAULT_COPILOT_MODEL_ID = 'gpt-5.4-mini';
+
 export const preferencesInitialState: PreferencesState = {
   hydratedFromDisk: false,
   theme: 'system',

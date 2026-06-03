@@ -19,7 +19,7 @@ describe('product store assembly', () => {
       'copilot',
       'jira'
     ]);
-    expect(state.ui).toMatchObject({ theme: 'system', sidebarOpen: true, activeView: null, showActivity: false, toasts: [] });
+    expect(state.ui).toMatchObject({ theme: 'system', sidebarOpen: true, activeView: null, showActivity: true, toasts: [] });
     expect(state.preferences).toMatchObject({ hydratedFromDisk: false, theme: 'system', accent: '#8b5cf6', activitySide: 'right' });
     expect(state.auth).toMatchObject({ copilotLoggedIn: null, githubLoggedIn: null, github: 'unknown', copilot: 'locked', atlassian: 'out' });
     expect(state.workspace).toEqual({

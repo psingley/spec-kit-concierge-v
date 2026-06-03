@@ -26,7 +26,7 @@ export const uiInitialState: UiState = {
   theme: 'system',
   sidebarOpen: true,
   activeView: null,
-  showActivity: false,
+  showActivity: true,
   showCustomize: false,
   showAbout: false,
   showRequest: false,
