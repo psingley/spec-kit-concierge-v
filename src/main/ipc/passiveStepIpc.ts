@@ -10,7 +10,9 @@ import type { DirtyDiffGateResult } from '../domain/reconciliation/dirtyDiffGate
 import type { TranscriptClassifierResult } from '../domain/reconciliation/transcriptClassifier';
 import type { StepHookContext, StepHookResult } from '../hooks/types';
 import type { MainLogger } from '../logging';
+import { extractAcpStreamProgress } from './acpUpdateText';
 import { assertOnePayload, getSenderContext, latencyMs, logHandlerError, toError } from './handlerUtils';
+import { createBufferedStepStreamEmitter } from './stepStreamBuffer';
 import { createStepStreamEvent, type PassiveStepSummary, type StepStreamEvent } from './stepStreamEvent.factory';
 
 export type PassiveStepName = Extract<StepName, 'plan' | 'tasks' | 'analyze'>;
@@ -195,11 +197,13 @@ export const registerPassiveStepIpc = ({
       let terminalSent = false;
       let featureDir: string | undefined;
       let failureDetails: { reason?: string; strandedArtifacts?: string[]; anomalyIds?: string[] } = {};
+      const streamEmitter = createBufferedStepStreamEmitter({ step, sessionId, sendEvent });
       const terminal = (streamEvent: Extract<StepStreamEvent, { type: 'done' }>): void => {
         if (terminalSent) {
           return;
         }
         terminalSent = true;
+        streamEmitter.flush();
         sendEvent(streamEvent);
       };
       const failureReasonFor = (result: Extract<StepHookResult, { ok: false }>): string =>
@@ -283,15 +287,7 @@ export const registerPassiveStepIpc = ({
           featureDir,
           signal: controller.signal,
           onUpdate: (update) => {
-            sendEvent({
-              type: 'progress',
-              step,
-              sessionId,
-              level: 'info',
-              message: `Streaming ${step} output`,
-              timestamp: new Date().toISOString(),
-              raw: update
-            });
+            streamEmitter.emit(extractAcpStreamProgress(update));
           }
         });
         if (facilitator !== undefined) {

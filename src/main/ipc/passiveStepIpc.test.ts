@@ -384,7 +384,45 @@ describe('registerPassiveStepIpc', () => {
       .resolves.toContain('"analyzeCommitSha": "analyze-sha"');
   });
 
-  it('forwards fine-grained ACP updates as progress events so stream silence resets live', async () => {
+  it('coalesces ACP assistant chunks in main before sending progress events', async () => {
+    const harness = createHarness();
+    const { repositoryPath } = await createRepo();
+
+    registerPassiveStepIpc({
+      step: 'analyze',
+      channel: 'copilot:analyze',
+      eventChannel: 'copilot:analyze:event',
+      ipcMain: harness.ipcMain,
+      logger: harness.logger,
+      userDataPath: '/tmp/user',
+      beforeHook: vi.fn().mockResolvedValue({ ok: true }),
+      afterHook: vi.fn().mockResolvedValue({ ok: true, commit: { commitSha: 'analyze-sha' } }),
+      agentAdapter: vi.fn(async (request) => {
+        request.onUpdate?.({ sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk', messageId: 'message-1', content: { type: 'text', text: 'Hello ' } } });
+        request.onUpdate?.({ sessionId: 's1', update: { sessionUpdate: 'agent_message_chunk', messageId: 'message-1', content: { type: 'text', text: 'world' } } });
+        return { updates: [] };
+      })
+    });
+
+    await harness.handlers.get('copilot:analyze')?.({ sender: harness.sender }, { ...payload, repositoryPath });
+
+    await vi.waitFor(() => expect(harness.sender.send).toHaveBeenCalledWith('copilot:analyze:event', expect.objectContaining({
+      event: expect.objectContaining({ type: 'done', step: 'analyze', status: 'pass' })
+    })));
+    const assistantEvents = harness.sender.send.mock.calls
+      .map((call) => call[1].event)
+      .filter((event) => event.type === 'progress' && event.kind === 'assistant-text');
+    expect(assistantEvents).toEqual([
+      expect.objectContaining({
+        step: 'analyze',
+        message: 'Hello world',
+        kind: 'assistant-text',
+        messageId: 'message-1'
+      })
+    ]);
+  });
+
+  it('forwards classified ACP tool updates as separate progress events so stream silence resets live', async () => {
     const harness = createHarness();
     const { repositoryPath } = await createRepo();
 
@@ -409,7 +447,8 @@ describe('registerPassiveStepIpc', () => {
       event: expect.objectContaining({
         type: 'progress',
         step: 'analyze',
-        message: 'Streaming analyze output',
+        message: expect.stringContaining('tool'),
+        kind: 'tool-call',
         raw: { sessionId: 's1', update: { sessionUpdate: 'tool_call_update', toolCallId: 't1' } }
       })
     })));

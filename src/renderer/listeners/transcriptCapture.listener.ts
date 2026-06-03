@@ -1,6 +1,7 @@
 import type { AppStartListening, ListenerTopicDescriptor } from './types';
 import {
   acpStreamEventReceived,
+  assistantTextReceived,
   hangSuspectedRecorded,
   markAcpEventSeen,
   recordActivity,
@@ -27,17 +28,32 @@ export const setupTranscriptCaptureListener = (startListening: AppStartListening
     actionCreator: acpStreamEventReceived,
     effect: (action, listenerApi) => {
       latestListenerApi = listenerApi as unknown as TimerListenerApi;
-      listenerApi.dispatch(
-        recordActivity({
-          timestamp: action.payload.timestamp,
-          level: 'info',
-          message: action.payload.message,
-          event: 'step-prompt-complete',
-          step: action.payload.step,
-          sessionId: action.payload.sessionId,
-          raw: action.payload.raw
-        })
-      );
+      const kind = action.payload.kind ?? 'generic';
+      if (kind === 'assistant-text') {
+        listenerApi.dispatch(
+          assistantTextReceived({
+            timestamp: action.payload.timestamp,
+            step: action.payload.step,
+            sessionId: action.payload.sessionId,
+            text: action.payload.message,
+            messageId: action.payload.messageId,
+            raw: action.payload.raw
+          })
+        );
+      } else {
+        listenerApi.dispatch(
+          recordActivity({
+            timestamp: action.payload.timestamp,
+            level: 'info',
+            message: action.payload.message,
+            kind,
+            event: kind === 'generic' ? 'step-prompt-complete' : kind,
+            step: action.payload.step,
+            sessionId: action.payload.sessionId,
+            raw: action.payload.raw
+          })
+        );
+      }
       listenerApi.dispatch(
         markAcpEventSeen({
           timestamp: action.payload.timestamp,

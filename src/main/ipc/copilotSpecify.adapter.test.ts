@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { describe, expect, it, vi } from 'vitest';
-import { buildSpecifyPrompt, runSpecifyPrintMode, type SpawnAdapter } from './copilotSpecify';
+import { buildSpecifyPrompt, runSpecifyPrintMode, type SpawnAdapter, type SpecifyStreamUpdate } from './copilotSpecify';
 
 // RFC-4122 v4 UUID shape (variant bits 8/9/a/b) — used to assert --session-id
 // is a real UUID, since copilot rejects the non-UUID Concierge sessionId.
@@ -91,7 +91,7 @@ const run = (
   prompt: string,
   repositoryPath: string,
   modelId: string | undefined,
-  onLine: ((line: string) => void) | undefined,
+  onLine: ((line: SpecifyStreamUpdate) => void) | undefined,
   spawnFn: SpawnAdapter,
   killSpy?: (pid: number) => void,
   branchName?: string
@@ -228,7 +228,9 @@ describe('runSpecifyPrintMode stdout streaming', () => {
 
     await run(
       'copilot', ['--allow-all-tools'], 'my feature', '/repo', undefined,
-      (line) => lines.push(line),
+      (line) => {
+        if (typeof line === 'string') lines.push(line);
+      },
       spawnFn
     );
 
@@ -243,15 +245,17 @@ describe('runSpecifyPrintMode stdout streaming', () => {
 
     await run(
       'copilot', ['--allow-all-tools'], 'my feature', '/repo', undefined,
-      (line) => lines.push(line),
+      (line) => {
+        if (typeof line === 'string') lines.push(line);
+      },
       spawnFn
     );
 
     expect(lines).toEqual(['Meaningful output']);
   });
 
-  it('surfaces a readable string (assistant text / event type) from JSONL events — not raw JSON', async () => {
-    const lines: string[] = [];
+  it('surfaces readable structured assistant text / event labels from JSONL events — not raw JSON', async () => {
+    const lines: unknown[] = [];
     const spawnFn = vi.fn(() =>
       makeFakeChild({
         stdoutLines: [
@@ -268,13 +272,15 @@ describe('runSpecifyPrintMode stdout streaming', () => {
       spawnFn
     );
 
-    // Assistant text extracted; an unknown type surfaces a friendly label
-    // (underscores → spaces); no raw JSON leaks. (Real tool events are
+    // Assistant text is structured for downstream coalescing; an unknown type
+    // surfaces a friendly label (underscores → spaces); no raw JSON leaks. (Real tool events are
     // tool.execution_start/_complete — covered in copilotSpecify.readable.test.ts.)
-    expect(lines).toContain('Creating feature directory...');
-    expect(lines).toContain('tool use');
+    expect(lines).toContainEqual(expect.objectContaining({ kind: 'status-update', message: 'Creating feature directory...' }));
+    expect(lines).toContainEqual(expect.objectContaining({ kind: 'status-update', message: 'tool use' }));
     for (const line of lines) {
-      expect(line).not.toMatch(/^\{/);
+      if (typeof line === 'string') {
+        expect(line).not.toMatch(/^\{/);
+      }
     }
   });
 });

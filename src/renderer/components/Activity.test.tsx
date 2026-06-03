@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Activity } from './Activity';
+import activityReducer, { assistantTextReceived, recordActivity } from '../slices/activity';
 
 describe('Activity', () => {
   it('renders real activity entries instead of demo terminal rows', () => {
@@ -47,5 +48,226 @@ describe('Activity', () => {
 
     expect(screen.getAllByText('Bound CLI session/update: writing spec.md')).toHaveLength(2);
     expect(screen.queryByText('git checkout -b spec/draft-rwgq')).not.toBeInTheDocument();
+  });
+
+  it('renders one growing assistant row while keeping tool rows separate', () => {
+    const { container } = render(
+      <Activity
+        entries={[
+          {
+            id: 'assistant-1',
+            timestamp: '2026-06-03T00:00:00.000Z',
+            level: 'progress',
+            kind: 'assistant-text',
+            message: 'Hello world'
+          },
+          {
+            id: 'tool-1',
+            timestamp: '2026-06-03T00:00:01.000Z',
+            level: 'info',
+            kind: 'tool-call',
+            message: 'Running tool read'
+          }
+        ]}
+        currentStatus="Hello world"
+        busy
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(container.querySelectorAll('.activity-stream .log-line.assistant-text')).toHaveLength(1);
+    expect(container.querySelectorAll('.activity-stream .log-line.tool-call')).toHaveLength(1);
+    expect(screen.getByText('Running tool read')).toBeInTheDocument();
+  });
+
+  it('renders no more log lines than the capped activity slice length', () => {
+    let state = activityReducer(undefined, { type: 'test/init' });
+    for (let index = 0; index < 300; index += 1) {
+      state = activityReducer(state, recordActivity({
+        timestamp: '2026-06-03T00:00:00.000Z',
+        level: 'info',
+        message: `entry ${index}`
+      }));
+    }
+
+    const { container } = render(
+      <Activity
+        entries={state.entries}
+        currentStatus="entry 299"
+        busy={false}
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(state.entries).toHaveLength(256);
+    expect(container.querySelectorAll('.activity-stream .log-line')).toHaveLength(state.entries.length);
+  });
+
+  it('renders reducer-accumulated assistant fragments as one row with separate status rows', () => {
+    let state = activityReducer(undefined, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:00.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-1',
+      text: 'Hel'
+    }));
+    state = activityReducer(state, assistantTextReceived({
+      timestamp: '2026-06-03T00:00:01.000Z',
+      step: 'plan',
+      sessionId: 'plan-1',
+      messageId: 'message-1',
+      text: 'lo'
+    }));
+    state = activityReducer(state, recordActivity({
+      timestamp: '2026-06-03T00:00:02.000Z',
+      level: 'info',
+      kind: 'status-update',
+      event: 'status-update',
+      message: 'Plan updated',
+      step: 'plan',
+      sessionId: 'plan-1'
+    }));
+
+    const { container } = render(
+      <Activity
+        entries={state.entries}
+        currentStatus={state.currentStatus}
+        busy={state.busy}
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(container.querySelectorAll('.activity-stream .log-line.assistant-text')).toHaveLength(1);
+    expect(container.querySelector('.activity-stream .log-line.assistant-text .msg')).toHaveTextContent('Hello');
+    expect(container.querySelectorAll('.activity-stream .log-line.status-update')).toHaveLength(1);
+    expect(container.querySelector('.activity-stream .log-line.status-update .msg')).toHaveTextContent('Plan updated');
+  });
+
+  it('surfaces a stall badge while a busy stream is suspected hung', () => {
+    render(
+      <Activity
+        entries={[]}
+        currentStatus="Running plan"
+        busy
+        hangSuspected
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+    expect(screen.queryByText('running')).not.toBeInTheDocument();
+  });
+
+  it('keeps a long-running capped stream visible without blanking', () => {
+    let state = activityReducer(undefined, { type: 'test/init' });
+    for (let index = 0; index < 600; index += 1) {
+      state = activityReducer(state, recordActivity({
+        timestamp: `2026-06-03T00:${String(Math.floor(index / 60)).padStart(2, '0')}:${String(index % 60).padStart(2, '0')}.000Z`,
+        level: 'info',
+        kind: 'status-update',
+        event: 'status-update',
+        message: `long run event ${index}`
+      }));
+    }
+
+    const { container } = render(
+      <Activity
+        entries={state.entries}
+        currentStatus="Still running"
+        busy
+        hangSuspected
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+    expect(screen.queryByText('No activity yet.')).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.activity-stream .log-line')).toHaveLength(256);
+    expect(screen.getByText('long run event 599')).toBeInTheDocument();
+  });
+
+  it('auto-scrolls the activity stream when follow state is enabled', () => {
+    const { container, rerender } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        followState="following"
+        side="right"
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 500 });
+
+    rerender(
+      <Activity
+        entries={[
+          { id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' },
+          { id: 'two', timestamp: '2026-06-03T00:00:01.000Z', level: 'info', message: 'two' }
+        ]}
+        currentStatus="two"
+        busy={false}
+        followState="following"
+        side="right"
+      />
+    );
+
+    expect(stream.scrollTop).toBe(500);
+  });
+
+  it('does not auto-scroll while follow state is paused', () => {
+    const { container, rerender } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        followState="paused"
+        side="right"
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 500 });
+    stream.scrollTop = 120;
+
+    rerender(
+      <Activity
+        entries={[
+          { id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' },
+          { id: 'two', timestamp: '2026-06-03T00:00:01.000Z', level: 'info', message: 'two' }
+        ]}
+        currentStatus="two"
+        busy={false}
+        followState="paused"
+        side="right"
+      />
+    );
+
+    expect(stream.scrollTop).toBe(120);
+  });
+
+  it('reports activity stream scroll metrics', () => {
+    const onScrollPositionChanged = vi.fn();
+    const { container } = render(
+      <Activity
+        entries={[{ id: 'one', timestamp: '2026-06-03T00:00:00.000Z', level: 'info', message: 'one' }]}
+        currentStatus="one"
+        busy={false}
+        side="right"
+        onScrollPositionChanged={onScrollPositionChanged}
+      />
+    );
+    const stream = container.querySelector('.activity-stream') as HTMLDivElement;
+    Object.defineProperty(stream, 'scrollHeight', { configurable: true, value: 1000 });
+    Object.defineProperty(stream, 'clientHeight', { configurable: true, value: 200 });
+    stream.scrollTop = 650;
+
+    fireEvent.scroll(stream);
+
+    expect(onScrollPositionChanged).toHaveBeenCalledWith({ scrollTop: 650, scrollHeight: 1000, clientHeight: 200 });
   });
 });

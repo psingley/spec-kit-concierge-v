@@ -5,8 +5,17 @@ export type ActivityProps = {
   entries: ActivityEntry[];
   currentStatus: string;
   busy: boolean;
+  hangSuspected?: boolean;
+  followState?: 'following' | 'paused';
   side: 'left' | 'right' | 'hidden';
   onClear?: () => void;
+  onScrollPositionChanged?: (metrics: ActivityScrollMetrics) => void;
+};
+
+export type ActivityScrollMetrics = {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
 };
 
 const glyphFor = (level: string): string => {
@@ -17,16 +26,44 @@ const glyphFor = (level: string): string => {
 };
 
 const renderMessage = (message: string): string => message;
+const classForEntry = (entry: ActivityEntry): string =>
+  ['log-line', entry.level, entry.kind ?? entry.event].filter(Boolean).join(' ');
 
-export const Activity = ({ entries, currentStatus, busy, side, onClear }: ActivityProps): React.ReactElement | null => {
+export const Activity = ({
+  entries,
+  currentStatus,
+  busy,
+  hangSuspected = false,
+  followState = 'following',
+  side,
+  onClear,
+  onScrollPositionChanged
+}: ActivityProps): React.ReactElement | null => {
+  const streamRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    if (followState !== 'following' || streamRef.current === null) {
+      return;
+    }
+    streamRef.current.scrollTop = streamRef.current.scrollHeight;
+  }, [entries, followState]);
+
   if (side === 'hidden') return null;
+  const stalled = busy && hangSuspected;
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>): void => {
+    const target = event.currentTarget;
+    onScrollPositionChanged?.({
+      scrollTop: target.scrollTop,
+      scrollHeight: target.scrollHeight,
+      clientHeight: target.clientHeight
+    });
+  };
   return (
     <aside className={`activity ${side}`} aria-label="Activity log">
       <div className="activity-head">
         <div className="h">▣<span>Activity</span></div>
-        <div className={`activity-status ${busy ? '' : 'idle'}`}>
-          {busy ? <span className="spinner sm" data-vd-role="spinner" /> : <span className="dot" data-vd-role="activity-idle-dot" />}
-          <span>{busy ? 'running' : 'idle'}</span>
+        <div className={`activity-status ${busy ? '' : 'idle'} ${stalled ? 'stalled' : ''}`}>
+          {stalled ? <span className="dot" data-vd-role="activity-stalled-dot" /> : busy ? <span className="spinner sm" data-vd-role="spinner" /> : <span className="dot" data-vd-role="activity-idle-dot" />}
+          <span>{stalled ? 'possibly stalled' : busy ? 'running' : 'idle'}</span>
         </div>
       </div>
       <div className="activity-now">
@@ -36,7 +73,7 @@ export const Activity = ({ entries, currentStatus, busy, side, onClear }: Activi
           <div className="now-text">{renderMessage(currentStatus)}</div>
         </div>
       </div>
-      <div className="activity-stream" role="log" aria-label="Activity log entries" aria-live="polite" tabIndex={0}>
+      <div ref={streamRef} className="activity-stream" role="log" aria-label="Activity log entries" aria-live="polite" tabIndex={0} onScroll={handleScroll}>
         {entries.length === 0 ? (
           <div className="log-line muted">
             <span className="ts">--:--:--</span>
@@ -44,7 +81,7 @@ export const Activity = ({ entries, currentStatus, busy, side, onClear }: Activi
             <span className="msg">No activity yet.</span>
           </div>
         ) : entries.map((entry) => (
-          <div key={entry.id} className={`log-line ${entry.level}`}>
+          <div key={entry.id} className={classForEntry(entry)}>
             <span className="ts">{entry.timestamp}</span>
             <span className="glyph" aria-hidden="true">{glyphFor(entry.level)}</span>
             <span className="msg">{renderMessage(entry.message)}</span>

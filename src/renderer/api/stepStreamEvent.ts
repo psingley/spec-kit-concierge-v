@@ -1,6 +1,7 @@
 import { requireExactKeys, requireRecord, requireString, type RendererBoundaryErrorName, type RendererFactoryResult } from './factoryUtils';
 
 export type StepName = 'specify' | 'clarify' | 'plan' | 'tasks' | 'analyze' | 'review';
+export type StreamEventKind = 'assistant-text' | 'tool-call' | 'status-update' | 'generic';
 
 export type ClarifySummary = {
   questions: Array<{ id: string; position?: number; text: string; choices: Array<{ key: string; label: string }> }>;
@@ -22,6 +23,8 @@ export type StepStreamEvent =
       level: 'info' | 'ok' | 'warn' | 'error';
       message: string;
       timestamp: string;
+      kind?: StreamEventKind;
+      messageId?: string;
       raw?: unknown;
     }
   | {
@@ -41,9 +44,11 @@ type ErrorName = 'InvalidStepStreamEvent';
 
 const stepNames = ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'];
 const levels = ['info', 'ok', 'warn', 'error'];
+const streamEventKinds = ['assistant-text', 'tool-call', 'status-update', 'generic'];
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const isStepName = (value: unknown): value is StepName => stepNames.includes(String(value));
 const isLevel = (value: unknown): value is 'info' | 'ok' | 'warn' | 'error' => levels.includes(String(value));
+const isStreamEventKind = (value: unknown): value is StreamEventKind => streamEventKinds.includes(String(value));
 const artifactKinds = ['text', 'markdown', 'code', 'image', 'pdf'] as const;
 const milestoneStatuses = ['pending', 'running', 'complete', 'warning'] as const;
 
@@ -117,18 +122,40 @@ export const parseRendererStepStreamEvent = (
   const root = requireRecord(value, 'InvalidStepStreamEvent', '$');
   if (!root.ok) return root;
   if (root.value.type === 'progress') {
-    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw']);
+    const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'level', 'message', 'timestamp', 'raw', 'kind', 'messageId']);
     if (!keys.ok) return keys;
     const sessionId = requireString(root.value.sessionId, 'InvalidStepStreamEvent', '$.sessionId');
     const message = requireString(root.value.message, 'InvalidStepStreamEvent', '$.message');
     const timestamp = requireString(root.value.timestamp, 'InvalidStepStreamEvent', '$.timestamp');
+    const messageId = root.value.messageId === undefined
+      ? undefined
+      : requireString(root.value.messageId, 'InvalidStepStreamEvent', '$.messageId');
     if (!sessionId.ok) return sessionId;
     if (!message.ok) return message;
     if (!timestamp.ok) return timestamp;
+    if (messageId !== undefined && !messageId.ok) return messageId;
     if (!isStepName(root.value.step) || !isLevel(root.value.level)) {
       return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'invalid progress event', path: '$' } };
     }
-    return { ok: true, value: { type: 'progress', step: root.value.step, sessionId: sessionId.value, level: root.value.level, message: message.value, timestamp: timestamp.value, raw: root.value.raw } };
+    if (root.value.kind !== undefined && !isStreamEventKind(root.value.kind)) {
+      return { ok: false, error: { name: 'InvalidStepStreamEvent', message: 'invalid progress kind', path: '$.kind' } };
+    }
+    const value: Extract<StepStreamEvent, { type: 'progress' }> = {
+      type: 'progress',
+      step: root.value.step,
+      sessionId: sessionId.value,
+      level: root.value.level,
+      message: message.value,
+      timestamp: timestamp.value,
+      kind: root.value.kind ?? 'generic'
+    };
+    if (messageId !== undefined) {
+      value.messageId = messageId.value;
+    }
+    if (Object.prototype.hasOwnProperty.call(root.value, 'raw')) {
+      value.raw = root.value.raw;
+    }
+    return { ok: true, value };
   }
   if (root.value.type === 'done') {
     const keys = requireExactKeys<ErrorName>(root.value, ['type', 'step', 'sessionId', 'status', 'specMarkdown', 'artifactPath', 'commitSha', 'branch', 'reason', 'summary']);

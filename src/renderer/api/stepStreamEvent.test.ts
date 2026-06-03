@@ -12,7 +12,49 @@ describe('shared step stream event renderer factory', () => {
       timestamp: '2026-05-29T00:00:00.000Z'
     };
 
+    expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: { ...event, kind: 'generic' } });
+  });
+
+  it('accepts validated progress kind values', () => {
+    const event = {
+      type: 'progress',
+      step: 'plan',
+      sessionId: 'plan-1',
+      level: 'info',
+      message: 'Reading plan context',
+      timestamp: '2026-06-03T00:00:00.000Z',
+      kind: 'assistant-text'
+    };
+
     expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: event });
+  });
+
+  it('accepts progress message ids for assistant row coalescing', () => {
+    const event = {
+      type: 'progress',
+      step: 'plan',
+      sessionId: 'plan-1',
+      level: 'info',
+      message: 'Hello',
+      timestamp: '2026-06-03T00:00:00.000Z',
+      kind: 'assistant-text',
+      messageId: 'message-1'
+    };
+
+    expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: event });
+  });
+
+  it('defaults missing progress kind to generic', () => {
+    const event = {
+      type: 'progress',
+      step: 'tasks',
+      sessionId: 'tasks-1',
+      level: 'info',
+      message: 'Running tasks',
+      timestamp: '2026-06-03T00:00:00.000Z'
+    };
+
+    expect(parseRendererStepStreamEvent(event)).toEqual({ ok: true, value: { ...event, kind: 'generic' } });
   });
 
   it('accepts clarify done pass events with parsed summary payload', () => {

@@ -8,7 +8,7 @@ describe('shared step stream event IPC factory', () => {
     for (const step of ['specify', 'clarify', 'plan', 'tasks', 'analyze', 'review'] as const) {
       expect(createStepStreamEvent({ type: 'progress', step, sessionId: `${step}-1`, level: 'info', message: 'Working', timestamp })).toEqual({
         ok: true,
-        value: { type: 'progress', step, sessionId: `${step}-1`, level: 'info', message: 'Working', timestamp }
+        value: { type: 'progress', step, sessionId: `${step}-1`, level: 'info', message: 'Working', timestamp, kind: 'generic' }
       });
     }
   });
