@@ -1,9 +1,20 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { describe, expect, it, vi } from 'vitest';
 import { createRtkQueryTestStore } from '../../test/rtkQueryStore';
 import { resumeSessionApi } from './resumeSession.endpoint';
 import { installConciergeBridge } from './testBridge';
+import { uiReducer } from '../slices/ui';
 
 const result = { specMarkdown: '# Spec\n\nbody', specCommitSha: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0' };
+
+const createResumeSessionStore = () =>
+  configureStore({
+    reducer: {
+      [resumeSessionApi.reducerPath]: resumeSessionApi.reducer,
+      ui: uiReducer
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(resumeSessionApi.middleware)
+  });
 
 describe('resumeSession endpoint', () => {
   it('reads the resumed spec through preload and validates {specMarkdown, specCommitSha}', async () => {
@@ -41,5 +52,45 @@ describe('resumeSession endpoint', () => {
     await expect(
       store.dispatch(resumeSessionApi.endpoints.resumeSession.initiate({ worktreePath: '/clone.worktrees/session-xyz' })).unwrap()
     ).rejects.toEqual({ status: 'IPC_ERROR', data: { name: 'Error', message: 'ipc failed' } });
+  });
+
+  it('shows a toast when resume IPC fails', async () => {
+    installConciergeBridge({
+      repo: {
+        ensureLocal: vi.fn(),
+        startSession: vi.fn(),
+        resumeSession: vi.fn(async () => {
+          throw new Error('ipc failed');
+        })
+      }
+    });
+    const store = createResumeSessionStore();
+
+    await store.dispatch(resumeSessionApi.endpoints.resumeSession.initiate({ worktreePath: '/clone.worktrees/session-xyz' })).unwrap().catch(() => {});
+
+    expect(store.getState().ui.toasts).toHaveLength(1);
+    expect(store.getState().ui.toasts[0]).toMatchObject({
+      level: 'error',
+      message: 'Session resume failed: ipc failed'
+    });
+  });
+
+  it('shows a toast when resume payload parsing fails', async () => {
+    installConciergeBridge({
+      repo: {
+        ensureLocal: vi.fn(),
+        startSession: vi.fn(),
+        resumeSession: vi.fn(async () => ({ specMarkdown: 42, specCommitSha: null }))
+      }
+    });
+    const store = createResumeSessionStore();
+
+    await store.dispatch(resumeSessionApi.endpoints.resumeSession.initiate({ worktreePath: '/clone.worktrees/session-xyz' })).unwrap().catch(() => {});
+
+    expect(store.getState().ui.toasts).toHaveLength(1);
+    expect(store.getState().ui.toasts[0]).toMatchObject({
+      level: 'error',
+      message: 'Session resume failed: specMarkdown must be a string'
+    });
   });
 });

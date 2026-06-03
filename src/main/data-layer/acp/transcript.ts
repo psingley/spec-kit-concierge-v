@@ -72,7 +72,8 @@ export const writeAcpTranscript = async ({
   homePath
 }: WriteAcpTranscriptOptions): Promise<string> => {
   const transcriptDirectory = path.join(userDataPath, 'transcripts', sessionId);
-  const transcriptPath = path.join(transcriptDirectory, `${step}-${timestamp.toISOString()}.jsonl`);
+  const safeTimestamp = timestamp.toISOString().replaceAll(':', '-');
+  const transcriptPath = path.join(transcriptDirectory, `${step}-${safeTimestamp}.jsonl`);
 
   try {
     await mkdir(transcriptDirectory, { recursive: true });

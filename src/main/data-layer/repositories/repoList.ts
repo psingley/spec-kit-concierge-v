@@ -1,9 +1,11 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { readTestAdapterConfig, type ExecFileAdapter } from '../auth/cliAuth';
+import { resolveWindowsBinary } from '../auth/execGh';
 
 const execFileAsync = promisify(execFile);
-const defaultExecFile: ExecFileAdapter = async (command, args, options) => execFileAsync(command, args, options);
+const defaultExecFile: ExecFileAdapter = async (command, args, options) =>
+  execFileAsync(await resolveWindowsBinary(command), args, options);
 const GH_REPOSITORY_FIELDS = 'id,name,owner,description,primaryLanguage,pushedAt,defaultBranchRef';
 const ghRepoListArgs = (owner?: string): string[] => [
   'repo',
