@@ -161,4 +161,33 @@ describe('Activity', () => {
     expect(screen.getByText('possibly stalled')).toBeInTheDocument();
     expect(screen.queryByText('running')).not.toBeInTheDocument();
   });
+
+  it('keeps a long-running capped stream visible without blanking', () => {
+    let state = activityReducer(undefined, { type: 'test/init' });
+    for (let index = 0; index < 600; index += 1) {
+      state = activityReducer(state, recordActivity({
+        timestamp: `2026-06-03T00:${String(Math.floor(index / 60)).padStart(2, '0')}:${String(index % 60).padStart(2, '0')}.000Z`,
+        level: 'info',
+        kind: 'status-update',
+        event: 'status-update',
+        message: `long run event ${index}`
+      }));
+    }
+
+    const { container } = render(
+      <Activity
+        entries={state.entries}
+        currentStatus="Still running"
+        busy
+        hangSuspected
+        side="right"
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('possibly stalled')).toBeInTheDocument();
+    expect(screen.queryByText('No activity yet.')).not.toBeInTheDocument();
+    expect(container.querySelectorAll('.activity-stream .log-line')).toHaveLength(256);
+    expect(screen.getByText('long run event 599')).toBeInTheDocument();
+  });
 });
