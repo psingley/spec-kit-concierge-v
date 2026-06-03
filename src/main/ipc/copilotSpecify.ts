@@ -6,6 +6,7 @@ import { mkdir } from 'node:fs/promises';
 import { app, type IpcMain } from 'electron';
 import { loadAgentManifest } from '../data-layer/agents/loader';
 import { BoundCLISupervisor } from '../data-layer/acp/supervisor';
+import { resolveWindowsBinary } from '../data-layer/auth/execGh';
 import { beforeSpecifyHook } from '../hooks/beforeSpecify.hook';
 import { afterSpecifyHook } from '../hooks/afterSpecify.hook';
 import type { StepHook } from '../hooks/types';
@@ -96,6 +97,7 @@ export type RegisterCopilotSpecifyIpcOptions = {
   // Post-specify reconciliation: guarantee the worktree ends on a real branch
   // (Bug 25) when spec-kit's LLM-executed git.feature hook left it detached.
   ensureBranch?: (repositoryPath: string, branchName: string) => Promise<string>;
+  spawnFn?: SpawnAdapter;
   now?: () => number;
 };
 
@@ -502,8 +504,9 @@ async (request) => {
   if (agent === undefined) {
     throw new Error('Copilot agent manifest entry is missing.');
   }
+  const binary = await resolveWindowsBinary(agent.binary);
   const outcome = await runSpecifyPrintMode(
-    agent.binary,
+    binary,
     agent.launchArgs,
     buildSpecifyPrompt(request.prompt),
     request.repositoryPath,
@@ -541,7 +544,7 @@ export const registerCopilotSpecifyIpc = ({
   ipcMain,
   logger,
   userDataPath = app.getPath('userData'),
-  agentAdapter = defaultAgentAdapter(logger, userDataPath),
+  agentAdapter,
   evaluateReadiness = defaultEvaluateReadiness(logger, userDataPath),
   beforeHook = beforeSpecifyHook,
   afterHook = afterSpecifyHook,
@@ -552,8 +555,10 @@ export const registerCopilotSpecifyIpc = ({
   branchReader = (repositoryPath) => runGit(repositoryPath, ['branch', '--show-current']),
   reconcileFeatureJson = reconcileSpecifyFeatureJson,
   ensureBranch = ensureBranchDefault,
+  spawnFn = nodeSpawn,
   now = () => performance.now()
 }: RegisterCopilotSpecifyIpcOptions): void => {
+  agentAdapter = agentAdapter ?? defaultAgentAdapter(logger, userDataPath, spawnFn);
   ipcMain.handle(COPILOT_SPECIFY_CHANNEL, async (event, ...args: unknown[]): Promise<CopilotSpecifyAck> => {
     const startedAt = now();
     const context = getSenderContext(event);

@@ -1,6 +1,13 @@
 import { EventEmitter } from 'node:events';
-import { describe, expect, it } from 'vitest';
-import { loginCopilot, loginGitHub, parseGitHubAuthStatus, type ExecFileAdapter } from './cliAuth';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  loginCopilot,
+  loginGitHub,
+  parseGitHubAuthStatus,
+  runCopilotLogin,
+  type ExecFileAdapter,
+  type SpawnAdapter
+} from './cliAuth';
 
 const authedSingle = `github.com
   ✓ Logged in to github.com account monalisa (keyring)
@@ -154,6 +161,36 @@ describe('loginCopilot', () => {
     ]);
   });
 
+  it('does not consult the process result fallback when the darwin keychain credential exists', async () => {
+    const invocations: string[] = [];
+    const execFile: ExecFileAdapter = async (command, args) => {
+      invocations.push(`${command} ${args.join(' ')}`);
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      if (command === 'security' && args[0] === 'find-generic-password') {
+        return { stdout: '', stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+    const spawnAdapter = vi.fn(() => {
+      throw new Error('copilot login should not start when the darwin keychain credential exists');
+    });
+
+    await expect(loginCopilot(true, '', execFile, 'darwin', {
+      spawnAdapter
+    })).resolves.toEqual({
+      status: 'ok',
+      provider: 'copilot',
+      label: 'Copilot CLI ready'
+    });
+    expect(spawnAdapter).not.toHaveBeenCalled();
+    expect(invocations).toEqual([
+      'gh auth status --active --hostname github.com',
+      'security find-generic-password -s copilot-cli -a https://github.com:monalisa'
+    ]);
+  });
+
   it('streams the Copilot device code from stdout and verifies the credential when login exits', async () => {
     const invocations: string[] = [];
     let credentialExists = false;
@@ -230,11 +267,150 @@ describe('loginCopilot', () => {
     expect(deviceCodes).toEqual([{ code: '023C-3350', url: 'https://github.com/login/device' }]);
   });
 
+  it('accepts a clean zero-exit copilot login result when non-darwin has no credential-status probe', async () => {
+    const invocations: string[] = [];
+    const execFile: ExecFileAdapter = async (command, args) => {
+      invocations.push(`${command} ${args.join(' ')}`);
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+    const spawnAdapter = () => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stdout.emit('data', Buffer.from('To authenticate, visit https://github.com/login/device and enter code 023C-3350.\nAuthenticated as monalisa.\n'));
+        child.emit('exit', 0);
+        child.emit('close', 0);
+      });
+      return child;
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'win32', {
+      spawnAdapter
+    })).resolves.toEqual({
+      status: 'ok',
+      provider: 'copilot',
+      label: 'Copilot CLI ready'
+    });
+    expect(invocations).toEqual([
+      'gh auth status --active --hostname github.com'
+    ]);
+  });
+
+  it('rejects a non-darwin copilot login when the process exits non-zero', async () => {
+    const execFile: ExecFileAdapter = async (command, args) => {
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+    const spawnAdapter = () => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stderr.emit('data', Buffer.from('device authorization timed out\n'));
+        child.emit('exit', 1);
+        child.emit('close', 1);
+      });
+      return child;
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'win32', {
+      spawnAdapter
+    })).rejects.toThrow('Copilot CLI login did not complete.');
+  });
+
+  it('rejects a non-darwin copilot login when zero-exit output contains a failure marker', async () => {
+    const execFile: ExecFileAdapter = async (command, args) => {
+      if (command === 'gh' && args[0] === 'auth' && args[1] === 'status') {
+        return { stdout: authedSingle, stderr: '' };
+      }
+      throw new Error(`unexpected invocation: ${command} ${args.join(' ')}`);
+    };
+    const spawnAdapter = () => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stderr.emit('data', Buffer.from('error: not authorized\n'));
+        child.emit('exit', 0);
+        child.emit('close', 0);
+      });
+      return child;
+    };
+
+    await expect(loginCopilot(true, '', execFile, 'win32', {
+      spawnAdapter
+    })).rejects.toThrow('Copilot CLI login did not complete.');
+  });
+
   it('requires GitHub to be connected before Copilot login', async () => {
     const execFile: ExecFileAdapter = async () => {
       throw new Error('should not cross the OS boundary');
     };
 
     await expect(loginCopilot(false, '', execFile, 'darwin')).rejects.toThrow('GitHub login is required before Copilot login.');
+  });
+});
+
+describe('runCopilotLogin', () => {
+  it('resolves with exit code and combined output while streaming the device code', async () => {
+    const deviceCodes: Array<{ code: string; url: string }> = [];
+    const spawnAdapter = vi.fn(() => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stdout.emit('data', Buffer.from('To authenticate, visit https://github.com/login/device and enter code 023C-3350.\n'));
+        child.stderr.emit('data', Buffer.from('Waiting for authorization...\n'));
+        child.emit('exit', 0);
+        child.emit('close', 0);
+      });
+      return child;
+    }) as unknown as SpawnAdapter;
+
+    await expect(runCopilotLogin(spawnAdapter, (info) => deviceCodes.push(info))).resolves.toEqual({
+      exitCode: 0,
+      output: 'To authenticate, visit https://github.com/login/device and enter code 023C-3350.\nWaiting for authorization...\n'
+    });
+    expect(spawnAdapter).toHaveBeenCalledWith('copilot', ['login'], { shell: false });
+    expect(deviceCodes).toEqual([{ code: '023C-3350', url: 'https://github.com/login/device' }]);
+  });
+
+  it('resolves with a non-zero exit code instead of discarding it', async () => {
+    const spawnAdapter = (() => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.stderr.emit('data', Buffer.from('authorization failed\n'));
+        child.emit('exit', 1);
+        child.emit('close', 1);
+      });
+      return child;
+    }) as unknown as SpawnAdapter;
+
+    await expect(runCopilotLogin(spawnAdapter)).resolves.toEqual({
+      exitCode: 1,
+      output: 'authorization failed\n'
+    });
+  });
+
+  it('rejects when the copilot login process fails to spawn', async () => {
+    const spawnAdapter = (() => {
+      const child = new EventEmitter() as EventEmitter & { stdout: EventEmitter; stderr: EventEmitter };
+      child.stdout = new EventEmitter();
+      child.stderr = new EventEmitter();
+      queueMicrotask(() => {
+        child.emit('error', new Error('spawn ENOENT'));
+      });
+      return child;
+    }) as unknown as SpawnAdapter;
+
+    await expect(runCopilotLogin(spawnAdapter)).rejects.toThrow('spawn ENOENT');
   });
 });

@@ -1,6 +1,7 @@
 import { execFile, spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { promisify } from 'node:util';
+import { resolveWindowsBinary } from './execGh';
 
 const execFileAsync = promisify(execFile);
 const GITHUB_HOSTNAME = 'github.com';
@@ -24,6 +25,11 @@ const defaultSpawn: SpawnAdapter = (command, args, options) => spawn(command, ar
 export type CopilotDeviceCodeInfo = {
   code: string;
   url: string;
+};
+
+export type CopilotLoginProcessResult = {
+  exitCode: number | null;
+  output: string;
 };
 
 export type LoginCopilotOptions = {
@@ -181,33 +187,48 @@ const parseCopilotDeviceCode = (output: string): CopilotDeviceCodeInfo | null =>
   return null;
 };
 
-const runCopilotLogin = async (
+const COPILOT_LOGIN_FAILURE_MARKER = /error|failed|not authorized/i;
+
+export const runCopilotLogin = async (
   spawnAdapter: SpawnAdapter,
   onDeviceCode?: (info: CopilotDeviceCodeInfo) => void
-): Promise<void> => new Promise((resolve, reject) => {
-  const child = spawnAdapter('copilot', ['login'], { shell: false });
-  let stdout = '';
-  let emittedDeviceCode = false;
-  let settled = false;
-  const settle = (fn: () => void): void => {
-    if (settled) return;
-    settled = true;
-    fn();
-  };
-  const inspectStdout = (chunk: unknown): void => {
-    stdout += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
-    if (emittedDeviceCode) return;
-    const parsed = parseCopilotDeviceCode(stdout);
-    if (parsed === null) return;
-    emittedDeviceCode = true;
-    onDeviceCode?.(parsed);
-  };
+): Promise<CopilotLoginProcessResult> => {
+  const copilotBinary = await resolveWindowsBinary('copilot');
+  return new Promise((resolve, reject) => {
+    const child = spawnAdapter(copilotBinary, ['login'], { shell: false });
+    let stdout = '';
+    let output = '';
+    let emittedDeviceCode = false;
+    let settled = false;
+    const settle = (fn: () => void): void => {
+      if (settled) return;
+      settled = true;
+      fn();
+    };
+    const inspectStdout = (chunk: unknown): void => {
+      const text = Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+      stdout += text;
+      output += text;
+      if (emittedDeviceCode) return;
+      const parsed = parseCopilotDeviceCode(stdout);
+      if (parsed === null) return;
+      emittedDeviceCode = true;
+      onDeviceCode?.(parsed);
+    };
+    const inspectStderr = (chunk: unknown): void => {
+      output += Buffer.isBuffer(chunk) ? chunk.toString('utf8') : String(chunk);
+    };
+    const resolveWithProcessResult = (code: unknown): void => {
+      settle(() => resolve({ exitCode: typeof code === 'number' ? code : null, output }));
+    };
 
-  child.stdout.on('data', inspectStdout);
-  child.on('error', (error) => settle(() => reject(error)));
-  child.on('close', () => settle(resolve));
-  child.on('exit', () => settle(resolve));
-});
+    child.stdout.on('data', inspectStdout);
+    child.stderr?.on('data', inspectStderr);
+    child.on('error', (error) => settle(() => reject(error)));
+    child.on('close', resolveWithProcessResult);
+    child.on('exit', resolveWithProcessResult);
+  });
+};
 
 export const readCopilotAuthStatus = async (
   githubLogin: string | undefined,
@@ -262,9 +283,17 @@ export const loginCopilot = async (
     return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
   }
 
-  await runCopilotLogin(options.spawnAdapter ?? defaultSpawn, options.onDeviceCode);
+  const loginResult = await runCopilotLogin(options.spawnAdapter ?? defaultSpawn, options.onDeviceCode);
   const authenticated = await readCopilotAuthStatus(githubStatus.login, execFileAdapter, platform);
-  if (!authenticated.authenticated) {
+  if (authenticated.authenticated) {
+    return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
+  }
+
+  if (
+    platform === 'darwin' ||
+    loginResult.exitCode !== 0 ||
+    COPILOT_LOGIN_FAILURE_MARKER.test(loginResult.output)
+  ) {
     throw new Error('Copilot CLI login did not complete.');
   }
   return { status: 'ok', provider: 'copilot', label: 'Copilot CLI ready' };
