@@ -8,6 +8,13 @@ export type ActivityProps = {
   hangSuspected?: boolean;
   side: 'left' | 'right' | 'hidden';
   onClear?: () => void;
+  onScrollPositionChanged?: (metrics: ActivityScrollMetrics) => void;
+};
+
+export type ActivityScrollMetrics = {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
 };
 
 const glyphFor = (level: string): string => {
