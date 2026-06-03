@@ -40,6 +40,38 @@ describe('jiraSubmissionCredentialService', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it('allows default safeStorage when the selected-backend API is absent', async () => {
+    vi.resetModules();
+    vi.doMock('electron', () => ({
+      safeStorage: {
+        isEncryptionAvailable: () => true,
+        encryptString: (plainText: string) => Buffer.from(`cipher:${plainText}`, 'utf8'),
+        decryptString: (cipherText: Buffer) => cipherText.toString('utf8').replace(/^cipher:/, '')
+      }
+    }));
+
+    try {
+      const { createJiraSubmissionCredentialService } = await import('./jiraSubmissionCredentialService');
+      const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
+      const fetch = vi.fn<typeof globalThis.fetch>()
+        .mockResolvedValue(response({ accountId: 'acct-1', displayName: 'Pat User', emailAddress: 'person@example.com' }));
+      const service = createJiraSubmissionCredentialService({ userDataPath, fetch });
+
+      await expect(service.saveCredential({
+        email: 'person@example.com',
+        token: 'secret-token',
+        baseUrl: 'https://example.atlassian.net'
+      })).resolves.toMatchObject({
+        ok: true,
+        authState: { state: 'warm', baseUrl: 'https://example.atlassian.net' }
+      });
+      expect(fetch).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.doUnmock('electron');
+      vi.resetModules();
+    }
+  });
+
   it('derives the site from the email domain, validates with /myself, persists encrypted metadata, loads in main only, and reports warm auth state without token', async () => {
     const userDataPath = await mkdtemp(path.join(os.tmpdir(), 'jira-credential-'));
     const fetch = vi.fn<typeof globalThis.fetch>()

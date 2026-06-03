@@ -49,7 +49,9 @@ export type JiraSubmissionCredentialService = {
 
 const defaultSafeStorage: SafeStorageAdapter = {
   isEncryptionAvailable: () => safeStorage.isEncryptionAvailable(),
-  getSelectedStorageBackend: () => safeStorage.getSelectedStorageBackend(),
+  getSelectedStorageBackend: typeof safeStorage?.getSelectedStorageBackend === 'function'
+    ? () => safeStorage.getSelectedStorageBackend()
+    : undefined,
   encryptStringAsync: async (plainText) => safeStorage.encryptString(plainText),
   decryptStringAsync: async (cipherText) => safeStorage.decryptString(cipherText)
 };
